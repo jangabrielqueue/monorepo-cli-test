@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "ezpay-uat",
+    "prod": "ezpay-prod"
+  }
+}
