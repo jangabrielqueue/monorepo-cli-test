@@ -3,7 +3,7 @@ import { Card, Steps, Spin, Alert } from "antd";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import { TransferSuccessful, TransferFailed } from "./TransferResult";
-import { submitDepositRequest, submitOTPRequest } from "./Requests";
+import { sendTopUpRequest, sendTopUpOtp } from "./Requests";
 
 import * as signalR from "@microsoft/signalr";
 import { RequestContext } from "../../Context";
@@ -29,7 +29,7 @@ class Deposit extends Component {
       waitingForReady: true,
       error: undefined,
     });
-    const result = await submitDepositRequest({
+    const result = await sendTopUpRequest({
       ...values,
       referenceId: this.props.referenceId,
     });
@@ -53,7 +53,7 @@ class Deposit extends Component {
       waitingForReady: true,
       error: undefined,
     });
-    const result = await submitOTPRequest(this.props.session, value.otp);
+    const result = await sendTopUpOtp(this.props.session, value.otp);
     if (result.error) {
       this.setState({
         waitingForReady: false,
