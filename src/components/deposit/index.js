@@ -28,15 +28,17 @@ class Deposit extends Component {
     this.setState({
       waitingForReady: true,
       error: undefined,
+      errors: undefined,
     });
     const result = await sendTopUpRequest({
       ...values,
       referenceId: this.props.referenceId,
     });
-    if (result.error) {
+    if (result.errors) {
       this.setState({
         waitingForReady: false,
-        error: result.error,
+        error: result.title,
+        errors: result.errors,
       });
     }
   };
@@ -52,12 +54,14 @@ class Deposit extends Component {
     this.setState({
       waitingForReady: true,
       error: undefined,
+      errors: undefined,
     });
     const result = await sendTopUpOtp(this.props.session, value.otp);
-    if (result.error) {
+    if (result.errors) {
       this.setState({
         waitingForReady: false,
-        error: result.error,
+        error: result.title,
+        errors: result.errors,
       });
     }
   };
@@ -76,7 +80,7 @@ class Deposit extends Component {
     this.setState({
       waitingForReady: false,
       isSuccessful: successful,
-      error: undefined,
+      errors: undefined,
       step: 2,
       transferResult: transferResult,
     });
@@ -93,7 +97,10 @@ class Deposit extends Component {
     connection.onclose(async () => {
       this.setState({
         waitingForReady: true,
-        error: "connection is closed, please refresh the page.",
+        error: "Network error",
+        errors: {
+          network: "connection is closed, please refresh the page.",
+        },
       });
     });
     try {
@@ -105,7 +112,10 @@ class Deposit extends Component {
       });
     } catch (ex) {
       this.setState({
-        error: "Can't connect to server, please refresh your browser.",
+        error: "Network error",
+        errors: {
+          network: "Can't connect to server, please refresh your browser.",
+        },
       });
     }
   };
@@ -125,11 +135,12 @@ class Deposit extends Component {
           {request => (
             <DepositForm
               merchant={request.merchant}
-              customer={request.customer}
+              requester={request.requester}
               currency={request.currency}
               bank={request.bank}
               amount={request.amount}
-              referenceId={request.referenceId}
+              reference={request.reference}
+              signature={request.signature}
               handleSubmit={this.handleSubmitDeposit}
             />
           )}

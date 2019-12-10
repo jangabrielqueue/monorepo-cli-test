@@ -18,27 +18,33 @@ function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
+function getDefaultBankByCurrency(currency) {
+  return getBanksByCurrency(currency)[0];
+}
+
 class DepositFormImpl extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currency: props.currency,
-      merchantId: props.merchant,
-      customerId: props.customer,
-      bankCode: undefined,
-      otpMethod: "SMS",
+      merchant: props.merchant,
+      requester: props.requester,
+      bank: getDefaultBankByCurrency(props.currency),
+      signature: props.signature,
+      reference: props.reference,
+      otpMethod: "1",
     };
   }
 
   handleBankCodeSelected = value => {
     this.setState({
-      bankCode: value,
+      bank: value,
     });
   };
 
   handleLoginNameChanged = e => {
     this.setState({
-      loginName: e.target.value,
+      username: e.target.value,
     });
   };
 
@@ -69,14 +75,8 @@ class DepositFormImpl extends Component {
   render() {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { referenceId } = this.props;
-    const {
-      merchantId,
-      customerId,
-      currency,
-      otpMethod,
-    } = this.state;
+    const { merchant, requester, currency, otpMethod, bank } = this.state;
     const bankCodes = getBanksByCurrency(currency);
-    const bankCode = this.state.bankCode || bankCodes[0];
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
@@ -91,12 +91,14 @@ class DepositFormImpl extends Component {
           </Form.Item>
           <Form.Item>
             <Select
-              defaultValue={bankCode}
+              defaultValue={bank}
               size="large"
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (
-                <Option value={x}>{x}</Option>
+                <Option key={x} value={x}>
+                  {x}
+                </Option>
               ))}
             </Select>
           </Form.Item>
@@ -143,8 +145,8 @@ class DepositFormImpl extends Component {
               size="large"
               onChange={this.handleOtpMethodSelected}
             >
-              <Option value="SMS">SMS OTP</Option>
-              <Option value="SMART_OTP">Smart OTP</Option>
+              <Option value="1">SMS OTP</Option>
+              <Option value="2">Smart OTP</Option>
             </Select>
           </Form.Item>
           <Form.Item>
@@ -162,7 +164,7 @@ class DepositFormImpl extends Component {
           <Form.Item>
             <Collapse bordered={false}>
               <Panel
-                header={"More about deposit to " + merchantId}
+                header={"More about deposit to " + merchant}
                 key="1"
                 style={{
                   border: "0",
@@ -176,11 +178,11 @@ class DepositFormImpl extends Component {
                   </div>
                   <div className="info-item">
                     <Icon type="safety" />
-                    <span>{merchantId}</span>
+                    <span>{merchant}</span>
                   </div>
                   <div className="info-item">
                     <Icon type="user" />
-                    <span>{customerId}</span>
+                    <span>{requester}</span>
                   </div>
                   <div className="info-item">
                     <Icon type="pay-circle" />
