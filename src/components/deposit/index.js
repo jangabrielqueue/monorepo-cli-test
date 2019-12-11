@@ -34,6 +34,7 @@ class Deposit extends Component {
       ...values,
       referenceId: this.props.referenceId,
     });
+    console.log(result);
     if (result.errors) {
       this.setState({
         waitingForReady: false,
@@ -67,22 +68,12 @@ class Deposit extends Component {
   };
 
   handleCommandStatusUpdate = e => {
-    let successful = false;
-    let transferResult = undefined;
-    if (e.successful) {
-      transferResult = e.successful;
-      successful = true;
-    } else if (e.retryableFailed) {
-      transferResult = e.retryableFailed;
-    } else if (e.unretryableFailed) {
-      transferResult = e.unretryableFailed;
-    }
     this.setState({
       waitingForReady: false,
-      isSuccessful: successful,
+      isSuccessful: e.isSuccess,
       errors: undefined,
       step: 2,
-      transferResult: transferResult,
+      transferResult: e,
     });
   };
 
@@ -92,7 +83,7 @@ class Deposit extends Component {
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();
-    connection.on("Update", this.handleCommandStatusUpdate);
+    connection.on("ReceivedResult", this.handleCommandStatusUpdate);
     connection.on("OtpRequested", this.handleRequestOTP);
     connection.onclose(async () => {
       this.setState({
@@ -140,7 +131,9 @@ class Deposit extends Component {
               bank={request.bank}
               amount={request.amount}
               reference={request.reference}
+              clientIp={request.clientIp}
               signature={request.signature}
+              datetime={request.datetime}
               handleSubmit={this.handleSubmitDeposit}
             />
           )}

@@ -32,6 +32,8 @@ class DepositFormImpl extends Component {
       bank: getDefaultBankByCurrency(props.currency),
       signature: props.signature,
       reference: props.reference,
+      clientIp: props.clientIp,
+      datetime: props.datetime,
       otpMethod: "1",
     };
   }

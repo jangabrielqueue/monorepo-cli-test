@@ -19,9 +19,7 @@ export async function sendTopUpRequest(data) {
       key: data.signature,
       callbackUri: "https://www.google.com",
       failedUrl: "https://www.google.com",
-      clientIp: "127.0.0.1",
       customer: data.requester,
-      datetime: dayjs.utc(),
       language: "en-us",
       note: "",
     });

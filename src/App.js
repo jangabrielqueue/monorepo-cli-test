@@ -20,6 +20,8 @@ function getParameters(queryString) {
     !parameters.amount ||
     parameters.amount <= 0 ||
     !parameters.reference ||
+    !parameters.clientIp ||
+    !parameters.datetime ||
     !parameters.signature
   ) {
     return undefined;
@@ -30,6 +32,8 @@ function getParameters(queryString) {
       currency: parameters.currency,
       amount: parameters.amount,
       reference: parameters.reference,
+      clientIp: parameters.clientIp,
+      datetime: parameters.datetime,
       signature: parameters.signature,
     };
   }
