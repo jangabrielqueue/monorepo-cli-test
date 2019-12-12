@@ -38,12 +38,14 @@ class OTPFormImpl extends Component {
   render() {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { deadline } = this.state;
+    const { otpReference } = this.props;
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             <Countdown title="Countdown" value={deadline} />
           </Form.Item>
+          <Form.Item><b>REF: {otpReference}</b></Form.Item>
           <Form.Item>
             {getFieldDecorator("OTP", {
               rules: [

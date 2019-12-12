@@ -5,7 +5,7 @@ import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
-const API_TOPUP_SUBMIT_REQUEST = ENDPOINT + "/api/topup/put";
+const API_TOPUP_SUBMIT_REQUEST = ENDPOINT + "/api/topup/post";
 const API_TOPUP_SUBMIT_OTP = ENDPOINT + "/api/topup/inputotp";
 
 const HEADERS = {
@@ -14,7 +14,7 @@ const HEADERS = {
 
 export async function sendTopUpRequest(data) {
   try {
-    const rsp = await axios.put(API_TOPUP_SUBMIT_REQUEST, {
+    const rsp = await axios.post(API_TOPUP_SUBMIT_REQUEST, {
       ...data,
       key: data.signature,
       callbackUri: "https://www.google.com",
@@ -28,23 +28,23 @@ export async function sendTopUpRequest(data) {
     if (ex.isAxiosError) {
       return ex.response.data;
     } else {
-      return { errors: { exception: ex }, title: "Unexpected error" };
+      return { errors: { exception: ex }, title: ex.toString() };
     }
   }
 }
 
-export async function sendTopUpOtp(session, otp) {
+export async function sendTopUpOtp(reference, otp) {
   try {
-    const rsp = await axios.put(API_TOPUP_SUBMIT_OTP, {
-      method: "POST",
-      headers: HEADERS,
-      body: JSON.stringify({
-        session,
-        otp,
-      }),
+    const rsp = await axios.post(API_TOPUP_SUBMIT_OTP, {
+      reference: reference,
+      otp: otp
     });
-    return rsp.json();
+    return rsp.data;
   } catch (ex) {
-    return { errors: { exception: ex }, title: "Unexpected error" };
+    if (ex.isAxiosError) {
+      return ex.response.data;
+    } else {
+      return { errors: { exception: ex }, title: ex.toString() };
+    }
   }
 }

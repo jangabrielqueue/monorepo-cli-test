@@ -1,5 +1,5 @@
 import React from "react";
-import { Result, Typography, Icon } from "antd";
+import { Result, Typography, Icon, Statistic } from "antd";
 
 const { Paragraph, Text } = Typography;
 
@@ -8,32 +8,15 @@ export const TransferSuccessful = ({ transferResult }) => {
     <Result
       status="success"
       title="Successfully Deposit!"
-      subTitle={"Bank references: " + transferResult.message}
+      subTitle={"References: " + transferResult.reference}
     >
-      <div className="desc">
-        <Paragraph>
-          <Text
-            strong
-            style={{
-              fontSize: 16,
-            }}
-          >
-            Please reference the details:
-          </Text>
-        </Paragraph>
-        <Paragraph>
-          <Icon style={{ color: "red" }} type="close-circle" />{" "}
-          {transferResult.refId}
-        </Paragraph>
-        <Paragraph>
-          <Icon style={{ color: "red" }} type="close-circle" />{" "}
-          {transferResult.message}
-        </Paragraph>
-        <Paragraph>
-          <Icon style={{ color: "red" }} type="close-circle" />{" "}
-          {transferResult.reference}
-        </Paragraph>
-      </div>
+      <Statistic
+        title=""
+        prefix={transferResult.currency}
+        value={transferResult.amount}
+        valueStyle={{ color: "#000", fontWeight: 700 }}
+        precision={2}
+      />
     </Result>
   );
 };
