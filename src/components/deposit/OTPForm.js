@@ -45,7 +45,7 @@ class OTPFormImpl extends Component {
           <Form.Item>
             <Countdown title="Countdown" value={deadline} />
           </Form.Item>
-          <Form.Item><b>REF: {otpReference}</b></Form.Item>
+          <Form.Item><b>OTP Reference: {otpReference}</b></Form.Item>
           <Form.Item>
             {getFieldDecorator("OTP", {
               rules: [
