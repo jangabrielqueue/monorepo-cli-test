@@ -1,13 +1,23 @@
 import React from "react";
-import { Result } from "antd";
+import { Result, Typography, Icon, Statistic } from "antd";
+
+const { Paragraph, Text } = Typography;
 
 export const TransferSuccessful = ({ transferResult }) => {
   return (
     <Result
       status="success"
       title="Successfully Deposit!"
-      subTitle={"Bank references: " + transferResult.bankReference}
-    />
+      subTitle={"References: " + transferResult.reference}
+    >
+      <Statistic
+        title=""
+        prefix={transferResult.currency}
+        value={transferResult.amount}
+        valueStyle={{ color: "#000", fontWeight: 700 }}
+        precision={2}
+      />
+    </Result>
   );
 };
 
@@ -16,7 +26,7 @@ export const TransferFailed = ({ transferResult }) => {
     <Result
       status="error"
       title="Submitted transaction failed"
-      subTitle={transferResult.error}
+      subTitle={transferResult.message}
     ></Result>
   );
 };

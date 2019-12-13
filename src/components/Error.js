@@ -1,13 +1,17 @@
 import React from "react";
-import { Result } from "antd";
-
+import { Card, Result } from "antd";
 
 export const ErrorMessage = ({ errorMessage }) => {
   return (
-    <Result
-      status="error"
-      title="Opps, Something wrong"
-      subTitle={errorMessage}
-    ></Result>
+    <>
+      <div className="deposit-container">
+        <Card>
+          <Result
+            status="error"
+            title={errorMessage}
+          ></Result>
+        </Card>
+      </div>
+    </>
   );
 };

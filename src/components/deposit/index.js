@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Steps, Spin, Alert } from "antd";
+import { Card, Steps, Spin, Alert, Progress } from "antd";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import { TransferSuccessful, TransferFailed } from "./TransferResult";
@@ -12,6 +12,24 @@ const { Step } = Steps;
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + "/hubs/monitor";
+
+const initProgress = {
+  currentStep: 1,
+  totalSteps: 10,
+  statusCode: "009",
+  statusMessage: "In progress",
+};
+
+const showProgress = progress => (
+  <div style={{ padding: "5px" }}>
+    <Progress
+      percent={(progress.currentStep / progress.totalSteps) * 100}
+      status="active"
+      showInfo={false}
+    />
+    <strong>{progress.statusMessage}</strong>
+  </div>
+);
 
 class Deposit extends Component {
   constructor(props) {
@@ -28,23 +46,33 @@ class Deposit extends Component {
     this.setState({
       waitingForReady: true,
       error: undefined,
+      errors: undefined,
+      progress: undefined,
     });
     const result = await sendTopUpRequest({
       ...values,
-      referenceId: this.props.referenceId,
+      reference: this.props.reference,
     });
-    if (result.error) {
+    if (result.errors) {
       this.setState({
         waitingForReady: false,
-        error: result.error,
+        error: result.title,
+        errors: result.errors,
+        progress: undefined,
+      });
+    } else {
+      this.setState({
+        progress: initProgress,
       });
     }
   };
 
-  handleRequestOTP = () => {
+  handleRequestOTP = e => {
     this.setState({
       waitingForReady: false,
+      progress: undefined,
       step: 1,
+      otpReference: e.extraData,
     });
   };
 
@@ -52,33 +80,34 @@ class Deposit extends Component {
     this.setState({
       waitingForReady: true,
       error: undefined,
+      errors: undefined,
+      progress: undefined,
     });
-    const result = await sendTopUpOtp(this.props.session, value.otp);
-    if (result.error) {
+    const result = await sendTopUpOtp(this.props.reference, value.otp);
+    if (result.errors) {
       this.setState({
         waitingForReady: false,
-        error: result.error,
+        error: result.title,
+        errors: result.errors,
+        progress: undefined,
       });
     }
   };
 
   handleCommandStatusUpdate = e => {
-    let successful = false;
-    let transferResult = undefined;
-    if (e.successful) {
-      transferResult = e.successful;
-      successful = true;
-    } else if (e.retryableFailed) {
-      transferResult = e.retryableFailed;
-    } else if (e.unretryableFailed) {
-      transferResult = e.unretryableFailed;
-    }
     this.setState({
       waitingForReady: false,
-      isSuccessful: successful,
-      error: undefined,
+      isSuccessful: e.isSuccess,
+      errors: undefined,
+      progress: undefined,
       step: 2,
-      transferResult: transferResult,
+      transferResult: e,
+    });
+  };
+
+  handleUpdateProgress = e => {
+    this.setState({
+      progress: e,
     });
   };
 
@@ -88,12 +117,17 @@ class Deposit extends Component {
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();
-    connection.on("Update", this.handleCommandStatusUpdate);
-    connection.on("OtpRequested", this.handleRequestOTP);
+    connection.on("receivedResult", this.handleCommandStatusUpdate);
+    connection.on("otpRequested", this.handleRequestOTP);
+    connection.on("Update", this.handleUpdateProgress);
     connection.onclose(async () => {
       this.setState({
         waitingForReady: true,
-        error: "connection is closed, please refresh the page.",
+        error: "Network error",
+        errors: {
+          network: "connection is closed, please refresh the page.",
+        },
+        progress: undefined,
       });
     });
     try {
@@ -105,7 +139,10 @@ class Deposit extends Component {
       });
     } catch (ex) {
       this.setState({
-        error: "Can't connect to server, please refresh your browser.",
+        error: "Network error",
+        errors: {
+          network: "Can't connect to server, please refresh your browser.",
+        },
       });
     }
   };
@@ -117,6 +154,8 @@ class Deposit extends Component {
       error,
       isSuccessful,
       transferResult,
+      progress,
+      otpReference,
     } = this.state;
     let content;
     if (step === 0) {
@@ -125,18 +164,26 @@ class Deposit extends Component {
           {request => (
             <DepositForm
               merchant={request.merchant}
-              customer={request.customer}
+              requester={request.requester}
               currency={request.currency}
               bank={request.bank}
               amount={request.amount}
-              referenceId={request.referenceId}
+              reference={request.reference}
+              clientIp={request.clientIp}
+              signature={request.signature}
+              datetime={request.datetime}
               handleSubmit={this.handleSubmitDeposit}
             />
           )}
         </RequestContext.Consumer>
       );
     } else if (step === 1) {
-      content = <OTPForm handleSubmit={this.handleSubmitOTP} />;
+      content = (
+        <OTPForm
+          otpReference={otpReference}
+          handleSubmit={this.handleSubmitOTP}
+        />
+      );
     } else if (step === 2 && isSuccessful) {
       content = <TransferSuccessful transferResult={transferResult} />;
     } else if (step === 2) {
@@ -164,6 +211,7 @@ class Deposit extends Component {
           <Spin spinning={waitingForReady}>
             <Card>{content}</Card>
           </Spin>
+          {progress && showProgress(progress)}
         </div>
       </>
     );

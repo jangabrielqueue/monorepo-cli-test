@@ -8,30 +8,43 @@ import { ReactComponent as Logo } from "./logo.svg";
 import { ConfigProvider } from "antd";
 import enUS from "antd/es/locale/en_US";
 import { RequestContext } from "./Context";
+import { ErrorMessage } from "./components/Error";
 
-function uuid() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-    var r = (Math.random() * 16) | 0,
-      v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+
+function getParameters(queryString) {
+  const parameters = QueryString.parse(queryString);
+  if (
+    !parameters.merchant ||
+    !parameters.requester ||
+    !parameters.currency ||
+    !parameters.amount ||
+    parameters.amount <= 0 ||
+    !parameters.reference ||
+    !parameters.clientIp ||
+    !parameters.datetime ||
+    !parameters.signature
+  ) {
+    return undefined;
+  } else {
+    return {
+      merchant: parameters.merchant,
+      requester: parameters.requester,
+      currency: parameters.currency,
+      amount: parameters.amount,
+      reference: parameters.reference,
+      clientIp: parameters.clientIp,
+      datetime: parameters.datetime,
+      signature: parameters.signature,
+    };
+  }
 }
 
 class App extends React.Component {
   constructor() {
     super();
-    const parameters = QueryString.parse(window.location.search);
     this.state = {
       locale: enUS,
-      request: {
-        merchant: parameters.merchant || "faker",
-        customer: parameters.customer || "clement",
-        currency: parameters.currency || "USD",
-        bank: parameters.bank || "FAKER",
-        amount: parameters.amount || 1,
-        referenceId: parameters.referenceId || uuid(),
-        securityKey: parameters.securityKey || uuid(),
-      },
+      request: getParameters(window.location.search),
     };
   }
 
@@ -41,27 +54,27 @@ class App extends React.Component {
   };
 
   render() {
-    const { locale } = this.state;
-    return (
-      <RequestContext.Provider value={this.state.request}>
-        <ConfigProvider locale={locale}>
-          <div className="main">
-            <div style={{ textAlign: "center" }}>
-              <Logo className="logo" />
-            </div>
-            <RequestContext.Consumer>
-              {({ merchant, referenceId, idempotencyKey, securityKey }) => (
-                <Deposit
-                  referenceId={referenceId}
-                  idempotencyKey={idempotencyKey}
-                  securityKey={securityKey}
-                  session={merchant + "-" + referenceId}
-                />
-              )}
-            </RequestContext.Consumer>
-          </div>
-        </ConfigProvider>
+    const { locale, request } = this.state;
+    const content = request ? (
+      <RequestContext.Provider value={request}>
+        <Deposit
+          reference={request.reference}
+          signature={request.signature}
+          session={request.merchant + "-" + request.reference}
+        />
       </RequestContext.Provider>
+    ) : (
+      <ErrorMessage errorMessage="Invalid parameters" />
+    );
+    return (
+      <ConfigProvider locale={locale}>
+        <div className="main">
+          <div style={{ textAlign: "center" }}>
+            <Logo className="logo" />
+          </div>
+          {content}
+        </div>
+      </ConfigProvider>
     );
   }
 }
