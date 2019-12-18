@@ -10,11 +10,19 @@ const vndBanks = [
   "AGRI",
 ];
 
+const VND_TOPUP_BANKS = [
+  "VCB",
+  "ACB",
+  "TCB",
+  "BIDV",
+  "SACOM",
+];
+
 const thbBanks = ["KBANK", "KTB", "SCB", "BBL", "BOA", "TMB"];
 
 export function getBanksByCurrency(currency) {
   if (currency === "VND") {
-    return vndBanks;
+    return VND_TOPUP_BANKS;
   } else if (currency === "THB") {
     return thbBanks;
   }
