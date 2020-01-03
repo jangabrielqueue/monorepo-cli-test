@@ -1,4 +1,8 @@
-const vndBanks = [
+const ENV = process.env.REACT_APP_ENV;
+
+const isUatOrDev = ENV === "UAT" || ENV === "DEVELOPMENT";
+
+const VND_ALL_BANKS = [
   "VCB",
   "ACB",
   "VTB",
@@ -10,21 +14,39 @@ const vndBanks = [
   "AGRI",
 ];
 
-const VND_TOPUP_BANKS = [
-  "VCB",
-  "ACB",
-  "TCB",
-  "BIDV",
-  "SACOM",
+const VND_TOPUP_BANKS = ["VCB", "ACB", "TCB", "BIDV", "SACOM"];
+const VND_TOPUP_BANKS_DEV = ["VCB", "ACB", "TCB", "BIDV", "SACOM", "FAKER"];
+
+const THB_TOPUP_BANKS = ["KBANK", "KTB", "SCB", "BBL", "BOA", "TMB"];
+const THB_TOPUP_BANKS_DEV = [
+  "KBANK",
+  "KTB",
+  "SCB",
+  "BBL",
+  "BOA",
+  "TMB",
+  "FAKERTHB",
 ];
 
-const thbBanks = ["KBANK", "KTB", "SCB", "BBL", "BOA", "TMB"];
+function getVndBanksByEnv() {
+  if (isUatOrDev) {
+    return VND_TOPUP_BANKS_DEV;
+  }
+  return VND_TOPUP_BANKS;
+}
+
+function getThbBanksByEnv() {
+  if (isUatOrDev) {
+    return THB_TOPUP_BANKS_DEV;
+  }
+  return THB_TOPUP_BANKS;
+}
 
 export function getBanksByCurrency(currency) {
   if (currency === "VND") {
-    return VND_TOPUP_BANKS;
+    return getVndBanksByEnv();
   } else if (currency === "THB") {
-    return thbBanks;
+    return getThbBanksByEnv();
   }
   return [];
 }
