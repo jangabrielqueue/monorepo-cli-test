@@ -4,13 +4,8 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-const ENDPOINT = process.env.REACT_APP_ENDPOINT;
-const API_TOPUP_SUBMIT_REQUEST = ENDPOINT + "/api/topup/post";
-const API_TOPUP_SUBMIT_OTP = ENDPOINT + "/api/topup/inputotp";
-
-const HEADERS = {
-  "Content-Type": "application/json",
-};
+const API_TOPUP_SUBMIT_REQUEST = "/api/topup/post";
+const API_TOPUP_SUBMIT_OTP = "/api/topup/inputotp";
 
 export async function sendTopUpRequest(data) {
   try {
