@@ -8,7 +8,6 @@ import {
   Route
 } from 'react-router-dom';
 import Layout from './containers/Layout/Layout'
-import NotFound from './components/NotFound';
 import axios from 'axios';
 
 const App = () => {

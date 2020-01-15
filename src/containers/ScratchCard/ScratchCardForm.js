@@ -1,78 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Form, InputNumber, Button, Select, Icon, Spin, Row, Col } from 'antd';
+import { Form, InputNumber, Button, Select, Statistic, Row, Col } from 'antd';
 import { useQuery } from '../../utils/utils';
-import axios from 'axios';
+
+const { Option } = Select;
 
 const ScratchCardForm = React.memo((props) => {
-    const { Option } = Select;
-    const { getFieldDecorator,validateFields } = props.form;
-    const { handleCurrentStep } = props;
+    const { handleSubmitScratchCard } = props;
+    const { getFieldDecorator, validateFields, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
-    const [postRes, setPostRes] = useState({
-        loading: false,
-        statusCode: '',
-        redirectUri: '',
-        error: false
-      });
-    const loadingIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
     const [telcoName, setTelcoName] = useState('');
-
-    function handleSubmit (e) {
-        e.preventDefault();
-
-        validateFields(async (err, values) => {
-
-            if (!err) {
-                const submitValues = {
-                    Telecom: values.telcoName,
-                    Pin: values.cardPin.toString(),
-                    SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: queryParams.get('ClientIp'),
-                    Language: queryParams.get('Language'),
-                    SuccessfulUrl: queryParams.get('SuccessfulUrl'),
-                    FailedUrl: queryParams.get('FailedUrl'),
-                    CallbackUri: queryParams.get('CallbackUri'),
-                    Datetime: queryParams.get('Datetime'),
-                    Key: queryParams.get('Key'),
-                    Note: queryParams.get('Note'),
-                    Merchant: queryParams.get('Merchant'),
-                    Currency: queryParams.get('Currency'),
-                    Bank: queryParams.get('Bank'),
-                    Customer: queryParams.get('Customer'),
-                    Reference: queryParams.get('Reference'),
-                    Amount: queryParams.get('Amount')
-                };
-                
-                await setPostRes({
-                    loading: true,
-                    statusCode: '',
-                    redirectUri: '',
-                    error: false
-                });
-
-                try {
-                    const res = await axios({
-                      url: '/ScratchCard/Deposit',
-                      method: 'POST',
-                      data: submitValues
-                    });
-                    await setPostRes({
-                      loading: false,
-                      statusCode: res.data.data.statusCode,
-                      redirectUri: res.data.redirectUri,
-                      error: false
-                    });
-                  } catch (error) {
-                    await setPostRes({
-                      loading: false,
-                      statusCode: '',
-                      redirectUri: '',
-                      error: true
-                    });
-                  }
-            }
-        });
-    }
 
     function validationRuleforCardPin () {
         let validation = {};
@@ -129,132 +65,95 @@ const ScratchCardForm = React.memo((props) => {
         return validation;
     }
 
-    function renderScratchCardForm () {
-        if (postRes.loading) {
-            return (
-                    <div className='loading-container'>
-                        <Spin indicator={loadingIcon} tip='Waiting For Response...' />
-                    </div>
-            );
-        } else if (postRes.statusCode === '009') {
-            return (
-                <div className='loading-container'>
-                    <Spin indicator={loadingIcon} tip='Confirming transaction...' />
-                </div>
-            );
-        } else {
-            const formItemLayout = {
-                labelCol: {
-                    xs: {
-                        span: 6
-                    }
-                },
-                wrapperCol: {
-                    xs: {
-                        span: 18
-                    }
-                }
-            };
-
-           return (
-            <>
-                <h1>Fill In Form</h1>
-                <Form {...formItemLayout} onSubmit={handleSubmit}>
-                    <Form.Item labelAlign='left' label='Telco Name'>
-                    {
-                        getFieldDecorator('telcoName', {
-                            rules: [{
-                                required: true,
-                                message: 'Please select telco name!'
-                            }]
-                        })
-                        (
-                            <Select
-                                placeholder='Telco Name'
-                                size='large'
-                                onChange={(val) => {
-                                    setTelcoName(val)
-                                    props.form.resetFields()
-                                }}
-                            >
-                                <Option value='VTT'>Viettel</Option>
-                                <Option value='VNP'>Vinaphone</Option>
-                                <Option value='VMS'>Mobiphone</Option>
-                            </Select>                            
-                        )
-                    }
-                    </Form.Item>
-                    <Form.Item labelAlign='left' label='Amount'>
-                    {
-                        getFieldDecorator('amount', {
-                            rules: [{
-                                required: true,
-                                message: 'Please input amount!'
-                            }],
-                            initialValue: queryParams.get('Amount')
-                        })
-                        (
-                            <InputNumber type='number' placeholder='Amount' disabled size='large' />                            
-                        )
-                    }
-                    </Form.Item>
-                    <Form.Item labelAlign='left' label='Card Pin'>
-                    {
-                        getFieldDecorator('cardPin', {
-                            rules: validationRuleforCardPin()
-                        })
-                        (
-                            <InputNumber type='number' placeholder='Card Pin' size='large' disabled={!telcoName} />                            
-                        )
-                    }
-                    </Form.Item>
-                    <Form.Item labelAlign='left' label='Card Serial No.'>
-                    {
-                        getFieldDecorator('cardSerialNumber', {
-                            rules: validationRuleforCardSerial()
-                        })
-                        (
-                            <InputNumber type='number' placeholder='Card Serial No.' size='large' disabled={!telcoName} />                         
-                        )
-                    }
-                    </Form.Item>
-                    <Row justify='center' type='flex'>
-                        <Col span={8}>
-                            <Button type='primary' htmlType='submit' block>
-                                Submit
-                            </Button>
-                        </Col>
-                    </Row>
-                    <div className='note-text'>
-                        <p>- Please submit the correct amount, card pin and serial number.</p>
-                        <p>- If submitted with incorrect amount, member will be penalised.</p>    
-                    </div>
-                </Form>
-            </>
-           ); 
-        }
+    function hasErrors (fieldsError) {
+        return Object.keys(fieldsError).some(field => fieldsError[field]);
     }
 
-    useEffect(() => {
-        if (postRes.statusCode !== '009' && postRes.redirectUri && !postRes.error && !postRes.loading) {
-             handleCurrentStep(postRes.statusCode, postRes.redirectUri)
-        } else if (postRes.statusCode === '009') {
-            setTimeout(() => handleCurrentStep(postRes.statusCode, postRes.redirectUri), 3000);
-        } else if (postRes.error) {
-            props.history.replace('/deposit/invalid');
-        }
-
-        if (!props.location.search) {
-            props.history.replace('/deposit/invalid');
-        }
-    }, [postRes]);
-
     return (
-        <div className='scratch-form-container'>
+        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFields)}>
+            <Form.Item>
+                <Statistic
+                    title="Deposit"
+                    prefix={queryParams.get('Currency')}
+                    value={queryParams.get('Amount')}
+                    valueStyle={{ color: "#000", fontWeight: 700 }}
+                    precision={2}
+                />
+            </Form.Item>
+            <Form.Item>
             {
-                renderScratchCardForm()
+                getFieldDecorator('telcoName', {
+                    rules: [{
+                        required: true,
+                        message: 'Please select telco name!'
+                    }]
+                })
+                (
+                    <Select
+                        allowClear
+                        placeholder='Telco Name'
+                        size='large'
+                        onChange={(val) => {
+                            setTelcoName(val)
+                            resetFields()
+                        }}
+                    >
+                        <Option value='VTT'>Viettel</Option>
+                        <Option value='VNP'>Vinaphone</Option>
+                        <Option value='VMS'>Mobiphone</Option>
+                    </Select>                            
+                )
             }
-        </div>
+            </Form.Item>
+            <Form.Item>
+            {
+                getFieldDecorator('cardPin', {
+                    rules: validationRuleforCardPin()
+                })
+                (
+                    <InputNumber
+                        type='number'
+                        size='large'
+                        placeholder='Card Pin'
+                        size='large'
+                        disabled={!telcoName}
+                    />                            
+                )
+            }
+            </Form.Item>
+            <Form.Item>
+            {
+                getFieldDecorator('cardSerialNumber', {
+                    rules: validationRuleforCardSerial()
+                })
+                (
+                    <InputNumber
+                        type='number'
+                        size='large'
+                        placeholder='Card Serial No.'
+                        size='large'
+                        disabled={!telcoName}
+                    />                         
+                )
+            }
+            </Form.Item>
+            <Form.Item>
+                <Button
+                    size='large'
+                    shape='round'
+                    type='primary'
+                    htmlType='submit'
+                    block
+                    disabled={hasErrors(getFieldsError())}
+                >
+                    Submit
+                </Button>
+            </Form.Item>
+            <div className='note-text'>
+                <p>- Please submit the correct amount, card pin and serial number.</p>
+                <p>- If submitted with incorrect amount, member will be penalised.</p>    
+            </div>
+        </Form>
     );
 });
 

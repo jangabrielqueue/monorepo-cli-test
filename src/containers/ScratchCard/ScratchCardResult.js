@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Button, Result, Icon, Spin } from 'antd';
 
 const ScratchCardResult = (props) => {
-  const { resultStatus, redirectUri } = props
-
+  const { isSuccessful, transferResult } = props
+  console.log('isSuccessful, transferResult', isSuccessful, transferResult)
   // initialize timeLeft with the seconds prop
   const [timeLeft, setTimeLeft] = useState(20);
 
   useEffect(() => {
     // exit early when we reach 0
     if (!timeLeft) {
-      return window.location.replace(redirectUri);
+      // return window.location.replace(redirectUri);
     };
 
     // save intervalId to clear the interval when the
@@ -26,15 +26,15 @@ const ScratchCardResult = (props) => {
   }, [timeLeft]);
 
   function handleRedirect () {
-    return window.location.replace(redirectUri);
+    // return window.location.replace(redirectUri);
   }
 
   return (
       <div className='scratch-result-container'>
         <Result
-          status={resultStatus === '006' || resultStatus === '009' ? 'success' : 'error'}
+          status={isSuccessful ? 'success' : 'error'}
           title='Payment Result'
-          subTitle={`${resultStatus === '006' ? 'The transaction has completed successfully.' : 'Deposit transaction is existing..'} You will be redirected to merchant website in ${timeLeft} seconds.`}
+          subTitle={`${isSuccessful ? 'The transaction has completed successfully.' : 'Deposit transaction is existing..'} You will be redirected to merchant website in ${timeLeft} seconds.`}
           extra={
               <Button type='primary' onClick={handleRedirect}>
                   Close

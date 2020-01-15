@@ -1,32 +1,11 @@
-.scratch-form-container {
-    background: #FFF;
-    margin: 20px 0 0;
-    border-radius: 10px;
-    box-shadow: 0 3px 20px 0 rgba(0,0,0,.1);
+.note-text {
+    font-size: 10px;        
+    font-weight: bold;
+    margin: 15px 0;
+    text-align: center;
 
-    h1 {
-        color: #3B3B3D;
-        margin: 0;
-        padding: 10px 0;
-        text-align: center;
-    }
-
-    form {
-        padding: 20px;
-    }
-
-    button[type='submit'] {
-        margin: 15px 0;
-    }
-
-    .note-text {
-        font-size: 10px;        
-        font-weight: bold;
-        text-align: center;
-
-        > p {
-            margin-bottom: 3px;
-        }
+    > p {
+        margin-bottom: 3px;
     }
 }
 
