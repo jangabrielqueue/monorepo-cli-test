@@ -138,12 +138,12 @@ const ScratchCard = (props) => {
         });
       };
       
-      function handleUpdateProgress (e) {
+    function handleUpdateProgress (e) {
         setDepositRequest({
             ...depositRequest,
             progress: e,
         });
-      };
+    };
 
     useEffect(() => {
         if (!props.location.search) {
@@ -159,46 +159,54 @@ const ScratchCard = (props) => {
         connection.on("receivedResult", handleCommandStatusUpdate);
         connection.on("Update", handleUpdateProgress);
 
-        async function start() {
-            try {
-                await connection.start();
-                await connection.invoke("Start", session);
-                setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: false
-                });
-            } catch (ex) {
-                setDepositRequest({
-                    ...depositRequest,
-                    error: "Network error",
-                    errors: {
+        connection.start()
+        .catch(() => {
+            setDepositRequest({
+                ...depositRequest,
+                error: "Network Error",
+                errors: {
+                network: "Can't connect to server, please refresh your browser.",
+                }
+            });   
+        });
+
+        connection.invoke("Start", session)
+        .then(() => {
+            setDepositRequest({
+                ...depositRequest,
+                error: undefined,
+                errors: undefined,
+                waitingForReady: false
+            });
+        })
+        .catch(() => {
+            setDepositRequest({
+                ...depositRequest,
+                error: "Network Error",
+                errors: {
                     network: "Can't connect to server, please refresh your browser.",
-                    },
-                });
-            }
-        };
+                }
+            });
+        });
 
-        start();
-
-        return () => {
-            connection.onclose(() => {
-                setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: true,
-                    error: "Network error",
-                    errors: {
-                      network: "connection is closed, please refresh the page.",
-                    },
-                    progress: undefined,                    
-                });
-              });
-        };
+        connection.onclose(() => {
+            setDepositRequest({
+                ...depositRequest,
+                waitingForReady: true,
+                error: "Network Error",
+                errors: {
+                    network: "Connection is closed, please refresh the page.",
+                },
+                progress: undefined,                    
+            });
+        });
     }, [])
 
     const {
         step,
         waitingForReady,
         error,
+        errors,
         progress,
     } = depositRequest;
 
@@ -218,9 +226,9 @@ const ScratchCard = (props) => {
                 error &&
                     <Alert
                         message={error}
+                        description={errors.network}
                         type="error"
                         showIcon
-                        closable
                         style={{ marginBottom: "0.5rem" }}
                     />
             }
