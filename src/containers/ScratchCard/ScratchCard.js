@@ -223,7 +223,7 @@ const ScratchCard = (props) => {
             </div>
             <div className='deposit-container'>
             {
-                error &&
+                false &&
                     <Alert
                         message={error}
                         description={errors.network}
@@ -232,7 +232,7 @@ const ScratchCard = (props) => {
                         style={{ marginBottom: "0.5rem" }}
                     />
             }
-            <Spin spinning={waitingForReady}>
+            <Spin spinning={false}>
                 <Card>
                     {
                         renderStepsContent(steps[step])

@@ -222,7 +222,7 @@ const Deposit = (props) => {
           </Steps>
         </div>
         <div className="deposit-container">
-          {error && (
+          {false && (
             <Alert
               message={error}
               type="error"
@@ -231,7 +231,7 @@ const Deposit = (props) => {
               style={{ marginBottom: "0.5rem" }}
             />
           )}
-          <Spin spinning={waitingForReady}>
+          <Spin spinning={false}>
             <Card>{content}</Card>
           </Spin>
           {progress && showProgress(progress)}
