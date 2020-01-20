@@ -33,7 +33,7 @@ const TopUp = (props) => {
         transferResult: {}
     });
     const queryParams = useQuery();
-    const session = `${queryParams.get('merchant')}-${queryParams.get('reference')}`;
+    const session = `TOPUP-BANK-${queryParams.get('merchant')}-${queryParams.get('reference')}`;
 
     async function handleSubmitDeposit (values) {
         setDepositRequest({
