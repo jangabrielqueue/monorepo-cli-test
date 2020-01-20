@@ -4,7 +4,7 @@ import {
     Route
   } from 'react-router-dom';
 import ScratchCard from '../ScratchCard/ScratchCard';
-import Deposit from '../TopUp/Deposit';
+import TopUp from '../TopUp';
 import './styles.scss';
 import InvalidPage from '../../components/InvalidPage';
 import NotFound from '../../components/NotFound';
@@ -16,7 +16,7 @@ const Layout = () => {
                 <h1>GAME <span>WALLET</span></h1>
             </div>
             <Switch>
-                <Route exact path='/topup/bank' component={Deposit} />
+                <Route exact path='/topup/bank' component={TopUp} />
                 <Route exact path='/deposit/scratch-card' component={ScratchCard} />
                 <Route path='/invalid' component={InvalidPage} />
                 <Route path='*' component={NotFound} />

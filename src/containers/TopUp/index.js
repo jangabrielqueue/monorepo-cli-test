@@ -19,7 +19,7 @@ const initProgress = {
     statusMessage: "In progress",
   };
 
-const Deposit = (props) => {
+const TopUp = (props) => {
     const [depositRequest, setDepositRequest] = useState({
         step: 0,
         waitingForReady: true,
@@ -242,4 +242,4 @@ const Deposit = (props) => {
     );
 }
 
-export default Deposit;
+export default TopUp;
