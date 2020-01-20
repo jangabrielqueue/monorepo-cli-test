@@ -5,6 +5,7 @@ import {
   } from 'react-router-dom';
 import ScratchCard from '../ScratchCard/ScratchCard';
 import TopUp from '../TopUp';
+import Deposit from '../Deposit';
 import './styles.scss';
 import InvalidPage from '../../components/InvalidPage';
 import NotFound from '../../components/NotFound';
@@ -17,6 +18,7 @@ const Layout = () => {
             </div>
             <Switch>
                 <Route exact path='/topup/bank' component={TopUp} />
+                <Route exact path='/deposit/bank' component={Deposit} />
                 <Route exact path='/deposit/scratch-card' component={ScratchCard} />
                 <Route path='/invalid' component={InvalidPage} />
                 <Route path='*' component={NotFound} />
