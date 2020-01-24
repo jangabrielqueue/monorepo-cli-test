@@ -72,7 +72,7 @@ const TopUp = (props) => {
             errors: undefined,
             progress: undefined,
         });
-        const result = await sendTopUpOtp(this.props.reference, value.otp);
+        const result = await sendTopUpOtp(queryParams.get('reference'), value.otp);
         if (result.errors) {
             setDepositRequest({
                 ...depositRequest,
@@ -139,7 +139,7 @@ const TopUp = (props) => {
 
         connection.on("receivedResult", handleCommandStatusUpdate);
         connection.on("otpRequested", handleRequestOTP);
-        connection.on("Update", handleUpdateProgress);
+        connection.on("update", handleUpdateProgress);
 
         async function start() {
             try {
