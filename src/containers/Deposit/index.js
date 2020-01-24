@@ -3,7 +3,7 @@ import { Card, Steps, Spin, Alert, Progress } from "antd";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import { TransferSuccessful, TransferFailed } from "./TransferResult";
-import { sendTopUpRequest, sendTopUpOtp } from "./Requests";
+import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from '../../utils/utils';
 
@@ -44,16 +44,15 @@ const Deposit = (props) => {
             progress: undefined,
         });
 
-        const result = await sendTopUpRequest({
+        const result = await sendDepositRequest({
           ...values,
           reference: queryParams.get('reference'),
         });
-        if (result.errors) {
+        if (result.error) {
             setDepositRequest({
                 ...depositRequest,
                 waitingForReady: false,
-                error: result.title,
-                errors: result.errors,
+                error: result.error,
                 progress: undefined,
             });
         } else {
@@ -72,13 +71,12 @@ const Deposit = (props) => {
             errors: undefined,
             progress: undefined,
         });
-        const result = await sendTopUpOtp(this.props.reference, value.otp);
-        if (result.errors) {
+        const result = await sendDepositOtp(queryParams.get('reference'), value.otp);
+        if (result.error) {
             setDepositRequest({
                 ...depositRequest,
                 waitingForReady: false,
-                error: result.title,
-                errors: result.errors,
+                error: result.error,
                 progress: undefined,
             });
         }
@@ -107,6 +105,7 @@ const Deposit = (props) => {
       };
       
       function handleUpdateProgress (e) {
+        console.log(e);
         setDepositRequest({
             ...depositRequest,
             progress: e,
@@ -132,14 +131,14 @@ const Deposit = (props) => {
         }
 
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl(API_USER_COMMAND_MONITOR)
-        .withAutomaticReconnect()
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
+          .withUrl(API_USER_COMMAND_MONITOR)
+          .withAutomaticReconnect()
+          .configureLogging(signalR.LogLevel.Information)
+          .build();
 
         connection.on("receivedResult", handleCommandStatusUpdate);
         connection.on("otpRequested", handleRequestOTP);
-        connection.on("Update", handleUpdateProgress);
+        connection.on("update", handleUpdateProgress);
 
         async function start() {
             try {
@@ -152,10 +151,10 @@ const Deposit = (props) => {
             } catch (ex) {
                 setDepositRequest({
                     ...depositRequest,
-                    error: "Network error",
-                    errors: {
-                    network: "Can't connect to server, please refresh your browser.",
-                    },
+                    error: {
+                      code: "Network error",
+                      message: "Can't connect to server, please refresh your browser."
+                    }
                 });
             }
         };
@@ -167,11 +166,11 @@ const Deposit = (props) => {
                 setDepositRequest({
                     ...depositRequest,
                     waitingForReady: true,
-                    error: "Network error",
-                    errors: {
-                      network: "connection is closed, please refresh the page.",
+                    error: {
+                      code: "Network error",
+                      message: "connection is closed, please refresh the page."
                     },
-                    progress: undefined,                    
+                    progress: undefined,
                 });
               });
         };
@@ -226,7 +225,7 @@ const Deposit = (props) => {
         <div className="deposit-container">
           {error && (
             <Alert
-              message={error}
+              description={error.message}
               type="error"
               showIcon
               closable

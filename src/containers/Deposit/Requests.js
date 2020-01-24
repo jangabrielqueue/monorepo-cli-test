@@ -4,12 +4,12 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-const API_TOPUP_SUBMIT_REQUEST = "/api/topup/post";
-const API_TOPUP_SUBMIT_OTP = "/api/topup/inputotp";
+const API_DEPOSIT_SUBMIT_REQUEST = "/api/deposit/post?api-version=2.0";
+const API_DEPOSIT_SUBMIT_OTP = "/api/deposit/inputotp?api-version=2.0";
 
-export async function sendTopUpRequest(data) {
+export async function sendDepositRequest(data) {
   try {
-    const rsp = await axios.post(API_TOPUP_SUBMIT_REQUEST, {
+    const rsp = await axios.post(API_DEPOSIT_SUBMIT_REQUEST, {
       ...data,
       key: data.signature,
       callbackUri: "https://www.google.com",
@@ -23,23 +23,23 @@ export async function sendTopUpRequest(data) {
     if (ex.isAxiosError) {
       return ex.response.data;
     } else {
-      return { errors: { exception: ex }, title: ex.toString() };
+      return { error: { code: "UnknownException", message: ex.message } };
     }
   }
 }
 
-export async function sendTopUpOtp(reference, otp) {
+export async function sendDepositOtp(reference, otp) {
   try {
-    const rsp = await axios.post(API_TOPUP_SUBMIT_OTP, {
+    const rsp = await axios.post(API_DEPOSIT_SUBMIT_OTP, {
       reference: reference,
-      otp: otp
+      otp: otp,
     });
     return rsp.data;
   } catch (ex) {
     if (ex.isAxiosError) {
       return ex.response.data;
     } else {
-      return { errors: { exception: ex }, title: ex.toString() };
+      return { error: { code: "UnknownException", message: ex.message } };
     }
   }
 }
