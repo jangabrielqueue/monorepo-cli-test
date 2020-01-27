@@ -29,7 +29,7 @@ class DepositFormImpl extends Component {
       currency: props.currency,
       merchant: props.merchant,
       requester: props.requester,
-      bank: getDefaultBankByCurrency(props.currency),
+      bank: props.bank || getDefaultBankByCurrency(props.currency),
       signature: props.signature,
       reference: props.reference,
       clientIp: props.clientIp,
@@ -95,6 +95,7 @@ class DepositFormImpl extends Component {
             <Select
               defaultValue={bank}
               size="large"
+              disabled={this.props.bank}
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (
