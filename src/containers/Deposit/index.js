@@ -26,7 +26,6 @@ const Deposit = props => {
     depositRequesting: false,
     otpRequesting: false,
     error: undefined,
-    errors: undefined,
     progress: undefined,
     otpReference: "",
     isSuccessful: false,
@@ -42,7 +41,6 @@ const Deposit = props => {
       ...depositRequest,
       waitingForReady: true,
       error: undefined,
-      errors: undefined,
       progress: undefined,
     });
 
@@ -71,7 +69,6 @@ const Deposit = props => {
       ...depositRequest,
       waitingForReady: true,
       error: undefined,
-      errors: undefined,
       progress: undefined,
     });
     const result = await sendDepositOtp(
@@ -93,7 +90,6 @@ const Deposit = props => {
       ...depositRequest,
       waitingForReady: false,
       isSuccessful: e.isSuccess,
-      errors: undefined,
       progress: undefined,
       step: 2,
       transferResult: e,
