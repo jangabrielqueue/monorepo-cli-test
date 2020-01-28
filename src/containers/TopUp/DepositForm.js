@@ -76,7 +76,7 @@ class DepositFormImpl extends Component {
 
   render() {
     const { getFieldDecorator, getFieldsError } = this.props.form;
-    const { referenceId } = this.props;
+    const { reference } = this.props;
     const { merchant, requester, currency, otpMethod, bank } = this.state;
     const bankCodes = getBanksByCurrency(currency);
     return (
@@ -176,7 +176,7 @@ class DepositFormImpl extends Component {
                 <div className="infos">
                   <div className="info-item">
                     <Icon type="key" />
-                    <span>{referenceId}</span>
+                    <span>{reference}</span>
                   </div>
                   <div className="info-item">
                     <Icon type="safety" />
