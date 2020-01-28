@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
+import * as firebase from "firebase/app";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import { TransferSuccessful, TransferFailed } from "./TransferResult";
@@ -20,6 +21,7 @@ const initProgress = {
 };
 
 const Deposit = props => {
+  const analytics = firebase.analytics();
   const [depositState, setDepositState] = useState({
     step: 0,
     waitingForReady: true,
@@ -33,10 +35,19 @@ const Deposit = props => {
   });
   const queryParams = useQuery();
   const merchant = queryParams.get("merchant");
+  const requester = queryParams.get("requester");
   const reference = queryParams.get("reference");
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
+  analytics.setUserProperties({
+    merchant: merchant,
+    requester: requester,
+  });
+
   async function handleSubmitDeposit(values) {
+    analytics.logEvent("login", {
+      reference: reference,
+    });
     setDepositState({
       ...depositState,
       waitingForReady: true,
@@ -48,6 +59,10 @@ const Deposit = props => {
       reference: queryParams.get("reference"),
     });
     if (result.error) {
+      analytics.logEvent("login_failed", {
+        reference: reference,
+        error: result.error,
+      });
       setDepositState({
         ...depositState,
         waitingForReady: false,
@@ -64,6 +79,10 @@ const Deposit = props => {
   }
 
   async function handleSubmitOTP(value) {
+    analytics.logEvent("submitted_otp", {
+      reference: reference,
+      otp: value.otp,
+    });
     setDepositState({
       ...depositState,
       waitingForReady: true,
@@ -75,16 +94,34 @@ const Deposit = props => {
       value.otp
     );
     if (result.error) {
+      analytics.logEvent("submitted_otp_failed", {
+        reference: reference,
+        otp: value.otp,
+      });
       setDepositState({
         ...depositState,
         waitingForReady: false,
         error: result.error,
         progress: undefined,
       });
+    } else {
+      analytics.logEvent("submitted_otp_succeed", {
+        reference: reference,
+        otp: value.otp,
+      });
+      setDepositState({
+        ...depositState,
+        waitingForReady: true,
+        step: 1,
+      });
     }
   }
 
   function handleCommandStatusUpdate(e) {
+    analytics.logEvent("received_result", {
+      reference: reference,
+      result: e,
+    });
     setDepositState({
       ...depositState,
       waitingForReady: false,
@@ -188,6 +225,7 @@ const Deposit = props => {
 
   let content;
   if (step === 0) {
+    analytics.setCurrentScreen("input_user_credentials");
     content = (
       <DepositForm
         merchant={queryParams.get("merchant")}
@@ -203,12 +241,15 @@ const Deposit = props => {
       />
     );
   } else if (step === 1) {
+    analytics.setCurrentScreen("input_otp");
     content = (
       <OTPForm otpReference={otpReference} handleSubmit={handleSubmitOTP} />
     );
   } else if (step === 2 && isSuccessful) {
+    analytics.setCurrentScreen("transfer_successful");
     content = <TransferSuccessful transferResult={transferResult} />;
   } else if (step === 2) {
+    analytics.setCurrentScreen("transfer_failed");
     content = <TransferFailed transferResult={transferResult} />;
   }
   return (
