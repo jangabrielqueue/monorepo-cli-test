@@ -43,7 +43,6 @@ const Deposit = props => {
       error: undefined,
       progress: undefined,
     });
-
     const result = await sendDepositRequest({
       ...values,
       reference: queryParams.get("reference"),
