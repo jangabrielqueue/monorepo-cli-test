@@ -95,7 +95,7 @@ class DepositFormImpl extends Component {
             <Select
               defaultValue={bank}
               size="large"
-              disabled={this.props.bank}
+              disabled={Boolean(this.props.bank)}
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (

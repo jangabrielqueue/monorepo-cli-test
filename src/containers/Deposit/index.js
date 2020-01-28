@@ -32,9 +32,9 @@ const Deposit = props => {
     transferResult: {},
   });
   const queryParams = useQuery();
-  const session = `DEPOSIT-BANK-${queryParams.get(
-    "merchant"
-  )}-${queryParams.get("reference")}`;
+  const merchant = queryParams.get("merchant");
+  const reference = queryParams.get("reference");
+  const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
   async function handleSubmitDeposit(values) {
     setDepositRequest({
