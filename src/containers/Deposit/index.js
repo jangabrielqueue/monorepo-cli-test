@@ -106,7 +106,6 @@ const Deposit = props => {
   }
 
   function handleUpdateProgress(e) {
-    console.log(e);
     setDepositState({
       ...depositState,
       progress: e,
