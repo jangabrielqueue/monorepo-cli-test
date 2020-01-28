@@ -9,7 +9,7 @@ import {
   Spin,
   Collapse,
 } from "antd";
-import { getBanksByCurrency } from "./banks";
+import { getBanksByCurrencyForTopUp } from "./../../utils/banks";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -19,7 +19,7 @@ function hasErrors(fieldsError) {
 }
 
 function getDefaultBankByCurrency(currency) {
-  return getBanksByCurrency(currency)[0];
+  return getBanksByCurrencyForTopUp(currency)[0];
 }
 
 class DepositFormImpl extends Component {
@@ -29,7 +29,7 @@ class DepositFormImpl extends Component {
       currency: props.currency,
       merchant: props.merchant,
       requester: props.requester,
-      bank: getDefaultBankByCurrency(props.currency),
+      bank: getDefaultBankByCurrency(props.currency).code,
       signature: props.signature,
       reference: props.reference,
       clientIp: props.clientIp,
@@ -78,7 +78,7 @@ class DepositFormImpl extends Component {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { reference } = this.props;
     const { merchant, requester, currency, otpMethod, bank } = this.state;
-    const bankCodes = getBanksByCurrency(currency);
+    const bankCodes = getBanksByCurrencyForTopUp(currency);
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
@@ -98,8 +98,8 @@ class DepositFormImpl extends Component {
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (
-                <Option key={x} value={x}>
-                  {x}
+                <Option key={x.code} value={x.code}>
+                  {x.name}
                 </Option>
               ))}
             </Select>

@@ -9,7 +9,7 @@ import {
   Spin,
   Collapse,
 } from "antd";
-import { getBanksByCurrency } from "./banks";
+import { getBanksByCurrency } from "../../utils/banks";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -29,7 +29,7 @@ class DepositFormImpl extends Component {
       currency: props.currency,
       merchant: props.merchant,
       requester: props.requester,
-      bank: props.bank || getDefaultBankByCurrency(props.currency),
+      bank: props.bank || getDefaultBankByCurrency(props.currency).code,
       signature: props.signature,
       reference: props.reference,
       clientIp: props.clientIp,
@@ -99,8 +99,8 @@ class DepositFormImpl extends Component {
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (
-                <Option key={x} value={x}>
-                  {x}
+                <Option key={x.code} value={x.code}>
+                  {x.name}
                 </Option>
               ))}
             </Select>
