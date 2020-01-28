@@ -20,7 +20,7 @@ const initProgress = {
 };
 
 const Deposit = props => {
-  const [depositRequest, setDepositRequest] = useState({
+  const [depositState, setDepositState] = useState({
     step: 0,
     waitingForReady: true,
     depositRequesting: false,
@@ -37,8 +37,8 @@ const Deposit = props => {
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
   async function handleSubmitDeposit(values) {
-    setDepositRequest({
-      ...depositRequest,
+    setDepositState({
+      ...depositState,
       waitingForReady: true,
       error: undefined,
       progress: undefined,
@@ -48,15 +48,15 @@ const Deposit = props => {
       reference: queryParams.get("reference"),
     });
     if (result.error) {
-      setDepositRequest({
-        ...depositRequest,
+      setDepositState({
+        ...depositState,
         waitingForReady: false,
         error: result.error,
         progress: undefined,
       });
     } else {
-      setDepositRequest({
-        ...depositRequest,
+      setDepositState({
+        ...depositState,
         waitingForReady: true,
         progress: initProgress,
       });
@@ -64,8 +64,8 @@ const Deposit = props => {
   }
 
   async function handleSubmitOTP(value) {
-    setDepositRequest({
-      ...depositRequest,
+    setDepositState({
+      ...depositState,
       waitingForReady: true,
       error: undefined,
       progress: undefined,
@@ -75,8 +75,8 @@ const Deposit = props => {
       value.otp
     );
     if (result.error) {
-      setDepositRequest({
-        ...depositRequest,
+      setDepositState({
+        ...depositState,
         waitingForReady: false,
         error: result.error,
         progress: undefined,
@@ -85,8 +85,8 @@ const Deposit = props => {
   }
 
   function handleCommandStatusUpdate(e) {
-    setDepositRequest({
-      ...depositRequest,
+    setDepositState({
+      ...depositState,
       waitingForReady: false,
       isSuccessful: e.isSuccess,
       progress: undefined,
@@ -96,8 +96,8 @@ const Deposit = props => {
   }
 
   function handleRequestOTP(e) {
-    setDepositRequest({
-      ...depositRequest,
+    setDepositState({
+      ...depositState,
       waitingForReady: false,
       progress: undefined,
       step: 1,
@@ -107,8 +107,8 @@ const Deposit = props => {
 
   function handleUpdateProgress(e) {
     console.log(e);
-    setDepositRequest({
-      ...depositRequest,
+    setDepositState({
+      ...depositState,
       progress: e,
     });
   }
@@ -145,13 +145,13 @@ const Deposit = props => {
       try {
         await connection.start();
         await connection.invoke("Start", session);
-        setDepositRequest({
-          ...depositRequest,
+        setDepositState({
+          ...depositState,
           waitingForReady: false,
         });
       } catch (ex) {
-        setDepositRequest({
-          ...depositRequest,
+        setDepositState({
+          ...depositState,
           error: {
             code: "Network error",
             message: "Can't connect to server, please refresh your browser.",
@@ -164,8 +164,8 @@ const Deposit = props => {
 
     return () => {
       connection.onclose(() => {
-        setDepositRequest({
-          ...depositRequest,
+        setDepositState({
+          ...depositState,
           waitingForReady: true,
           error: {
             code: "Network error",
@@ -185,7 +185,7 @@ const Deposit = props => {
     transferResult,
     progress,
     otpReference,
-  } = depositRequest;
+  } = depositState;
 
   let content;
   if (step === 0) {
