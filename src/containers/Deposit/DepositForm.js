@@ -78,6 +78,7 @@ class DepositFormImpl extends Component {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { reference } = this.props;
     const { merchant, requester, currency, otpMethod, bank } = this.state;
+    const showOtpMethod = currency === "VND";
     const bankCodes = getBanksByCurrency(currency);
     return (
       <Spin spinning={false}>
@@ -142,16 +143,18 @@ class DepositFormImpl extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item>
-            <Select
-              defaultValue={otpMethod}
-              size="large"
-              onChange={this.handleOtpMethodSelected}
-            >
-              <Option value="1">SMS OTP</Option>
-              <Option value="2">Smart OTP</Option>
-            </Select>
-          </Form.Item>
+          {showOtpMethod && (
+            <Form.Item>
+              <Select
+                defaultValue={otpMethod}
+                size="large"
+                onChange={this.handleOtpMethodSelected}
+              >
+                <Option value="1">SMS OTP</Option>
+                <Option value="2">Smart OTP</Option>
+              </Select>
+            </Form.Item>
+          )}
           <Form.Item>
             <Button
               size="large"
