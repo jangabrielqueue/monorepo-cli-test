@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Statistic, Form, Icon, Input, Button, Spin } from "antd";
+import { isNullOrWhitespace } from "../../utils/utils";
 
 const { Countdown } = Statistic;
 
@@ -39,13 +40,18 @@ class OTPFormImpl extends Component {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { deadline } = this.state;
     const { otpReference } = this.props;
+    const hint = isNullOrWhitespace(otpReference) ? (
+      <b>OTP for new recipient</b>
+    ) : (
+      <b>OTP Reference: {otpReference}</b>
+    );
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             <Countdown title="Countdown" value={deadline} />
           </Form.Item>
-          <Form.Item><b>OTP Reference: {otpReference}</b></Form.Item>
+          <Form.Item>{hint}</Form.Item>
           <Form.Item>
             {getFieldDecorator("OTP", {
               rules: [
