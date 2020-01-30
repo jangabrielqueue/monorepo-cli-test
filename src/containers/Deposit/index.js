@@ -271,10 +271,10 @@ const Deposit = props => {
             className="error-message"
           />
         )}
-        {progress && showProgress(progress)}
         <Spin spinning={waitingForReady}>
           <Card>{content}</Card>
         </Spin>
+        {progress && showProgress(progress)}
       </div>
     </>
   );
