@@ -6,6 +6,7 @@ const FILES = {
   FAKERTHB: "/banks/GW_LOGO.png",
   BIDV: "/banks/BIDV_LOGO.svg",
   SCB: "/banks/SCB_LOGO.svg",
+  BBL: "/banks/BBL_LOGO.svg",
 };
 
 function getFilePath(bank) {
