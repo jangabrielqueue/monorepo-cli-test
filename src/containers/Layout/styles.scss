@@ -1,25 +1,25 @@
 .main {
-    margin: 0 auto;
-    max-width: 960px;
+  margin: 0 auto;
+  max-width: 960px;
 }
 
 .logo-container {
-    margin: 20px 0;
-    text-align: center;
-  
-    > img {
-      height: auto;
-      max-width: 200px;
-      width: 100%;
-    }
+  margin: 20px 0;
+  text-align: center;
 
-    > h1 {
-        margin: 0;
-        color: #8DC63F;
-        font-weight: bold;
+  > img {
+    width: 140px;
+    // max-width: 250px;
+    height: 55px;
+  }
 
-        span {
-            color: #3B3B3D;
-        }
+  > h1 {
+    margin: 0;
+    color: #8dc63f;
+    font-weight: bold;
+
+    span {
+      color: #3b3b3d;
     }
+  }
 }

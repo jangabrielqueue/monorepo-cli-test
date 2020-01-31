@@ -9,7 +9,7 @@ import {
   Spin,
   Collapse,
 } from "antd";
-import { getBanksByCurrencyForTopUp } from "./../../utils/banks";
+import { getBanksByCurrency } from "../../utils/banks";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -19,7 +19,7 @@ function hasErrors(fieldsError) {
 }
 
 function getDefaultBankByCurrency(currency) {
-  return getBanksByCurrencyForTopUp(currency)[0];
+  return getBanksByCurrency(currency)[0];
 }
 
 class DepositFormImpl extends Component {
@@ -29,7 +29,7 @@ class DepositFormImpl extends Component {
       currency: props.currency,
       merchant: props.merchant,
       requester: props.requester,
-      bank: getDefaultBankByCurrency(props.currency).code,
+      bank: props.bank || getDefaultBankByCurrency(props.currency).code,
       signature: props.signature,
       reference: props.reference,
       clientIp: props.clientIp,
@@ -78,7 +78,8 @@ class DepositFormImpl extends Component {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { reference } = this.props;
     const { merchant, requester, currency, otpMethod, bank } = this.state;
-    const bankCodes = getBanksByCurrencyForTopUp(currency);
+    const showOtpMethod = currency === "VND";
+    const bankCodes = getBanksByCurrency(currency);
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
@@ -95,6 +96,7 @@ class DepositFormImpl extends Component {
             <Select
               defaultValue={bank}
               size="large"
+              disabled={Boolean(this.props.bank)}
               onChange={this.handleBankCodeSelected}
             >
               {bankCodes.map(x => (
@@ -141,16 +143,18 @@ class DepositFormImpl extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item>
-            <Select
-              defaultValue={otpMethod}
-              size="large"
-              onChange={this.handleOtpMethodSelected}
-            >
-              <Option value="1">SMS OTP</Option>
-              <Option value="2">Smart OTP</Option>
-            </Select>
-          </Form.Item>
+          {showOtpMethod && (
+            <Form.Item>
+              <Select
+                defaultValue={otpMethod}
+                size="large"
+                onChange={this.handleOtpMethodSelected}
+              >
+                <Option value="1">SMS OTP</Option>
+                <Option value="2">Smart OTP</Option>
+              </Select>
+            </Form.Item>
+          )}
           <Form.Item>
             <Button
               size="large"
