@@ -2,23 +2,23 @@ const ENV = process.env.REACT_APP_ENV;
 
 const isUatOrDev = ENV === "UAT" || ENV === "DEVELOPMENT";
 
-const VCB = { code: "VCB", name: "Vietcombank" };
+const VCB = { code: "VCB", name: "VietcomBank" };
 const ACB = { code: "ACB", name: "NganHang A Chau ACB" };
-const VTB = { code: "VTB", name: "VTB" };
-const DAB = { code: "DAB", name: "DAB" };
+const VTB = { code: "VTB", name: "VietinBank" };
+const DAB = { code: "DAB", name: "ĐôngÁ Bank" };
 const BIDV = { code: "BIDV", name: "Ngan Hang BIDV" };
-const TCB = { code: "TCB", name: "TCB" };
-const EXIM = { code: "EXIM", name: "EXIM" };
-const SACOM = { code: "SACOM", name: "SACOM" };
-const AGRI = { code: "AGRI", name: "Agribank" };
-const FAKER = { code: "FAKER", name: "Faker" };
+const TCB = { code: "TCB", name: "TechcomBank" };
+const EXIM = { code: "EXIM", name: "EximBank" };
+const SACOM = { code: "SACOM", name: "SacomBank" };
+const AGRI = { code: "AGRI", name: "AgriBank" };
+const FAKER = { code: "FAKER", name: "Faker VND" };
 
-const KBANK = { code: "KBANK", name: "KBANK" };
-const KTB = { code: "KTB", name: "KTB" };
-const SCB = { code: "SCB", name: "SCB" };
-const BBL = { code: "BBL", name: "BBL" };
-const BOA = { code: "BOA", name: "BOA" };
-const TMB = { code: "TMB", name: "TMB" };
+const KBANK = { code: "KBANK", name: "Kasikorn Bank" };
+const KTB = { code: "KTB", name: "Krung Thai Bank" };
+const SCB = { code: "SCB", name: "Siam Commercial Bank" };
+const BBL = { code: "BBL", name: "Bangkok Bank" };
+const BOA = { code: "BOA", name: "Ayudhya Bank / Krungsri" };
+const TMB = { code: "TMB", name: "TMB Bank" };
 const FAKERTHB = { code: "FAKERTHB", name: "Faker THB" };
 
 const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI];
