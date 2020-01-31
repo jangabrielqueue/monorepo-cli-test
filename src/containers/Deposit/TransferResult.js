@@ -1,9 +1,27 @@
 import React from "react";
-import { Result, Typography, Icon, Statistic } from "antd";
+import { Result, Statistic } from "antd";
 
-const { Paragraph, Text } = Typography;
+export class AutoRedirect extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-export const TransferSuccessful = ({ transferResult }) => {
+  componentDidMount() {
+    this.id = setTimeout(() => {
+      window.location.href = this.props.url;
+    }, this.props.delay);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.id);
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
+export const TransferSuccessful = ({ transferResult, redirectUrl }) => {
   return (
     <Result
       status="success"
@@ -21,7 +39,7 @@ export const TransferSuccessful = ({ transferResult }) => {
   );
 };
 
-export const TransferFailed = ({ transferResult }) => {
+export const TransferFailed = ({ transferResult, redirectUrl }) => {
   return (
     <Result
       status="error"

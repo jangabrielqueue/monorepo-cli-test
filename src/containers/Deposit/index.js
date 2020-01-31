@@ -3,7 +3,11 @@ import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
-import { TransferSuccessful, TransferFailed } from "./TransferResult";
+import {
+  AutoRedirect,
+  TransferSuccessful,
+  TransferFailed,
+} from "./TransferResult";
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
@@ -247,10 +251,18 @@ const Deposit = props => {
     );
   } else if (step === 2 && isSuccessful) {
     analytics.setCurrentScreen("transfer_successful");
-    content = <TransferSuccessful transferResult={transferResult} />;
+    content = (
+      <AutoRedirect delay={3000} url={queryParams.get("su")}>
+        <TransferSuccessful transferResult={transferResult} />
+      </AutoRedirect>
+    );
   } else if (step === 2) {
     analytics.setCurrentScreen("transfer_failed");
-    content = <TransferFailed transferResult={transferResult} />;
+    content = (
+      <AutoRedirect delay={3000} url={queryParams.get("fu")}>
+        <TransferFailed transferResult={transferResult} />
+      </AutoRedirect>
+    );
   }
   return (
     <>
