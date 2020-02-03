@@ -1,7 +1,7 @@
 import React from "react";
 import { Result, Statistic } from "antd";
 
-export const TransferSuccessful = ({ transferResult, redirectUrl }) => {
+export const TransferSuccessful = ({ transferResult }) => {
   return (
     <Result
       status="success"
@@ -19,7 +19,7 @@ export const TransferSuccessful = ({ transferResult, redirectUrl }) => {
   );
 };
 
-export const TransferFailed = ({ transferResult, redirectUrl }) => {
+export const TransferFailed = ({ transferResult }) => {
   return (
     <Result
       status="error"
