@@ -28,7 +28,7 @@ export class AutoRedirect extends React.Component {
     return (
       <>
         <Countdown
-          title={`you will be redirected in ${this.props.delay / 1000} seconds`}
+          title={`You will be redirected in ${this.props.delay / 1000} seconds`}
           value={deadline}
         />
         {this.props.children}
