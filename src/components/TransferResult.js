@@ -1,7 +1,5 @@
 import React from "react";
-import { Result, Typography, Icon, Statistic } from "antd";
-
-const { Paragraph, Text } = Typography;
+import { Result, Statistic } from "antd";
 
 export const TransferSuccessful = ({ transferResult }) => {
   return (

@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
-import { TransferSuccessful, TransferFailed } from "./TransferResult";
+import {
+  TransferSuccessful,
+  TransferFailed,
+} from "../../components/TransferResult";
 import { sendTopUpRequest, sendTopUpOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
