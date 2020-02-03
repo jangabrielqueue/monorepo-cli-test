@@ -6,7 +6,7 @@ const { Option } = Select;
 
 const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard } = props;
-    const { getFieldDecorator, validateFields, getFieldsError, resetFields } = props.form;
+    const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
     const [telcoName, setTelcoName] = useState('');
 
@@ -70,12 +70,12 @@ const ScratchCardForm = React.memo((props) => {
     }
 
     return (
-        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFields)}>
+        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
             <Form.Item>
                 <Statistic
                     title="Deposit"
-                    prefix={queryParams.get('Currency')}
-                    value={queryParams.get('Amount')}
+                    prefix={queryParams.get('currency')}
+                    value={queryParams.get('amount')}
                     valueStyle={{ color: "#000", fontWeight: 700 }}
                     precision={2}
                 />
@@ -116,7 +116,6 @@ const ScratchCardForm = React.memo((props) => {
                         size='large'
                         placeholder='Card Pin'
                         size='large'
-                        disabled={!telcoName}
                     />                            
                 )
             }
@@ -132,7 +131,6 @@ const ScratchCardForm = React.memo((props) => {
                         size='large'
                         placeholder='Card Serial No.'
                         size='large'
-                        disabled={!telcoName}
                     />                         
                 )
             }

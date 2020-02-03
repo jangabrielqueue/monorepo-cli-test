@@ -1,91 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Steps, Spin, Alert, Progress } from "antd";
+import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
 import ScratchCardResult from './ScratchCardResult';
 import { useQuery } from '../../utils/utils';
-import * as signalR from "@microsoft/signalr";
+import * as signalR from '@microsoft/signalr';
 import './styles.scss';
 import axios from 'axios';
 
 const { Step } = Steps;
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
-const API_USER_COMMAND_MONITOR = ENDPOINT + "/hubs/monitor";
+const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const initProgress = {
-    currentStep: 1,
-    totalSteps: 10,
-    statusCode: "009",
-    statusMessage: "In progress",
+    percent: 33.5,
+    statusCode: '009',
+    statusMessage: 'Waiting For Response',
   };
 
 const ScratchCard = (props) => {
-    const [depositRequest, setDepositRequest] = useState({
-        step: 0,
-        waitingForReady: true,
-        otpRequesting: false,
-        error: undefined,
-        errors: undefined,
-        progress: undefined,
-        isSuccessful: false,
-        transferResult: {}
-    });
+    const [step, setStep] = useState(0);
+    const [waitingForReady, setWaitingForReady] = useState(true);
+    const [error, setError] = useState(undefined);
+    const [progress, setProgress] = useState(undefined);
+    const [transferResult, setTransferResult] = useState({});
+    const [isSuccessful, setIsSuccessful] = useState(undefined);
+    
     const steps = ['FILL IN FORM', 'RESULT'];
     const queryParams = useQuery();
-    const session = `${queryParams.get('merchant')}-${queryParams.get('reference')}`;
+    const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('merchant')}-${queryParams.get('reference')}`;
 
-    function handleSubmitScratchCard (e, validateFields) {
+    function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
 
-        validateFields(async (err, values) => {
-
+        validateFieldsAndScroll(async (err, values) => {
             if (!err) {
                 const submitValues = {
                     Telecom: values.telcoName,
                     Pin: values.cardPin.toString(),
                     SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: queryParams.get('ClientIp'),
-                    Language: queryParams.get('Language'),
-                    SuccessfulUrl: queryParams.get('SuccessfulUrl'),
-                    FailedUrl: queryParams.get('FailedUrl'),
-                    CallbackUri: queryParams.get('CallbackUri'),
-                    Datetime: queryParams.get('Datetime'),
-                    Key: queryParams.get('Key'),
-                    Note: queryParams.get('Note'),
-                    Merchant: queryParams.get('Merchant'),
-                    Currency: queryParams.get('Currency'),
-                    Bank: queryParams.get('Bank'),
-                    Customer: queryParams.get('Customer'),
-                    Reference: queryParams.get('Reference'),
-                    Amount: queryParams.get('Amount')
+                    ClientIp: queryParams.get('clientIp'),
+                    Language: queryParams.get('language'),
+                    SuccessfulUrl: queryParams.get('successfulUrl'),
+                    FailedUrl: queryParams.get('failedUrl'),
+                    CallbackUri: queryParams.get('callbackUri'),
+                    Datetime: queryParams.get('datetime'),
+                    Key: queryParams.get('key'),
+                    Note: queryParams.get('note'),
+                    Merchant: queryParams.get('merchant'),
+                    Currency: queryParams.get('currency'),
+                    Bank: queryParams.get('bank'),
+                    Customer: queryParams.get('customer'),
+                    Reference: queryParams.get('reference'),
+                    Amount: queryParams.get('amount')
                 };
-                
-                await setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: true,
-                    error: undefined,
-                    errors: undefined,
-                    progress: undefined,
-                });
 
+                await setWaitingForReady(true);
+                await setProgress(initProgress);
+                
                 try {
                     await axios({
                       url: 'api/ScratchCard/Deposit',
                       method: 'POST',
                       data: submitValues
                     });
-                    await setDepositRequest({
-                        ...depositRequest,
-                        progress: initProgress,
-                    });
                   } catch (error) {
-                    await setDepositRequest({
-                        ...depositRequest,
-                        waitingForReady: false,
-                        error: error.title,
-                        errors: error.errors,
-                        progress: undefined,
-                    });
+                    await setWaitingForReady(false);
+                    await setProgress(undefined);
+                    await setError(error);
                   }
             }
         });
@@ -103,8 +85,8 @@ const ScratchCard = (props) => {
             case 'RESULT':
                 return (
                     <ScratchCardResult
-                        isSuccessful={depositRequest.isSuccessful}
-                        transferResult={depositRequest.transferResult}
+                        isSuccessful={isSuccessful}
+                        transferResult={transferResult}
                     />
                 );
         
@@ -115,10 +97,10 @@ const ScratchCard = (props) => {
 
     function showProgress (progress) {
         return (
-            <div style={{ padding: "5px" }}>
+            <div style={{ padding: '5px' }}>
                 <Progress
-                percent={(progress.currentStep / progress.totalSteps) * 100}
-                status="active"
+                percent={progress.percent}
+                status='active'
                 showInfo={false}
                 />
                 <strong>{progress.statusMessage}</strong>
@@ -126,24 +108,37 @@ const ScratchCard = (props) => {
         );
     };
 
-    function handleCommandStatusUpdate (e) {
-        setDepositRequest({
-            ...depositRequest,
-            waitingForReady: false,
-            isSuccessful: e.isSuccess,
-            errors: undefined,
-            progress: undefined,
-            step: 2,
-            transferResult: e,
-        });
+    function handleCommandStatusUpdate (result) {
+        if (result.statusCode === '009') {
+            setProgress({
+                percent: 67,
+                statusCode: result.statusCode,
+                statusMessage: 'Confirming transaction',
+              });
+            setWaitingForReady(true);
+            setStep(0);
+        } else if (result.statusCode === '006') {
+            setProgress({
+                percent: 100,
+                statusCode: result.statusCode,
+                statusMessage: 'Transaction Complete',
+              });
+            setWaitingForReady(false);
+            setIsSuccessful(true);
+            setTransferResult(result);
+            setStep(1);
+        } else {
+            setProgress({
+                percent: 100,
+                statusCode: result.statusCode,
+                statusMessage: 'Transaction Complete',
+              });
+            setWaitingForReady(false);
+            setIsSuccessful(false);
+            setTransferResult(result);
+            setStep(1);
+        }
       };
-      
-    function handleUpdateProgress (e) {
-        setDepositRequest({
-            ...depositRequest,
-            progress: e,
-        });
-    };
 
     useEffect(() => {
         if (!props.location.search) {
@@ -156,59 +151,39 @@ const ScratchCard = (props) => {
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-        connection.on("receivedResult", handleCommandStatusUpdate);
-        connection.on("Update", handleUpdateProgress);
+        connection.on('receivedResult', handleCommandStatusUpdate);
 
-        connection.start()
-        .catch(() => {
-            setDepositRequest({
-                ...depositRequest,
-                error: "Network Error",
-                errors: {
-                network: "Can't connect to server, please refresh your browser.",
-                }
-            });   
-        });
+        async function start() {
+            try {
+              await connection.start();
+              await connection.invoke('Start', session);
+              setWaitingForReady(false);
+            } catch (ex) {
+              setWaitingForReady(true);
+              setError({
+                error: {
+                    code: 'Network error',
+                    message: 'Can\'t connect to server, please refresh your browser.'
+                  }
+              });
+            }
+          }
+      
+        start();
 
-        connection.invoke("Start", session)
-        .then(() => {
-            setDepositRequest({
-                ...depositRequest,
-                error: undefined,
-                errors: undefined,
-                waitingForReady: false
+        return () => {
+            connection.onclose(() => {
+                setWaitingForReady(true);
+                setError({
+                    error: {
+                        code: 'Network error',
+                        message: 'Connection is closed, please refresh the page.'
+                      }
+                  });
+                setProgress(undefined);
             });
-        })
-        .catch(() => {
-            setDepositRequest({
-                ...depositRequest,
-                error: "Network Error",
-                errors: {
-                    network: "Can't connect to server, please refresh your browser.",
-                }
-            });
-        });
-
-        connection.onclose(() => {
-            setDepositRequest({
-                ...depositRequest,
-                waitingForReady: true,
-                error: "Network Error",
-                errors: {
-                    network: "Connection is closed, please refresh the page.",
-                },
-                progress: undefined,                    
-            });
-        });
+        };
     }, [])
-
-    const {
-        step,
-        waitingForReady,
-        error,
-        errors,
-        progress,
-    } = depositRequest;
 
     return (
         <>
@@ -223,16 +198,16 @@ const ScratchCard = (props) => {
             </div>
             <div className='deposit-container'>
             {
-                false &&
+                error &&
                     <Alert
-                        message={error}
-                        description={errors.network}
-                        type="error"
+                        message={error.name}
+                        description={error.message}
+                        type='error'
                         showIcon
-                        style={{ marginBottom: "0.5rem" }}
+                        style={{ marginBottom: '0.5rem' }}
                     />
             }
-            <Spin spinning={false}>
+            <Spin spinning={waitingForReady}>
                 <Card>
                     {
                         renderStepsContent(steps[step])

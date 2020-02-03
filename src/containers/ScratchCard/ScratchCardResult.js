@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Result, Icon, Spin } from 'antd';
+import { Button, Result, Icon, Spin, Statistic } from 'antd';
 
 const ScratchCardResult = (props) => {
   const { isSuccessful, transferResult } = props
-  console.log('isSuccessful, transferResult', isSuccessful, transferResult)
+
   // initialize timeLeft with the seconds prop
   const [timeLeft, setTimeLeft] = useState(20);
 
@@ -25,23 +25,22 @@ const ScratchCardResult = (props) => {
     // when we update it
   }, [timeLeft]);
 
-  function handleRedirect () {
-    // return window.location.replace(redirectUri);
-  }
-
   return (
-      <div className='scratch-result-container'>
-        <Result
-          status={isSuccessful ? 'success' : 'error'}
-          title='Payment Result'
-          subTitle={`${isSuccessful ? 'The transaction has completed successfully.' : 'Deposit transaction is existing..'} You will be redirected to merchant website in ${timeLeft} seconds.`}
-          extra={
-              <Button type='primary' onClick={handleRedirect}>
-                  Close
-              </Button>
-          }
-        />
-      </div>
+      <Result
+        status={isSuccessful ? 'success' : 'error'}
+        title={isSuccessful ? 'Successfully Deposit!' : 'Submitted Transaction Failed!'}
+        subTitle={`${isSuccessful ? 'References: ' + transferResult.reference : transferResult.statusMessage} You will be redirected to merchant website in ${timeLeft} seconds.`}
+      >
+        {
+          isSuccessful &&
+            <Statistic
+              prefix={'VND'}
+              value={'1000'}
+              valueStyle={{ color: "#000", fontWeight: 700 }}
+              precision={2}
+            />
+        }
+      </Result>
   );
 }
 
