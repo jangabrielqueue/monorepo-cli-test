@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card, Steps, Spin, Alert, Progress } from "antd";
+import { Card, Steps, Spin, Alert, Progress, Statistic } from "antd";
 import * as firebase from "firebase/app";
+import { AutoRedirect } from "../../components/AutoRedirect";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
-import {
-  AutoRedirect,
-  TransferSuccessful,
-  TransferFailed,
-} from "./TransferResult";
+import { TransferSuccessful, TransferFailed } from "./TransferResult";
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
@@ -252,14 +249,14 @@ const Deposit = props => {
   } else if (step === 2 && isSuccessful) {
     analytics.setCurrentScreen("transfer_successful");
     content = (
-      <AutoRedirect delay={3000} url={queryParams.get("su")}>
+      <AutoRedirect delay={10000} url={queryParams.get("su")}>
         <TransferSuccessful transferResult={transferResult} />
       </AutoRedirect>
     );
   } else if (step === 2) {
     analytics.setCurrentScreen("transfer_failed");
     content = (
-      <AutoRedirect delay={3000} url={queryParams.get("fu")}>
+      <AutoRedirect delay={10000} url={queryParams.get("fu")}>
         <TransferFailed transferResult={transferResult} />
       </AutoRedirect>
     );
