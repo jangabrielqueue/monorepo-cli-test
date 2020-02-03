@@ -121,7 +121,7 @@ const Deposit = props => {
     }
   }
 
-  function handleCommandStatusUpdate(e) {
+  function handleReceivedResult(e) {
     analytics.logEvent("received_result", {
       reference: reference,
       result: e,
@@ -177,7 +177,7 @@ const Deposit = props => {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    connection.on("receivedResult", handleCommandStatusUpdate);
+    connection.on("receivedResult", handleReceivedResult);
     connection.on("otpRequested", handleRequestOTP);
     connection.on("update", handleUpdateProgress);
 
