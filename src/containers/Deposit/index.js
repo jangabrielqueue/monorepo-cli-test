@@ -27,7 +27,6 @@ const initProgress = {
 const Deposit = props => {
   const analytics = firebase.analytics();
   const [depositState, setDepositState] = useState({
-    step: 0,
     waitingForReady: true,
     depositRequesting: false,
     otpRequesting: false,
@@ -37,6 +36,7 @@ const Deposit = props => {
     isSuccessful: false,
     transferResult: {},
   });
+  const [step, setStep] = useState(0);
   const queryParams = useQuery();
   const merchant = queryParams.get("merchant");
   const requester = queryParams.get("requester");
@@ -116,8 +116,8 @@ const Deposit = props => {
       setDepositState({
         ...depositState,
         waitingForReady: true,
-        step: 1,
       });
+      setStep(1);
     }
   }
 
@@ -131,9 +131,9 @@ const Deposit = props => {
       waitingForReady: false,
       isSuccessful: e.isSuccess,
       progress: undefined,
-      step: 2,
       transferResult: e,
     });
+    setStep(2);
   }
 
   function handleRequestOTP(e) {
@@ -141,9 +141,9 @@ const Deposit = props => {
       ...depositState,
       waitingForReady: false,
       progress: undefined,
-      step: 1,
       otpReference: e.extraData,
     });
+    setStep(1);
   }
 
   function handleUpdateProgress(e) {
@@ -218,7 +218,6 @@ const Deposit = props => {
   }, []);
 
   const {
-    step,
     waitingForReady,
     error,
     isSuccessful,
