@@ -26,17 +26,13 @@ const initProgress = {
 
 const Deposit = props => {
   const analytics = firebase.analytics();
-  const [depositState, setDepositState] = useState({
-    waitingForReady: true,
-    depositRequesting: false,
-    otpRequesting: false,
-    error: undefined,
-    progress: undefined,
-    otpReference: "",
-    isSuccessful: false,
-    transferResult: {},
-  });
   const [step, setStep] = useState(0);
+  const [otpReference, setOtpReference] = useState();
+  const [waitingForReady, setWaitingForReady] = useState(true);
+  const [error, setError] = useState();
+  const [progress, setProgress] = useState();
+  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [transferResult, setTransferResult] = useState({});
   const queryParams = useQuery();
   const merchant = queryParams.get("merchant");
   const requester = queryParams.get("requester");
@@ -52,12 +48,9 @@ const Deposit = props => {
     analytics.logEvent("login", {
       reference: reference,
     });
-    setDepositState({
-      ...depositState,
-      waitingForReady: true,
-      error: undefined,
-      progress: undefined,
-    });
+    setError(undefined);
+    setProgress(undefined);
+    setWaitingForReady(true);
     const result = await sendDepositRequest({
       ...values,
       reference: queryParams.get("reference"),
@@ -67,18 +60,10 @@ const Deposit = props => {
         reference: reference,
         error: result.error,
       });
-      setDepositState({
-        ...depositState,
-        waitingForReady: false,
-        error: result.error,
-        progress: undefined,
-      });
+      setWaitingForReady(false);
+      setError(result.error);
     } else {
-      setDepositState({
-        ...depositState,
-        waitingForReady: true,
-        progress: initProgress,
-      });
+      setProgress(initProgress);
     }
   }
 
@@ -87,12 +72,9 @@ const Deposit = props => {
       reference: reference,
       otp: value.otp,
     });
-    setDepositState({
-      ...depositState,
-      waitingForReady: true,
-      error: undefined,
-      progress: undefined,
-    });
+    setError(undefined);
+    setProgress(undefined);
+    setWaitingForReady(true);
     const result = await sendDepositOtp(
       queryParams.get("reference"),
       value.otp
@@ -102,20 +84,13 @@ const Deposit = props => {
         reference: reference,
         otp: value.otp,
       });
-      setDepositState({
-        ...depositState,
-        waitingForReady: false,
-        error: result.error,
-        progress: undefined,
-      });
+      setError(result.error);
+      setProgress(undefined);
+      setWaitingForReady(false);
     } else {
       analytics.logEvent("submitted_otp_succeed", {
         reference: reference,
         otp: value.otp,
-      });
-      setDepositState({
-        ...depositState,
-        waitingForReady: true,
       });
       setStep(1);
     }
@@ -126,31 +101,22 @@ const Deposit = props => {
       reference: reference,
       result: e,
     });
-    setDepositState({
-      ...depositState,
-      waitingForReady: false,
-      isSuccessful: e.isSuccess,
-      progress: undefined,
-      transferResult: e,
-    });
+    setIsSuccessful(e.isSuccess);
+    setProgress(undefined);
+    setTransferResult(e);
+    setWaitingForReady(false);
     setStep(2);
   }
 
   function handleRequestOTP(e) {
-    setDepositState({
-      ...depositState,
-      waitingForReady: false,
-      progress: undefined,
-      otpReference: e.extraData,
-    });
+    setProgress(undefined);
     setStep(1);
+    setOtpReference(e.extraData);
+    setWaitingForReady(false);
   }
 
   function handleUpdateProgress(e) {
-    setDepositState({
-      ...depositState,
-      progress: e,
-    });
+    setProgress(e);
   }
 
   function showProgress(progress) {
@@ -185,46 +151,28 @@ const Deposit = props => {
       try {
         await connection.start();
         await connection.invoke("Start", session);
-        setDepositState({
-          ...depositState,
-          waitingForReady: false,
-        });
       } catch (ex) {
-        setDepositState({
-          ...depositState,
-          error: {
-            code: "Network error",
-            message: "Can't connect to server, please refresh your browser.",
-          },
+        setError({
+          code: "Network error",
+          message: "Can't connect to server, please refresh your browser.",
         });
       }
+      setWaitingForReady(false);
     }
 
     start();
 
     return () => {
       connection.onclose(() => {
-        setDepositState({
-          ...depositState,
-          waitingForReady: true,
-          error: {
-            code: "Network error",
-            message: "connection is closed, please refresh the page.",
-          },
-          progress: undefined,
+        setWaitingForReady(true);
+        setError({
+          code: "Network error",
+          message: "connection is closed, please refresh the page.",
         });
+        setProgress(undefined);
       });
     };
   }, []);
-
-  const {
-    waitingForReady,
-    error,
-    isSuccessful,
-    transferResult,
-    progress,
-    otpReference,
-  } = depositState;
 
   let content;
   if (step === 0) {
