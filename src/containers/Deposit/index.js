@@ -4,7 +4,10 @@ import * as firebase from "firebase/app";
 import { AutoRedirect } from "../../components/AutoRedirect";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
-import { TransferSuccessful, TransferFailed } from "./TransferResult";
+import {
+  TransferSuccessful,
+  TransferFailed,
+} from "../../components/TransferResult";
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
