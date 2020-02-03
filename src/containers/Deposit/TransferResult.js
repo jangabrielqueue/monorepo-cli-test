@@ -1,26 +1,6 @@
 import React from "react";
 import { Result, Statistic } from "antd";
 
-export class AutoRedirect extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {
-    this.id = setTimeout(() => {
-      window.location.href = this.props.url;
-    }, this.props.delay);
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.id);
-  }
-
-  render() {
-    return this.props.children;
-  }
-}
-
 export const TransferSuccessful = ({ transferResult, redirectUrl }) => {
   return (
     <Result
