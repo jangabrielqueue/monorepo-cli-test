@@ -12,7 +12,7 @@
       ]
     },
     {
-      "site": "topup-prod-ezpay",
+      "site": "deposit-prod-ezpay",
       "public": "build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [

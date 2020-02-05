@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Steps, Spin, Alert, Progress, Statistic } from "antd";
+import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
 import { AutoRedirect } from "../../components/AutoRedirect";
 import DepositForm from "./DepositForm";
@@ -37,6 +37,11 @@ const Deposit = props => {
   const merchant = queryParams.get("merchant");
   const requester = queryParams.get("requester");
   const reference = queryParams.get("reference");
+  const language = queryParams.get("language");
+  const note = queryParams.get("note");
+  const successfulUrl = queryParams.get("successfulUrl");
+  const failedUrl = queryParams.get("failedUrl");
+  const callbackUri = queryParams.get("callbackUri");
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
   analytics.setUserProperties({
@@ -46,18 +51,23 @@ const Deposit = props => {
 
   async function handleSubmitDeposit(values) {
     analytics.logEvent("login", {
-      reference: reference,
+      reference,
     });
     setError(undefined);
     setProgress(undefined);
     setWaitingForReady(true);
     const result = await sendDepositRequest({
       ...values,
-      reference: queryParams.get("reference"),
+      reference,
+      language,
+      note,
+      successfulUrl,
+      failedUrl,
+      callbackUri,
     });
     if (result.error) {
       analytics.logEvent("login_failed", {
-        reference: reference,
+        reference,
         error: result.error,
       });
       setWaitingForReady(false);
@@ -75,10 +85,7 @@ const Deposit = props => {
     setError(undefined);
     setProgress(undefined);
     setWaitingForReady(true);
-    const result = await sendDepositOtp(
-      queryParams.get("reference"),
-      value.otp
-    );
+    const result = await sendDepositOtp(reference, value.otp);
     if (result.error) {
       analytics.logEvent("submitted_otp_failed", {
         reference: reference,
@@ -179,12 +186,12 @@ const Deposit = props => {
     analytics.setCurrentScreen("input_user_credentials");
     content = (
       <DepositForm
-        merchant={queryParams.get("merchant")}
-        requester={queryParams.get("requester")}
+        merchant={merchant}
+        requester={requester}
         currency={queryParams.get("currency")}
         bank={queryParams.get("bank")}
         amount={queryParams.get("amount")}
-        reference={queryParams.get("reference")}
+        reference={reference}
         clientIp={queryParams.get("clientIp")}
         signature={queryParams.get("signature")}
         datetime={queryParams.get("datetime")}
@@ -199,14 +206,14 @@ const Deposit = props => {
   } else if (step === 2 && isSuccessful) {
     analytics.setCurrentScreen("transfer_successful");
     content = (
-      <AutoRedirect delay={10000} url={queryParams.get("su")}>
+      <AutoRedirect delay={10000} url={successfulUrl}>
         <TransferSuccessful transferResult={transferResult} />
       </AutoRedirect>
     );
   } else if (step === 2) {
     analytics.setCurrentScreen("transfer_failed");
     content = (
-      <AutoRedirect delay={10000} url={queryParams.get("fu")}>
+      <AutoRedirect delay={10000} url={failedUrl}>
         <TransferFailed transferResult={transferResult} />
       </AutoRedirect>
     );
