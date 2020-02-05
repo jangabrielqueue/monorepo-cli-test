@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Result, Icon, Spin, Statistic } from 'antd';
+import {  Result, Statistic } from 'antd';
 
 const ScratchCardResult = (props) => {
-  const { isSuccessful, transferResult } = props
-
+  const { isSuccessful, transferResult, successfulUrl, failedUrl } = props
+  
   // initialize timeLeft with the seconds prop
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(10);
 
   useEffect(() => {
     // exit early when we reach 0
+    const redirectUrl = isSuccessful ? successfulUrl : failedUrl;
+
     if (!timeLeft) {
-      // return window.location.replace(redirectUri);
+      return window.location.replace(redirectUrl);
     };
 
     // save intervalId to clear the interval when the
@@ -34,8 +36,8 @@ const ScratchCardResult = (props) => {
         {
           isSuccessful &&
             <Statistic
-              prefix={'VND'}
-              value={'1000'}
+              prefix={transferResult.currency}
+              value={transferResult.actualAmount}
               valueStyle={{ color: "#000", fontWeight: 700 }}
               precision={2}
             />

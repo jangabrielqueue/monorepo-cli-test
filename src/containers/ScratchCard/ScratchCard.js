@@ -62,7 +62,8 @@ const ScratchCard = (props) => {
                     await axios({
                       url: 'api/ScratchCard/Deposit',
                       method: 'POST',
-                      data: submitValues
+                      data: submitValues,
+                      timeout: 5000
                     });
                   } catch (error) {
                     await setWaitingForReady(false);
@@ -87,6 +88,8 @@ const ScratchCard = (props) => {
                     <ScratchCardResult
                         isSuccessful={isSuccessful}
                         transferResult={transferResult}
+                        successfulUrl={queryParams.get('successfulUrl')}
+                        failedUrl={queryParams.get('failedUrl')}
                     />
                 );
         
@@ -96,31 +99,59 @@ const ScratchCard = (props) => {
     }
 
     function showProgress (progress) {
+        function progressStatus () {
+            if (progress.percent !== 100) {
+                return 'active';
+            } else if (progress.percent === 100 && !isSuccessful) {
+                return 'exception';
+            } else if (progress.percent === 100 && isSuccessful) {
+                return 'success';
+            }
+        }
+
         return (
             <div style={{ padding: '5px' }}>
                 <Progress
-                percent={progress.percent}
-                status='active'
-                showInfo={false}
+                    percent={progress.percent}
+                    status={progressStatus()}
+                    showInfo={false}
                 />
                 <strong>{progress.statusMessage}</strong>
             </div>            
         );
     };
 
-    function handleCommandStatusUpdate (result) {
+    async function handleCommandStatusUpdate (result) {
+        let start, end;
+
+        start = performance.now();
+        
         if (result.statusCode === '009') {
             setProgress({
                 percent: 67,
-                statusCode: result.statusCode,
                 statusMessage: 'Confirming transaction',
               });
             setWaitingForReady(true);
             setStep(0);
+            await new Promise(resolve => setTimeout(resolve, 180000));
+            await new Promise(resolve => resolve(end = performance.now()));
+            const time = (end - start);
+
+            if (time >= 180000) {
+                setProgress({
+                    percent: 100,
+                    statusMessage: 'Transaction Complete',
+                  });
+                setWaitingForReady(false);
+                setIsSuccessful(false);
+                setTransferResult({
+                    statusMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
+                });
+                setStep(1);
+            }
         } else if (result.statusCode === '006') {
             setProgress({
                 percent: 100,
-                statusCode: result.statusCode,
                 statusMessage: 'Transaction Complete',
               });
             setWaitingForReady(false);
@@ -130,7 +161,6 @@ const ScratchCard = (props) => {
         } else {
             setProgress({
                 percent: 100,
-                statusCode: result.statusCode,
                 statusMessage: 'Transaction Complete',
               });
             setWaitingForReady(false);
@@ -162,7 +192,7 @@ const ScratchCard = (props) => {
               setWaitingForReady(true);
               setError({
                 error: {
-                    code: 'Network error',
+                    name: 'Network error',
                     message: 'Can\'t connect to server, please refresh your browser.'
                   }
               });
@@ -176,14 +206,14 @@ const ScratchCard = (props) => {
                 setWaitingForReady(true);
                 setError({
                     error: {
-                        code: 'Network error',
+                        name: 'Network error',
                         message: 'Connection is closed, please refresh the page.'
                       }
                   });
                 setProgress(undefined);
             });
         };
-    }, [])
+    }, []);
 
     return (
         <>

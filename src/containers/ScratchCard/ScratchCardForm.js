@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Form, InputNumber, Button, Select, Statistic, Row, Col } from 'antd';
+import React, { useState } from 'react';
+import { Form, InputNumber, Button, Select, Statistic } from 'antd';
 import { useQuery } from '../../utils/utils';
 
 const { Option } = Select;
