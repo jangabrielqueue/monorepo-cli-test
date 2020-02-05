@@ -12,11 +12,7 @@ export async function sendDepositRequest(data) {
     const rsp = await axios.post(API_DEPOSIT_SUBMIT_REQUEST, {
       ...data,
       key: data.signature,
-      callbackUri: "https://www.google.com",
-      failedUrl: "https://www.google.com",
       customer: data.requester,
-      language: "en-us",
-      note: "",
     });
     return rsp.data;
   } catch (ex) {
