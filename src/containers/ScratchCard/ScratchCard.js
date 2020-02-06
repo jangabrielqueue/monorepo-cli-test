@@ -28,7 +28,7 @@ const ScratchCard = (props) => {
     
     const steps = ['FILL IN FORM', 'RESULT'];
     const queryParams = useQuery();
-    const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('merchant')}-${queryParams.get('reference')}`;
+    const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
 
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
@@ -39,20 +39,20 @@ const ScratchCard = (props) => {
                     Telecom: values.telcoName,
                     Pin: values.cardPin.toString(),
                     SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: queryParams.get('clientIp'),
-                    Language: queryParams.get('language'),
-                    SuccessfulUrl: queryParams.get('successfulUrl'),
-                    FailedUrl: queryParams.get('failedUrl'),
-                    CallbackUri: queryParams.get('callbackUri'),
-                    Datetime: queryParams.get('datetime'),
-                    Key: queryParams.get('key'),
-                    Note: queryParams.get('note'),
-                    Merchant: queryParams.get('merchant'),
-                    Currency: queryParams.get('currency'),
-                    Bank: queryParams.get('bank'),
-                    Customer: queryParams.get('customer'),
-                    Reference: queryParams.get('reference'),
-                    Amount: queryParams.get('amount')
+                    ClientIp: queryParams.get('c3'),
+                    Language: queryParams.get('l'),
+                    SuccessfulUrl: queryParams.get('su'),
+                    FailedUrl: queryParams.get('fu'),
+                    CallbackUri: queryParams.get('c4'),
+                    Datetime: queryParams.get('d'),
+                    Key: queryParams.get('k'),
+                    Note: queryParams.get('n'),
+                    Merchant: queryParams.get('m'),
+                    Currency: queryParams.get('c1'),
+                    Bank: queryParams.get('b'),
+                    Customer: queryParams.get('c2'),
+                    Reference: queryParams.get('r'),
+                    Amount: queryParams.get('a')
                 };
 
                 await setWaitingForReady(true);
@@ -88,8 +88,8 @@ const ScratchCard = (props) => {
                     <ScratchCardResult
                         isSuccessful={isSuccessful}
                         transferResult={transferResult}
-                        successfulUrl={queryParams.get('successfulUrl')}
-                        failedUrl={queryParams.get('failedUrl')}
+                        successfulUrl={queryParams.get('su')}
+                        failedUrl={queryParams.get('fu')}
                     />
                 );
         

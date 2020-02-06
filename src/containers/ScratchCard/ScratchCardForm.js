@@ -74,8 +74,8 @@ const ScratchCardForm = React.memo((props) => {
             <Form.Item>
                 <Statistic
                     title="Deposit"
-                    prefix={queryParams.get('currency')}
-                    value={queryParams.get('amount')}
+                    prefix={queryParams.get('c1')}
+                    value={queryParams.get('a')}
                     valueStyle={{ color: "#000", fontWeight: 700 }}
                     precision={2}
                 />
