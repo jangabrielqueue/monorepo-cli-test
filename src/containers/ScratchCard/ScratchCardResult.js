@@ -31,8 +31,9 @@ const ScratchCardResult = (props) => {
       <Result
         status={isSuccessful ? 'success' : 'error'}
         title={isSuccessful ? 'Successfully Deposit!' : 'Submitted Transaction Failed!'}
-        subTitle={`${isSuccessful ? 'References: ' + transferResult.reference : transferResult.statusMessage} You will be redirected to merchant website in ${timeLeft} seconds.`}
+        subTitle={`${isSuccessful ? 'References: ' + transferResult.reference : transferResult.statusMessage}`}
       >
+        <p>You will be redirected to merchant website in {timeLeft} seconds.</p>
         {
           isSuccessful &&
             <Statistic

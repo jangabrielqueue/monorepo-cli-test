@@ -8,7 +8,7 @@ const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard } = props;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
-    const [telcoName, setTelcoName] = useState('');
+    const [telcoName, setTelcoName] = useState('VTT');
 
     function validationRuleforCardPin () {
         let validation = {};
@@ -86,7 +86,8 @@ const ScratchCardForm = React.memo((props) => {
                     rules: [{
                         required: true,
                         message: 'Please select telco name!'
-                    }]
+                    }],
+                    initialValue: telcoName
                 })
                 (
                     <Select
