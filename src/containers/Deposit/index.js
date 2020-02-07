@@ -34,14 +34,21 @@ const Deposit = props => {
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
   const queryParams = useQuery();
-  const merchant = queryParams.get("merchant");
-  const requester = queryParams.get("requester");
-  const reference = queryParams.get("reference");
-  const language = queryParams.get("language");
-  const note = queryParams.get("note");
-  const successfulUrl = queryParams.get("successfulUrl");
-  const failedUrl = queryParams.get("failedUrl");
-  const callbackUri = queryParams.get("callbackUri");
+  const bank = queryParams.get("b");
+  const merchant = queryParams.get("m");
+  const currency = queryParams.get("c1");
+  const requester = queryParams.get("c2");
+  const clientIp = queryParams.get("c3");
+  const callbackUri = queryParams.get("c4");
+  const amount = queryParams.get("a");
+  const reference = queryParams.get("r");
+  const datetime = queryParams.get("d");
+  const signature = queryParams.get("k");
+  const successfulUrl = queryParams.get("su");
+  const failedUrl = queryParams.get("fu");
+  const note = queryParams.get("n");
+  const language = queryParams.get("l");
+
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
   analytics.setUserProperties({
@@ -188,13 +195,13 @@ const Deposit = props => {
       <DepositForm
         merchant={merchant}
         requester={requester}
-        currency={queryParams.get("currency")}
-        bank={queryParams.get("bank")}
-        amount={queryParams.get("amount")}
+        currency={currency}
+        bank={bank}
+        amount={amount}
         reference={reference}
-        clientIp={queryParams.get("clientIp")}
-        signature={queryParams.get("signature")}
-        datetime={queryParams.get("datetime")}
+        clientIp={clientIp}
+        signature={signature}
+        datetime={datetime}
         handleSubmit={handleSubmitDeposit}
       />
     );
