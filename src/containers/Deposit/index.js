@@ -224,7 +224,7 @@ const Deposit = props => {
   } else if (step === 2 && transferResult.statusCode === "000") {
     analytics.setCurrentScreen("transfer_successful");
     content = (
-      <AutoRedirect delay={10000} url={failedUrl}>
+      <AutoRedirect delay={10000} url={successfulUrl}>
         <TransferWaitForConfirm transferResult={transferResult} />
       </AutoRedirect>
     );
