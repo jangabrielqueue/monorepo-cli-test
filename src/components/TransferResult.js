@@ -28,3 +28,13 @@ export const TransferFailed = ({ transferResult }) => {
     ></Result>
   );
 };
+
+export const TransferWaitForConfirm = ({ transferResult }) => {
+  return (
+    <Result
+      status="success"
+      title="Successfully Deposit!"
+      subTitle="Transaction is pending for confirmation."
+    ></Result>
+  );
+};
