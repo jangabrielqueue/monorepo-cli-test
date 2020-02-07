@@ -16,6 +16,7 @@ const Layout = () => {
     <div className="main">
       <div className="logo-container">
         {/* <h1>GAME <span>WALLET</span></h1> */}
+        {/* <h3 className="poweredby">Powered By</h3> */}
         <Logo bank={bank} />
       </div>
       <Switch>
