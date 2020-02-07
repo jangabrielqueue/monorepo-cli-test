@@ -161,6 +161,9 @@ const Deposit = props => {
     connection.on("receivedResult", handleReceivedResult);
     connection.on("otpRequested", handleRequestOTP);
     connection.on("update", handleUpdateProgress);
+    connection.onreconnected(async e => {
+      await connection.invoke("Start", session);
+    });
 
     async function start() {
       try {
