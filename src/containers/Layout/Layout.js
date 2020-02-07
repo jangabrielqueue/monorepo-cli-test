@@ -11,7 +11,7 @@ import { useQuery } from "../../utils/utils";
 
 const Layout = () => {
   const queryParams = useQuery();
-  const bank = queryParams.get("bank");
+  const bank = queryParams.get("b");
   return (
     <div className="main">
       <div className="logo-container">
