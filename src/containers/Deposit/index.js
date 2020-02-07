@@ -7,6 +7,7 @@ import OTPForm from "./OTPForm";
 import {
   TransferSuccessful,
   TransferFailed,
+  TransferWaitForConfirm,
 } from "../../components/TransferResult";
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
@@ -160,6 +161,9 @@ const Deposit = props => {
     connection.on("receivedResult", handleReceivedResult);
     connection.on("otpRequested", handleRequestOTP);
     connection.on("update", handleUpdateProgress);
+    connection.onreconnected(async e => {
+      await connection.invoke("Start", session);
+    });
 
     async function start() {
       try {
@@ -215,6 +219,13 @@ const Deposit = props => {
     content = (
       <AutoRedirect delay={10000} url={successfulUrl}>
         <TransferSuccessful transferResult={transferResult} />
+      </AutoRedirect>
+    );
+  } else if (step === 2 && transferResult.statusCode === "000") {
+    analytics.setCurrentScreen("transfer_successful");
+    content = (
+      <AutoRedirect delay={10000} url={failedUrl}>
+        <TransferWaitForConfirm transferResult={transferResult} />
       </AutoRedirect>
     );
   } else if (step === 2) {

@@ -170,7 +170,7 @@ class DepositFormImpl extends Component {
           <Form.Item>
             <Collapse bordered={false}>
               <Panel
-                header={"More about deposit to " + merchant}
+                header="More information"
                 key="1"
                 style={{
                   border: "0",
@@ -181,14 +181,6 @@ class DepositFormImpl extends Component {
                   <div className="info-item">
                     <Icon type="key" />
                     <span>{reference}</span>
-                  </div>
-                  <div className="info-item">
-                    <Icon type="safety" />
-                    <span>{merchant}</span>
-                  </div>
-                  <div className="info-item">
-                    <Icon type="user" />
-                    <span>{requester}</span>
                   </div>
                   <div className="info-item">
                     <Icon type="pay-circle" />

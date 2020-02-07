@@ -11,11 +11,12 @@ import { useQuery } from "../../utils/utils";
 
 const Layout = () => {
   const queryParams = useQuery();
-  const bank = queryParams.get("bank");
+  const bank = queryParams.get("b");
   return (
     <div className="main">
       <div className="logo-container">
         {/* <h1>GAME <span>WALLET</span></h1> */}
+        {/* <h3 className="poweredby">Powered By</h3> */}
         <Logo bank={bank} />
       </div>
       <Switch>
