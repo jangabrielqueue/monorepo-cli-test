@@ -50,7 +50,9 @@ const App = () => {
   axios.defaults.headers.post["Content-Type"] = "application/json";
 
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
   const [locale, setLocale] = useState(enUS); // locale hasn't been setup
 
