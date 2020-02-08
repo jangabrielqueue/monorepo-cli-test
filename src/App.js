@@ -3,6 +3,7 @@ import * as firebase from "firebase/app";
 import "firebase/analytics";
 import "./App.scss";
 import { ConfigProvider } from "antd";
+import ErrorBoundary from "react-error-boundary";
 import enUS from "antd/es/locale/en_US";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Layout from "./containers/Layout/Layout";
@@ -19,6 +20,30 @@ const firebaseConfig = {
   measurementId: "G-FTXSLEEXVV",
 };
 
+const errorHandler = (error, componentStack) => {
+  const analytics = firebase.analytics();
+  analytics.logEvent("exception", {
+    stack: componentStack,
+    description: error,
+    fatal: true,
+  });
+};
+
+const FallbackComponent = ({ componentStack, error }) => (
+  <div>
+    <p>
+      <strong>Oops! An error occured!</strong>
+    </p>
+    <p>Please contact customer service</p>
+    <p>
+      <strong>Error:</strong> {error.toString()}
+    </p>
+    <p>
+      <strong>Stacktrace:</strong> {componentStack}
+    </p>
+  </div>
+);
+
 const App = () => {
   const { REACT_APP_ENDPOINT } = process.env;
   axios.defaults.baseURL = REACT_APP_ENDPOINT;
@@ -30,13 +55,15 @@ const App = () => {
   const [locale, setLocale] = useState(enUS); // locale hasn't been setup
 
   return (
-    <ConfigProvider locale={locale}>
-      <Router>
-        <Switch>
-          <Route path="/" component={Layout} />
-        </Switch>
-      </Router>
-    </ConfigProvider>
+    <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+      <ConfigProvider locale={locale}>
+        <Router>
+          <Switch>
+            <Route path="/" component={Layout} />
+          </Switch>
+        </Router>
+      </ConfigProvider>
+    </ErrorBoundary>
   );
 };
 
