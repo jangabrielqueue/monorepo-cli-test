@@ -49,13 +49,9 @@ const Deposit = props => {
   const failedUrl = queryParams.get("fu");
   const note = queryParams.get("n");
   const language = queryParams.get("l");
-
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
 
-  analytics.setUserProperties({
-    merchant: merchant,
-    requester: requester,
-  });
+  analytics.setCurrentScreen("deposit");
 
   async function handleSubmitDeposit(values) {
     analytics.logEvent("login", {

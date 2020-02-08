@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
+import * as firebase from "firebase/app";
 import ScratchCard from "../ScratchCard/ScratchCard";
 import TopUp from "../TopUp";
 import Deposit from "../Deposit";
@@ -12,6 +13,14 @@ import { useQuery } from "../../utils/utils";
 const Layout = () => {
   const queryParams = useQuery();
   const bank = queryParams.get("b");
+  const analytics = firebase.analytics();
+  analytics.setUserProperties({
+    merchant: queryParams.get("m"),
+    currency: queryParams.get("c1"),
+    requester: queryParams.get("c2"),
+    reference: queryParams.get("r"),
+  });
+  analytics.logEvent("page_loaded");
   return (
     <div className="main">
       <div className="logo-container">
