@@ -20,8 +20,8 @@ const getFilePath = bank => {
 
 const ACB = (
   <>
-    <img className="poweredby" src="/banks/PoweredBy.svg" />
-    <img style={{ width: 100 }} src={getFilePath("ACB")} />
+    <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
+    <img alt="ACB" style={{ width: 100 }} src={getFilePath("ACB")} />
   </>
 );
 
@@ -34,9 +34,9 @@ const VCB = (
         textAlign: "right",
       }}
     >
-      <img className="poweredby" src="/banks/PoweredBy.svg" />
+      <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
     </div>
-    <img style={{ width: "160px" }} src={getFilePath("VCB")} />
+    <img alt="VCB" style={{ width: "160px" }} src={getFilePath("VCB")} />
   </>
 );
 
@@ -49,10 +49,10 @@ const TCB = (
         textAlign: "right",
       }}
     >
-      <img className="poweredby" src="/banks/PoweredBy.svg" />
+      <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
     </div>
     <div style={{ margin: "auto", width: "140px" }}>
-      <img src={getFilePath("TCB")} />
+      <img alt="TCB" src={getFilePath("TCB")} />
     </div>
   </>
 );
@@ -81,9 +81,9 @@ const EXIM = (
         textAlign: "right",
       }}
     >
-      <img className="poweredby" src="/banks/PoweredBy.svg" />
+      <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
     </div>
-    <img style={{ width: "160px" }} src={getFilePath("EXIM")} />
+    <img alt="EXIM" style={{ width: "160px" }} src={getFilePath("EXIM")} />
   </>
 );
 
@@ -97,7 +97,7 @@ const SCB = (
         textAlign: "right",
       }}
     >
-      <img className="poweredby" src="/banks/PoweredBy.svg" />
+      <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
     </div>
     <img src={getFilePath("SCB")} />
   </>
@@ -106,14 +106,14 @@ const SCB = (
 const TMB = (
   <>
     {/* <img className="poweredby" src="/banks/PoweredBy.svg" /> */}
-    <img style={{ width: 120 }} src={getFilePath("TMB")} />
+    <img alt="TMB" style={{ width: 120 }} src={getFilePath("TMB")} />
   </>
 );
 
 const VIB = (
   <>
     {/* <img className="poweredby" src="/banks/PoweredBy.svg" /> */}
-    <img src={getFilePath("VIB")} />
+    <img alt="VIB" src={getFilePath("VIB")} />
   </>
 );
 
@@ -141,9 +141,9 @@ const Logo = ({ bank }) => {
           textAlign: "right",
         }}
       >
-        <img className="poweredby" src="/banks/PoweredBy.svg" />
+        <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
       </div>
-      <img src={getFilePath(bank)} />
+      <img alt={bank} src={getFilePath(bank)} />
     </>
   );
 };
