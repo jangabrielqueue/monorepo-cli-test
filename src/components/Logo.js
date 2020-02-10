@@ -7,7 +7,8 @@ const FILES = {
   BIDV: "/banks/BIDV_LOGO.svg",
   SCB: "/banks/SCB_LOGO.svg",
   BBL: "/banks/BBL_LOGO.svg",
-  C3TEK: "/banks/GW_LOGO.png"
+  C3TEK: "/banks/GW_LOGO.png",
+  PRECARD: "/banks/GW_LOGO.png"
 };
 
 const getFilePath = bank => {

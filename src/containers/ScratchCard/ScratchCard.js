@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
-import ScratchCardResult from './ScratchCardResult';
 import { useQuery } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
 import './styles.scss';
 import axios from 'axios';
-
+import { AutoRedirect } from "../../components/AutoRedirect";
+import {
+    TransferSuccessful,
+    TransferFailed,
+    TransferWaitForConfirm,
+  } from "../../components/TransferResult";
+  
 const { Step } = Steps;
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
@@ -15,7 +20,7 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 const initProgress = {
     percent: 33.5,
     statusCode: '009',
-    statusMessage: 'Waiting For Response',
+    statusMessage: 'Waiting for provider confirmation.',
   };
 
 const ScratchCard = (props) => {
@@ -84,14 +89,25 @@ const ScratchCard = (props) => {
                 );
 
             case 'RESULT':
-                return (
-                    <ScratchCardResult
-                        isSuccessful={isSuccessful}
-                        transferResult={transferResult}
-                        successfulUrl={queryParams.get('su')}
-                        failedUrl={queryParams.get('fu')}
-                    />
-                );
+                if (isSuccessful) {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                            <TransferSuccessful transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                } else if (transferResult.statusCode === '009') {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                            <TransferWaitForConfirm transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                } else {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('fu')}>
+                            <TransferFailed transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                }
         
             default:
                 return;
@@ -129,7 +145,7 @@ const ScratchCard = (props) => {
         if (result.statusCode === '009') {
             setProgress({
                 percent: 67,
-                statusMessage: 'Confirming transaction',
+                statusMessage: result.statusMessage,
               });
             setWaitingForReady(true);
             setStep(0);
@@ -139,8 +155,8 @@ const ScratchCard = (props) => {
 
             if (time >= 180000) {
                 setProgress({
-                    percent: 100,
-                    statusMessage: 'Transaction Complete',
+                    percent: 67,
+                    statusMessage: result.statusMessage,
                   });
                 setWaitingForReady(false);
                 setIsSuccessful(false);

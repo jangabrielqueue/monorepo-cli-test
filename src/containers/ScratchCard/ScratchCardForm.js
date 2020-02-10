@@ -150,7 +150,7 @@ const ScratchCardForm = React.memo((props) => {
             </Form.Item>
             <div className='note-text'>
                 <p>- Please submit the correct amount, card pin and serial number.</p>
-                <p>- If submitted with incorrect amount, member will be penalised.</p>    
+                <p>- If submitted with incorrect amount, member will be penalized.</p>    
             </div>
         </Form>
     );
