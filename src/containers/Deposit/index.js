@@ -108,6 +108,7 @@ const Deposit = props => {
   }
 
   function handleReceivedResult(e) {
+    console.log('e received result', e)
     analytics.logEvent("received_result", {
       reference: reference,
       result: e,
@@ -120,6 +121,7 @@ const Deposit = props => {
   }
 
   function handleRequestOTP(e) {
+    console.log('e otp', e)
     setProgress(undefined);
     setStep(1);
     setOtpReference(e.extraData);
@@ -127,6 +129,7 @@ const Deposit = props => {
   }
 
   function handleUpdateProgress(e) {
+    console.log('e update', e)
     setProgress(e);
   }
 
@@ -187,6 +190,18 @@ const Deposit = props => {
       });
     };
   }, []);
+
+  useEffect(() => {
+    window.onbeforeunload = (e) => {
+      if (step < 2) {
+        // this custom message will only appear on earlier version of different browsers.
+        // However on modern and latest browsers their own default message will override this custom message.
+        e.returnValue = 'Do you really want to leave current page?'
+      } else {
+        e.returnValue;
+      }
+    };
+  }, [step]);
 
   let content;
   if (step === 0) {
