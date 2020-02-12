@@ -12,6 +12,8 @@ import {
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
+import { useIntl } from 'react-intl';
+import messages from './messages';
 
 const { Step } = Steps;
 
@@ -50,6 +52,7 @@ const Deposit = props => {
   const note = queryParams.get("n");
   const language = queryParams.get("l");
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
+  const intl = useIntl();
 
   analytics.setCurrentScreen("deposit");
 
@@ -108,7 +111,6 @@ const Deposit = props => {
   }
 
   function handleReceivedResult(e) {
-    console.log('e received result', e)
     analytics.logEvent("received_result", {
       reference: reference,
       result: e,
@@ -121,7 +123,6 @@ const Deposit = props => {
   }
 
   function handleRequestOTP(e) {
-    console.log('e otp', e)
     setProgress(undefined);
     setStep(1);
     setOtpReference(e.extraData);
@@ -129,7 +130,6 @@ const Deposit = props => {
   }
 
   function handleUpdateProgress(e) {
-    console.log('e update', e)
     setProgress(e);
   }
 
@@ -198,7 +198,7 @@ const Deposit = props => {
         // However on modern and latest browsers their own default message will override this custom message.
         e.returnValue = 'Do you really want to leave current page?'
       } else {
-        e.returnValue;
+        return;
       }
     };
   }, [step]);
@@ -247,13 +247,14 @@ const Deposit = props => {
       </AutoRedirect>
     );
   }
+
   return (
     <>
       <div className="steps-container">
         <Steps size="small" current={step}>
-          <Step title="LOGIN" />
-          <Step title="AUTHORIZATION" />
-          <Step title="RESULT" />
+          <Step title={intl.formatMessage(messages.steps.login)} />
+          <Step title={intl.formatMessage(messages.steps.authorization)} />
+          <Step title={intl.formatMessage(messages.steps.result)} />
         </Steps>
       </div>
       <div className="deposit-container">

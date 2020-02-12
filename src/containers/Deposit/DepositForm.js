@@ -10,6 +10,8 @@ import {
   Collapse,
 } from "antd";
 import { getBanksByCurrency } from "../../utils/banks";
+import messages from './messages';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -76,16 +78,17 @@ class DepositFormImpl extends Component {
 
   render() {
     const { getFieldDecorator, getFieldsError } = this.props.form;
-    const { reference } = this.props;
+    const { reference, intl } = this.props;
     const { merchant, requester, currency, otpMethod, bank } = this.state;
     const showOtpMethod = currency === "VND";
     const bankCodes = getBanksByCurrency(currency);
+
     return (
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             <Statistic
-              title="Deposit"
+              title={intl.formatMessage(messages.deposit)}
               prefix={this.props.currency}
               value={this.props.amount}
               valueStyle={{ color: "#000", fontWeight: 700 }}
@@ -111,17 +114,17 @@ class DepositFormImpl extends Component {
               rules: [
                 {
                   required: true,
-                  message: "Please input your online banking login name!",
+                  message: intl.formatMessage(messages.placeholders.inputLoginName),
                 },
               ],
             })(
-              <Input
+              <Input 
                 size="large"
                 allowClear
                 prefix={
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                placeholder="Online banking login name"
+                placeholder={intl.formatMessage(messages.placeholders.loginName)}
                 onChange={this.handleLoginNameChanged}
               />
             )}
@@ -129,7 +132,7 @@ class DepositFormImpl extends Component {
           <Form.Item>
             {getFieldDecorator("Password", {
               rules: [
-                { required: true, message: "Please input your Password!" },
+                { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
               ],
             })(
               <Input.Password
@@ -138,7 +141,7 @@ class DepositFormImpl extends Component {
                 prefix={
                   <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                placeholder="Password"
+                placeholder={intl.formatMessage(messages.placeholders.password)}
                 onChange={this.handlePasswordChanged}
               />
             )}
@@ -164,13 +167,13 @@ class DepositFormImpl extends Component {
               block
               disabled={hasErrors(getFieldsError())}
             >
-              Submit
+              <FormattedMessage {...messages.submit} />
             </Button>
           </Form.Item>
           <Form.Item>
             <Collapse bordered={false}>
               <Panel
-                header="More information"
+                header={intl.formatMessage(messages.moreInformation)}
                 key="1"
                 style={{
                   border: "0",
@@ -198,4 +201,4 @@ class DepositFormImpl extends Component {
 
 const DepositForm = Form.create({ name: "deposit_form" })(DepositFormImpl);
 
-export default DepositForm;
+export default injectIntl(DepositForm);

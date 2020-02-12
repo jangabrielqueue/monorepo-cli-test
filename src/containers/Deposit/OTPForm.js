@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Statistic, Form, Icon, Input, Button, Spin } from "antd";
 import { isNullOrWhitespace } from "../../utils/utils";
+import messages from './messages';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 const { Countdown } = Statistic;
 
@@ -39,7 +41,7 @@ class OTPFormImpl extends Component {
   render() {
     const { getFieldDecorator, getFieldsError } = this.props.form;
     const { deadline } = this.state;
-    const { otpReference } = this.props;
+    const { otpReference, intl } = this.props;
     const hint = isNullOrWhitespace(otpReference) ? (
       <b>OTP for new recipient</b>
     ) : (
@@ -49,7 +51,7 @@ class OTPFormImpl extends Component {
       <Spin spinning={false}>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            <Countdown title="Countdown" value={deadline} />
+            <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
           </Form.Item>
           <Form.Item>{hint}</Form.Item>
           <Form.Item>
@@ -57,7 +59,7 @@ class OTPFormImpl extends Component {
               rules: [
                 {
                   required: true,
-                  message: "Please input OTP received from bank!",
+                  message: intl.formatMessage(messages.placeholders.inputOtp),
                 },
               ],
             })(
@@ -67,7 +69,7 @@ class OTPFormImpl extends Component {
                 prefix={
                   <Icon type="safety" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                placeholder="Please input OTP received from bank"
+                placeholder={intl.formatMessage(messages.placeholders.inputOtp)}
                 onChange={this.handleOTPChanged}
               />
             )}
@@ -81,7 +83,7 @@ class OTPFormImpl extends Component {
               block
               disabled={hasErrors(getFieldsError())}
             >
-              Submit
+              <FormattedMessage {...messages.submit} />
             </Button>
           </Form.Item>
         </Form>
@@ -92,4 +94,4 @@ class OTPFormImpl extends Component {
 
 const OTPForm = Form.create({ name: "otp_form" })(OTPFormImpl);
 
-export default OTPForm;
+export default injectIntl(OTPForm);

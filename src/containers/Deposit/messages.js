@@ -1,0 +1,56 @@
+import { defineMessages } from 'react-intl';
+
+export default defineMessages({
+    steps: {
+        login: {
+            id: 'steps.login',
+            defaultMessage: 'LOGIN'
+        },
+        authorization: {
+            id: 'steps.authorization',
+            defaultMessage: 'AUTHORIZATION'
+        },
+        result: {
+            id: 'steps.result',
+            defaultMessage: 'RESULT'
+        }
+    },
+    deposit: {
+        id: 'deposit',
+        defaultMessage: 'Deposit'
+    },
+    placeholders: {
+        loginName: {
+            id: 'placeholders.loginName',
+            defaultMessage: 'Online banking login name'
+        },
+        password: {
+            id: 'placeholders.password',
+            defaultMessage: 'Password'
+        },
+        inputLoginName: {
+            id: 'placeholders.inputLoginName',
+            defaultMessage: 'Please input your online banking login name'
+        },
+        inputPassword: {
+            id: 'placeholders.inputPassword',
+            defaultMessage: 'Please input your password'
+        },
+        inputOtp: {
+            id: 'placeholders.inputOtp',
+            defaultMessage: 'Please input OTP received from bank'
+        }
+    },
+    submit: {
+        id: 'submit',
+        defaultMessage: 'Submit'
+    },
+    moreInformation: {
+        id: 'moreInformation',
+        defaultMessage: 'More Information'
+    },
+    countdown: {
+        id: 'countdown',
+        defaultMessage: 'Countdown'
+    }
+});
