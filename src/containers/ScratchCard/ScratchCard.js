@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
-import { useQuery } from '../../utils/utils';
+import { useQuery, sleep } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
 import './styles.scss';
 import axios from 'axios';
@@ -149,7 +149,7 @@ const ScratchCard = (props) => {
               });
             setWaitingForReady(true);
             setStep(0);
-            await new Promise(resolve => setTimeout(resolve, 180000));
+            await sleep(180000);
             await new Promise(resolve => resolve(end = performance.now()));
             const time = (end - start);
 
@@ -198,6 +198,9 @@ const ScratchCard = (props) => {
         .build();
 
         connection.on('receivedResult', handleCommandStatusUpdate);
+        connection.onreconnected(async e => {
+            await connection.invoke("Start", session);
+        });
 
         async function start() {
             try {
@@ -229,7 +232,7 @@ const ScratchCard = (props) => {
                 setProgress(undefined);
             });
         };
-    }, []);
+    }, [session]);
 
     return (
         <>
