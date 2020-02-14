@@ -11,4 +11,12 @@ function isNullOrWhitespace(input) {
   return input.replace(/\s/g, "").length < 1;
 }
 
-export { useQuery, isNullOrWhitespace };
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export {
+  useQuery,
+  isNullOrWhitespace,
+  sleep
+};

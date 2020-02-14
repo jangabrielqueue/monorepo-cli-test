@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Form, InputNumber, Button, Select, Statistic, Row, Col } from 'antd';
+import React, { useState } from 'react';
+import { Form, InputNumber, Button, Select, Statistic } from 'antd';
 import { useQuery } from '../../utils/utils';
 
 const { Option } = Select;
 
 const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard } = props;
-    const { getFieldDecorator, validateFields, getFieldsError, resetFields } = props.form;
+    const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
-    const [telcoName, setTelcoName] = useState('');
+    const [telcoName, setTelcoName] = useState('VTT');
 
     function validationRuleforCardPin () {
         let validation = {};
@@ -70,12 +70,12 @@ const ScratchCardForm = React.memo((props) => {
     }
 
     return (
-        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFields)}>
+        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
             <Form.Item>
                 <Statistic
                     title="Deposit"
-                    prefix={queryParams.get('Currency')}
-                    value={queryParams.get('Amount')}
+                    prefix={queryParams.get('c1')}
+                    value={queryParams.get('a')}
                     valueStyle={{ color: "#000", fontWeight: 700 }}
                     precision={2}
                 />
@@ -86,7 +86,8 @@ const ScratchCardForm = React.memo((props) => {
                     rules: [{
                         required: true,
                         message: 'Please select telco name!'
-                    }]
+                    }],
+                    initialValue: telcoName
                 })
                 (
                     <Select
@@ -116,7 +117,6 @@ const ScratchCardForm = React.memo((props) => {
                         size='large'
                         placeholder='Card Pin'
                         size='large'
-                        disabled={!telcoName}
                     />                            
                 )
             }
@@ -132,7 +132,6 @@ const ScratchCardForm = React.memo((props) => {
                         size='large'
                         placeholder='Card Serial No.'
                         size='large'
-                        disabled={!telcoName}
                     />                         
                 )
             }
@@ -151,7 +150,7 @@ const ScratchCardForm = React.memo((props) => {
             </Form.Item>
             <div className='note-text'>
                 <p>- Please submit the correct amount, card pin and serial number.</p>
-                <p>- If submitted with incorrect amount, member will be penalised.</p>    
+                <p>- If submitted with incorrect amount, member will be penalized.</p>    
             </div>
         </Form>
     );

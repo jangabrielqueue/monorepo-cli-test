@@ -1,91 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Steps, Spin, Alert, Progress } from "antd";
+import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
-import ScratchCardResult from './ScratchCardResult';
-import { useQuery } from '../../utils/utils';
-import * as signalR from "@microsoft/signalr";
+import { useQuery, sleep } from '../../utils/utils';
+import * as signalR from '@microsoft/signalr';
 import './styles.scss';
 import axios from 'axios';
-
+import { AutoRedirect } from "../../components/AutoRedirect";
+import {
+    TransferSuccessful,
+    TransferFailed,
+    TransferWaitForConfirm,
+  } from "../../components/TransferResult";
+  
 const { Step } = Steps;
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
-const API_USER_COMMAND_MONITOR = ENDPOINT + "/hubs/monitor";
+const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const initProgress = {
-    currentStep: 1,
-    totalSteps: 10,
-    statusCode: "009",
-    statusMessage: "In progress",
+    percent: 33.5,
+    statusCode: '009',
+    statusMessage: 'Waiting for provider confirmation.',
   };
 
 const ScratchCard = (props) => {
-    const [depositRequest, setDepositRequest] = useState({
-        step: 0,
-        waitingForReady: true,
-        otpRequesting: false,
-        error: undefined,
-        errors: undefined,
-        progress: undefined,
-        isSuccessful: false,
-        transferResult: {}
-    });
+    const [step, setStep] = useState(0);
+    const [waitingForReady, setWaitingForReady] = useState(true);
+    const [error, setError] = useState(undefined);
+    const [progress, setProgress] = useState(undefined);
+    const [transferResult, setTransferResult] = useState({});
+    const [isSuccessful, setIsSuccessful] = useState(undefined);
+    
     const steps = ['FILL IN FORM', 'RESULT'];
     const queryParams = useQuery();
-    const session = `${queryParams.get('merchant')}-${queryParams.get('reference')}`;
+    const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
 
-    function handleSubmitScratchCard (e, validateFields) {
+    function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
 
-        validateFields(async (err, values) => {
-
+        validateFieldsAndScroll(async (err, values) => {
             if (!err) {
                 const submitValues = {
                     Telecom: values.telcoName,
                     Pin: values.cardPin.toString(),
                     SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: queryParams.get('ClientIp'),
-                    Language: queryParams.get('Language'),
-                    SuccessfulUrl: queryParams.get('SuccessfulUrl'),
-                    FailedUrl: queryParams.get('FailedUrl'),
-                    CallbackUri: queryParams.get('CallbackUri'),
-                    Datetime: queryParams.get('Datetime'),
-                    Key: queryParams.get('Key'),
-                    Note: queryParams.get('Note'),
-                    Merchant: queryParams.get('Merchant'),
-                    Currency: queryParams.get('Currency'),
-                    Bank: queryParams.get('Bank'),
-                    Customer: queryParams.get('Customer'),
-                    Reference: queryParams.get('Reference'),
-                    Amount: queryParams.get('Amount')
+                    ClientIp: queryParams.get('c3'),
+                    Language: queryParams.get('l'),
+                    SuccessfulUrl: queryParams.get('su'),
+                    FailedUrl: queryParams.get('fu'),
+                    CallbackUri: queryParams.get('c4'),
+                    Datetime: queryParams.get('d'),
+                    Key: queryParams.get('k'),
+                    Note: queryParams.get('n'),
+                    Merchant: queryParams.get('m'),
+                    Currency: queryParams.get('c1'),
+                    Bank: queryParams.get('b'),
+                    Customer: queryParams.get('c2'),
+                    Reference: queryParams.get('r'),
+                    Amount: queryParams.get('a')
                 };
-                
-                await setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: true,
-                    error: undefined,
-                    errors: undefined,
-                    progress: undefined,
-                });
 
+                await setWaitingForReady(true);
+                await setProgress(initProgress);
+                
                 try {
                     await axios({
                       url: 'api/ScratchCard/Deposit',
                       method: 'POST',
-                      data: submitValues
-                    });
-                    await setDepositRequest({
-                        ...depositRequest,
-                        progress: initProgress,
+                      data: submitValues,
+                      timeout: 5000
                     });
                   } catch (error) {
-                    await setDepositRequest({
-                        ...depositRequest,
-                        waitingForReady: false,
-                        error: error.title,
-                        errors: error.errors,
-                        progress: undefined,
-                    });
+                    await setWaitingForReady(false);
+                    await setProgress(undefined);
+                    await setError(error);
                   }
             }
         });
@@ -101,12 +89,25 @@ const ScratchCard = (props) => {
                 );
 
             case 'RESULT':
-                return (
-                    <ScratchCardResult
-                        isSuccessful={depositRequest.isSuccessful}
-                        transferResult={depositRequest.transferResult}
-                    />
-                );
+                if (isSuccessful) {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                            <TransferSuccessful transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                } else if (transferResult.statusCode === '009') {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                            <TransferWaitForConfirm transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                } else {
+                    return (
+                        <AutoRedirect delay={10000} url={queryParams.get('fu')}>
+                            <TransferFailed transferResult={transferResult} />
+                        </AutoRedirect>
+                    );
+                }
         
             default:
                 return;
@@ -114,35 +115,76 @@ const ScratchCard = (props) => {
     }
 
     function showProgress (progress) {
+        function progressStatus () {
+            if (progress.percent !== 100) {
+                return 'active';
+            } else if (progress.percent === 100 && !isSuccessful) {
+                return 'exception';
+            } else if (progress.percent === 100 && isSuccessful) {
+                return 'success';
+            }
+        }
+
         return (
-            <div style={{ padding: "5px" }}>
+            <div style={{ padding: '5px' }}>
                 <Progress
-                percent={(progress.currentStep / progress.totalSteps) * 100}
-                status="active"
-                showInfo={false}
+                    percent={progress.percent}
+                    status={progressStatus()}
+                    showInfo={false}
                 />
                 <strong>{progress.statusMessage}</strong>
             </div>            
         );
     };
 
-    function handleCommandStatusUpdate (e) {
-        setDepositRequest({
-            ...depositRequest,
-            waitingForReady: false,
-            isSuccessful: e.isSuccess,
-            errors: undefined,
-            progress: undefined,
-            step: 2,
-            transferResult: e,
-        });
-      };
-      
-      function handleUpdateProgress (e) {
-        setDepositRequest({
-            ...depositRequest,
-            progress: e,
-        });
+    async function handleCommandStatusUpdate (result) {
+        let start, end;
+
+        start = performance.now();
+        
+        if (result.statusCode === '009') {
+            setProgress({
+                percent: 67,
+                statusMessage: result.message,
+              });
+            setWaitingForReady(true);
+            setStep(0);
+            await sleep(180000);
+            await new Promise(resolve => resolve(end = performance.now()));
+            const time = (end - start);
+
+            if (time >= 180000) {
+                setProgress({
+                    percent: 67,
+                    statusMessage: result.message,
+                  });
+                setWaitingForReady(false);
+                setIsSuccessful(false);
+                setTransferResult({
+                    ...result,
+                    message: 'A server connection timeout error, please contact customer support for the transaction status.'
+                });
+                setStep(1);
+            }
+        } else if (result.statusCode === '006') {
+            setProgress({
+                percent: 100,
+                statusMessage: 'Transaction Complete',
+              });
+            setWaitingForReady(false);
+            setIsSuccessful(true);
+            setTransferResult(result);
+            setStep(1);
+        } else {
+            setProgress({
+                percent: 100,
+                statusMessage: 'Transaction Complete',
+              });
+            setWaitingForReady(false);
+            setIsSuccessful(false);
+            setTransferResult(result);
+            setStep(1);
+        }
       };
 
     useEffect(() => {
@@ -156,51 +198,42 @@ const ScratchCard = (props) => {
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-        connection.on("receivedResult", handleCommandStatusUpdate);
-        connection.on("Update", handleUpdateProgress);
+        connection.on('receivedResult', handleCommandStatusUpdate);
+        connection.onreconnected(async e => {
+            await connection.invoke("Start", session);
+        });
 
         async function start() {
             try {
-                await connection.start();
-                await connection.invoke("Start", session);
-                setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: false
-                });
+              await connection.start();
+              await connection.invoke('Start', session);
+              setWaitingForReady(false);
             } catch (ex) {
-                setDepositRequest({
-                    ...depositRequest,
-                    error: "Network error",
-                    errors: {
-                    network: "Can't connect to server, please refresh your browser.",
-                    },
-                });
+              setWaitingForReady(true);
+              setError({
+                error: {
+                    name: 'Network error',
+                    message: 'Can\'t connect to server, please refresh your browser.'
+                  }
+              });
             }
-        };
-
+          }
+      
         start();
 
         return () => {
             connection.onclose(() => {
-                setDepositRequest({
-                    ...depositRequest,
-                    waitingForReady: true,
-                    error: "Network error",
-                    errors: {
-                      network: "connection is closed, please refresh the page.",
-                    },
-                    progress: undefined,                    
-                });
-              });
+                setWaitingForReady(true);
+                setError({
+                    error: {
+                        name: 'Network error',
+                        message: 'Connection is closed, please refresh the page.'
+                      }
+                  });
+                setProgress(undefined);
+            });
         };
-    }, [])
-
-    const {
-        step,
-        waitingForReady,
-        error,
-        progress,
-    } = depositRequest;
+    }, [session]);
 
     return (
         <>
@@ -217,11 +250,11 @@ const ScratchCard = (props) => {
             {
                 error &&
                     <Alert
-                        message={error}
-                        type="error"
+                        message={error.name}
+                        description={error.message}
+                        type='error'
                         showIcon
-                        closable
-                        style={{ marginBottom: "0.5rem" }}
+                        style={{ marginBottom: '0.5rem' }}
                     />
             }
             <Spin spinning={waitingForReady}>
