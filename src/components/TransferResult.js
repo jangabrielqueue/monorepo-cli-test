@@ -24,7 +24,7 @@ export const TransferFailed = ({ transferResult }) => {
     <Result
       status="error"
       title="Submitted transaction failed"
-      subTitle={transferResult.message || transferResult.statusMessage}
+      subTitle={transferResult.message}
     ></Result>
   );
 };

@@ -145,7 +145,7 @@ const ScratchCard = (props) => {
         if (result.statusCode === '009') {
             setProgress({
                 percent: 67,
-                statusMessage: result.statusMessage,
+                statusMessage: result.message,
               });
             setWaitingForReady(true);
             setStep(0);
@@ -156,12 +156,13 @@ const ScratchCard = (props) => {
             if (time >= 180000) {
                 setProgress({
                     percent: 67,
-                    statusMessage: result.statusMessage,
+                    statusMessage: result.message,
                   });
                 setWaitingForReady(false);
                 setIsSuccessful(false);
                 setTransferResult({
-                    statusMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
+                    ...result,
+                    message: 'A server connection timeout error, please contact customer support for the transaction status.'
                 });
                 setStep(1);
             }
