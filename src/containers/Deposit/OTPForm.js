@@ -45,7 +45,7 @@ class OTPFormImpl extends Component {
     const hint = isNullOrWhitespace(otpReference) ? (
       <b>OTP for new recipient</b>
     ) : (
-      <b>OTP Reference: {otpReference}</b>
+      <b><FormattedMessage {...messages.otpReference} />: {otpReference}</b>
     );
     return (
       <Spin spinning={false}>

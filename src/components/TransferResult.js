@@ -1,11 +1,17 @@
 import React from "react";
 import { Result, Statistic } from "antd";
+import { useIntl } from 'react-intl';
+import messages from './messages';
+
+let intl;
 
 export const TransferSuccessful = ({ transferResult }) => {
+  intl = useIntl();
+
   return (
     <Result
       status="success"
-      title="Successfully Deposit!"
+      title={intl.formatMessage(messages.success.successfullyDeposit)}
       subTitle={"References: " + transferResult.reference}
     >
       <Statistic
@@ -20,21 +26,25 @@ export const TransferSuccessful = ({ transferResult }) => {
 };
 
 export const TransferFailed = ({ transferResult }) => {
+  intl = useIntl();
+
   return (
     <Result
       status="error"
-      title="Submitted transaction failed"
+      title={intl.formatMessage(messages.errors.transactionFailed)}
       subTitle={transferResult.message}
     ></Result>
   );
 };
 
 export const TransferWaitForConfirm = ({ transferResult }) => {
+  intl = useIntl();
+
   return (
     <Result
       status="success"
-      title="Successfully Deposit!"
-      subTitle="Transaction is pending for confirmation."
+      title={intl.formatMessage(messages.success.successfullyDeposit)}
+      subTitle={intl.formatMessage(messages.progress.pendingConfirmation)}
     ></Result>
   );
 };

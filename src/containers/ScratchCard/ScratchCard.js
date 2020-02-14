@@ -5,12 +5,14 @@ import { useQuery, sleep } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
 import './styles.scss';
 import axios from 'axios';
-import { AutoRedirect } from "../../components/AutoRedirect";
+import AutoRedirect from "../../components/AutoRedirect";
 import {
     TransferSuccessful,
     TransferFailed,
     TransferWaitForConfirm,
   } from "../../components/TransferResult";
+import { useIntl } from 'react-intl';
+import messages from './messages';
   
 const { Step } = Steps;
 
@@ -30,8 +32,8 @@ const ScratchCard = (props) => {
     const [progress, setProgress] = useState(undefined);
     const [transferResult, setTransferResult] = useState({});
     const [isSuccessful, setIsSuccessful] = useState(undefined);
-    
-    const steps = ['FILL IN FORM', 'RESULT'];
+    const intl = useIntl();
+    const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)];
     const queryParams = useQuery();
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
 
@@ -81,14 +83,14 @@ const ScratchCard = (props) => {
     
     function renderStepsContent (currentStep) {
         switch (currentStep) {
-            case 'FILL IN FORM':
+            case intl.formatMessage(messages.steps.fillInForm):
                 return (
                     <ScratchCardForm
                         handleSubmitScratchCard={handleSubmitScratchCard}
                     />
                 );
 
-            case 'RESULT':
+            case intl.formatMessage(messages.steps.result):
                 if (isSuccessful) {
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('su')}>
@@ -162,7 +164,7 @@ const ScratchCard = (props) => {
                 setIsSuccessful(false);
                 setTransferResult({
                     ...result,
-                    message: 'A server connection timeout error, please contact customer support for the transaction status.'
+                    message: intl.formatMessage(messages.errors.connectionTimeout)
                 });
                 setStep(1);
             }

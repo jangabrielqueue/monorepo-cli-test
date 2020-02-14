@@ -52,5 +52,9 @@ export default defineMessages({
     countdown: {
         id: 'countdown',
         defaultMessage: 'Countdown'
+    },
+    otpReference: {
+        id: 'otpReference',
+        defaultMessage: 'OTP Reference'
     }
 });

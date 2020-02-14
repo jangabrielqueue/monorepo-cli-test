@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Form, InputNumber, Button, Select, Statistic } from 'antd';
 import { useQuery } from '../../utils/utils';
+import { useIntl, FormattedMessage } from 'react-intl';
+import messages from './messages';
 
 const { Option } = Select;
 
@@ -9,6 +11,7 @@ const ScratchCardForm = React.memo((props) => {
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
     const [telcoName, setTelcoName] = useState('VTT');
+    const intl = useIntl();
 
     function validationRuleforCardPin () {
         let validation = {};
@@ -85,7 +88,7 @@ const ScratchCardForm = React.memo((props) => {
                 getFieldDecorator('telcoName', {
                     rules: [{
                         required: true,
-                        message: 'Please select telco name!'
+                        message: intl.formatMessage(messages.placeholders.selectTelco)
                     }],
                     initialValue: telcoName
                 })
@@ -115,7 +118,7 @@ const ScratchCardForm = React.memo((props) => {
                     <InputNumber
                         type='number'
                         size='large'
-                        placeholder='Card Pin'
+                        placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                         size='large'
                     />                            
                 )
@@ -130,7 +133,7 @@ const ScratchCardForm = React.memo((props) => {
                     <InputNumber
                         type='number'
                         size='large'
-                        placeholder='Card Serial No.'
+                        placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                         size='large'
                     />                         
                 )
@@ -149,8 +152,8 @@ const ScratchCardForm = React.memo((props) => {
                 </Button>
             </Form.Item>
             <div className='note-text'>
-                <p>- Please submit the correct amount, card pin and serial number.</p>
-                <p>- If submitted with incorrect amount, member will be penalized.</p>    
+                <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
+                <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>    
             </div>
         </Form>
     );

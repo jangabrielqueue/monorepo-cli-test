@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
-import { AutoRedirect } from "../../components/AutoRedirect";
+import AutoRedirect from "../../components/AutoRedirect";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import {
@@ -171,7 +171,7 @@ const Deposit = props => {
       } catch (ex) {
         setError({
           code: "Network error",
-          message: "Can't connect to server, please refresh your browser.",
+          message: intl.formatMessage(messages.errors.networkError),
         });
       }
       setWaitingForReady(false);
@@ -184,7 +184,7 @@ const Deposit = props => {
         setWaitingForReady(true);
         setError({
           code: "Network error",
-          message: "connection is closed, please refresh the page.",
+          message: "Connection is closed, please refresh the page.",
         });
         setProgress(undefined);
       });
