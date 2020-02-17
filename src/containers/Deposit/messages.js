@@ -56,5 +56,11 @@ export default defineMessages({
     otpReference: {
         id: 'otpReference',
         defaultMessage: 'OTP Reference'
+    },
+    errors: {
+        networkError: {
+            id: 'errors.networkError',
+            defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+        }
     }
 });

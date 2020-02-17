@@ -76,7 +76,7 @@ const ScratchCardForm = React.memo((props) => {
         <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
             <Form.Item>
                 <Statistic
-                    title="Deposit"
+                    title={intl.formatMessage(messages.deposit)}
                     prefix={queryParams.get('c1')}
                     value={queryParams.get('a')}
                     valueStyle={{ color: "#000", fontWeight: 700 }}
@@ -148,7 +148,7 @@ const ScratchCardForm = React.memo((props) => {
                     block
                     disabled={hasErrors(getFieldsError())}
                 >
-                    Submit
+                    <FormattedMessage {...messages.submit} />
                 </Button>
             </Form.Item>
             <div className='note-text'>

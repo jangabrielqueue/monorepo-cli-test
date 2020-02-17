@@ -40,5 +40,19 @@ export default defineMessages({
             id: 'errors.connectionTimeout',
             defaultMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
         }
+    },
+    submit: {
+        id: 'submit',
+        defaultMessage: 'Submit'
+    },
+    deposit: {
+        id: 'deposit',
+        defaultMessage: 'Deposit'
+    },
+    errors: {
+        networkError: {
+            id: 'errors.networkError',
+            defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+        }
     }
 });

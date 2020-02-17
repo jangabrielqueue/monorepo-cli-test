@@ -215,7 +215,7 @@ const ScratchCard = (props) => {
               setError({
                 error: {
                     name: 'Network error',
-                    message: 'Can\'t connect to server, please refresh your browser.'
+                    message: intl.formatMessage(messages.errors.networkError)
                   }
               });
             }
