@@ -153,7 +153,7 @@ const ScratchCardForm = React.memo((props) => {
             </Form.Item>
             <div className='note-text'>
                 <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
-                <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>    
+                <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
             </div>
         </Form>
     );
