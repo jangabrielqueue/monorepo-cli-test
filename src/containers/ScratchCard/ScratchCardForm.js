@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, InputNumber, Button, Select, Statistic } from 'antd';
+import { Form, Input, Button, Select, Statistic } from 'antd';
 import { useQuery } from '../../utils/utils';
 import { useIntl, FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -26,14 +26,19 @@ const ScratchCardForm = React.memo((props) => {
                 pattern: /^\d{1,14}$/,
                 message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
             } 
-        } else if (telcoName === 'VMS' || telcoName === 'ZING') {
+        } else if (telcoName === 'VMS') {
             validation = {
                 pattern: /^\d{1,12}$/,
                 message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
             }
+        } else if (telcoName === 'ZING') {
+            validation = {
+                pattern: /^.{1,12}$/,
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+            } 
         } else if (telcoName === 'GATE') {
             validation = {
-                pattern: /^\d{1,10}$/,
+                pattern: /^.{1,10}$/,
                 message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
             } 
         }
@@ -68,7 +73,7 @@ const ScratchCardForm = React.memo((props) => {
                     message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 },
                 {
-                    pattern: /^\d{1,9}$/,
+                    pattern: /^.{1,9}$/,
                     message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
                 }
             ];
@@ -79,7 +84,7 @@ const ScratchCardForm = React.memo((props) => {
                     message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 },
                 {
-                    pattern: /^\d{1,10}$/,
+                    pattern: /^.{1,10}$/,
                     message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
                 }
             ];
@@ -144,9 +149,8 @@ const ScratchCardForm = React.memo((props) => {
                     rules: validationRuleforCardPin()
                 })
                 (
-                    <InputNumber
-                        type='number'
-                        size='large'
+                    <Input
+                        type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
                         placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                         size='large'
                     />                            
@@ -159,9 +163,8 @@ const ScratchCardForm = React.memo((props) => {
                     rules: validationRuleforCardSerial()
                 })
                 (
-                    <InputNumber
-                        type='number'
-                        size='large'
+                    <Input
+                        type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
                         placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                         size='large'
                     />                         
