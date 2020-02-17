@@ -5,7 +5,7 @@
     "deposit": "การฝากเงิน    ",
     "placeholders.loginName": "ชื่อบัญชีออนไลน์แบงค์กิ้ง",
     "placeholders.password": "รหัสผ่าน",
-    "submit": "เสนอ",
+    "submit": "ยื่น",
     "otp.sms": "SMS OTP",
     "otp.smart": "SMART OTP",
     "moreInformation": "รายละเอียดเพิ่มเติม",
@@ -32,5 +32,13 @@
     "placeholders.cardSerialNo": "เลขที่บัตร",
     "placeholders.cardPin": "รหัส PIN ของบัตร",
     "texts.submitCorrectCardDetails": "กรุณากรอกข้อมูลเลขที่บัตร รหัสPINของบัตร และจำนวนเงินให้ถูกต้อง",
-    "texts.submitIncorrectCardDetails": "หากกรอกข้อมูลที่ไม่เป็นความจริง บัญชีผู้ใช้จะโดนลงโทษ,ระงับ"
+    "texts.submitIncorrectCardDetails": "หากกรอกข้อมูลที่ไม่เป็นความจริง บัญชีผู้ใช้จะโดนลงโทษ,ระงับ",
+    "errors.networkErrorTitle": "การเชื่อมต่อผิดพลาด",
+    "otpNewRecipient": "OTP สำหรับสมาชิกใหม่",
+    "errors.connectionError": "ปิดการเชื่อมต่อ โปรดรีเฟรชหน้าใหม่อีกครั้ง",
+    "transactionComplete": "รายการสำเร็จ",
+    "waitingForProvider": "กรุณารอสำหรับการยืนยัน",
+    "placeholders.inputMaxChar": "กรุณใส่จำนวนตัวอักษรสูงสุดไม่เกิน {maxLength} ตัวอักษร",
+    "placeholders.inputSerialNumber": "กรุณากรอกหมายเลขซีเรียล",
+    "placeholders.telcoName": "ชื่อผู้ให้บริการ"
 }

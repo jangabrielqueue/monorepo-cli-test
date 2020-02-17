@@ -5,7 +5,7 @@
     "deposit": "Gửi Tiền",
     "placeholders.loginName": "Tên Đăng Nhập Tài Khoản Banking",
     "placeholders.password": "Mật Khẩu",
-    "submit": "Gửi đi",
+    "submit": "Gửi",
     "otp.sms": "SMS OTP",
     "otp.smart": "SMART OTP",
     "moreInformation": "Xem Thêm Thông Tin",
@@ -32,5 +32,13 @@
     "placeholders.cardSerialNo": "Mã Seri",
     "placeholders.cardPin": "Mã Thẻ",
     "texts.submitCorrectCardDetails": "Vui lòng điền chính xác số tiền, mã thẻ và mã seri",
-    "texts.submitIncorrectCardDetails": "Nếu điền sai mệnh giá, thành viên sẽ bị phạt"
+    "texts.submitIncorrectCardDetails": "Nếu điền sai mệnh giá, thành viên sẽ bị phạt",
+    "errors.networkErrorTitle": "Lỗi Hệ Thống",
+    "otpNewRecipient": "OTP cho người nhận.",
+    "errors.connectionError": "Kết nối đã đóng, vui lòng làm mới trang.",
+    "transactionComplete": "Giao Dịch Hoàn Thành",
+    "waitingForProvider": "Chờ xác nhận từ nhà cung cấp",
+    "placeholders.inputMaxChar": "Vui lòng nhập (tối đa {maxLength} ký tự.)",
+    "placeholders.inputSerialNumber": "Vui lòng nhập mã seri.",
+    "placeholders.telcoName": "Tên Nhà Mạng"
 }

@@ -20,13 +20,6 @@ const { Step } = Steps;
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + "/hubs/monitor";
 
-const initProgress = {
-  currentStep: 1,
-  totalSteps: 10,
-  statusCode: "009",
-  statusMessage: "In progress",
-};
-
 const Deposit = props => {
   const analytics = firebase.analytics();
   const [step, setStep] = useState(0);
@@ -53,6 +46,12 @@ const Deposit = props => {
   const language = queryParams.get("l");
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
   const intl = useIntl();
+  const initProgress = {
+    currentStep: 1,
+    totalSteps: 10,
+    statusCode: "009",
+    statusMessage: intl.formatMessage(messages.progress.inProgress),
+  };
 
   analytics.setCurrentScreen("deposit");
 
@@ -170,7 +169,7 @@ const Deposit = props => {
         await connection.invoke("Start", session);
       } catch (ex) {
         setError({
-          code: "Network error",
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.networkError),
         });
       }
@@ -183,8 +182,8 @@ const Deposit = props => {
       connection.onclose(() => {
         setWaitingForReady(true);
         setError({
-          code: "Network error",
-          message: "Connection is closed, please refresh the page.",
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.connectionError),
         });
         setProgress(undefined);
       });

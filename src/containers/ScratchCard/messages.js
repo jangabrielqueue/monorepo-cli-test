@@ -23,6 +23,18 @@ export default defineMessages({
         cardPin: {
             id: 'placeholders.cardPin',
             defaultMessage: 'Card Pin'
+        },
+        inputMaxChar: {
+            id: 'placeholders.inputMaxChar',
+            defaultMessage: 'Please input a maximum length of {maxLength} characters.'
+        },
+        inputSerialNumber: {
+            id: 'placeholders.inputSerialNumber',
+            defaultMessage: 'Please input serial number.'
+        },
+        telcoName: {
+            id: 'placeholders.telcoName',
+            defaultMessage: '\Telco Name'
         }
     },
     texts: {
@@ -39,6 +51,32 @@ export default defineMessages({
         connectionTimeout: {
             id: 'errors.connectionTimeout',
             defaultMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
+        },
+        networkError: {
+            id: 'errors.networkError',
+            defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+        },
+        networkErrorTitle: {
+            id: 'errors.networkErrorTitle',
+            defaultMessage: 'Network Error'
+        },
+        connectionError: {
+            id: 'errors.connectionError',
+            defaultMessage: 'Connection is closed, please refresh the page.'
+        }
+    },
+    progress: {
+        inProgress: {
+            id: 'progress.inProgress',
+            defaultMessage: 'In progress'
+        },
+        waitingForProvider: {
+            id: 'progress.waitingForProvider',
+            defaultMessage: 'Waiting for provider confirmation'
+        },
+        transactionComplete: {
+            id: 'progress.transactionComplete',
+            defaultMessage: 'Transaction Complete'
         }
     },
     submit: {
@@ -48,11 +86,5 @@ export default defineMessages({
     deposit: {
         id: 'deposit',
         defaultMessage: 'Deposit'
-    },
-    errors: {
-        networkError: {
-            id: 'errors.networkError',
-            defaultMessage: 'Can\'t connect to server, please refresh your browser.'
-        }
     }
 });

@@ -19,24 +19,24 @@ const ScratchCardForm = React.memo((props) => {
         if (telcoName === 'VTT') {
             validation = {
                 pattern: /^\d{1,15}$/,
-                message: 'Please input a maximum length of 15 characters.'
-            }                
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 })
+            }
         } else if (telcoName === 'VNP') {
             validation = {
                 pattern: /^\d{1,14}$/,
-                message: 'Please input a maximum length of 14 characters.'
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
             } 
         } else if (telcoName === 'VMS') {
             validation = {
                 pattern: /^\d{1,12}$/,
-                message: 'Please input a maximum length of 12 characters.'
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
             }
         }
 
         return [
             {
                 required: true,
-                message: 'Please input serial number!'
+                message: intl.formatMessage(messages.placeholders.inputSerialNumber)
             },
             validation
         ]
@@ -49,18 +49,18 @@ const ScratchCardForm = React.memo((props) => {
             validation = [
                 {
                     required: true,
-                    message: 'Please input serial number!'
+                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 },
                 {
                     pattern: /^\d{1,14}$/,
-                    message: 'Please input a maximum length of 14 characters.'
+                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
                 }
             ];             
         } else {
             validation = [
                 {
                     required: true,
-                    message: 'Please input serial number!'
+                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 }                
             ];
         }
@@ -95,7 +95,7 @@ const ScratchCardForm = React.memo((props) => {
                 (
                     <Select
                         allowClear
-                        placeholder='Telco Name'
+                        placeholder={intl.formatMessage(messages.placeholders.telcoName)}
                         size='large'
                         onChange={(val) => {
                             setTelcoName(val)

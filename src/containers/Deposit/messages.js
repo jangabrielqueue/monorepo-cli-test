@@ -57,10 +57,28 @@ export default defineMessages({
         id: 'otpReference',
         defaultMessage: 'OTP Reference'
     },
+    otpNewRecipient: {
+        id: 'otpNewRecipient',
+        defaultMessage: 'OTP for new recipient'
+    },
     errors: {
         networkError: {
             id: 'errors.networkError',
             defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+        },
+        networkErrorTitle: {
+            id: 'errors.networkErrorTitle',
+            defaultMessage: 'Network Error'
+        },
+        connectionError: {
+            id: 'errors.connectionError',
+            defaultMessage: 'Connection is closed, please refresh the page.'
+        }
+    },
+    progress: {
+        inProgress: {
+            id: 'progress.inProgress',
+            defaultMessage: 'In progress'
         }
     }
 });

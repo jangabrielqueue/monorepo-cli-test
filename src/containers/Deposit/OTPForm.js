@@ -43,7 +43,7 @@ class OTPFormImpl extends Component {
     const { deadline } = this.state;
     const { otpReference, intl } = this.props;
     const hint = isNullOrWhitespace(otpReference) ? (
-      <b>OTP for new recipient</b>
+      <b><FormattedMessage {...messages.otpNewRecipient} /></b>
     ) : (
       <b><FormattedMessage {...messages.otpReference} />: {otpReference}</b>
     );

@@ -32,5 +32,13 @@
     "placeholders.cardSerialNo": "Card Serial No.",
     "placeholders.cardPin": "Card Pin",
     "texts.submitCorrectCardDetails": "Please submit the correct amount, card pin and serial number.",
-    "texts.submitIncorrectCardDetails": "If submitted with incorrect amount, member will be penalized."
+    "texts.submitIncorrectCardDetails": "If submitted with incorrect amount, member will be penalized.",
+    "errors.networkErrorTitle": "Netwrok Error",
+    "otpNewRecipient": "OTP for new recipient",
+    "errors.connectionError": "Connection is closed, please refresh the page.",
+    "progress.transactionComplete": "Transaction Complete",
+    "progress.waitingForProvider": "Waiting for provider confirmation",
+    "placeholders.inputMaxChar": "Please input a maximum length of {maxLength} characters.",
+    "placeholders.inputSerialNumber": "Please input serial number.",
+    "placeholders.telcoName": "Telco Name"
 }

@@ -19,12 +19,6 @@ const { Step } = Steps;
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
-const initProgress = {
-    percent: 33.5,
-    statusCode: '009',
-    statusMessage: 'In progress',
-  };
-
 const ScratchCard = (props) => {
     const [step, setStep] = useState(0);
     const [waitingForReady, setWaitingForReady] = useState(true);
@@ -36,6 +30,11 @@ const ScratchCard = (props) => {
     const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)];
     const queryParams = useQuery();
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
+    const initProgress = {
+        percent: 33.5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.inProgress),
+    };
 
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
@@ -147,7 +146,7 @@ const ScratchCard = (props) => {
         if (result.statusCode === '009') {
             setProgress({
                 percent: 67,
-                statusMessage: result.message,
+                statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
               });
             setWaitingForReady(true);
             setStep(0);
@@ -158,7 +157,7 @@ const ScratchCard = (props) => {
             if (time >= 180000) {
                 setProgress({
                     percent: 67,
-                    statusMessage: result.message,
+                    statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
                   });
                 setWaitingForReady(false);
                 setIsSuccessful(false);
@@ -171,7 +170,7 @@ const ScratchCard = (props) => {
         } else if (result.statusCode === '006') {
             setProgress({
                 percent: 100,
-                statusMessage: 'Transaction Complete',
+                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
               });
             setWaitingForReady(false);
             setIsSuccessful(true);
@@ -180,7 +179,7 @@ const ScratchCard = (props) => {
         } else {
             setProgress({
                 percent: 100,
-                statusMessage: 'Transaction Complete',
+                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
               });
             setWaitingForReady(false);
             setIsSuccessful(false);
@@ -214,7 +213,7 @@ const ScratchCard = (props) => {
               setWaitingForReady(true);
               setError({
                 error: {
-                    name: 'Network error',
+                    name: intl.formatMessage(messages.errors.networkErrorTitle),
                     message: intl.formatMessage(messages.errors.networkError)
                   }
               });
@@ -228,8 +227,8 @@ const ScratchCard = (props) => {
                 setWaitingForReady(true);
                 setError({
                     error: {
-                        name: 'Network error',
-                        message: 'Connection is closed, please refresh the page.'
+                        name: intl.formatMessage(messages.errors.networkErrorTitle),
+                        message: intl.formatMessage(messages.errors.connectionError)
                       }
                   });
                 setProgress(undefined);
