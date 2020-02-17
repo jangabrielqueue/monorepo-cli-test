@@ -22,7 +22,7 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 const initProgress = {
     percent: 33.5,
     statusCode: '009',
-    statusMessage: 'Waiting for provider confirmation.',
+    statusMessage: 'In progress',
   };
 
 const ScratchCard = (props) => {
