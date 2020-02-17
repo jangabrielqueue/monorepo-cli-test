@@ -105,6 +105,8 @@ const ScratchCardForm = React.memo((props) => {
                         <Option value='VTT'>Viettel</Option>
                         <Option value='VNP'>Vinaphone</Option>
                         <Option value='VMS'>Mobiphone</Option>
+                        <Option value='ZING'>Zing</Option>
+                        <Option value='GATE'>Gate</Option>
                     </Select>                            
                 )
             }
