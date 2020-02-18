@@ -33,8 +33,8 @@ const ScratchCardForm = React.memo((props) => {
             }
         } else if (telcoName === 'ZING') {
             validation = {
-                pattern: /^.{1,12}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+                pattern: /^.{1,9}$/,
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
             } 
         } else if (telcoName === 'GATE') {
             validation = {
@@ -73,8 +73,8 @@ const ScratchCardForm = React.memo((props) => {
                     message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 },
                 {
-                    pattern: /^.{1,9}$/,
-                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
+                    pattern: /^.{1,12}$/,
+                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
                 }
             ];
         } else if (telcoName === 'GATE') {
