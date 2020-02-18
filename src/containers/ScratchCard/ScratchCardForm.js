@@ -31,16 +31,6 @@ const ScratchCardForm = React.memo((props) => {
                 pattern: /^\d{1,12}$/,
                 message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
             }
-        } else if (telcoName === 'ZING') {
-            validation = {
-                pattern: /^.{1,9}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
-            } 
-        } else if (telcoName === 'GATE') {
-            validation = {
-                pattern: /^.{1,10}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
-            } 
         }
 
         return [
@@ -64,28 +54,6 @@ const ScratchCardForm = React.memo((props) => {
                 {
                     pattern: /^\d{1,14}$/,
                     message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
-                }
-            ];             
-        } else if (telcoName === 'ZING') {
-            validation = [
-                {
-                    required: true,
-                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
-                },
-                {
-                    pattern: /^.{1,12}$/,
-                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
-                }
-            ];
-        } else if (telcoName === 'GATE') {
-            validation = [
-                {
-                    required: true,
-                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
-                },
-                {
-                    pattern: /^.{1,10}$/,
-                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
                 }
             ];
         } else {
@@ -137,8 +105,6 @@ const ScratchCardForm = React.memo((props) => {
                         <Option value='VTT'>Viettel</Option>
                         <Option value='VNP'>Vinaphone</Option>
                         <Option value='VMS'>Mobiphone</Option>
-                        <Option value='ZING'>Zing</Option>
-                        <Option value='GATE'>Gate</Option>
                     </Select>                            
                 )
             }
@@ -150,7 +116,7 @@ const ScratchCardForm = React.memo((props) => {
                 })
                 (
                     <Input
-                        type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
+                        type='number'
                         placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                         size='large'
                     />                            
@@ -164,7 +130,7 @@ const ScratchCardForm = React.memo((props) => {
                 })
                 (
                     <Input
-                        type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
+                        type='number'
                         placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                         size='large'
                     />                         
