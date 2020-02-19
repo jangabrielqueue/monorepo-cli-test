@@ -15,17 +15,6 @@ import locale_en from './translations/locale/en.json';
 import locale_vi from './translations/locale/vi.json';
 import locale_th from './translations/locale/th.json';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDhdp-yh5TH6QsS4hWSjh6OSQxQ88bLRwY",
-  authDomain: "",
-  databaseURL: "",
-  projectId: "ezpay-prod",
-  storageBucket: "",
-  messagingSenderId: "687841048917",
-  appId: "1:687841048917:web:edcacb2afdf0ee5ce997dc",
-  measurementId: "G-FTXSLEEXVV",
-};
-
 const errorHandler = (error, componentStack) => {
   const analytics = firebase.analytics();
   analytics.logEvent("exception", {
@@ -57,6 +46,23 @@ const App = (props) => {
 
   // Initialize Firebase
   if (!firebase.apps.length) {
+    const {
+      REACT_APP_FIREBASE_API_KEY,
+      REACT_APP_FIREBASE_APP_ID,
+      REACT_APP_FIREBASE_PROJ_ID,
+      REACT_APP_FIREBASE_MSG_SENDER_ID,
+      REACT_APP_FIREBASE_MEASUREMENT_ID,
+    } = process.env;
+    const firebaseConfig = {
+      apiKey: REACT_APP_FIREBASE_API_KEY,
+      authDomain: "",
+      databaseURL: "",
+      projectId: REACT_APP_FIREBASE_PROJ_ID,
+      storageBucket: "",
+      messagingSenderId: REACT_APP_FIREBASE_MSG_SENDER_ID,
+      appId: REACT_APP_FIREBASE_APP_ID,
+      measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID,
+    };
     firebase.initializeApp(firebaseConfig);
   }
 
