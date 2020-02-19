@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
-import { AutoRedirect } from "../../components/AutoRedirect";
+import AutoRedirect from "../../components/AutoRedirect";
 import DepositForm from "./DepositForm";
 import OTPForm from "./OTPForm";
 import {
@@ -12,18 +12,13 @@ import {
 import { sendDepositRequest, sendDepositOtp } from "./Requests";
 import * as signalR from "@microsoft/signalr";
 import { useQuery } from "../../utils/utils";
+import { useIntl } from 'react-intl';
+import messages from './messages';
 
 const { Step } = Steps;
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + "/hubs/monitor";
-
-const initProgress = {
-  currentStep: 1,
-  totalSteps: 10,
-  statusCode: "009",
-  statusMessage: "In progress",
-};
 
 const Deposit = props => {
   const analytics = firebase.analytics();
@@ -50,6 +45,13 @@ const Deposit = props => {
   const note = queryParams.get("n");
   const language = queryParams.get("l");
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
+  const intl = useIntl();
+  const initProgress = {
+    currentStep: 1,
+    totalSteps: 10,
+    statusCode: "009",
+    statusMessage: intl.formatMessage(messages.progress.inProgress),
+  };
 
   analytics.setCurrentScreen("deposit");
 
@@ -167,8 +169,8 @@ const Deposit = props => {
         await connection.invoke("Start", session);
       } catch (ex) {
         setError({
-          code: "Network error",
-          message: "Can't connect to server, please refresh your browser.",
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.networkError),
         });
       }
       setWaitingForReady(false);
@@ -180,13 +182,25 @@ const Deposit = props => {
       connection.onclose(() => {
         setWaitingForReady(true);
         setError({
-          code: "Network error",
-          message: "connection is closed, please refresh the page.",
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.connectionError),
         });
         setProgress(undefined);
       });
     };
   }, []);
+
+  useEffect(() => {
+    window.onbeforeunload = (e) => {
+      if (step < 2) {
+        // this custom message will only appear on earlier version of different browsers.
+        // However on modern and latest browsers their own default message will override this custom message.
+        e.returnValue = 'Do you really want to leave current page?'
+      } else {
+        return;
+      }
+    };
+  }, [step]);
 
   let content;
   if (step === 0) {
@@ -232,13 +246,14 @@ const Deposit = props => {
       </AutoRedirect>
     );
   }
+
   return (
     <>
       <div className="steps-container">
         <Steps size="small" current={step}>
-          <Step title="LOGIN" />
-          <Step title="AUTHORIZATION" />
-          <Step title="RESULT" />
+          <Step title={intl.formatMessage(messages.steps.login)} />
+          <Step title={intl.formatMessage(messages.steps.authorization)} />
+          <Step title={intl.formatMessage(messages.steps.result)} />
         </Steps>
       </div>
       <div className="deposit-container">

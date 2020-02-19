@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Form, InputNumber, Button, Select, Statistic } from 'antd';
+import { Form, Input, Button, Select, Statistic } from 'antd';
 import { useQuery } from '../../utils/utils';
+import { useIntl, FormattedMessage } from 'react-intl';
+import messages from './messages';
 
 const { Option } = Select;
 
@@ -9,6 +11,7 @@ const ScratchCardForm = React.memo((props) => {
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const queryParams = useQuery();
     const [telcoName, setTelcoName] = useState('VTT');
+    const intl = useIntl();
 
     function validationRuleforCardPin () {
         let validation = {};
@@ -16,27 +19,27 @@ const ScratchCardForm = React.memo((props) => {
         if (telcoName === 'VTT') {
             validation = {
                 pattern: /^\d{1,15}$/,
-                message: 'Please input a maximum length of 15 characters.'
-            }                
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 })
+            }
         } else if (telcoName === 'VNP') {
             validation = {
                 pattern: /^\d{1,14}$/,
-                message: 'Please input a maximum length of 14 characters.'
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
             } 
         } else if (telcoName === 'VMS') {
             validation = {
                 pattern: /^\d{1,12}$/,
-                message: 'Please input a maximum length of 12 characters.'
+                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
             }
         }
 
         return [
             {
                 required: true,
-                message: 'Please input serial number!'
+                message: intl.formatMessage(messages.placeholders.inputSerialNumber)
             },
             validation
-        ]
+        ];
     }
 
     function validationRuleforCardSerial () {
@@ -46,18 +49,18 @@ const ScratchCardForm = React.memo((props) => {
             validation = [
                 {
                     required: true,
-                    message: 'Please input serial number!'
+                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 },
                 {
                     pattern: /^\d{1,14}$/,
-                    message: 'Please input a maximum length of 14 characters.'
+                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
                 }
-            ];             
+            ];
         } else {
             validation = [
                 {
                     required: true,
-                    message: 'Please input serial number!'
+                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
                 }                
             ];
         }
@@ -73,7 +76,7 @@ const ScratchCardForm = React.memo((props) => {
         <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
             <Form.Item>
                 <Statistic
-                    title="Deposit"
+                    title={intl.formatMessage(messages.deposit)}
                     prefix={queryParams.get('c1')}
                     value={queryParams.get('a')}
                     valueStyle={{ color: "#000", fontWeight: 700 }}
@@ -85,14 +88,14 @@ const ScratchCardForm = React.memo((props) => {
                 getFieldDecorator('telcoName', {
                     rules: [{
                         required: true,
-                        message: 'Please select telco name!'
+                        message: intl.formatMessage(messages.placeholders.selectTelco)
                     }],
                     initialValue: telcoName
                 })
                 (
                     <Select
                         allowClear
-                        placeholder='Telco Name'
+                        placeholder={intl.formatMessage(messages.placeholders.telcoName)}
                         size='large'
                         onChange={(val) => {
                             setTelcoName(val)
@@ -112,10 +115,9 @@ const ScratchCardForm = React.memo((props) => {
                     rules: validationRuleforCardPin()
                 })
                 (
-                    <InputNumber
+                    <Input
                         type='number'
-                        size='large'
-                        placeholder='Card Pin'
+                        placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                         size='large'
                     />                            
                 )
@@ -127,10 +129,9 @@ const ScratchCardForm = React.memo((props) => {
                     rules: validationRuleforCardSerial()
                 })
                 (
-                    <InputNumber
+                    <Input
                         type='number'
-                        size='large'
-                        placeholder='Card Serial No.'
+                        placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                         size='large'
                     />                         
                 )
@@ -145,12 +146,12 @@ const ScratchCardForm = React.memo((props) => {
                     block
                     disabled={hasErrors(getFieldsError())}
                 >
-                    Submit
+                    <FormattedMessage {...messages.submit} />
                 </Button>
             </Form.Item>
             <div className='note-text'>
-                <p>- Please submit the correct amount, card pin and serial number.</p>
-                <p>- If submitted with incorrect amount, member will be penalized.</p>    
+                <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
+                <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
             </div>
         </Form>
     );

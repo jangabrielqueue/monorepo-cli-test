@@ -1,9 +1,11 @@
 import React from "react";
 import { Statistic } from "antd";
+import { injectIntl } from 'react-intl';
+import messages from './messages';
 
 const { Countdown } = Statistic;
 
-export class AutoRedirect extends React.Component {
+class AutoRedirect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -25,10 +27,12 @@ export class AutoRedirect extends React.Component {
 
   render() {
     const { deadline } = this.state;
+    const { intl } = this.props;
+    
     return (
       <>
         <Countdown
-          title={`You will be redirected in ${this.props.delay / 1000} seconds`}
+          title={intl.formatMessage(messages.texts.redirected, { timeLeft: this.props.delay / 1000 })}
           value={deadline}
         />
         {this.props.children}
@@ -36,3 +40,5 @@ export class AutoRedirect extends React.Component {
     );
   }
 }
+
+export default injectIntl(AutoRedirect);

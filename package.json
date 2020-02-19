@@ -15,6 +15,7 @@
     "react-app-polyfill": "^1.0.2",
     "react-dom": "^16.9.0",
     "react-error-boundary": "^1.2.5",
+    "react-intl": "^3.12.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.0",
     "source-map-explorer": "^2.0.1"
@@ -23,8 +24,9 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "uat": "env-cmd -f .env.uat react-scripts build && firebase use default && firebase deploy --only hosting:topup-uat-ezpay",
-    "prod": "env-cmd -f .env.production react-scripts build && firebase use prod && firebase deploy --only hosting:deposit-prod-ezpay",
+    "deploy:uat": "env-cmd -f .env.uat react-scripts build && firebase use default && firebase deploy --only hosting:topup-uat-ezpay",
+    "deploy:prod": "env-cmd -f .env.production react-scripts build && firebase use prod && firebase deploy --only hosting:deposit-prod-ezpay",
+    "deploy:dev": "env-cmd -f .env.development react-scripts build && firebase use default && firebase deploy --only hosting:deposit-dev-ezpay",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -44,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.3",
     "eslint": "^6.3.0"
   }
 }
