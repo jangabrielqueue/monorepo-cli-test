@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
 import AutoRedirect from "../../components/AutoRedirect";
@@ -109,28 +109,37 @@ const Deposit = props => {
     }
   }
 
-  function handleReceivedResult(e) {
-    analytics.logEvent("received_result", {
-      reference: reference,
-      result: e,
-    });
-    setIsSuccessful(e.isSuccess);
-    setProgress(undefined);
-    setTransferResult(e);
-    setWaitingForReady(false);
-    setStep(2);
-  }
+  const handleReceivedResult = useCallback(
+    (e) => {
+        analytics.logEvent("received_result", {
+          reference: reference,
+          result: e,
+        });
+        setIsSuccessful(e.isSuccess);
+        setProgress(undefined);
+        setTransferResult(e);
+        setWaitingForReady(false);
+        setStep(2);
+    },
+    [analytics, reference],
+  );
 
-  function handleRequestOTP(e) {
-    setProgress(undefined);
-    setStep(1);
-    setOtpReference(e.extraData);
-    setWaitingForReady(false);
-  }
+  const handleRequestOTP = useCallback(
+    (e) => {
+      setProgress(undefined);
+      setStep(1);
+      setOtpReference(e.extraData);
+      setWaitingForReady(false);
+    },
+    [],
+  );
 
-  function handleUpdateProgress(e) {
-    setProgress(e);
-  }
+  const handleUpdateProgress = useCallback(
+    (e) => {
+      setProgress(e);
+    },
+    [],
+  );
 
   function showProgress(progress) {
     return (
@@ -146,15 +155,20 @@ const Deposit = props => {
   }
 
   useEffect(() => {
-    if (!props.location.search) {
-      props.history.replace("/invalid");
+    console.log('useeffect 1')
+    if (queryParams.toString().split('&').length < 14) {
+      return props.history.replace('/invalid');
     }
 
+  }, [props.history, queryParams])
+
+  useEffect(() => {
+    console.log('useeffect 2')
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(API_USER_COMMAND_MONITOR)
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
+    .withUrl(API_USER_COMMAND_MONITOR)
+    .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
     connection.on("receivedResult", handleReceivedResult);
     connection.on("otpRequested", handleRequestOTP);
@@ -188,9 +202,10 @@ const Deposit = props => {
         setProgress(undefined);
       });
     };
-  }, []);
+  }, [session, handleReceivedResult, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
+    console.log('useEffect 3')
     window.onbeforeunload = (e) => {
       if (step < 2) {
         // this custom message will only appear on earlier version of different browsers.
@@ -217,6 +232,7 @@ const Deposit = props => {
         signature={signature}
         datetime={datetime}
         handleSubmit={handleSubmitDeposit}
+        otpMethod='1'
       />
     );
   } else if (step === 1) {

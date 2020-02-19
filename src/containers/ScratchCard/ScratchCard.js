@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
 import { useQuery, sleep } from '../../utils/utils';
@@ -152,59 +152,76 @@ const ScratchCard = (props) => {
         );
     };
 
-    async function handleCommandStatusUpdate (result) {
-        let start, end;
+    const handleCommandStatusUpdate = useCallback(
+        async (result) => {
+            let start, end;
 
-        start = performance.now();
-        
-        if (result.statusCode === '009') {
-            setProgress({
-                percent: 67,
-                statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
-              });
-            setWaitingForReady(true);
-            setStep(0);
-            await sleep(180000);
-            await new Promise(resolve => resolve(end = performance.now()));
-            const time = (end - start);
-
-            if (time >= 180000) {
+            start = performance.now();
+            
+            if (result.statusCode === '009') {
                 setProgress({
                     percent: 67,
                     statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
                   });
+                setWaitingForReady(true);
+                setStep(0);
+                await sleep(180000);
+                await new Promise(resolve => resolve(end = performance.now()));
+                const time = (end - start);
+    
+                if (time >= 180000) {
+                    setProgress({
+                        percent: 67,
+                        statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
+                      });
+                    setWaitingForReady(false);
+                    setIsSuccessful(false);
+                    setTransferResult({
+                        ...result,
+                        message: intl.formatMessage(messages.errors.connectionTimeout)
+                    });
+                    setStep(1);
+                }
+            } else if (result.statusCode === '006') {
+                setProgress({
+                    percent: 100,
+                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                  });
+                setWaitingForReady(false);
+                setIsSuccessful(true);
+                setTransferResult(result);
+                setStep(1);
+            } else {
+                setProgress({
+                    percent: 100,
+                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                  });
                 setWaitingForReady(false);
                 setIsSuccessful(false);
-                setTransferResult({
-                    ...result,
-                    message: intl.formatMessage(messages.errors.connectionTimeout)
-                });
+                setTransferResult(result);
                 setStep(1);
             }
-        } else if (result.statusCode === '006') {
-            setProgress({
-                percent: 100,
-                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-              });
-            setWaitingForReady(false);
-            setIsSuccessful(true);
-            setTransferResult(result);
-            setStep(1);
-        } else {
-            setProgress({
-                percent: 100,
-                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-              });
-            setWaitingForReady(false);
-            setIsSuccessful(false);
-            setTransferResult(result);
-            setStep(1);
-        }
-      };
+        },
+        [intl],
+    );
+
+    // const redirectInvalidParams = useCallback(
+    //     () => {
+    //         if (!props.location.search) {
+    //             return props.history.replace('/invalid');
+    //         }
+    //     },
+    //     [props],
+    // );
+
+    // useEffect(() => {
+    //     redirectInvalidParams();
+    // }, [])
 
     useEffect(() => {
+        console.log('useEffect', queryParams.toString().split('&'))
         if (!props.location.search) {
-            props.history.replace('/invalid');
+            return props.history.replace('/invalid');
         }
 
         const connection = new signalR.HubConnectionBuilder()
@@ -248,7 +265,7 @@ const ScratchCard = (props) => {
                 setProgress(undefined);
             });
         };
-    }, [session]);
+    }, [session, handleCommandStatusUpdate, intl]);
 
     return (
         <>

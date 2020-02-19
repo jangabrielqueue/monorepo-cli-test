@@ -34,7 +34,7 @@ export default defineMessages({
         },
         telcoName: {
             id: 'placeholders.telcoName',
-            defaultMessage: '\Telco Name'
+            defaultMessage: 'Telco Name'
         }
     },
     texts: {
@@ -54,7 +54,7 @@ export default defineMessages({
         },
         networkError: {
             id: 'errors.networkError',
-            defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+            defaultMessage: "Can't connect to server, please refresh your browser."
         },
         networkErrorTitle: {
             id: 'errors.networkErrorTitle',
