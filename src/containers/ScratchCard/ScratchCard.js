@@ -65,12 +65,26 @@ const ScratchCard = (props) => {
                 await setProgress(initProgress);
                 
                 try {
-                    await axios({
+                    const response = await axios({
                       url: 'api/ScratchCard/Deposit',
                       method: 'POST',
                       data: submitValues,
                       timeout: 5000
                     });
+
+                    if (response.data.statusCode === '001') {
+                        await setProgress({
+                            percent: 100,
+                            statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                          });
+                        await setWaitingForReady(false);
+                        await setIsSuccessful(false);
+                        await setTransferResult({
+                            ...response.data,
+                            message: response.data.statusMessage
+                        });
+                        await setStep(1);
+                    }
                   } catch (error) {
                     await setWaitingForReady(false);
                     await setProgress(undefined);
