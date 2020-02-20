@@ -35,8 +35,8 @@ const TopUp = props => {
     transferResult: {},
   });
   const queryParams = useQuery();
-  const session = `TOPUP-BANK-${queryParams.get("merchant")}-${queryParams.get(
-    "reference"
+  const session = `TOPUP-BANK-${queryParams.get("m")}-${queryParams.get(
+    "r"
   )}`;
 
   async function handleSubmitDeposit(values) {
@@ -49,7 +49,7 @@ const TopUp = props => {
 
     const result = await sendTopUpRequest({
       ...values,
-      reference: queryParams.get("reference"),
+      reference: queryParams.get("r"),
     });
     if (result.error) {
       setDepositRequest({
@@ -74,7 +74,7 @@ const TopUp = props => {
       error: undefined,
       progress: undefined,
     });
-    const result = await sendTopUpOtp(queryParams.get("reference"), value.otp);
+    const result = await sendTopUpOtp(queryParams.get("r"), value.otp);
     if (result.errors) {
       setDepositRequest({
         ...depositRequest,
@@ -192,15 +192,15 @@ const TopUp = props => {
   if (step === 0) {
     content = (
       <DepositForm
-        merchant={queryParams.get("merchant")}
-        requester={queryParams.get("requester")}
-        currency={queryParams.get("currency")}
-        bank={queryParams.get("bank")}
-        amount={queryParams.get("amount")}
-        reference={queryParams.get("reference")}
-        clientIp={queryParams.get("clientIp")}
-        signature={queryParams.get("signature")}
-        datetime={queryParams.get("datetime")}
+        merchant={queryParams.get("m")}
+        requester={queryParams.get("c2")}
+        currency={queryParams.get("c1")}
+        bank={queryParams.get("b")}
+        amount={queryParams.get("a")}
+        reference={queryParams.get("r")}
+        clientIp={queryParams.get("c3")}
+        signature={queryParams.get("k")}
+        datetime={queryParams.get("d")}
         handleSubmit={handleSubmitDeposit}
       />
     );
