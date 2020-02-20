@@ -205,25 +205,18 @@ const ScratchCard = (props) => {
         [intl],
     );
 
-    // const redirectInvalidParams = useCallback(
-    //     () => {
-    //         if (!props.location.search) {
-    //             return props.history.replace('/invalid');
-    //         }
-    //     },
-    //     [props],
-    // );
-
-    // useEffect(() => {
-    //     redirectInvalidParams();
-    // }, [])
+    useEffect(() => {
+        if (queryParams.toString().split('&').length < 14) {
+          return props.history.replace('/invalid');
+        }
+    
+        // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
+        // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+        // avoid unnecessary warning
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [])
 
     useEffect(() => {
-        console.log('useEffect', queryParams.toString().split('&'))
-        if (!props.location.search) {
-            return props.history.replace('/invalid');
-        }
-
         const connection = new signalR.HubConnectionBuilder()
         .withUrl(API_USER_COMMAND_MONITOR)
         .withAutomaticReconnect()
@@ -266,6 +259,19 @@ const ScratchCard = (props) => {
             });
         };
     }, [session, handleCommandStatusUpdate, intl]);
+
+    useEffect(() => {
+        window.onbeforeunload = window.onunload = (e) => {
+          if (step < 2) {
+            // this custom message will only appear on earlier version of different browsers.
+            // However on modern and latest browsers their own default message will override this custom message.
+            // as of the moment only applicable on browsers. there's no definite implementation on mobile
+            e.returnValue = 'Do you really want to leave current page?'
+          } else {
+            return;
+          }
+        };
+      }, [step]);
 
     return (
         <>

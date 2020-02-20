@@ -33,7 +33,6 @@ const DepositFormImpl = React.memo((props) => {
     reference,
     clientIp,
     datetime,
-    otpMethod,
     amount,
     handleSubmit,
     intl
@@ -61,7 +60,6 @@ const DepositFormImpl = React.memo((props) => {
           reference,
           clientIp,
           datetime,
-          otpMethod,
           amount,
           otpMethod: otpMethodValue,
           ...values

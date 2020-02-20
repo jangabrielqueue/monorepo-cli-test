@@ -14,6 +14,7 @@ import { IntlProvider } from "react-intl";
 import locale_en from './translations/locale/en.json';
 import locale_vi from './translations/locale/vi.json';
 import locale_th from './translations/locale/th.json';
+import 'antd/dist/antd.css';
 
 const errorHandler = (error, componentStack) => {
   const analytics = firebase.analytics();
