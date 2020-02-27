@@ -11,6 +11,7 @@ import {
 import { getBanksByCurrency } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import './styles.scss';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -84,15 +85,16 @@ const DepositFormImpl = React.memo((props) => {
               defaultValue={bank || getDefaultBankByCurrency(props.currency).code}
               size="large"
               disabled={Boolean(bank)}
+              aria-owns='1 2 3 4 5 6 7 8 9'
             >
-              {bankCodes.map(x => (
-                <Option key={x.code} value={x.code}>
+              {bankCodes.map((x, i)=> (
+                <Option key={x.code} id={i} value={x.code}>
                   {x.name}
                 </Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item>
+          <Form.Item htmlFor='deposit_form_username'>
             {getFieldDecorator('username', {
               rules: [
                 {
@@ -108,10 +110,11 @@ const DepositFormImpl = React.memo((props) => {
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
                 placeholder={intl.formatMessage(messages.placeholders.loginName)}
+                id='deposit_form_username'
               />
             )}
           </Form.Item>
-          <Form.Item>
+          <Form.Item htmlFor='deposit_form_password'>
             {getFieldDecorator('password', {
               rules: [
                 { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
@@ -124,6 +127,7 @@ const DepositFormImpl = React.memo((props) => {
                   <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
                 placeholder={intl.formatMessage(messages.placeholders.password)}
+                id='deposit_form_password'
               />
             )}
           </Form.Item>
@@ -135,9 +139,10 @@ const DepositFormImpl = React.memo((props) => {
                 onChange={(val) => {
                   setOtpMethodValue(val);
                 }}
+                aria-owns='otp-1 otp-2'
               >
-                <Option value="1">SMS OTP</Option>
-                <Option value="2">Smart OTP</Option>
+                <Option value="1" id='otp-1'>SMS OTP</Option>
+                <Option value="2" id='otp-2'>Smart OTP</Option>
               </Select>
             </Form.Item>
           )}

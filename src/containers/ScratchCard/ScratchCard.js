@@ -218,7 +218,10 @@ const ScratchCard = (props) => {
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl(API_USER_COMMAND_MONITOR)
+        .withUrl(API_USER_COMMAND_MONITOR, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();

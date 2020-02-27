@@ -1,14 +1,16 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Switch, Route } from "react-router-dom";
 import * as firebase from "firebase/app";
-import ScratchCard from "../ScratchCard/ScratchCard";
-import TopUp from "../TopUp";
-import Deposit from "../Deposit";
 import "./styles.scss";
-import InvalidPage from "../../components/InvalidPage";
-import NotFound from "../../components/NotFound";
 import Logo from "../../components/Logo";
 import { useQuery } from "../../utils/utils";
+import FallbackPage from '../../components/FallbackPage';
+
+const Deposit = lazy(() => import('../Deposit'));
+const ScratchCard = lazy(() => import('../ScratchCard/ScratchCard'));
+const TopUp = lazy(() => import('../TopUp'));
+const InvalidPage = lazy(() => import('../../components/InvalidPage'));
+const NotFound = lazy(() => import('../../components/NotFound'));
 
 const Layout = () => {
   const queryParams = useQuery();
@@ -24,17 +26,17 @@ const Layout = () => {
   return (
     <div className="main">
       <div className="logo-container">
-        {/* <h1>GAME <span>WALLET</span></h1> */}
-        {/* <h3 className="poweredby">Powered By</h3> */}
         <Logo bank={bank} />
       </div>
-      <Switch>
-        <Route exact path="/topup/bank" component={TopUp} />
-        <Route exact path="/deposit/bank" component={Deposit} />
-        <Route exact path="/deposit/scratch-card" component={ScratchCard} />
-        <Route path="/invalid" component={InvalidPage} />
-        <Route path="*" component={NotFound} />
-      </Switch>
+      <Suspense fallback={<FallbackPage />}>
+        <Switch>
+          <Route exact path="/topup/bank" component={TopUp} />
+          <Route exact path="/deposit/bank" component={Deposit} />
+          <Route exact path="/deposit/scratch-card" component={ScratchCard} />
+          <Route path="/invalid" component={InvalidPage} />
+          <Route path="*" component={NotFound} />
+        </Switch>
+      </Suspense>
     </div>
   );
 };
