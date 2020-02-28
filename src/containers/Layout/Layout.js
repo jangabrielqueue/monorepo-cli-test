@@ -2,7 +2,6 @@ import React, { Suspense, lazy } from "react";
 import { Switch, Route } from "react-router-dom";
 import * as firebase from "firebase/app";
 import "./styles.scss";
-import Logo from "../../components/Logo";
 import { useQuery } from "../../utils/utils";
 import FallbackPage from '../../components/FallbackPage';
 
@@ -11,6 +10,7 @@ const ScratchCard = lazy(() => import('../ScratchCard/ScratchCard'));
 const TopUp = lazy(() => import('../TopUp'));
 const InvalidPage = lazy(() => import('../../components/InvalidPage'));
 const NotFound = lazy(() => import('../../components/NotFound'));
+const Logo = lazy(() => import('../../components/Logo'));
 
 const Layout = () => {
   const queryParams = useQuery();
@@ -26,7 +26,22 @@ const Layout = () => {
   return (
     <div className="main">
       <div className="logo-container">
-        <Logo bank={bank} />
+        <Suspense fallback={
+          <>
+            <div
+              style={{
+                margin: "auto",
+                width: "140px",
+                textAlign: "right",
+              }}
+            >
+              <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
+            </div>
+            <img alt='GameWallet' src='/banks/GW_LOGO.png' />
+          </>
+        }>
+          <Logo bank={bank} />
+        </Suspense>
       </div>
       <Suspense fallback={<FallbackPage />}>
         <Switch>
