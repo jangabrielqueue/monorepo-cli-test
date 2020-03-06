@@ -1,14 +1,19 @@
-import React from "react";
+import React from 'react';
 import { Spin, Card, Steps } from 'antd';
 import '../containers/Layout/styles.scss';
 
-const FallbackPage = (props) => {
+const FallbackPage = () => {
   const { Step } = Steps;
-
+  
   return (
     <>
-      <div className="steps-container">
-        <Steps size="small" current={0}>
+      <div className='logo-container'>
+        <>
+          <img alt='GameWallet' src='/banks/GW_LOGO.png' />
+        </>
+      </div>
+      <div className='steps-container'>
+        <Steps size='small' current={0}>
           <Step title='LOGIN' />
           {
             window.location.pathname === '/deposit/bank' &&
@@ -17,7 +22,7 @@ const FallbackPage = (props) => {
           <Step title='RESULT' />
         </Steps>
       </div>
-      <div className="fallback-container">
+      <div className='fallback-container'>
         <Card>
           <Spin />
         </Card>

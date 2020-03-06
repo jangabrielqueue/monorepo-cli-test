@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Statistic,
   Form,
   Icon,
   Input,
@@ -8,7 +7,7 @@ import {
   Select,
   Collapse,
 } from "antd";
-import { getBanksByCurrency } from "../../utils/banks";
+import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
@@ -36,6 +35,8 @@ const DepositFormImpl = React.memo((props) => {
     datetime,
     amount,
     handleSubmit,
+    refFormSubmit,
+    handleHasFieldError,
     intl
   } = props;
   const {
@@ -43,14 +44,14 @@ const DepositFormImpl = React.memo((props) => {
     getFieldDecorator,
     getFieldsError
   } = props.form;
-  const showOtpMethod = currency === "VND";
   const bankCodes = getBanksByCurrency(currency);
-  const [otpMethodValue, setOtpMethodValue] = useState('1');
+  const isBankKnown = checkBankIfKnown(currency, bank);
 
-  const handleSubmitForm = e => {
-    e.preventDefault();
-    validateFields((err, values) => {
+  const handleSubmitForm = (type) => {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
+    validateFields((err, values) => {  
+      console.log('values', values)
       if (!err) {
         handleSubmit({
           currency,
@@ -62,44 +63,44 @@ const DepositFormImpl = React.memo((props) => {
           clientIp,
           datetime,
           amount,
-          otpMethod: otpMethodValue,
+          otpMethod: otpType,
           ...values
         });
       }
     });
   };
 
+  useEffect(() => {
+    handleHasFieldError(hasErrors(getFieldsError()))
+  }, [getFieldsError()])
+
     return (
-        <Form onSubmit={handleSubmitForm}>
-          <Form.Item>
-            <Statistic
-              title={intl.formatMessage(messages.deposit)}
-              prefix={currency}
-              value={amount}
-              valueStyle={{ color: "#000", fontWeight: 700 }}
-              precision={2}
-            />
-          </Form.Item>
-          <Form.Item>
-            {
-              getFieldDecorator('bank', {
-                initialValue: bank || getDefaultBankByCurrency(props.currency).code
-              })(
-                <Select
-                  size="large"
-                  disabled={Boolean(bank)}
-                  aria-owns='1 2 3 4 5 6 7 8 9'
-                >
-                  {bankCodes.map((x, i)=> (
-                    <Option key={x.code} id={i} value={x.code}>
-                      {x.name}
-                    </Option>
-                  ))}
-                </Select>
-              )
-            }
-          </Form.Item>
-          <Form.Item htmlFor='deposit_form_username'>
+      <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
+        {
+          !isBankKnown &&
+          <div className='form-icon-container bank-name'>
+            <Form.Item label='Bank Name'>
+              {
+                getFieldDecorator('bank', {
+                  initialValue: getDefaultBankByCurrency(props.currency).code
+                })(
+                  <Select
+                    size="large"
+                    aria-owns='1 2 3 4 5 6 7 8 9'
+                  >
+                    {bankCodes.map((x, i)=> (
+                      <Option key={x.code} id={i} value={x.code}>
+                        {x.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )
+              }
+            </Form.Item>
+          </div>
+        }
+        <div className='form-icon-container username'>
+          <Form.Item label='Online Banking Login Name' htmlFor='deposit_form_username'>
             {getFieldDecorator('username', {
               rules: [
                 {
@@ -111,15 +112,14 @@ const DepositFormImpl = React.memo((props) => {
               <Input 
                 size="large"
                 allowClear
-                prefix={
-                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
                 placeholder={intl.formatMessage(messages.placeholders.loginName)}
                 id='deposit_form_username'
               />
             )}
           </Form.Item>
-          <Form.Item htmlFor='deposit_form_password'>
+        </div>
+        <div className='form-icon-container password'>
+          <Form.Item label='Password' htmlFor='deposit_form_password'>
             {getFieldDecorator('password', {
               rules: [
                 { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
@@ -128,65 +128,36 @@ const DepositFormImpl = React.memo((props) => {
               <Input.Password
                 size="large"
                 allowClear
-                prefix={
-                  <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
                 placeholder={intl.formatMessage(messages.placeholders.password)}
                 id='deposit_form_password'
               />
             )}
           </Form.Item>
-          {showOtpMethod && (
-            <Form.Item>
-              <Select
-                defaultValue={otpMethodValue}
-                size="large"
-                onChange={(val) => {
-                  setOtpMethodValue(val);
-                }}
-                aria-owns='otp-1 otp-2'
-              >
-                <Option value="1" id='otp-1'>SMS OTP</Option>
-                <Option value="2" id='otp-2'>Smart OTP</Option>
-              </Select>
-            </Form.Item>
-          )}
-          <Form.Item>
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              shape="round"
-              block
-              disabled={hasErrors(getFieldsError())}
+        </div>
+        <div className='more-info-form-item'>
+          <Collapse bordered={false}>
+            <Panel
+              header={intl.formatMessage(messages.moreInformation)}
+              key="1"
+              style={{
+                border: "0",
+                fontWeight: 600,
+              }}
             >
-              <FormattedMessage {...messages.submit} />
-            </Button>
-          </Form.Item>
-          <Form.Item>
-            <Collapse bordered={false}>
-              <Panel
-                header={intl.formatMessage(messages.moreInformation)}
-                key="1"
-                style={{
-                  border: "0",
-                  fontWeight: 600,
-                }}
-              >
-                <div className="infos">
-                  <div className="info-item">
-                    <Icon type="key" />
-                    <span>{reference}</span>
-                  </div>
-                  <div className="info-item">
-                    <Icon type="pay-circle" />
-                    <span>{currency}</span>
-                  </div>
+              <div className="infos">
+                <div className="info-item">
+                  <Icon type="key" />
+                  <span>{reference}</span>
                 </div>
-              </Panel>
-            </Collapse>
-          </Form.Item>
-        </Form>
+                <div className="info-item">
+                  <Icon type="pay-circle" />
+                  <span>{currency}</span>
+                </div>
+              </div>
+            </Panel>
+          </Collapse>
+        </div>
+      </Form>
     );
   });
 

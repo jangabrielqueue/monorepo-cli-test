@@ -1,0 +1,30 @@
+.form-icon-container {
+    display: flex;
+}
+
+.bank-name {
+    &:before {
+        content: url('../../assets/icons/bank-name.svg');
+        height: 20px;
+        margin: 10px 10px 10px 20px;;
+        width: 20px;
+    }        
+}
+
+.username {
+    &:before {
+        content: url('../../assets/icons/username.svg');
+        height: 20px;
+        margin: 10px 10px 10px 20px;;
+        width: 20px;
+    }
+}
+
+.password {
+    &:before {
+        content: url('../../assets/icons/password.svg');
+        height: 20px;
+        margin: 10px 10px 10px 20px;;
+        width: 20px;
+    }
+}

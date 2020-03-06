@@ -1,13 +1,7 @@
+// Global Styles
+
 body {
-  background-color: #f6f9fc !important;
-}
-
-.ant-form-item {
-  margin-bottom: 10px;
-}
-
-.ant-input-number {
-  width: 100%;
+  background-color: #ffffff;
 }
 
 .steps-container {
@@ -40,8 +34,88 @@ body {
   }
 }
 
-.ant-steps-item-title {
-  color: #000000 !important;
+.more-info-form-item {
+  margin: 0 10px;
+}
+
+.steps-bar-container {
+  padding: 10px 0;
+  text-align: center;
+}
+
+.progress-bar-container {
+  min-height: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+
+  > p {
+    font-weight: bold;
+    margin: 15px 0 0;
+    text-align: center;
+  }
+}
+
+// antd elements override
+.ant-select-selection {
+  border-bottom: 1px solid #E3E3E3 !important;
+  border-left: none !important;
+  border-radius: 0 !important;
+  border-right: none !important;
+  border-top: none !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.ant-select-selection__rendered {
+  margin: 0 !important;
+}
+
+.ant-input-lg {
+  padding-left: 0 !important;
+}
+
+.ant-input {
+  border-bottom: 1px solid #E3E3E3 !important;
+  border-left: none !important;
+  border-radius: 0 !important;
+  border-right: none !important;
+  border-top: none !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.ant-form-vertical {
+  .ant-form-item {
+    margin-bottom: 15px !important;
+    width: 100% !important;
+  }
+
+  .ant-form-item-label {
+    padding: 0 !important;
+  }
+}
+
+.ant-collapse-borderless {
+  background-color: transparent !important;
+}
+
+.ant-collapse {
+  > .ant-collapse-item {
+    > .ant-collapse-header {
+      padding: 5px 16px 5px 40px !important;
+    }
+  }
+}
+
+.ant-modal-content {
+  border-radius: 15px !important;
+  margin: 0 12px;
 }
 
 // mobile device
