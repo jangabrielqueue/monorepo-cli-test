@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Steps, Spin, Alert, Progress } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
 import { useQuery, sleep } from '../../utils/utils';
@@ -152,63 +152,76 @@ const ScratchCard = (props) => {
         );
     };
 
-    async function handleCommandStatusUpdate (result) {
-        let start, end;
+    const handleCommandStatusUpdate = useCallback(
+        async (result) => {
+            let start, end;
 
-        start = performance.now();
-        
-        if (result.statusCode === '009') {
-            setProgress({
-                percent: 67,
-                statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
-              });
-            setWaitingForReady(true);
-            setStep(0);
-            await sleep(180000);
-            await new Promise(resolve => resolve(end = performance.now()));
-            const time = (end - start);
-
-            if (time >= 180000) {
+            start = performance.now();
+            
+            if (result.statusCode === '009') {
                 setProgress({
                     percent: 67,
                     statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
                   });
+                setWaitingForReady(true);
+                setStep(0);
+                await sleep(180000);
+                await new Promise(resolve => resolve(end = performance.now()));
+                const time = (end - start);
+    
+                if (time >= 180000) {
+                    setProgress({
+                        percent: 67,
+                        statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
+                      });
+                    setWaitingForReady(false);
+                    setIsSuccessful(false);
+                    setTransferResult({
+                        ...result,
+                        message: intl.formatMessage(messages.errors.connectionTimeout)
+                    });
+                    setStep(1);
+                }
+            } else if (result.statusCode === '006') {
+                setProgress({
+                    percent: 100,
+                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                  });
+                setWaitingForReady(false);
+                setIsSuccessful(true);
+                setTransferResult(result);
+                setStep(1);
+            } else {
+                setProgress({
+                    percent: 100,
+                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                  });
                 setWaitingForReady(false);
                 setIsSuccessful(false);
-                setTransferResult({
-                    ...result,
-                    message: intl.formatMessage(messages.errors.connectionTimeout)
-                });
+                setTransferResult(result);
                 setStep(1);
             }
-        } else if (result.statusCode === '006') {
-            setProgress({
-                percent: 100,
-                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-              });
-            setWaitingForReady(false);
-            setIsSuccessful(true);
-            setTransferResult(result);
-            setStep(1);
-        } else {
-            setProgress({
-                percent: 100,
-                statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-              });
-            setWaitingForReady(false);
-            setIsSuccessful(false);
-            setTransferResult(result);
-            setStep(1);
-        }
-      };
+        },
+        [intl],
+    );
 
     useEffect(() => {
-        if (!props.location.search) {
-            props.history.replace('/invalid');
+        if (queryParams.toString().split('&').length < 14) {
+          return props.history.replace('/invalid');
         }
+    
+        // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
+        // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+        // avoid unnecessary warning
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [])
 
+    useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl(API_USER_COMMAND_MONITOR)
+        .withUrl(API_USER_COMMAND_MONITOR, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();
@@ -248,7 +261,20 @@ const ScratchCard = (props) => {
                 setProgress(undefined);
             });
         };
-    }, [session]);
+    }, [session, handleCommandStatusUpdate, intl]);
+
+    useEffect(() => {
+        window.onbeforeunload = window.onunload = (e) => {
+          if (step < 2) {
+            // this custom message will only appear on earlier version of different browsers.
+            // However on modern and latest browsers their own default message will override this custom message.
+            // as of the moment only applicable on browsers. there's no definite implementation on mobile
+            e.returnValue = 'Do you really want to leave current page?'
+          } else {
+            return;
+          }
+        };
+      }, [step]);
 
     return (
         <>

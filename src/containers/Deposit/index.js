@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, Steps, Spin, Alert, Progress } from "antd";
 import * as firebase from "firebase/app";
 import AutoRedirect from "../../components/AutoRedirect";
@@ -109,28 +109,37 @@ const Deposit = props => {
     }
   }
 
-  function handleReceivedResult(e) {
-    analytics.logEvent("received_result", {
-      reference: reference,
-      result: e,
-    });
-    setIsSuccessful(e.isSuccess);
-    setProgress(undefined);
-    setTransferResult(e);
-    setWaitingForReady(false);
-    setStep(2);
-  }
+  const handleReceivedResult = useCallback(
+    (e) => {
+        analytics.logEvent("received_result", {
+          reference: reference,
+          result: e,
+        });
+        setIsSuccessful(e.isSuccess);
+        setProgress(undefined);
+        setTransferResult(e);
+        setWaitingForReady(false);
+        setStep(2);
+    },
+    [analytics, reference],
+  );
 
-  function handleRequestOTP(e) {
-    setProgress(undefined);
-    setStep(1);
-    setOtpReference(e.extraData);
-    setWaitingForReady(false);
-  }
+  const handleRequestOTP = useCallback(
+    (e) => {
+      setProgress(undefined);
+      setStep(1);
+      setOtpReference(e.extraData);
+      setWaitingForReady(false);
+    },
+    [],
+  );
 
-  function handleUpdateProgress(e) {
-    setProgress(e);
-  }
+  const handleUpdateProgress = useCallback(
+    (e) => {
+      setProgress(e);
+    },
+    [],
+  );
 
   function showProgress(progress) {
     return (
@@ -146,15 +155,22 @@ const Deposit = props => {
   }
 
   useEffect(() => {
-    if (!props.location.search) {
-      props.history.replace("/invalid");
+    if (queryParams.toString().split('&').length < 14) {
+      return props.history.replace('/invalid');
     }
 
+    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
+    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+    // avoid unnecessary warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(API_USER_COMMAND_MONITOR)
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
+    .withUrl(API_USER_COMMAND_MONITOR)
+    .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
     connection.on("receivedResult", handleReceivedResult);
     connection.on("otpRequested", handleRequestOTP);
@@ -188,13 +204,14 @@ const Deposit = props => {
         setProgress(undefined);
       });
     };
-  }, []);
+  }, [session, handleReceivedResult, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
     window.onbeforeunload = (e) => {
       if (step < 2) {
         // this custom message will only appear on earlier version of different browsers.
         // However on modern and latest browsers their own default message will override this custom message.
+        // as of the moment only applicable on browsers. there's no definite implementation on mobile
         e.returnValue = 'Do you really want to leave current page?'
       } else {
         return;

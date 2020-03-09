@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import {
   Statistic,
   Form,
@@ -6,12 +6,12 @@ import {
   Input,
   Button,
   Select,
-  Spin,
   Collapse,
 } from "antd";
 import { getBanksByCurrency } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import './styles.scss';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -24,93 +24,78 @@ function getDefaultBankByCurrency(currency) {
   return getBanksByCurrency(currency)[0];
 }
 
-class DepositFormImpl extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currency: props.currency,
-      merchant: props.merchant,
-      requester: props.requester,
-      bank: props.bank || getDefaultBankByCurrency(props.currency).code,
-      signature: props.signature,
-      reference: props.reference,
-      clientIp: props.clientIp,
-      datetime: props.datetime,
-      otpMethod: "1",
-    };
-  }
+const DepositFormImpl = React.memo((props) => {
+  const {
+    currency,
+    merchant,
+    requester,
+    bank,
+    signature,
+    reference,
+    clientIp,
+    datetime,
+    amount,
+    handleSubmit,
+    intl
+  } = props;
+  const {
+    validateFields,
+    getFieldDecorator,
+    getFieldsError
+  } = props.form;
+  const showOtpMethod = currency === "VND";
+  const bankCodes = getBanksByCurrency(currency);
+  const [otpMethodValue, setOtpMethodValue] = useState('1');
 
-  handleBankCodeSelected = value => {
-    this.setState({
-      bank: value,
-    });
-  };
-
-  handleLoginNameChanged = e => {
-    this.setState({
-      username: e.target.value,
-    });
-  };
-
-  handlePasswordChanged = e => {
-    this.setState({
-      password: e.target.value,
-    });
-  };
-
-  handleOtpMethodSelected = value => {
-    this.setState({
-      otpMethod: value,
-    });
-  };
-
-  handleSubmit = e => {
+  const handleSubmitForm = e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    validateFields((err, values) => {
+
       if (!err) {
-        this.props.handleSubmit({
-          ...this.state,
-          amount: this.props.amount,
+        handleSubmit({
+          currency,
+          merchant,
+          requester,
+          bank,
+          signature,
+          reference,
+          clientIp,
+          datetime,
+          amount,
+          otpMethod: otpMethodValue,
+          ...values
         });
       }
     });
   };
 
-  render() {
-    const { getFieldDecorator, getFieldsError } = this.props.form;
-    const { reference, intl } = this.props;
-    const { merchant, requester, currency, otpMethod, bank } = this.state;
-    const showOtpMethod = currency === "VND";
-    const bankCodes = getBanksByCurrency(currency);
-
     return (
-      <Spin spinning={false}>
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={handleSubmitForm}>
           <Form.Item>
             <Statistic
               title={intl.formatMessage(messages.deposit)}
-              prefix={this.props.currency}
-              value={this.props.amount}
+              prefix={currency}
+              value={amount}
               valueStyle={{ color: "#000", fontWeight: 700 }}
               precision={2}
             />
           </Form.Item>
           <Form.Item>
             <Select
-              defaultValue={bank}
+              defaultValue={bank || getDefaultBankByCurrency(props.currency).code}
               size="large"
-              disabled={Boolean(this.props.bank)}
-              onChange={this.handleBankCodeSelected}
+              disabled={Boolean(bank)}
+              aria-owns='1 2 3 4 5 6 7 8 9'
             >
-              {bankCodes.map(x => (
-                <Option key={x.code} value={x.code}>
+              {bankCodes.map((x, i)=> (
+                <Option key={x.code} id={i} value={x.code}>
                   {x.name}
                 </Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item>
-            {getFieldDecorator("Login Name", {
+          <Form.Item htmlFor='deposit_form_username'>
+            {getFieldDecorator('username', {
               rules: [
                 {
                   required: true,
@@ -125,12 +110,12 @@ class DepositFormImpl extends Component {
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
                 placeholder={intl.formatMessage(messages.placeholders.loginName)}
-                onChange={this.handleLoginNameChanged}
+                id='deposit_form_username'
               />
             )}
           </Form.Item>
-          <Form.Item>
-            {getFieldDecorator("Password", {
+          <Form.Item htmlFor='deposit_form_password'>
+            {getFieldDecorator('password', {
               rules: [
                 { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
               ],
@@ -142,19 +127,22 @@ class DepositFormImpl extends Component {
                   <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
                 placeholder={intl.formatMessage(messages.placeholders.password)}
-                onChange={this.handlePasswordChanged}
+                id='deposit_form_password'
               />
             )}
           </Form.Item>
           {showOtpMethod && (
             <Form.Item>
               <Select
-                defaultValue={otpMethod}
+                defaultValue={otpMethodValue}
                 size="large"
-                onChange={this.handleOtpMethodSelected}
+                onChange={(val) => {
+                  setOtpMethodValue(val);
+                }}
+                aria-owns='otp-1 otp-2'
               >
-                <Option value="1">SMS OTP</Option>
-                <Option value="2">Smart OTP</Option>
+                <Option value="1" id='otp-1'>SMS OTP</Option>
+                <Option value="2" id='otp-2'>Smart OTP</Option>
               </Select>
             </Form.Item>
           )}
@@ -194,11 +182,8 @@ class DepositFormImpl extends Component {
             </Collapse>
           </Form.Item>
         </Form>
-      </Spin>
     );
-  }
-}
+  });
 
 const DepositForm = Form.create({ name: "deposit_form" })(DepositFormImpl);
-
 export default injectIntl(DepositForm);

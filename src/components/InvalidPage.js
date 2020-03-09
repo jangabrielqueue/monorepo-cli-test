@@ -3,7 +3,7 @@ import { Result } from 'antd';
 import messages from './messages';
 import { useIntl } from 'react-intl';
 
-const NotFound = (props) => {
+const InvalidPage = (props) => {
   const intl = useIntl();
 
   return (
@@ -15,4 +15,4 @@ const NotFound = (props) => {
   );
 };
 
-export default NotFound;
+export default InvalidPage;

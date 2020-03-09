@@ -101,15 +101,16 @@ const ScratchCardForm = React.memo((props) => {
                             setTelcoName(val)
                             resetFields()
                         }}
+                        aria-owns='telco-1 telco-2 telco-3'
                     >
-                        <Option value='VTT'>Viettel</Option>
-                        <Option value='VNP'>Vinaphone</Option>
-                        <Option value='VMS'>Mobiphone</Option>
+                        <Option value='VTT' id='telco-1'>Viettel</Option>
+                        <Option value='VNP' id='telco-2'>Vinaphone</Option>
+                        <Option value='VMS' id='telco-3'>Mobiphone</Option>
                     </Select>                            
                 )
             }
             </Form.Item>
-            <Form.Item>
+            <Form.Item htmlFor='scratch_card_form_cardPin'>
             {
                 getFieldDecorator('cardPin', {
                     rules: validationRuleforCardPin()
@@ -119,11 +120,12 @@ const ScratchCardForm = React.memo((props) => {
                         type='number'
                         placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                         size='large'
+                        id='scratch_card_form_cardPin'
                     />                            
                 )
             }
             </Form.Item>
-            <Form.Item>
+            <Form.Item htmlFor='scratch_card_form_cardSerialNumber'>
             {
                 getFieldDecorator('cardSerialNumber', {
                     rules: validationRuleforCardSerial()
@@ -133,6 +135,7 @@ const ScratchCardForm = React.memo((props) => {
                         type='number'
                         placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                         size='large'
+                        id='scratch_card_form_cardSerialNumber'
                     />                         
                 )
             }
