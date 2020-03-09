@@ -2,11 +2,17 @@
     display: flex;
 }
 
+.form-otp-new-recipient {
+    font-weight: bold;
+    margin-bottom: 15px;
+    padding: 0 25px;
+}
+
 .bank-name {
     &:before {
         content: url('../../assets/icons/bank-name.svg');
         height: 20px;
-        margin: 10px 10px 10px 20px;;
+        margin: 10px 10px 10px 0;
         width: 20px;
     }        
 }
@@ -15,7 +21,7 @@
     &:before {
         content: url('../../assets/icons/username.svg');
         height: 20px;
-        margin: 10px 10px 10px 20px;;
+        margin: 10px 10px 10px 0;
         width: 20px;
     }
 }
@@ -24,7 +30,16 @@
     &:before {
         content: url('../../assets/icons/password.svg');
         height: 20px;
-        margin: 10px 10px 10px 20px;;
+        margin: 10px 10px 10px 0;
+        width: 20px;
+    }
+}
+
+.otp-reference {
+    &:before {
+        content: url('../../assets/icons/otp-reference.svg');
+        height: 20px;
+        margin: 10px 10px 10px 0;
         width: 20px;
     }
 }

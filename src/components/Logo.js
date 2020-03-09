@@ -8,7 +8,7 @@ const getFilePath = (bank, currency) => {
     return require(`../assets/banks/${bank}_LOGO.svg`);
   }
 
-  return require('../assets/banks/GW_LOGO.png');
+  return require('../assets/banks/GW_LOGO.svg');
 };
 
 const Logo = ({ bank, currency }) => {

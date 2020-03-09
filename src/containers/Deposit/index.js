@@ -24,15 +24,18 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
+const { Countdown } = Statistic;
+
 const Deposit = props => {
   const analytics = firebase.analytics();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(true);
   const [error, setError] = useState();
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
+  const [deadline, setDeadline] = useState();
   const queryParams = useQuery();
   const bank = queryParams.get('b');
   const merchant = queryParams.get('m');
@@ -224,9 +227,14 @@ const Deposit = props => {
         return;
       }
     };
+
+    if (step === 1) {
+      setDeadline(Date.now() + 1000 * 180);
+    }
   }, [step]);
 
   let content;
+  
   if (step === 0) {
     analytics.setCurrentScreen('input_user_credentials');
     content = (
@@ -243,12 +251,16 @@ const Deposit = props => {
         handleSubmit={handleSubmitDeposit}
         refFormSubmit={refFormSubmit}
         handleHasFieldError={handleHasFieldError}
+        waitingForReady={waitingForReady}
+        hasFieldError={hasFieldError}
+        showOtpMethod={showOtpMethod}
+        handleRefFormSubmit={handleRefFormSubmit}
       />
     );
   } else if (step === 1) {
     analytics.setCurrentScreen('input_otp');
     content = (
-      <OTPForm otpReference={otpReference} handleSubmit={handleSubmitOTP} />
+      <OTPForm otpReference={otpReference} handleSubmitOTP={handleSubmitOTP} waitingForReady={waitingForReady} />
     );
   } else if (step === 2 && isSuccessful) {
     analytics.setCurrentScreen('transfer_successful');
@@ -272,20 +284,27 @@ const Deposit = props => {
       </AutoRedirect>
     );
   }
-  console.log('progress', progress && progress.statusCode)
+
   return (
     <div className='wrapper'>
       <div className='container'>
         <div className='form-content'>
           <header>
             <Logo bank={bank} currency={currency} />
-            <Statistic
-              title={intl.formatMessage(messages.deposit)}
-              prefix={currency}
-              value={amount}
-              valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
-              precision={2}
-            />
+            {
+              step === 0 &&
+              <Statistic
+                title={intl.formatMessage(messages.deposit)}
+                prefix={currency}
+                value={amount}
+                valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
+                precision={2}
+              />
+            }
+            {
+              step === 1 &&
+              <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
+            }
             {
               error &&
               <Alert
@@ -297,51 +316,41 @@ const Deposit = props => {
               />
             }
           </header>
-          <main>
-            <Spin spinning={waitingForReady}>
-              <div>{content}</div>
-            </Spin>
-          </main>
+          {
+            content
+          }
         </div>
         <StepsBar step={step} />
       </div>
       <footer className='footer-submit-container'>
           {
-            showOtpMethod ?
+            showOtpMethod &&
             <>
-              <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
+              <Button size='large' className='deposit-submit' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
                 <SMSIcon /> SMS OTP
               </Button>
-              <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
+              <Button size='large' className='deposit-submit' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
                 <SMARTIcon />SMART OTP
               </Button>     
-            </> :
-              <Button
-                size='large'
-                type='primary'
-                htmlType='submit'
-                disabled={hasFieldError}
-                onClick={() => handleRefFormSubmit(undefined)}
-              >
-              <FormattedMessage {...messages.submit} />
-            </Button>
+            </>
           } 
         </footer>
-        <ConfirmationModal visible={false}>
-            {
-              // progress &&
+        <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
               <div className='progress-bar-container'>
-                <Progress
-                  // percent={(progress.currentStep / progress.totalSteps) * 100}
-                  percent={70}
-                  status='active'
-                  showInfo={false}
-                  strokeColor='#34A220'
-                />
-                {/* <strong>{progress.statusMessage}</strong> */}
-                <p>Submitting transaction via secure connection</p>
+                {
+                  (progress && (progress.currentStep / progress.totalSteps) * 100) >= 60
+                    ?
+                      <img alt='submit-transaction' width='100' src={require('../../assets/icons/submit-success.svg')} />
+                    :
+                      <Progress
+                        percent={progress && (progress.currentStep / progress.totalSteps) * 100}
+                        status='active'
+                        showInfo={false}
+                        strokeColor='#34A220'
+                      />
+                }
+                <p>{progress && progress.statusMessage}</p>
               </div>
-            }
         </ConfirmationModal>
     </div>
   );

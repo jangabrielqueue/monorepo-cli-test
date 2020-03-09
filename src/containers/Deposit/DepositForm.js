@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Form,
   Icon,
@@ -6,6 +6,7 @@ import {
   Button,
   Select,
   Collapse,
+  Spin
 } from "antd";
 import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
@@ -37,7 +38,11 @@ const DepositFormImpl = React.memo((props) => {
     handleSubmit,
     refFormSubmit,
     handleHasFieldError,
-    intl
+    intl,
+    waitingForReady,
+    hasFieldError,
+    showOtpMethod,
+    handleRefFormSubmit
   } = props;
   const {
     validateFields,
@@ -50,8 +55,7 @@ const DepositFormImpl = React.memo((props) => {
   const handleSubmitForm = (type) => {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
-    validateFields((err, values) => {  
-      console.log('values', values)
+    validateFields((err, values) => {
       if (!err) {
         handleSubmit({
           currency,
@@ -75,89 +79,108 @@ const DepositFormImpl = React.memo((props) => {
   }, [getFieldsError()])
 
     return (
-      <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
-        {
-          !isBankKnown &&
-          <div className='form-icon-container bank-name'>
-            <Form.Item label='Bank Name'>
-              {
-                getFieldDecorator('bank', {
-                  initialValue: getDefaultBankByCurrency(props.currency).code
-                })(
-                  <Select
-                    size="large"
-                    aria-owns='1 2 3 4 5 6 7 8 9'
-                  >
-                    {bankCodes.map((x, i)=> (
-                      <Option key={x.code} id={i} value={x.code}>
-                        {x.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )
-              }
+      <main>
+        <Spin spinning={waitingForReady}>
+          <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
+            {
+              !isBankKnown &&
+              <div className='form-icon-container bank-name'>
+                <Form.Item label='Bank Name'>
+                  {
+                    getFieldDecorator('bank', {
+                      initialValue: getDefaultBankByCurrency(props.currency).code
+                    })(
+                      <Select
+                        size="large"
+                        aria-owns='1 2 3 4 5 6 7 8 9'
+                      >
+                        {bankCodes.map((x, i)=> (
+                          <Option key={x.code} id={i} value={x.code}>
+                            {x.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    )
+                  }
+                </Form.Item>
+              </div>
+            }
+          <div className='form-icon-container username'>
+            <Form.Item label='Online Banking Login Name' htmlFor='deposit_form_username'>
+              {getFieldDecorator('username', {
+                rules: [
+                  {
+                    required: true,
+                    message: intl.formatMessage(messages.placeholders.inputLoginName),
+                  },
+                ],
+              })(
+                <Input 
+                  size="large"
+                  allowClear
+                  placeholder={intl.formatMessage(messages.placeholders.loginName)}
+                  id='deposit_form_username'
+                />
+              )}
             </Form.Item>
           </div>
-        }
-        <div className='form-icon-container username'>
-          <Form.Item label='Online Banking Login Name' htmlFor='deposit_form_username'>
-            {getFieldDecorator('username', {
-              rules: [
-                {
-                  required: true,
-                  message: intl.formatMessage(messages.placeholders.inputLoginName),
-                },
-              ],
-            })(
-              <Input 
-                size="large"
-                allowClear
-                placeholder={intl.formatMessage(messages.placeholders.loginName)}
-                id='deposit_form_username'
-              />
-            )}
-          </Form.Item>
-        </div>
-        <div className='form-icon-container password'>
-          <Form.Item label='Password' htmlFor='deposit_form_password'>
-            {getFieldDecorator('password', {
-              rules: [
-                { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
-              ],
-            })(
-              <Input.Password
-                size="large"
-                allowClear
-                placeholder={intl.formatMessage(messages.placeholders.password)}
-                id='deposit_form_password'
-              />
-            )}
-          </Form.Item>
-        </div>
-        <div className='more-info-form-item'>
-          <Collapse bordered={false}>
-            <Panel
-              header={intl.formatMessage(messages.moreInformation)}
-              key="1"
-              style={{
-                border: "0",
-                fontWeight: 600,
-              }}
+          <div className='form-icon-container password'>
+            <Form.Item label='Password' htmlFor='deposit_form_password'>
+              {getFieldDecorator('password', {
+                rules: [
+                  { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
+                ],
+              })(
+                <Input.Password
+                  size="large"
+                  allowClear
+                  placeholder={intl.formatMessage(messages.placeholders.password)}
+                  id='deposit_form_password'
+                />
+              )}
+            </Form.Item>
+          </div>
+          <div className='more-info-form-item'>
+            <Collapse bordered={false}>
+              <Panel
+                header={intl.formatMessage(messages.moreInformation)}
+                key="1"
+                style={{
+                  border: "0",
+                  fontWeight: 600,
+                }}
+              >
+                <div className="infos">
+                  <div className="info-item">
+                    <Icon type="key" />
+                    <span>{reference}</span>
+                  </div>
+                  <div className="info-item">
+                    <Icon type="pay-circle" />
+                    <span>{currency}</span>
+                  </div>
+                </div>
+              </Panel>
+            </Collapse>
+          </div>
+        </Form>
+        </Spin>
+        {
+          !showOtpMethod &&
+          <div className='form-content-submit-container'>
+            <Button
+              size='large'
+              type='primary'
+              htmlType='submit'
+              disabled={hasFieldError}
+              className='submit'
+              onClick={() => handleRefFormSubmit(undefined)}
             >
-              <div className="infos">
-                <div className="info-item">
-                  <Icon type="key" />
-                  <span>{reference}</span>
-                </div>
-                <div className="info-item">
-                  <Icon type="pay-circle" />
-                  <span>{currency}</span>
-                </div>
-              </div>
-            </Panel>
-          </Collapse>
-        </div>
-      </Form>
+              <FormattedMessage {...messages.submit} />
+            </Button>
+          </div>
+        }
+      </main>
     );
   });
 

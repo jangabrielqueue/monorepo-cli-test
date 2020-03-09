@@ -68,17 +68,11 @@ function getBanksByCurrency(currency) {
 }
 
 function checkBankIfKnown (currency, bank) {
-  const faker = ['FAKER', 'FAKERTHB'];
-  
-  if (!faker.includes(bank)) {
     if (currency === 'VND') {
       return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank)
     } else if (currency === 'THB') {
       return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank)
     }
-  }
-
-  return false;
 }
 
 function getVndBanksByEnvForTopUp() {
