@@ -10,17 +10,17 @@ export default defineMessages({
     success: {
         successfullyDeposit: {
             id: 'success.successfullyDeposit',
-            defaultMessage: 'Successfully deposit'
+            defaultMessage: 'Successfully Deposited!'
         }
     },
     errors: {
         transactionFailed: {
             id: 'errors.transactionFailed',
-            defaultMessage: 'Submitted transaction failed'
+            defaultMessage: 'Submitted Transaction Failed!'
         },
         submissionFailed: {
             id: 'errors.submissionFailed',
-            defaultMessage: 'Submission Failed'
+            defaultMessage: 'Submission Failed!'
         },
         invalidParameters: {
             id: 'errors.invalidParameters',
@@ -34,7 +34,7 @@ export default defineMessages({
     progress: {
         pendingConfirmation: {
             id: 'progress.pendingConfirmation',
-            defaultMessage: 'Transaction is pending for confirmation'
+            defaultMessage: 'Transaction is pending for confirmation.'
         }
     }
 });

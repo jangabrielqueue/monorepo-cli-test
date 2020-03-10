@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Spin, Alert, Progress, Button, Icon, Steps } from 'antd';
+import { Statistic, Alert, Progress, Button } from 'antd';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -15,7 +15,6 @@ import { useQuery } from '../../utils/utils';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
-import { FormattedMessage } from 'react-intl';
 import { ReactComponent as SMSIcon } from '../../assets/icons/sms.svg';
 import { ReactComponent as SMARTIcon } from '../../assets/icons/smart.svg';
 import StepsBar from '../../components/StepsBar';
@@ -28,7 +27,7 @@ const { Countdown } = Statistic;
 
 const Deposit = props => {
   const analytics = firebase.analytics();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(true);
   const [error, setError] = useState();
@@ -36,6 +35,9 @@ const Deposit = props => {
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
   const [deadline, setDeadline] = useState();
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: window.outerWidth
+  });
   const queryParams = useQuery();
   const bank = queryParams.get('b');
   const merchant = queryParams.get('m');
@@ -63,6 +65,12 @@ const Deposit = props => {
   const refFormSubmit = useRef(null);
   const showOtpMethod = currency === 'VND';
   analytics.setCurrentScreen('deposit');
+
+  const handleWindowResize = () => {
+    setWindowDimensions({
+      width: window.outerWidth
+    });
+  }
 
   async function handleSubmitDeposit(values) {
     analytics.logEvent('login', {
@@ -95,16 +103,16 @@ const Deposit = props => {
   async function handleSubmitOTP(value) {
     analytics.logEvent('submitted_otp', {
       reference: reference,
-      otp: value.otp,
+      otp: value,
     });
     setError(undefined);
     setProgress(undefined);
     setWaitingForReady(true);
-    const result = await sendDepositOtp(reference, value.otp);
+    const result = await sendDepositOtp(reference, value);
     if (result.error) {
       analytics.logEvent('submitted_otp_failed', {
         reference: reference,
-        otp: value.otp,
+        otp: value,
       });
       setError(result.error);
       setProgress(undefined);
@@ -112,7 +120,7 @@ const Deposit = props => {
     } else {
       analytics.logEvent('submitted_otp_succeed', {
         reference: reference,
-        otp: value.otp,
+        otp: value,
       });
       setStep(1);
     }
@@ -173,6 +181,11 @@ const Deposit = props => {
     // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
     // avoid unnecessary warning
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => window.removeEventListener('resize', handleWindowResize);
+    
   }, [])
 
   useEffect(() => {
@@ -255,6 +268,7 @@ const Deposit = props => {
         hasFieldError={hasFieldError}
         showOtpMethod={showOtpMethod}
         handleRefFormSubmit={handleRefFormSubmit}
+        windowDimensions={windowDimensions}
       />
     );
   } else if (step === 1) {
@@ -266,7 +280,7 @@ const Deposit = props => {
     analytics.setCurrentScreen('transfer_successful');
     content = (
       <AutoRedirect delay={10000} url={successfulUrl}>
-        <TransferSuccessful transferResult={transferResult} />
+        <TransferSuccessful transferResult={transferResult} language={language} />
       </AutoRedirect>
     );
   } else if (step === 2 && transferResult.statusCode === '000') {
@@ -289,7 +303,7 @@ const Deposit = props => {
     <div className='wrapper'>
       <div className='container'>
         <div className='form-content'>
-          <header>
+          <header className={step === 2 ? null : 'header-bottom-border'}>
             <Logo bank={bank} currency={currency} />
             {
               step === 0 &&
@@ -322,19 +336,27 @@ const Deposit = props => {
         </div>
         <StepsBar step={step} />
       </div>
-      <footer className='footer-submit-container'>
-          {
-            showOtpMethod &&
-            <>
-              <Button size='large' className='deposit-submit' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
-                <SMSIcon /> SMS OTP
+        {
+          (showOtpMethod && windowDimensions.width <= 576 && step === 0) &&
+          <footer className='footer-submit-container'>
+            <div className='deposit-submit-buttons'>
+              <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError} loading={waitingForReady}>
+                {
+                  !waitingForReady &&
+                  <SMSIcon />
+                }
+                SMS OTP
               </Button>
-              <Button size='large' className='deposit-submit' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
-                <SMARTIcon />SMART OTP
-              </Button>     
-            </>
-          } 
-        </footer>
+              <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError} loading={waitingForReady}>
+                {
+                  !waitingForReady &&
+                  <SMARTIcon />
+                }
+                SMART OTP
+              </Button>
+            </div>  
+          </footer>
+        }
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
               <div className='progress-bar-container'>
                 {

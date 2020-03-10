@@ -12,6 +12,8 @@ import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
+import { ReactComponent as SMSIcon } from '../../assets/icons/sms.svg';
+import { ReactComponent as SMARTIcon } from '../../assets/icons/smart.svg';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -42,7 +44,8 @@ const DepositFormImpl = React.memo((props) => {
     waitingForReady,
     hasFieldError,
     showOtpMethod,
-    handleRefFormSubmit
+    handleRefFormSubmit,
+    windowDimensions
   } = props;
   const {
     validateFields,
@@ -173,12 +176,33 @@ const DepositFormImpl = React.memo((props) => {
               type='primary'
               htmlType='submit'
               disabled={hasFieldError}
-              className='submit'
+              loading={waitingForReady}
               onClick={() => handleRefFormSubmit(undefined)}
             >
-              <FormattedMessage {...messages.submit} />
+              {
+                !waitingForReady && <FormattedMessage {...messages.submit} />
+              }
             </Button>
           </div>
+        }
+        {
+          (showOtpMethod && windowDimensions.width > 576) &&
+          <div className='deposit-submit-buttons'>
+            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
+              {
+                !waitingForReady &&
+                <SMSIcon />
+              }
+              SMS OTP
+            </Button>
+            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
+              {
+                !waitingForReady &&
+                <SMARTIcon />
+              }
+              SMART OTP
+            </Button>     
+          </div>          
         }
       </main>
     );

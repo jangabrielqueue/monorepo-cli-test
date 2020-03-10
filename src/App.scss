@@ -39,7 +39,7 @@ body {
 }
 
 .steps-bar-container {
-  padding: 10px 0;
+  padding: 15px 0;
   text-align: center;
 }
 
@@ -52,12 +52,65 @@ body {
 
   > img {
     animation: zoomInAndOut 0.5s ease-in-out;
+    margin-bottom: 20px;
   }
 
   > p {
     font-weight: bold;
-    margin: 15px 0 0;
+    margin: 0;
     text-align: center;
+    width: 100%;
+  }
+}
+
+.logo {
+  margin: 25px 0;
+  text-align: center;
+
+  img {
+    height: auto;
+    max-width: 230px;
+    width: 100%;
+  }
+}
+
+.auto-redirect-statistic {
+  padding: 0 15px;
+
+   .ant-statistic-title {
+    margin-bottom: 10px !important;
+  }
+
+  .ant-statistic-content-value {
+    font-weight: bold !important;
+  }
+}
+
+.auto-redirect-content {
+  text-align: center;
+
+  img {
+    margin: 30px 0;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  p {
+    margin: 25px 0;
+  }
+
+  .transaction-amount {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.11);
+    border-radius: 11px;
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    height: 50px;
+    justify-content: center;
+    width: 100%;
   }
 }
 

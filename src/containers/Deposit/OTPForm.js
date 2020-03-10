@@ -65,10 +65,16 @@ const OTPFormImpl = React.memo((props) => {
               type='primary'
               htmlType='submit'
               block
+              loading={waitingForReady}
               disabled={hasErrors(getFieldsError())}
               className='otp-submit'
             >
-              <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+              {
+                !waitingForReady &&
+                <>
+                  <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                </>
+              }
             </Button>
           </div>
         </Form>
