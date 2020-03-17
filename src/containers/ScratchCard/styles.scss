@@ -1,3 +1,26 @@
+.form-icon-container {
+    display: flex;
+}
+
+.mobile {
+    &:before {
+        content: url('../../assets/icons/otp-reference.svg');
+        height: 20px;
+        margin: 10px 15px 10px 0;
+        width: 20px;
+    }
+}
+
+.credit-card {
+    &:before {
+        content: url('../../assets/icons/credit-card.svg');
+        height: 20px;
+        margin: 10px 15px 10px 2px;
+        width: 20px;
+        opacity: 0.6;
+    }
+}
+
 .note-text {
     font-size: 12px;        
     font-weight: bold;

@@ -40,9 +40,8 @@ export const TransferWaitForConfirm = ({ transferResult }) => {
 
   return (
     <div className='auto-redirect-content'>
-      <img alt='submit-pending' src={require('../assets/icons/submit-success.svg')} />
-      <h1>{intl.formatMessage(messages.success.successfullyDeposit)}</h1>
-      <p>{intl.formatMessage(messages.progress.pendingConfirmation)}</p>
+      <h2>{intl.formatMessage(messages.progress.pendingConfirmation)}</h2>
+      <p>{transferResult.message}</p>
     </div>
   );
 };

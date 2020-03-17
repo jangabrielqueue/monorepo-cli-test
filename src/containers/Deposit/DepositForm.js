@@ -54,6 +54,7 @@ const DepositFormImpl = React.memo((props) => {
   } = props.form;
   const bankCodes = getBanksByCurrency(currency);
   const isBankKnown = checkBankIfKnown(currency, bank);
+  const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
 
   const handleSubmitForm = (type) => {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
@@ -79,7 +80,7 @@ const DepositFormImpl = React.memo((props) => {
 
   useEffect(() => {
     handleHasFieldError(hasErrors(getFieldsError()))
-  }, [getFieldsError()])
+  }, [getFieldsErrorDepArray, getFieldsError, handleHasFieldError])
 
     return (
       <main>

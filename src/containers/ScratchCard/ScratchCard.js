@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Steps, Spin, Alert, Progress } from 'antd';
+import { Alert, Progress, Statistic } from 'antd';
 import ScratchCardForm from './ScratchCardForm';
 import { useQuery, sleep } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
@@ -13,8 +13,9 @@ import {
   } from "../../components/TransferResult";
 import { useIntl } from 'react-intl';
 import messages from './messages';
-  
-const { Step } = Steps;
+import Logo from '../../components/Logo';
+import StepsBar from '../../components/StepsBar';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
@@ -100,6 +101,7 @@ const ScratchCard = (props) => {
                 return (
                     <ScratchCardForm
                         handleSubmitScratchCard={handleSubmitScratchCard}
+                        waitingForReady={waitingForReady}
                     />
                 );
 
@@ -129,39 +131,17 @@ const ScratchCard = (props) => {
         }
     }
 
-    function showProgress (progress) {
-        function progressStatus () {
-            if (progress.percent !== 100) {
-                return 'active';
-            } else if (progress.percent === 100 && !isSuccessful) {
-                return 'exception';
-            } else if (progress.percent === 100 && isSuccessful) {
-                return 'success';
-            }
-        }
-
-        return (
-            <div style={{ padding: '5px' }}>
-                <Progress
-                    percent={progress.percent}
-                    status={progressStatus()}
-                    showInfo={false}
-                />
-                <strong>{progress.statusMessage}</strong>
-            </div>            
-        );
-    };
-
     const handleCommandStatusUpdate = useCallback(
         async (result) => {
             let start, end;
 
             start = performance.now();
-            
+
             if (result.statusCode === '009') {
                 setProgress({
                     percent: 67,
                     statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
+                    statusCode: result.statusCode
                   });
                 setWaitingForReady(true);
                 setStep(0);
@@ -173,6 +153,7 @@ const ScratchCard = (props) => {
                     setProgress({
                         percent: 67,
                         statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
+                        statusCode: '001'
                       });
                     setWaitingForReady(false);
                     setIsSuccessful(false);
@@ -181,25 +162,33 @@ const ScratchCard = (props) => {
                         message: intl.formatMessage(messages.errors.connectionTimeout)
                     });
                     setStep(1);
+
+                    return;
                 }
             } else if (result.statusCode === '006') {
                 setProgress({
                     percent: 100,
                     statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                    statusCode: result.statusCode
                   });
                 setWaitingForReady(false);
                 setIsSuccessful(true);
                 setTransferResult(result);
                 setStep(1);
+                
+                return;
             } else {
                 setProgress({
                     percent: 100,
                     statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                    statusCode: result.statusCode
                   });
                 setWaitingForReady(false);
                 setIsSuccessful(false);
                 setTransferResult(result);
                 setStep(1);
+
+                return;
             }
         },
         [intl],
@@ -213,8 +202,7 @@ const ScratchCard = (props) => {
         // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
         // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
         // avoid unnecessary warning
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [])
+      }, [])    // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
@@ -265,7 +253,7 @@ const ScratchCard = (props) => {
 
     useEffect(() => {
         window.onbeforeunload = window.onunload = (e) => {
-          if (step < 2) {
+          if (step === 0) {
             // this custom message will only appear on earlier version of different browsers.
             // However on modern and latest browsers their own default message will override this custom message.
             // as of the moment only applicable on browsers. there's no definite implementation on mobile
@@ -277,39 +265,57 @@ const ScratchCard = (props) => {
       }, [step]);
 
     return (
-        <>
-            <div className='steps-container'>  
-                <Steps current={step} size='small'>
-                    {
-                        steps.map((item, i) => (
-                            <Step key={i} title={item} />
-                        ))
-                    }
-                </Steps>
-            </div>
-            <div className='deposit-container'>
-            {
-                error &&
-                    <Alert
-                        message={error.name}
-                        description={error.message}
-                        type='error'
-                        showIcon
-                        style={{ marginBottom: '0.5rem' }}
-                    />
-            }
-            <Spin spinning={waitingForReady}>
-                <Card>
+        <div className='wrapper'>
+            <div className='container'>
+                <div className='form-content'>
+                    <header className={step === 1 ? null : 'header-bottom-border'}>
+                        <Logo bank={queryParams.get('b')} currency={queryParams.get('c1')} />
+                        {
+                            step === 0 &&
+                            <Statistic
+                                title={intl.formatMessage(messages.deposit)}
+                                prefix={queryParams.get('c1')}
+                                value={queryParams.get('a')}
+                                valueStyle={{ color: "#000", fontWeight: 700 }}
+                                precision={2}
+                            />
+                        }
+                        {
+                            error &&
+                            <Alert
+                                message={error.name}
+                                description={error.message}
+                                type='error'
+                                showIcon
+                                closable
+                                className='error-message'
+                            />
+                        }
+                    </header>
                     {
                         renderStepsContent(steps[step])
                     }
-                </Card>
-            </Spin>
-                {
-                    progress && showProgress(progress)
-                }
+                </div>
+                <StepsBar step={step === 1 ? 2 : step} />
             </div>
-        </>
+            <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
+              <div className='progress-bar-container'>
+                {
+                  (progress && progress.percent === 100)
+                    ?
+                      <img alt='submit-transaction' width='100' src={require('../../assets/icons/submit-success.svg')} />
+                    :
+                      <Progress
+                        percent={progress && progress.percent}
+                        status='active'
+                        showInfo={false}
+                        strokeColor='#34A220'
+                      />
+                }
+                <p>{progress && progress.statusMessage}</p>
+              </div>
+            </ConfirmationModal>
+        </div>
     );
 }
 
