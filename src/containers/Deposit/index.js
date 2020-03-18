@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button } from 'antd';
+import { Statistic, Alert, Progress, Button, Icon } from 'antd';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -15,10 +15,10 @@ import { useQuery } from '../../utils/utils';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
-import { ReactComponent as SMSIcon } from '../../assets/icons/sms.svg';
-import { ReactComponent as SMARTIcon } from '../../assets/icons/smart.svg';
 import StepsBar from '../../components/StepsBar';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import { checkBankIfKnown } from '../../utils/banks';
+import Icons from './Icons';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
@@ -65,6 +65,10 @@ const Deposit = props => {
   const refFormSubmit = useRef(null);
   const showOtpMethod = currency === 'VND';
   analytics.setCurrentScreen('deposit');
+  const isBankKnown = checkBankIfKnown(currency, bank);
+  const wrapperBG = isBankKnown ? `bg-${bank.toLowerCase()}` : 'bg-unknown';
+  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : 'button-unknown';
+  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
 
   const handleWindowResize = () => {
     setWindowDimensions({
@@ -265,7 +269,13 @@ const Deposit = props => {
   } else if (step === 1) {
     analytics.setCurrentScreen('input_otp');
     content = (
-      <OTPForm otpReference={otpReference} handleSubmitOTP={handleSubmitOTP} waitingForReady={waitingForReady} />
+      <OTPForm
+        otpReference={otpReference}
+        handleSubmitOTP={handleSubmitOTP}
+        waitingForReady={waitingForReady}
+        bank={bank}
+        currency={currency}
+      />
     );
   } else if (step === 2 && isSuccessful) {
     analytics.setCurrentScreen('transfer_successful');
@@ -291,11 +301,11 @@ const Deposit = props => {
   }
 
   return (
-    <div className='wrapper'>
+    <div className={`wrapper ${wrapperBG}`}>
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
-            <Logo bank={bank} currency={currency} />
+            <Logo bank={bank.toUpperCase()} currency={currency} />
             {
               step === 0 &&
               <Statistic
@@ -331,17 +341,17 @@ const Deposit = props => {
           (showOtpMethod && windowDimensions.width <= 576 && step === 0) &&
           <footer className='footer-submit-container'>
             <div className='deposit-submit-buttons'>
-              <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError} loading={waitingForReady}>
+              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <SMSIcon />
+                  <Icons name={`sms-${renderIcon}`} />
                 }
                 SMS OTP
               </Button>
-              <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError} loading={waitingForReady}>
+              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <SMARTIcon />
+                  <Icons name={`smart-${renderIcon}`} />
                 }
                 SMART OTP
               </Button>

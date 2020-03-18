@@ -16,6 +16,7 @@ import messages from './messages';
 import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import { checkBankIfKnown } from '../../utils/banks';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
@@ -36,6 +37,8 @@ const ScratchCard = (props) => {
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.inProgress),
     };
+    const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b'));
+    const wrapperBG = isBankKnown ? `bg-${queryParams.get('b').toLowerCase()}` : 'bg-unknown';
 
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
@@ -265,11 +268,11 @@ const ScratchCard = (props) => {
       }, [step]);
 
     return (
-        <div className='wrapper'>
+        <div className={`wrapper ${wrapperBG}`}>
             <div className='container'>
                 <div className='form-content'>
                     <header className={step === 1 ? null : 'header-bottom-border'}>
-                        <Logo bank={queryParams.get('b')} currency={queryParams.get('c1')} />
+                        <Logo bank={queryParams.get('b').toUpperCase()} currency={queryParams.get('c1')} />
                         {
                             step === 0 &&
                             <Statistic

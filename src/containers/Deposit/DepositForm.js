@@ -12,8 +12,7 @@ import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
-import { ReactComponent as SMSIcon } from '../../assets/icons/sms.svg';
-import { ReactComponent as SMARTIcon } from '../../assets/icons/smart.svg';
+import Icons from './Icons';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -55,7 +54,9 @@ const DepositFormImpl = React.memo((props) => {
   const bankCodes = getBanksByCurrency(currency);
   const isBankKnown = checkBankIfKnown(currency, bank);
   const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
-
+  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
+  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  
   const handleSubmitForm = (type) => {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
@@ -173,8 +174,8 @@ const DepositFormImpl = React.memo((props) => {
           !showOtpMethod &&
           <div className='form-content-submit-container'>
             <Button
+              className={buttonBG}
               size='large'
-              type='primary'
               htmlType='submit'
               disabled={hasFieldError}
               loading={waitingForReady}
@@ -189,17 +190,17 @@ const DepositFormImpl = React.memo((props) => {
         {
           (showOtpMethod && windowDimensions.width > 576) &&
           <div className='deposit-submit-buttons'>
-            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
               {
                 !waitingForReady &&
-                <SMSIcon />
+                <Icons name={`sms-${renderIcon}`} />
               }
               SMS OTP
             </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
               {
                 !waitingForReady &&
-                <SMARTIcon />
+                <Icons name={`smart-${renderIcon}`} />
               }
               SMART OTP
             </Button>     

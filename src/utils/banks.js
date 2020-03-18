@@ -21,7 +21,9 @@ const BOA = { code: "BOA", name: "Ayudhya Bank / Krungsri" };
 const TMB = { code: "TMB", name: "TMB Bank" };
 const FAKERTHB = { code: "FAKERTHB", name: "Faker THB" };
 
-const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI];
+const PRECARD = { code: "PRECARD", name: "PRECARD" };
+
+const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, PRECARD];
 const VND_ALL_BANKS_DEV = [
   VCB,
   ACB,
@@ -32,17 +34,18 @@ const VND_ALL_BANKS_DEV = [
   EXIM,
   SACOM,
   AGRI,
-  FAKER,
+  PRECARD,
+  FAKER
 ];
 
-const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB];
-const THB_ALL_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, FAKERTHB];
+const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB, PRECARD];
+const THB_ALL_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, PRECARD, FAKERTHB];
 
-const VND_TOPUP_BANKS = [VCB, ACB, TCB, BIDV, SACOM];
-const VND_TOPUP_BANKS_DEV = [VCB, ACB, TCB, BIDV, SACOM, FAKER];
+const VND_TOPUP_BANKS = [VCB, ACB, TCB, BIDV, SACOM, PRECARD];
+const VND_TOPUP_BANKS_DEV = [VCB, ACB, TCB, BIDV, SACOM, PRECARD, FAKER];
 
-const THB_TOPUP_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB];
-const THB_TOPUP_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, FAKERTHB];
+const THB_TOPUP_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB, PRECARD];
+const THB_TOPUP_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, PRECARD, FAKERTHB];
 
 function getVndBanksByEnvForDeposit() {
   if (isUatOrDev) {
@@ -69,9 +72,9 @@ function getBanksByCurrency(currency) {
 
 function checkBankIfKnown (currency, bank) {
     if (currency === 'VND') {
-      return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank)
+      return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
     } else if (currency === 'THB') {
-      return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank)
+      return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
     }
 }
 

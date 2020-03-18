@@ -4,6 +4,7 @@ import { isNullOrWhitespace } from '../../utils/utils';
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
+import { checkBankIfKnown } from "../../utils/banks";
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -11,7 +12,9 @@ function hasErrors(fieldsError) {
 
 const OTPFormImpl = React.memo((props) => {
   const { getFieldDecorator, getFieldsError, validateFields } = props.form;
-  const { handleSubmitOTP, otpReference, intl, waitingForReady } = props;
+  const { handleSubmitOTP, otpReference, intl, waitingForReady, bank, currency } = props;
+  const isBankKnown = checkBankIfKnown(currency, bank);
+  const buttonOtpBG = isBankKnown ? `button-otp-${bank.toLowerCase()}` : 'button-otp-unknown';
 
   function handleSubmitForm (e) {
     e.preventDefault();
@@ -62,12 +65,10 @@ const OTPFormImpl = React.memo((props) => {
           <div className='form-content-submit-container'>
             <Button
               size='large'
-              type='primary'
               htmlType='submit'
-              block
               loading={waitingForReady}
               disabled={hasErrors(getFieldsError())}
-              className='otp-submit'
+              className={buttonOtpBG}
             >
               {
                 !waitingForReady &&

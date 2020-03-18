@@ -139,8 +139,8 @@ const ScratchCardForm = React.memo((props) => {
                     </div>
                     <div className='form-content-submit-container'>
                         <Button
+                            className='button-precard'
                             size='large'
-                            type='primary'
                             htmlType='submit'
                             disabled={hasErrors(getFieldsError())}
                             loading={waitingForReady}

@@ -1,9 +1,8 @@
 .wrapper {
-  background-image: linear-gradient(190deg, #FF2600 44%, #FFFFFF calc(44% + 2px));
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   padding-top: 75px;
-  flex-wrap: wrap;
 
   .container {
     margin: 0 20px;
@@ -32,21 +31,20 @@
           text-align: center;
 
           > button {
-            background-color: #FF2600;
             border-radius: 11px;
             border: 0;
-            height: 50px;
             color: #ffffff;
-            width: 100%;
             font-weight: bold;
+            height: 50px;
+            width: 100%;
 
             &:disabled {
               opacity: 0.5;
             }
         
             > svg {
-                vertical-align: middle;
                 margin-right: 5px;
+                vertical-align: middle;
             }
           }
         }
@@ -55,11 +53,11 @@
   }
 
   .footer-submit-container {
-    width: 100%;
-    text-align: center;
+    box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
     margin-top: 20px;
     padding-top: 10px;
-    box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
+    text-align: center;
+    width: 100%;
   }
 }
 
@@ -70,32 +68,234 @@
   > button {
     background-color: #ffffff !important;
     border-radius: 8px;
-    border: 2px solid #FF2600;
-    border-color: #FF2600 !important;
-    color: #FF2600 !important;
+    font-weight: bold;
+    height: 43px;
     margin: 0 15px !important;
     max-width: 150px;
     width: 100%;
-    font-weight: bold;
-    height: 43px;
 
     &:disabled {
       opacity: 0.5;
     }
   
     > svg {
-        vertical-align: middle;
         margin-right: 5px;
+        vertical-align: middle;
     }
   }
 }
 
 .fallback-container {
   margin: 0 auto;
-  min-height: 500px;
   max-width: 500px;
+  min-height: 500px;
   padding: 1rem 2rem 0rem 2rem;
   text-align: center;
+}
+
+// wrapper bg based on bank name
+.bg-unknown, .bg-faker, .bg-fakerthb, .bg-precard {
+  background-image: linear-gradient(190deg, #91C431 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-tcb {
+  background-image: linear-gradient(190deg, #FF2600 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-tmb {
+  background-image: linear-gradient(190deg, #008CCD 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-boa {
+  background-image: linear-gradient(190deg, #FFCC2F 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-ktb {
+  background-image: linear-gradient(190deg, #00B5E9 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-bbl {
+  background-image: linear-gradient(190deg, #0048AA 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-kbank {
+  background-image: linear-gradient(190deg, #00B463 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-scb {
+  background-image: linear-gradient(190deg, #59358C 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-vib {
+  background-image: linear-gradient(190deg, #007BC0 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-agri {
+  background-image: linear-gradient(190deg, #AB1C40 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-exim {
+  background-image: linear-gradient(190deg, #0071A7 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-dab {
+  background-image: linear-gradient(190deg, #F49200 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-bidv {
+  background-image: linear-gradient(190deg, #2B56AB 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-vcb {
+  background-image: linear-gradient(190deg, #00613F 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-acb {
+  background-image: linear-gradient(190deg, #0038A6 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-sacom {
+  background-image: linear-gradient(190deg, #0A74BE 44%, #FFFFFF calc(44% + 2px));
+}
+
+.bg-vtb {
+  background-image: linear-gradient(190deg, #055893 44%, #FFFFFF calc(44% + 2px));
+}
+
+// button color based on bank name
+.button-unknown, .button-faker {
+  border-color: #91C431 !important;
+  border: 2px solid #91C431;
+  color: #91C431 !important;
+}
+
+.button-tcb {
+  border-color: #FF2600 !important;
+  border: 2px solid #FF2600;
+  color: #FF2600 !important;
+}
+
+.button-vib {
+  border-color: #007BC0 !important;
+  border: 2px solid #007BC0;
+  color: #007BC0 !important;
+}
+
+.button-agri {
+  border-color: #AB1C40 !important;
+  border: 2px solid #AB1C40;
+  color: #AB1C40 !important;
+}
+
+.button-exim {
+  border-color: #0071A7 !important;
+  border: 2px solid #0071A7;
+  color: #0071A7 !important;
+}
+
+.button-dab {
+  border-color: #F49200 !important;
+  border: 2px solid #F49200;
+  color: #F49200 !important;
+}
+
+.button-bidv {
+  border-color: #2B56AB !important;
+  border: 2px solid #2B56AB;
+  color: #2B56AB !important;
+}
+
+.button-vcb {
+  border-color: #00613F !important;
+  border: 2px solid #00613F;
+  color: #00613F !important;
+}
+
+.button-acb {
+  border-color: #0038A6 !important;
+  border: 2px solid #0038A6;
+  color: #0038A6 !important;
+}
+
+.button-sacom {
+  border-color: #0A74BE !important;
+  border: 2px solid #0A74BE;
+  color: #0A74BE !important;
+}
+
+.button-vtb {
+  border-color: #055893 !important;
+  border: 2px solid #055893;
+  color: #055893 !important;
+}
+
+// button otp color based on bank name
+.button-otp-unknown, .button-otp-faker, .button-fakerthb, .button-otp-fakerthb, .button-precard {
+  background-color: #91C431 !important;
+}
+
+.button-otp-tcb {
+  background-color: #FF2600 !important;
+}
+
+.button-otp-tmb, .button-tmb {
+  background-color: #008CCD !important;
+}
+
+.button-otp-boa, .button-boa {
+  background-color: #FFCC2F !important;
+}
+
+.button-otp-ktb, .button-ktb {
+  background-color: #00B5E9 !important;
+}
+
+.button-otp-bbl, .button-bbl {
+  background-color: #0048AA !important;
+}
+
+.button-otp-kbank, .button-kbank {
+  background-color: #00B463 !important;
+}
+
+.button-otp-scb, .button-scb {
+  background-color: #59358C !important;
+}
+
+.button-otp-vib {
+  background-color: #007BC0 !important;
+}
+
+.button-otp-agri {
+  background-color: #AB1C40 !important;
+}
+
+.button-otp-exim {
+  background-color: #0071A7 !important;
+}
+
+.button-otp-dab {
+  background-color: #F49200 !important;
+}
+
+.button-otp-bidv {
+  background-color: #2B56AB !important;
+}
+
+.button-otp-vcb {
+  background-color: #00613F !important;
+}
+
+.button-otp-acb {
+  background-color: #0038A6 !important;
+}
+
+.button-otp-sacom {
+  background-color: #0A74BE !important;
+}
+
+.button-otp-vtb {
+  background-color: #055893 !important;
 }
 
 @media only screen and(max-width: 23.438em) {
