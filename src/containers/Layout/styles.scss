@@ -34,8 +34,10 @@
             border-radius: 11px;
             border: 0;
             color: #ffffff;
-            font-weight: bold;
+            font-family: ProductSansMedium;
+            font-size: 18px;
             height: 50px;
+            padding: 0 20px;
             width: 100%;
 
             &:disabled {
@@ -43,7 +45,7 @@
             }
         
             > svg {
-                margin-right: 5px;
+                float: left;
                 vertical-align: middle;
             }
           }
@@ -59,8 +61,10 @@
             border-radius: 11px;
             border: 0;
             color: #ffffff;
-            font-weight: bold;
+            font-family: ProductSansMedium;
+            font-size: 18px;
             height: 50px;
+            padding: 0 20px;
             width: 100%;
 
             &:disabled {
@@ -68,8 +72,8 @@
             }
         
             > svg {
-                margin-right: 5px;
-                vertical-align: middle;
+              float: left;
+              vertical-align: middle;
             }
           }
         }
@@ -92,7 +96,7 @@
   > button {
     background-color: #ffffff !important;
     border-radius: 8px;
-    font-weight: bold;
+    font-family: ProductSansBold;
     height: 43px;
     margin: 15px !important;
     max-width: 150px;
@@ -326,7 +330,7 @@
     border: 0;
     box-shadow: none;
     color: #FFFFFF;
-    font-weight: bold;
+    font-family: ProductSansBold;
     height: 43px;
     margin: 15px !important;
     max-width: 150px;
