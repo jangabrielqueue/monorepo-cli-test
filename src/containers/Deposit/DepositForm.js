@@ -57,7 +57,7 @@ const DepositFormImpl = React.memo((props) => {
   const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
   
-  const handleSubmitForm = (type) => {
+  function handleSubmitForm (type) {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
     validateFields((err, values) => {

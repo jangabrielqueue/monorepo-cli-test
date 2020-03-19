@@ -1,95 +1,84 @@
-import React, { Component } from "react";
-import { Statistic, Form, Icon, Input, Button, Spin } from "antd";
-import { isNullOrWhitespace } from "../../utils/utils";
-
-const { Countdown } = Statistic;
+import React from 'react';
+import { Form, Input, Button, Spin } from 'antd';
+import { isNullOrWhitespace } from '../../utils/utils';
+import messages from './messages';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
-class OTPFormImpl extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const OTPFormImpl = React.memo((props) => {
+  const { getFieldDecorator, getFieldsError, validateFields } = props.form;
+  const { handleSubmit, otpReference, intl, waitingForReady } = props;
 
-  handleOTPChanged = e => {
-    this.setState({
-      otp: e.target.value,
-    });
-  };
-
-  handleSubmit = e => {
+  function handleSubmitForm (e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+
+    validateFields((err, { OTP }) => {
       if (!err) {
-        this.props.handleSubmit(this.state);
+        handleSubmit(OTP);
       }
     });
   };
 
-  componentDidMount = () => {
-    const deadline = Date.now() + 1000 * 180;
-    this.setState({
-      deadline,
-    });
-  };
-
-  render() {
-    const { getFieldDecorator, getFieldsError } = this.props.form;
-    const { deadline } = this.state;
-    const { otpReference } = this.props;
-    const hint = isNullOrWhitespace(otpReference) ? (
-      <b>OTP for new recipient</b>
-    ) : (
-      <b>OTP Reference: {otpReference}</b>
-    );
-    return (
-      <Spin spinning={false}>
-        <Form onSubmit={this.handleSubmit}>
-          <Form.Item>
-            <Countdown title="Countdown" value={deadline} />
-          </Form.Item>
-          <Form.Item>{hint}</Form.Item>
-          <Form.Item>
-            {getFieldDecorator("OTP", {
-              rules: [
-                {
-                  required: true,
-                  message: "Please input OTP received from bank!",
-                },
-              ],
-            })(
-              <Input
-                size="large"
-                allowClear
-                prefix={
-                  <Icon type="safety" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                placeholder="Please input OTP received from bank"
-                onChange={this.handleOTPChanged}
-              />
-            )}
-          </Form.Item>
-          <Form.Item>
+  return (
+    <main>
+      <Spin spinning={waitingForReady}>
+        <Form layout='vertical' onSubmit={handleSubmitForm} hideRequiredMark={true}>
+          {
+            isNullOrWhitespace(otpReference) ?
+            <div className='form-otp-new-recipient'>
+              <FormattedMessage {...messages.otpNewRecipient} />
+            </div> :
+            <div className='form-icon-container otp-reference'>
+              <Form.Item label='OTP Reference'>
+                {otpReference}
+              </Form.Item>
+            </div>
+          }
+          <div className='form-icon-container username'>
+            <Form.Item label='Input OTP Received from Bank' htmlFor='input_otp'>
+              {
+                getFieldDecorator('OTP', {
+                  rules: [
+                    {
+                      required: true,
+                      message: intl.formatMessage(messages.placeholders.inputOtp),
+                    },
+                  ],
+                })(
+                  <Input
+                    size='large'
+                    allowClear
+                    placeholder={intl.formatMessage(messages.placeholders.inputOtp)}
+                    id='input_otp'
+                  />
+                )
+              }
+            </Form.Item>
+          </div>
+          <div className='form-content-submit-top-up-container'>
             <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              shape="round"
-              block
+              size='large'
+              htmlType='submit'
+              loading={waitingForReady}
               disabled={hasErrors(getFieldsError())}
             >
-              Submit
+              {
+                !waitingForReady &&
+                <>
+                  <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                </>
+              }
             </Button>
-          </Form.Item>
+          </div>
         </Form>
       </Spin>
-    );
-  }
-}
+    </main>
+  );
+});
 
-const OTPForm = Form.create({ name: "otp_form" })(OTPFormImpl);
-
-export default OTPForm;
+const OTPForm = Form.create({ name: 'otp_form' })(OTPFormImpl);
+export default injectIntl(OTPForm);

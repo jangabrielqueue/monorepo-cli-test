@@ -48,6 +48,31 @@
             }
           }
         }
+
+        .form-content-submit-top-up-container {
+          margin-top: 5px;
+          padding: 10px 0 5px;
+          text-align: center;
+
+          > button {
+            background-color: #1890ff !important;
+            border-radius: 11px;
+            border: 0;
+            color: #ffffff;
+            font-weight: bold;
+            height: 50px;
+            width: 100%;
+
+            &:disabled {
+              opacity: 0.5;
+            }
+        
+            > svg {
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+          }
+        }
       }
     }
   }
@@ -62,7 +87,6 @@
 }
 
 .deposit-submit-buttons {
-  padding: 15px 0;
   text-align: center;
   
   > button {
@@ -70,7 +94,7 @@
     border-radius: 8px;
     font-weight: bold;
     height: 43px;
-    margin: 0 15px !important;
+    margin: 15px !important;
     max-width: 150px;
     width: 100%;
 
@@ -91,6 +115,11 @@
   min-height: 500px;
   padding: 1rem 2rem 0rem 2rem;
   text-align: center;
+}
+
+// wrapper bg for top-up
+.bg-top-up {
+  background-image: linear-gradient(190deg, #1890ff 44%, #FFFFFF calc(44% + 2px));
 }
 
 // wrapper bg based on bank name
@@ -164,68 +193,57 @@
 
 // button color based on bank name
 .button-unknown, .button-faker {
-  border-color: #91C431 !important;
-  border: 2px solid #91C431;
+  border: 2px solid #91C431 !important;
   color: #91C431 !important;
 }
 
 .button-tcb {
-  border-color: #FF2600 !important;
-  border: 2px solid #FF2600;
+  border: 2px solid #FF2600 !important;
   color: #FF2600 !important;
 }
 
 .button-vib {
-  border-color: #007BC0 !important;
-  border: 2px solid #007BC0;
+  border: 2px solid #007BC0 !important;
   color: #007BC0 !important;
 }
 
 .button-agri {
-  border-color: #AB1C40 !important;
-  border: 2px solid #AB1C40;
+  border: 2px solid #AB1C40 !important;
   color: #AB1C40 !important;
 }
 
 .button-exim {
-  border-color: #0071A7 !important;
-  border: 2px solid #0071A7;
+  border: 2px solid #0071A7 !important;
   color: #0071A7 !important;
 }
 
 .button-dab {
-  border-color: #F49200 !important;
-  border: 2px solid #F49200;
+  border: 2px solid #F49200 !important;
   color: #F49200 !important;
 }
 
 .button-bidv {
-  border-color: #2B56AB !important;
-  border: 2px solid #2B56AB;
+  border: 2px solid #2B56AB !important;
   color: #2B56AB !important;
 }
 
 .button-vcb {
-  border-color: #00613F !important;
-  border: 2px solid #00613F;
+  border: 2px solid #00613F !important;
   color: #00613F !important;
 }
 
 .button-acb {
-  border-color: #0038A6 !important;
-  border: 2px solid #0038A6;
+  border: 2px solid #0038A6 !important;
   color: #0038A6 !important;
 }
 
 .button-sacom {
-  border-color: #0A74BE !important;
-  border: 2px solid #0A74BE;
+  border: 2px solid #0A74BE !important;
   color: #0A74BE !important;
 }
 
 .button-vtb {
-  border-color: #055893 !important;
-  border: 2px solid #055893;
+  border: 2px solid #055893 !important;
   color: #055893 !important;
 }
 
@@ -296,6 +314,40 @@
 
 .button-otp-vtb {
   background-color: #055893 !important;
+}
+
+// default color for topup based on antd framework
+.deposit-submit-top-up-buttons {
+  text-align: center;
+  
+  > button {
+    background-color: #1890ff;
+    border-radius: 8px;
+    border: 0;
+    box-shadow: none;
+    color: #FFFFFF;
+    font-weight: bold;
+    height: 43px;
+    margin: 15px !important;
+    max-width: 150px;
+    width: 100%;
+
+    &:disabled {
+      background-color: #1890ff !important;
+      color: #FFFFFF !important;
+      opacity: 0.7;
+    }
+
+    &:hover {
+      border: 2px solid #1890ff !important;
+      color: #1890ff !important;
+    }
+  
+    > svg {
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+  }
 }
 
 @media only screen and(max-width: 23.438em) {

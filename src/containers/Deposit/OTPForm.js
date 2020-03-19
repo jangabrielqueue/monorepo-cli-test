@@ -82,7 +82,6 @@ const OTPFormImpl = React.memo((props) => {
       </Spin>
     </main>
   );
-
 });
 
 const OTPForm = Form.create({ name: 'otp_form' })(OTPFormImpl);

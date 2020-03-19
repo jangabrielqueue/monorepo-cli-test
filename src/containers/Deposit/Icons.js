@@ -117,6 +117,8 @@ const Icons = ({ name }) => {
             return <SMSVTB />;
         case 'smart-vtb':
             return <SMARTVTB />;
+        default:
+            return;
       }
 }
 

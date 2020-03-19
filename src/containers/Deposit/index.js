@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button, Icon } from 'antd';
+import { Statistic, Alert, Progress, Button } from 'antd';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -69,12 +69,6 @@ const Deposit = props => {
   const wrapperBG = isBankKnown ? `bg-${bank.toLowerCase()}` : 'bg-unknown';
   const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : 'button-unknown';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
-
-  const handleWindowResize = () => {
-    setWindowDimensions({
-      width: window.outerWidth
-    });
-  }
 
   async function handleSubmitDeposit(values) {
     analytics.logEvent('login', {
@@ -168,6 +162,12 @@ const Deposit = props => {
 
   function handleHasFieldError (hasError) {
     setHasFieldError(hasError);
+  }
+
+  function handleWindowResize () {
+    setWindowDimensions({
+      width: window.outerWidth
+    });
   }
 
   useEffect(() => {
