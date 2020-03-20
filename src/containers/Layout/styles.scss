@@ -114,11 +114,11 @@
 }
 
 .fallback-container {
-  margin: 0 auto;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   max-width: 500px;
   min-height: 500px;
-  padding: 1rem 2rem 0rem 2rem;
-  text-align: center;
 }
 
 // wrapper bg for top-up

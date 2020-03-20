@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import { getBanksByCurrencyForTopUp } from './../../utils/banks';
 import messages from './messages';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import './styles.scss';
 
 const { Option } = Select;
