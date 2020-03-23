@@ -272,7 +272,7 @@ const ScratchCard = (props) => {
             <div className='container'>
                 <div className='form-content'>
                     <header className={step === 1 ? null : 'header-bottom-border'}>
-                        <Logo bank={queryParams.get('b').toUpperCase()} currency={queryParams.get('c1')} />
+                        <Logo bank='PRECARD' type='scratch-card' currency={queryParams.get('c1')} />
                         {
                             step === 0 &&
                             <Statistic
