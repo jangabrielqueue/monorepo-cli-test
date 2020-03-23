@@ -114,7 +114,6 @@ const DepositFormImpl = React.memo((props) => {
                   <Input
                     size='large'
                     allowClear
-                    placeholder={intl.formatMessage(messages.placeholders.loginName)}
                     id='deposit_form_username'
                   />
                 )}
@@ -130,7 +129,6 @@ const DepositFormImpl = React.memo((props) => {
                   <Input.Password
                     size='large'
                     allowClear
-                    placeholder={intl.formatMessage(messages.placeholders.password)}
                     id='deposit_form_password'
                   />
                 )}

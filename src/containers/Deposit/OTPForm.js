@@ -55,7 +55,6 @@ const OTPFormImpl = React.memo((props) => {
                   <Input
                     size='large'
                     allowClear
-                    placeholder={intl.formatMessage(messages.placeholders.inputOtp)}
                     id='input_otp'
                   />
                 )

@@ -110,7 +110,6 @@ const ScratchCardForm = React.memo((props) => {
                                 (
                                     <Input
                                         type='number'
-                                        placeholder={intl.formatMessage(messages.placeholders.cardPin)}
                                         size='large'
                                         allowClear
                                         id='scratch_card_form_cardPin'
@@ -128,7 +127,6 @@ const ScratchCardForm = React.memo((props) => {
                                 (
                                     <Input
                                         type='number'
-                                        placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
                                         size='large'
                                         allowClear
                                         id='scratch_card_form_cardSerialNumber'
