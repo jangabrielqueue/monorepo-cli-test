@@ -136,15 +136,9 @@ const Logo = ({ bank }) => {
   }
   return (
     <>
-      <div
-        style={{
-          margin: "auto",
-          width: "140px",
-          textAlign: "right",
-        }}
-      >
+      <p>
         <img alt="poweredBy" className="poweredby" src="/banks/PoweredBy.svg" />
-      </div>
+      </p>
       <img alt={bank} src={getFilePath(bank)} />
     </>
   );
