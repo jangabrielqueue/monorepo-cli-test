@@ -81,18 +81,23 @@ const DepositFormImpl = React.memo((props) => {
             />
           </Form.Item>
           <Form.Item>
-            <Select
-              defaultValue={bank || getDefaultBankByCurrency(props.currency).code}
-              size="large"
-              disabled={Boolean(bank)}
-              aria-owns='1 2 3 4 5 6 7 8 9'
-            >
-              {bankCodes.map((x, i)=> (
-                <Option key={x.code} id={i} value={x.code}>
-                  {x.name}
-                </Option>
-              ))}
-            </Select>
+            {
+              getFieldDecorator('bank', {
+                initialValue: bank || getDefaultBankByCurrency(props.currency).code
+              })(
+                <Select
+                  size="large"
+                  disabled={Boolean(bank)}
+                  aria-owns='1 2 3 4 5 6 7 8 9'
+                >
+                  {bankCodes.map((x, i)=> (
+                    <Option key={x.code} id={i} value={x.code}>
+                      {x.name}
+                    </Option>
+                  ))}
+                </Select>
+              )
+            }
           </Form.Item>
           <Form.Item htmlFor='deposit_form_username'>
             {getFieldDecorator('username', {
