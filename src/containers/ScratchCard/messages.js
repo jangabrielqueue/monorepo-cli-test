@@ -28,6 +28,10 @@ export default defineMessages({
             id: 'placeholders.inputMaxChar',
             defaultMessage: 'Please input a maximum length of {maxLength} characters.'
         },
+        inputCardPin: {
+            id: 'placeholders.inputSerialNumber',
+            defaultMessage: 'Please input card pin.'
+        },
         inputSerialNumber: {
             id: 'placeholders.inputSerialNumber',
             defaultMessage: 'Please input serial number.'

@@ -34,7 +34,7 @@ const ScratchCardForm = React.memo((props) => {
         return [
             {
                 required: true,
-                message: intl.formatMessage(messages.placeholders.inputSerialNumber)
+                message: intl.formatMessage(messages.placeholders.inputCardPin)
             },
             validation
         ];
@@ -113,6 +113,7 @@ const ScratchCardForm = React.memo((props) => {
                                         size='large'
                                         allowClear
                                         id='scratch_card_form_cardPin'
+                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
                                     />                            
                                 )
                             }
@@ -130,6 +131,7 @@ const ScratchCardForm = React.memo((props) => {
                                         size='large'
                                         allowClear
                                         id='scratch_card_form_cardSerialNumber'
+                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
                                     />                         
                                 )
                             }
