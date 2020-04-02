@@ -13,6 +13,7 @@ import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
 import Icons from './Icons';
+import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -180,7 +181,10 @@ const DepositFormImpl = React.memo((props) => {
               onClick={() => handleRefFormSubmit(undefined)}
             >
               {
-                !waitingForReady && <FormattedMessage {...messages.submit} />
+                !waitingForReady &&
+                <>
+                  <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                </>
               }
             </Button>
           </div>

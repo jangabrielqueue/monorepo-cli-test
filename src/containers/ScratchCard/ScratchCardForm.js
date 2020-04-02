@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Select, Spin } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import messages from './messages';
+import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 const { Option } = Select;
 
@@ -146,7 +147,10 @@ const ScratchCardForm = React.memo((props) => {
                             loading={waitingForReady}
                         >
                             {
-                                !waitingForReady && <FormattedMessage {...messages.submit} />
+                                !waitingForReady &&
+                                <>
+                                    <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                                </>
                             }
                         </Button>
                     </div>
