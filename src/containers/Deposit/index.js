@@ -18,7 +18,6 @@ import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { checkBankIfKnown } from '../../utils/banks';
-import Icons from './Icons';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
@@ -344,14 +343,14 @@ const Deposit = props => {
               <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <Icons name={`sms-${renderIcon}`} />
+                  <img src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
                 }
                 SMS OTP
               </Button>
               <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <Icons name={`smart-${renderIcon}`} />
+                  <img src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
                 }
                 SMART OTP
               </Button>
@@ -359,21 +358,19 @@ const Deposit = props => {
           </footer>
         }
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
-              <div className='progress-bar-container'>
-                {
-                  (progress && (progress.currentStep / progress.totalSteps) * 100) >= 60
-                    ?
-                      <img alt='submit-transaction' width='100' src={require('../../assets/icons/submit-success.svg')} />
-                    :
-                      <Progress
-                        percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-                        status='active'
-                        showInfo={false}
-                        strokeColor='#34A220'
-                      />
-                }
-                <p>{progress && progress.statusMessage}</p>
-              </div>
+          <div className='progress-bar-container'>
+            {
+              (progress && (progress.currentStep / progress.totalSteps) * 100) < 100 &&
+              <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
+            }
+            <Progress
+              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
+              status='active'
+              showInfo={false}
+              strokeColor='#34A220'
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </div>
         </ConfirmationModal>
     </div>
   );

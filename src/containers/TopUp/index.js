@@ -292,21 +292,19 @@ const TopUp = props => {
         </footer>
       }
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
-              <div className='progress-bar-container'>
-                {
-                  (progress && (progress.currentStep / progress.totalSteps) * 100) >= 60
-                    ?
-                      <img alt='submit-transaction' width='100' src={require('../../assets/icons/submit-success.svg')} />
-                    :
-                      <Progress
-                        percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-                        status='active'
-                        showInfo={false}
-                        strokeColor='#34A220'
-                      />
-                }
-                <p>{progress && progress.statusMessage}</p>
-              </div>
+          <div className='progress-bar-container'>
+            {
+              (progress && (progress.currentStep / progress.totalSteps) * 100) < 100 &&
+              <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
+            }
+            <Progress
+              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
+              status='active'
+              showInfo={false}
+              strokeColor='#34A220'
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </div>
         </ConfirmationModal>      
     </div>
   );

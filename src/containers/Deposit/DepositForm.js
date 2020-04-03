@@ -12,7 +12,6 @@ import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
-import Icons from './Icons';
 import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 const { Option } = Select;
@@ -195,14 +194,14 @@ const DepositFormImpl = React.memo((props) => {
             <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
               {
                 !waitingForReady &&
-                <Icons name={`sms-${renderIcon}`} />
+                <img src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
               }
               SMS OTP
             </Button>
             <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
               {
                 !waitingForReady &&
-                <Icons name={`smart-${renderIcon}`} />
+                <img src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
               }
               SMART OTP
             </Button>     

@@ -304,17 +304,15 @@ const ScratchCard = (props) => {
             <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
               <div className='progress-bar-container'>
                 {
-                  (progress && progress.percent === 100)
-                    ?
-                      <img alt='submit-transaction' width='100' src={require('../../assets/icons/submit-success.svg')} />
-                    :
-                      <Progress
-                        percent={progress && progress.percent}
-                        status='active'
-                        showInfo={false}
-                        strokeColor='#34A220'
-                      />
+                  (progress && progress.percent < 100) &&
+                  <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
                 }
+                <Progress
+                    percent={progress && progress.percent}
+                    status='active'
+                    showInfo={false}
+                    strokeColor='#34A220'
+                />
                 <p>{progress && progress.statusMessage}</p>
               </div>
             </ConfirmationModal>
