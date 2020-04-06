@@ -22,7 +22,8 @@ const { Countdown } = Statistic;
 const TopUp = props => {
   const [step, setStep] = useState(0);
   const [otpReference, setOtpReference] = useState();
-  const [waitingForReady, setWaitingForReady] = useState(true);
+  const [waitingForReady, setWaitingForReady] = useState(false);
+  const [establishConnection, setEstablishConnection] = useState(false);
   const [error, setError] = useState();
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -161,14 +162,14 @@ const TopUp = props => {
           message: intl.formatMessage(messages.errors.networkError),
         });
       }
-      setWaitingForReady(false);
+      setEstablishConnection(true);
     }
 
     start();
 
     return () => {
       connection.onclose(() => {
-        setWaitingForReady(true);
+        setEstablishConnection(false);
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.connectionError),
@@ -215,6 +216,7 @@ const TopUp = props => {
         hasFieldError={hasFieldError}
         handleRefFormSubmit={handleRefFormSubmit}
         windowDimensions={windowDimensions}
+        establishConnection={establishConnection}
       />
     );
   } else if (step === 1) {
@@ -282,10 +284,10 @@ const TopUp = props => {
         (windowDimensions.width <= 576 && step === 0) &&
         <footer className='footer-submit-container'>
           <div className='deposit-submit-top-up-buttons'>
-            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError} loading={waitingForReady}>
+            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
               SMS OTP
             </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError} loading={waitingForReady}>
+            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
               SMART OTP
             </Button>
           </div>  

@@ -41,7 +41,8 @@ const DepositFormImpl = React.memo((props) => {
     intl,
     hasFieldError,
     handleRefFormSubmit,
-    windowDimensions
+    windowDimensions,
+    establishConnection
   } = props;
   const {
     validateFields,
@@ -170,10 +171,10 @@ const DepositFormImpl = React.memo((props) => {
         {
           (windowDimensions.width > 576) &&
           <div className='deposit-submit-top-up-buttons'>
-            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
+            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
               SMS OTP
             </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
+            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
               SMART OTP
             </Button>     
           </div>          

@@ -44,7 +44,8 @@ const DepositFormImpl = React.memo((props) => {
     hasFieldError,
     showOtpMethod,
     handleRefFormSubmit,
-    windowDimensions
+    windowDimensions,
+    establishConnection
   } = props;
   const {
     validateFields,
@@ -175,7 +176,7 @@ const DepositFormImpl = React.memo((props) => {
               className={buttonBG}
               size='large'
               htmlType='submit'
-              disabled={hasFieldError}
+              disabled={hasFieldError || !establishConnection}
               loading={waitingForReady}
               onClick={() => handleRefFormSubmit(undefined)}
             >
@@ -191,14 +192,14 @@ const DepositFormImpl = React.memo((props) => {
         {
           (showOtpMethod && windowDimensions.width > 576) &&
           <div className='deposit-submit-buttons'>
-            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError}>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
               {
                 !waitingForReady &&
                 <img src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
               }
               SMS OTP
             </Button>
-            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError}>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
               {
                 !waitingForReady &&
                 <img src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />

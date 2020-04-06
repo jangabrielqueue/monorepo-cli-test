@@ -7,7 +7,7 @@ import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.s
 const { Option } = Select;
 
 const ScratchCardForm = React.memo((props) => {
-    const { handleSubmitScratchCard, waitingForReady } = props;
+    const { handleSubmitScratchCard, waitingForReady, establishConnection } = props;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
     const [telcoName, setTelcoName] = useState('VTT');
     const intl = useIntl();
@@ -143,7 +143,7 @@ const ScratchCardForm = React.memo((props) => {
                             className='button-precard'
                             size='large'
                             htmlType='submit'
-                            disabled={hasErrors(getFieldsError())}
+                            disabled={hasErrors(getFieldsError()) || !establishConnection}
                             loading={waitingForReady}
                         >
                             {

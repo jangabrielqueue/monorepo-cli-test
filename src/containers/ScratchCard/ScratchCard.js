@@ -23,7 +23,8 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const ScratchCard = (props) => {
     const [step, setStep] = useState(0);
-    const [waitingForReady, setWaitingForReady] = useState(true);
+    const [waitingForReady, setWaitingForReady] = useState(false);
+    const [establishConnection, setEstablishConnection] = useState(false);
     const [error, setError] = useState(undefined);
     const [progress, setProgress] = useState(undefined);
     const [transferResult, setTransferResult] = useState({});
@@ -105,6 +106,7 @@ const ScratchCard = (props) => {
                     <ScratchCardForm
                         handleSubmitScratchCard={handleSubmitScratchCard}
                         waitingForReady={waitingForReady}
+                        establishConnection={establishConnection}
                     />
                 );
 
@@ -226,9 +228,7 @@ const ScratchCard = (props) => {
             try {
               await connection.start();
               await connection.invoke('Start', session);
-              setWaitingForReady(false);
             } catch (ex) {
-              setWaitingForReady(true);
               setError({
                 error: {
                     name: intl.formatMessage(messages.errors.networkErrorTitle),
@@ -236,13 +236,14 @@ const ScratchCard = (props) => {
                   }
               });
             }
+            setEstablishConnection(true);
           }
       
         start();
 
         return () => {
             connection.onclose(() => {
-                setWaitingForReady(true);
+                setEstablishConnection(false);
                 setError({
                     error: {
                         name: intl.formatMessage(messages.errors.networkErrorTitle),
