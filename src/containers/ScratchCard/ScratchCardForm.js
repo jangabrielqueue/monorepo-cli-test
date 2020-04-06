@@ -115,6 +115,7 @@ const ScratchCardForm = React.memo((props) => {
                                         allowClear
                                         id='scratch_card_form_cardPin'
                                         onKeyDown={e => e.which === 69 && e.preventDefault()}
+                                        autoComplete='off'
                                     />                            
                                 )
                             }
@@ -133,6 +134,7 @@ const ScratchCardForm = React.memo((props) => {
                                         allowClear
                                         id='scratch_card_form_cardSerialNumber'
                                         onKeyDown={e => e.which === 69 && e.preventDefault()}
+                                        autoComplete='off'
                                     />                         
                                 )
                             }

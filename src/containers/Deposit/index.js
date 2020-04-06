@@ -345,14 +345,14 @@ const Deposit = props => {
               <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <img src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
+                  <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
                 }
                 SMS OTP
               </Button>
               <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
                 {
                   !waitingForReady &&
-                  <img src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
+                  <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
                 }
                 SMART OTP
               </Button>

@@ -125,6 +125,7 @@ const DepositFormImpl = React.memo((props) => {
                   size="large"
                   allowClear
                   id='deposit_form_username'
+                  autoComplete='off'
                 />
               )}
             </Form.Item>
@@ -140,6 +141,7 @@ const DepositFormImpl = React.memo((props) => {
                   size="large"
                   allowClear
                   id='deposit_form_password'
+                  autoComplete='off'
                 />
               )}
             </Form.Item>
@@ -195,14 +197,14 @@ const DepositFormImpl = React.memo((props) => {
             <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
               {
                 !waitingForReady &&
-                <img src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
+                <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
               }
               SMS OTP
             </Button>
             <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
               {
                 !waitingForReady &&
-                <img src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
+                <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
               }
               SMART OTP
             </Button>     

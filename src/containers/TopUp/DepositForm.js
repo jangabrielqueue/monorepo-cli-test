@@ -116,6 +116,7 @@ const DepositFormImpl = React.memo((props) => {
                     size='large'
                     allowClear
                     id='deposit_form_username'
+                    autoComplete='off'
                   />
                 )}
               </Form.Item>
@@ -131,6 +132,7 @@ const DepositFormImpl = React.memo((props) => {
                     size='large'
                     allowClear
                     id='deposit_form_password'
+                    autoComplete='off'
                   />
                 )}
               </Form.Item>

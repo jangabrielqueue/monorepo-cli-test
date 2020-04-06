@@ -56,6 +56,7 @@ const OTPFormImpl = React.memo((props) => {
                     size='large'
                     allowClear
                     id='input_otp'
+                    autoComplete='off'
                   />
                 )
               }
