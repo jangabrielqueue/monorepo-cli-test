@@ -33,11 +33,6 @@ const ScratchCard = (props) => {
     const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)];
     const queryParams = useQuery();
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
-    const initProgress = {
-        percent: 33.5,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.inProgress),
-    };
     const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b'));
     const wrapperBG = isBankKnown ? `bg-${queryParams.get('b').toLowerCase()}` : 'bg-unknown';
 
@@ -66,9 +61,36 @@ const ScratchCard = (props) => {
                     Amount: queryParams.get('a')
                 };
 
-                await setWaitingForReady(true);
-                await setProgress(initProgress);
-                
+                setWaitingForReady(true);
+                setProgress({
+                    currentStep: 1,
+                    totalSteps: 5,
+                    statusCode: '009',
+                    statusMessage: intl.formatMessage(messages.progress.startingConnection),
+                  });
+                await sleep(3000);
+                setProgress({
+                    currentStep: 2,
+                    totalSteps: 5,
+                    statusCode: '009',
+                    statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
+                  });
+                await sleep(3000);
+                setProgress({
+                    currentStep: 3,
+                    totalSteps: 5,
+                    statusCode: '009',
+                    statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
+                });
+                await sleep(3000);
+                setProgress({
+                  currentStep: 4,
+                  totalSteps: 5,
+                  statusCode: '009',
+                  statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+                });
+                await sleep(3000);
+
                 try {
                     const response = await axios({
                       url: 'api/ScratchCard/Deposit',
@@ -76,24 +98,27 @@ const ScratchCard = (props) => {
                       data: submitValues,
                       timeout: 5000
                     });
-
                     if (response.data.statusCode === '001') {
-                        await setProgress({
-                            percent: 100,
-                            statusMessage: intl.formatMessage(messages.progress.transactionComplete),
+                        setProgress({
+                            currentStep: 5,
+                            totalSteps: 5,
+                            statusCode: '009',
+                            statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
                           });
-                        await setWaitingForReady(false);
-                        await setIsSuccessful(false);
-                        await setTransferResult({
-                            ...response.data,
+                        await sleep(1000);
+                        setProgress(undefined);
+                        setWaitingForReady(false);
+                        setIsSuccessful(false);
+                        setError({
                             message: response.data.statusMessage
                         });
-                        await setStep(1);
                     }
                   } catch (error) {
-                    await setWaitingForReady(false);
-                    await setProgress(undefined);
-                    await setError(error);
+                      if (error && error.code !== 'ECONNABORTED') {
+                        setWaitingForReady(false);
+                        setProgress(undefined);
+                        setError(error);
+                      }
                   }
             }
         });
@@ -144,10 +169,11 @@ const ScratchCard = (props) => {
 
             if (result.statusCode === '009') {
                 setProgress({
-                    percent: 67,
-                    statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
-                    statusCode: result.statusCode
-                  });
+                    currentStep: 5,
+                    totalSteps: 5,
+                    statusCode: result.statusCode,
+                    statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+                });
                 setWaitingForReady(true);
                 setStep(0);
                 await sleep(180000);
@@ -155,11 +181,6 @@ const ScratchCard = (props) => {
                 const time = (end - start);
     
                 if (time >= 180000) {
-                    setProgress({
-                        percent: 67,
-                        statusMessage: intl.formatMessage(messages.progress.waitingForProvider),
-                        statusCode: '001'
-                      });
                     setWaitingForReady(false);
                     setIsSuccessful(false);
                     setTransferResult({
@@ -171,11 +192,7 @@ const ScratchCard = (props) => {
                     return;
                 }
             } else if (result.statusCode === '006') {
-                setProgress({
-                    percent: 100,
-                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-                    statusCode: result.statusCode
-                  });
+                setProgress(undefined);
                 setWaitingForReady(false);
                 setIsSuccessful(true);
                 setTransferResult(result);
@@ -183,11 +200,7 @@ const ScratchCard = (props) => {
                 
                 return;
             } else {
-                setProgress({
-                    percent: 100,
-                    statusMessage: intl.formatMessage(messages.progress.transactionComplete),
-                    statusCode: result.statusCode
-                  });
+                setProgress(undefined);
                 setWaitingForReady(false);
                 setIsSuccessful(false);
                 setTransferResult(result);
@@ -305,11 +318,11 @@ const ScratchCard = (props) => {
             <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
               <div className='progress-bar-container'>
                 {
-                  (progress && progress.percent < 100) &&
+                  (progress && (progress.currentStep / progress.totalSteps) * 100) <= 100 &&
                   <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
                 }
                 <Progress
-                    percent={progress && progress.percent}
+                    percent={progress && (progress.currentStep / progress.totalSteps) * 100}
                     status='active'
                     showInfo={false}
                     strokeColor='#34A220'

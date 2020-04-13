@@ -11,7 +11,7 @@ import {
 } from '../../components/TransferResult';
 import { sendDepositRequest, sendDepositOtp } from './Requests';
 import * as signalR from '@microsoft/signalr';
-import { useQuery } from '../../utils/utils';
+import { useQuery, sleep } from '../../utils/utils';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
@@ -55,12 +55,6 @@ const Deposit = props => {
   const language = queryParams.get('l');
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const initProgress = {
-    currentStep: 1,
-    totalSteps: 10,
-    statusCode: '009',
-    statusMessage: intl.formatMessage(messages.progress.inProgress),
-  };
   const [hasFieldError, setHasFieldError] = useState(false);
   const refFormSubmit = useRef(null);
   const showOtpMethod = currency === 'VND';
@@ -75,8 +69,21 @@ const Deposit = props => {
       reference,
     });
     setError(undefined);
-    setProgress(undefined);
     setWaitingForReady(true);
+    setProgress({
+      currentStep: 1,
+      totalSteps: 5,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.startingConnection),
+    });
+    await sleep(3000);
+    setProgress({
+      currentStep: 2,
+      totalSteps: 5,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
+    });
+    await sleep(3000);
     const result = await sendDepositRequest({
       ...values,
       reference,
@@ -91,10 +98,30 @@ const Deposit = props => {
         reference,
         error: result.error,
       });
+      setProgress({
+        currentStep: 3,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
+      });
+      await sleep(3000);
+      setProgress({
+        currentStep: 4,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+      });
+      await sleep(3000);
+      setProgress({
+        currentStep: 5,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+      });
+      await sleep(1000);
+      setProgress(undefined);
       setWaitingForReady(false);
       setError(result.error);
-    } else {
-      setProgress(initProgress);
     }
   }
 
@@ -104,7 +131,6 @@ const Deposit = props => {
       otp: value,
     });
     setError(undefined);
-    setProgress(undefined);
     setWaitingForReady(true);
     const result = await sendDepositOtp(reference, value);
     if (result.error) {
@@ -113,7 +139,6 @@ const Deposit = props => {
         otp: value,
       });
       setError(result.error);
-      setProgress(undefined);
       setWaitingForReady(false);
     } else {
       analytics.logEvent('submitted_otp_succeed', {
@@ -125,7 +150,7 @@ const Deposit = props => {
   }
 
   const handleReceivedResult = useCallback(
-    (e) => {
+    async (e) => {
         analytics.logEvent('received_result', {
           reference: reference,
           result: e,
@@ -140,7 +165,8 @@ const Deposit = props => {
   );
 
   const handleRequestOTP = useCallback(
-    (e) => {
+    async (e) => {
+      await sleep(3000);
       setProgress(undefined);
       setStep(1);
       setOtpReference(e.extraData);
@@ -150,8 +176,29 @@ const Deposit = props => {
   );
 
   const handleUpdateProgress = useCallback(
-    (e) => {
-      setProgress(e);
+    async (e) => {
+      if ((e.currentStep + 2) === (e.totalSteps + 2)) {
+        setProgress({
+          currentStep: 5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+        });
+      } else if ((e.currentStep + 2) === 3) {
+        setProgress({
+          currentStep: 3.5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+        });
+        await sleep(1000);
+        setProgress({
+          currentStep: 5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        });
+      }
     },
     [],
   );
@@ -362,7 +409,7 @@ const Deposit = props => {
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             {
-              (progress && (progress.currentStep / progress.totalSteps) * 100) < 100 &&
+              (progress && (progress.currentStep / progress.totalSteps) * 100) <= 100 &&
               <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
             }
             <Progress

@@ -8,7 +8,7 @@ import {
 } from '../../components/TransferResult';
 import { sendTopUpRequest, sendTopUpOtp } from './Requests';
 import * as signalR from '@microsoft/signalr';
-import { useQuery } from '../../utils/utils';
+import { useQuery, sleep } from '../../utils/utils';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import StepsBar from '../../components/StepsBar';
@@ -43,39 +43,64 @@ const TopUp = props => {
   const signature = queryParams.get('k');
   const session = `TOPUP-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const initProgress = {
-    currentStep: 1,
-    totalSteps: 10,
-    statusCode: '009',
-    statusMessage: intl.formatMessage(messages.progress.inProgress),
-  };
   const [hasFieldError, setHasFieldError] = useState(false);
   const refFormSubmit = useRef(null);
 
   async function handleSubmitDeposit(values) {
     setError(undefined);
-    setProgress(undefined);
     setWaitingForReady(true);
+    setProgress({
+      currentStep: 1,
+      totalSteps: 5,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.startingConnection),
+    });
+    await sleep(3000);
+    setProgress({
+      currentStep: 2,
+      totalSteps: 5,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
+    });
+    await sleep(3000);
     const result = await sendTopUpRequest({
       ...values,
       reference: reference,
     });
     if (result.error) {
+      setProgress({
+        currentStep: 3,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
+      });
+      await sleep(3000);
+      setProgress({
+        currentStep: 4,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+      });
+      await sleep(3000);
+      setProgress({
+        currentStep: 5,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+      });
+      await sleep(1000);
+      setProgress(undefined);
       setWaitingForReady(false);
       setError(result.error);
-    } else {
-      setProgress(initProgress);
     }
   }
 
   async function handleSubmitOTP(value) {
     setError(undefined);
-    setProgress(undefined);
     setWaitingForReady(true);
     const result = await sendTopUpOtp(reference, value);
     if (result.errors) {
       setError(result.error);
-      setProgress(undefined);
       setWaitingForReady(false);
     } else {
       setStep(1);
@@ -94,7 +119,8 @@ const TopUp = props => {
   );
 
   const handleRequestOTP = useCallback(
-    (e) => {
+    async (e) => {
+      await sleep(3000);
       setProgress(undefined);
       setStep(1);
       setOtpReference(e.extraData);
@@ -104,8 +130,29 @@ const TopUp = props => {
   );
 
   const handleUpdateProgress = useCallback(
-    (e) => {
-      setProgress(e);
+    async (e) => {
+      if ((e.currentStep + 2) === (e.totalSteps + 2)) {
+        setProgress({
+          currentStep: 5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+        });
+      } else if ((e.currentStep + 2) === 3) {
+        setProgress({
+          currentStep: 3.5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+        });
+        await sleep(1000);
+        setProgress({
+          currentStep: 5,
+          totalSteps: 5,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        });
+      }
     },
     [],
   );
@@ -296,7 +343,7 @@ const TopUp = props => {
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             {
-              (progress && (progress.currentStep / progress.totalSteps) * 100) < 100 &&
+              (progress && (progress.currentStep / progress.totalSteps) * 100) <= 100 &&
               <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
             }
             <Progress
