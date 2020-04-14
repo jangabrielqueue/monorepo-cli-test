@@ -161,7 +161,7 @@ const ScratchCard = (props) => {
     const handleCommandStatusUpdate = useCallback(
         async (result) => {
             let start, end;
-
+            console.log('result', result)
             start = performance.now();
 
             if (result.statusCode === '009') {
@@ -178,6 +178,7 @@ const ScratchCard = (props) => {
                 const time = (end - start);
     
                 if (time >= 180000) {
+                    setProgress(undefined);
                     setWaitingForReady(false);
                     setIsSuccessful(false);
                     setTransferResult({

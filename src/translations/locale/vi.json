@@ -15,6 +15,7 @@
     "progress.beginningTransaction": "Bắt đầu giao dịch",
     "progress.submittingTransaction": "Gửi giao dịch qua kết nối bảo mật",
     "progress.waitingTransaction": "Chờ giao dịch xác nhận",
+    "progress.pendingConfirmation": "Giao dịch đang chờ xác nhận",
     "placeholders.inputLoginName": "Vui lòng điền tên đăng nhập tài khoản banking của bạn",
     "placeholders.inputPassword": "Vui lòng nhập mật khẩu tài khoản",
     "placeholders.inputOtp": "Vui lòng nhập mã OTP nhận được từ ngân hàng",

@@ -15,6 +15,7 @@
     "progress.beginningTransaction": "Beginning of the transaction",
     "progress.submittingTransaction": "Submitting transaction via secured connection",
     "progress.waitingTransaction": "Waiting transaction confirm",
+    "progress.pendingConfirmation": "Transaction is pending for confirmation",
     "placeholders.inputLoginName": "Please input your online banking login name",
     "placeholders.inputPassword": "Please input your password",
     "placeholders.inputOtp": "Please input OTP received from bank",

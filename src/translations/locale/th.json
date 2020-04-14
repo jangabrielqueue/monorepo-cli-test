@@ -15,6 +15,7 @@
     "progress.beginningTransaction": "ระบบเริ่มทำรายการ",
     "progress.submittingTransaction": "กำลังดำเนินการผ่านระบบการรักษาข้อมูล",
     "progress.waitingTransaction": "รอการยืนยันจากระบบ",
+    "progress.pendingConfirmation": "กำลังรอการยืนยันธุรกรรม",
     "placeholders.inputLoginName": "กรุณากรอกข้อมูลช่องชื่อบัญชีออนไลน์แบงค์กิ้ง",
     "placeholders.inputPassword": "กรุณากรอกรหัสผ่าน",
     "placeholders.inputOtp": "กรุณากรอกรหัส OTP ที่ได้จากธนาคาร",
