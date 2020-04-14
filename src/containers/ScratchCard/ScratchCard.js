@@ -68,35 +68,34 @@ const ScratchCard = (props) => {
                     statusCode: '009',
                     statusMessage: intl.formatMessage(messages.progress.startingConnection),
                   });
-                await sleep(3000);
+                await sleep(1500);
                 setProgress({
                     currentStep: 2,
                     totalSteps: 5,
                     statusCode: '009',
                     statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
                   });
-                await sleep(3000);
+                await sleep(1500);
                 setProgress({
                     currentStep: 3,
                     totalSteps: 5,
                     statusCode: '009',
                     statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
                 });
-                await sleep(3000);
+                await sleep(1500);
                 setProgress({
                   currentStep: 4,
                   totalSteps: 5,
                   statusCode: '009',
                   statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
                 });
-                await sleep(3000);
+                await sleep(1500);
 
                 try {
                     const response = await axios({
                       url: 'api/ScratchCard/Deposit',
                       method: 'POST',
-                      data: submitValues,
-                      timeout: 5000
+                      data: submitValues
                     });
                     if (response.data.statusCode === '001') {
                         setProgress({
@@ -105,7 +104,7 @@ const ScratchCard = (props) => {
                             statusCode: '009',
                             statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
                           });
-                        await sleep(1000);
+                        await sleep(1500);
                         setProgress(undefined);
                         setWaitingForReady(false);
                         setIsSuccessful(false);
@@ -114,11 +113,9 @@ const ScratchCard = (props) => {
                         });
                     }
                   } catch (error) {
-                      if (error && error.code !== 'ECONNABORTED') {
                         setWaitingForReady(false);
                         setProgress(undefined);
                         setError(error);
-                      }
                   }
             }
         });

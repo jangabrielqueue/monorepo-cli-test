@@ -55,14 +55,14 @@ const TopUp = props => {
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.startingConnection),
     });
-    await sleep(3000);
+    await sleep(1500);
     setProgress({
       currentStep: 2,
       totalSteps: 5,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
     });
-    await sleep(3000);
+    await sleep(1500);
     const result = await sendTopUpRequest({
       ...values,
       reference: reference,
@@ -74,21 +74,21 @@ const TopUp = props => {
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
       });
-      await sleep(3000);
+      await sleep(1500);
       setProgress({
         currentStep: 4,
         totalSteps: 5,
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
       });
-      await sleep(3000);
+      await sleep(1500);
       setProgress({
         currentStep: 5,
         totalSteps: 5,
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
       });
-      await sleep(1000);
+      await sleep(1500);
       setProgress(undefined);
       setWaitingForReady(false);
       setError(result.error);
@@ -120,7 +120,7 @@ const TopUp = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
-      await sleep(3000);
+      await sleep(1500);
       setProgress(undefined);
       setStep(1);
       setOtpReference(e.extraData);
@@ -145,7 +145,7 @@ const TopUp = props => {
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
         });
-        await sleep(1000);
+        await sleep(1500);
         setProgress({
           currentStep: 5,
           totalSteps: 5,
