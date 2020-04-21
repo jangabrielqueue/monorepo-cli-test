@@ -1,6 +1,5 @@
 import React from 'react';
 import { Spin } from 'antd';
-import '../containers/Layout/styles.scss';
 
 const FallbackPage = () => {
   return (

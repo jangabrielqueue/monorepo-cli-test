@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button } from 'antd';
+import { Alert, Progress } from 'antd';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -18,11 +18,19 @@ import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { checkBankIfKnown } from '../../utils/banks';
+import GlobalButton from '../../components/GlobalButton';
+import styled from 'styled-components';
+import Statistics from '../../components/Statistics';
+import Countdown from '../../components/Countdown';
+import ErrorAlert from '../../components/ErrorAlert';
+import ProgressModal from '../../components/ProgressModal';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
-const { Countdown } = Statistic;
+const WrapperBG = styled.div`
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
+`;
 
 const Deposit = props => {
   const analytics = firebase.analytics();
@@ -60,8 +68,7 @@ const Deposit = props => {
   const showOtpMethod = currency === 'VND';
   analytics.setCurrentScreen('deposit');
   const isBankKnown = checkBankIfKnown(currency, bank);
-  const wrapperBG = isBankKnown ? `bg-${bank.toLowerCase()}` : 'bg-unknown';
-  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : 'button-unknown';
+  const themeColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
 
   async function handleSubmitDeposit(values) {
@@ -337,35 +344,30 @@ const Deposit = props => {
       </AutoRedirect>
     );
   }
-
+  
   return (
-    <div className={`wrapper ${wrapperBG}`}>
+    <WrapperBG className='wrapper' color={themeColor}>
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
             <Logo bank={bank.toUpperCase()} currency={currency} />
             {
               step === 0 &&
-              <Statistic
+              <Statistics
                 title={intl.formatMessage(messages.deposit)}
-                prefix={currency}
-                value={amount}
-                valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
-                precision={2}
+                language={language}
+                currency={currency}
+                amount={amount}
               />
             }
             {
               step === 1 &&
-              <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
+              <Countdown />
             }
             {
               error &&
-              <Alert
-                description={error.message}
-                type='error'
-                showIcon
-                closable
-                className='error-message'
+              <ErrorAlert
+                message={error.message}
               />
             }
           </header>
@@ -379,7 +381,7 @@ const Deposit = props => {
           (showOtpMethod && windowDimensions.width <= 576 && step === 0) &&
           <footer className='footer-submit-container'>
             <div className='deposit-submit-buttons'>
-              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
+              {/* <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
                 {
                   !waitingForReady &&
                   <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
@@ -392,23 +394,37 @@ const Deposit = props => {
                   <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
                 }
                 SMART OTP
-              </Button>
+              </Button> */}
+              <GlobalButton
+                label='SMS OTP'
+                color={themeColor}
+                outlined
+                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />}
+                onClick={() => undefined}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor} 
+                outlined
+                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />}
+                onClick={() => undefined}
+                disabled={!establishConnection || waitingForReady}
+              />
             </div>  
           </footer>
         }
-        <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-            <Progress
-              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-              status='active'
-              showInfo={false}
-              strokeColor='#34A220'
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
             />
             <p>{progress && progress.statusMessage}</p>
           </div>
-        </ConfirmationModal>
-    </div>
+        </ProgressModal>
+    </WrapperBG>
   );
 };
 

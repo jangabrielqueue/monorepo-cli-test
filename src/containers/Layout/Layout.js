@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as firebase from 'firebase/app';
-import './styles.scss';
 import FallbackPage from '../../components/FallbackPage';
 import { useQuery } from "../../utils/utils";
 

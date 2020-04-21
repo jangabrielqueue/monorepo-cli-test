@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/analytics";
 import "./App.scss";
-import { ConfigProvider } from "antd";
 import ErrorBoundary from "react-error-boundary";
-import enUS from "antd/es/locale/en_US";
-import viVN from "antd/es/locale/vi_VN";
-import thTH from "antd/es/locale/th_TH";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Layout from "./containers/Layout/Layout";
 import axios from "axios";
@@ -17,6 +13,35 @@ import locale_th from './translations/locale/th.json';
 import './assets/fonts/ProductSans-Regular.ttf';
 import './assets/fonts/ProductSans-Bold.ttf';
 import './assets/fonts/ProductSans-Medium-500.ttf';
+import '@rmwc/button/styles';
+import '@rmwc/dialog/styles';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyles from './assets/styles/GlobalStyles';
+
+const theme = {
+  colors: {
+    main: '#91C431',
+    faker: '#91C431',
+    fakerthb: '#91C431',
+    topup: '#1890ff',
+    tcb: '#FF2600',
+    tmb: '#008CCD',
+    boa: '#FFCC2F',
+    ktb: '#00B5E9',
+    bbl: '#0048AA',
+    kbank: '#00B463',
+    scb: '#59358C',
+    vib: '#007BC0',
+    agri: '#AB1C40',
+    exim: '#0071A7',
+    dab: '#F49200',
+    bidv: '#2B56AB',
+    vcb: '#00613F',
+    acb: '#0038A6',
+    sacom: '#0A74BE',
+    vtb: '#055893'
+  }
+};
 
 const errorHandler = (error, componentStack) => {
   const analytics = firebase.analytics();
@@ -70,7 +95,6 @@ const App = (props) => {
   }
 
   const [locale, setLocale] = useState('en');
-  const [localeAntd, setLocaleAntd] = useState({});
   const localeMessages = {
     'en': locale_en,
     'vi': locale_vi,
@@ -81,15 +105,12 @@ const App = (props) => {
     switch (param) {
       case 'vi-vn':
         setLocale('vi');
-        setLocaleAntd(viVN);
         break;
       case 'th-th':
         setLocale('th');
-        setLocaleAntd(thTH);
         break;
       default:
         setLocale('en');
-        setLocaleAntd(enUS);
     }
   }
 
@@ -101,17 +122,18 @@ const App = (props) => {
   }, []);
 
   return (
-    <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-      <ConfigProvider locale={localeAntd}>
+    <ThemeProvider theme={theme}>
+      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         <IntlProvider locale={locale} messages={localeMessages[locale]}>
+          <GlobalStyles />
           <Router>
             <Switch>
               <Route path="/" component={Layout} />
             </Switch>
           </Router>
         </IntlProvider>
-      </ConfigProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 };
 

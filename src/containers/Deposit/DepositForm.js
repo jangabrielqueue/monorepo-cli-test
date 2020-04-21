@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   Form,
   Icon,
@@ -7,12 +7,19 @@ import {
   Select,
   Collapse,
   Spin
-} from "antd";
-import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
+} from 'antd';
+import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks';
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
-import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
+import GlobalButton from '../../components/GlobalButton';
+import CollapsiblePanel from '../../components/CollapsiblePanel';
+import styled from 'styled-components';
+import accountIcon from '../../assets/icons/account.png';
+import currencyIcon from '../../assets/icons/currency.png';
+import bankIcon from '../../assets/icons/bank-name.svg';
+import usernameIcon from '../../assets/icons/username.svg';
+import passwordIcon from '../../assets/icons/password.svg';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -24,6 +31,49 @@ function hasErrors(fieldsError) {
 function getDefaultBankByCurrency(currency) {
   return getBanksByCurrency(currency)[0];
 }
+
+const StyledMoreInfo = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0 25px;
+
+  > li {
+    padding-bottom: 5px;
+    
+    &:before {
+      content: '';
+      display: inline-block;
+      height: 20px;
+      margin-right: 5px;
+      vertical-align: middle;
+      width: 20px;
+    }
+
+    &:first-child {
+      &:before {
+        background: url(${accountIcon}) no-repeat center;
+      }
+    }
+
+    &:last-child {
+      &:before {
+        background: url(${currencyIcon}) no-repeat center;
+      }
+    }
+  }
+`;
+
+const FormIconContainer = styled.fieldset`
+  margin-bottom: 25px;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(${usernameIcon}) no-repeat center;
+  }
+`;
 
 const DepositFormImpl = React.memo((props) => {
   const {
@@ -55,7 +105,7 @@ const DepositFormImpl = React.memo((props) => {
   const bankCodes = getBanksByCurrency(currency);
   const isBankKnown = checkBankIfKnown(currency, bank);
   const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
-  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
+  const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
   
   function handleSubmitForm (type) {
@@ -86,7 +136,7 @@ const DepositFormImpl = React.memo((props) => {
 
     return (
       <main>
-        <Spin spinning={waitingForReady}>
+        {/* <Spin spinning={waitingForReady}>
           <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
             {
               !isBankKnown &&
@@ -97,7 +147,7 @@ const DepositFormImpl = React.memo((props) => {
                       initialValue: getDefaultBankByCurrency(props.currency).code
                     })(
                       <Select
-                        size="large"
+                        size='large'
                         aria-owns='1 2 3 4 5 6 7 8 9'
                       >
                         {bankCodes.map((x, i)=> (
@@ -122,7 +172,7 @@ const DepositFormImpl = React.memo((props) => {
                 ],
               })(
                 <Input 
-                  size="large"
+                  size='large'
                   allowClear
                   id='deposit_form_username'
                   autoComplete='off'
@@ -138,7 +188,7 @@ const DepositFormImpl = React.memo((props) => {
                 ],
               })(
                 <Input.Password
-                  size="large"
+                  size='large'
                   allowClear
                   id='deposit_form_password'
                   autoComplete='off'
@@ -146,23 +196,31 @@ const DepositFormImpl = React.memo((props) => {
               )}
             </Form.Item>
           </div>
-          <div className='more-info-form-item'>
+          <CollapsiblePanel
+            title={intl.formatMessage(messages.moreInformation)}
+          >
+            <StyledMoreInfo>
+              <li>{reference}</li>
+              <li>{currency}</li>
+            </StyledMoreInfo>
+          </CollapsiblePanel>
+           <div className='more-info-form-item'>
             <Collapse bordered={false}>
               <Panel
                 header={intl.formatMessage(messages.moreInformation)}
-                key="1"
+                key='1'
                 style={{
-                  border: "0",
+                  border: '0',
                   fontWeight: 600,
                 }}
               >
-                <div className="infos">
-                  <div className="info-item">
-                    <Icon type="key" />
+                <div className='infos'>
+                  <div className='info-item'>
+                    <Icon type='key' />
                     <span>{reference}</span>
                   </div>
-                  <div className="info-item">
-                    <Icon type="pay-circle" />
+                  <div className='info-item'>
+                    <Icon type='pay-circle' />
                     <span>{currency}</span>
                   </div>
                 </div>
@@ -170,11 +228,21 @@ const DepositFormImpl = React.memo((props) => {
             </Collapse>
           </div>
         </Form>
-        </Spin>
+        </Spin> */}
+        <form>
+            <FormIconContainer icon='username'>
+                <label htmlFor='username'>Online Banking Login Name</label>
+                <input type='text' id='username' name='username' />
+            </FormIconContainer>
+            <FormIconContainer icon='password'>
+                <label htmlFor='password'>Password</label>
+                <input type='text' id='password' name='password' />
+            </FormIconContainer>
+        </form>
         {
           !showOtpMethod &&
           <div className='form-content-submit-container'>
-            <Button
+            {/* <Button
               className={buttonBG}
               size='large'
               htmlType='submit'
@@ -188,13 +256,20 @@ const DepositFormImpl = React.memo((props) => {
                   <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
                 </>
               }
-            </Button>
+            </Button> */}
+            <GlobalButton
+                label={<FormattedMessage {...messages.submit} />}
+                color={buttonColor}
+                icon={<img alt='sms' src={require('../../assets/icons/submit-otp.svg')} />}
+                onClick={() => undefined}
+                disabled={!establishConnection || waitingForReady}
+              />
           </div>
         }
         {
           (showOtpMethod && windowDimensions.width > 576) &&
           <div className='deposit-submit-buttons'>
-            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
+            {/* <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
               {
                 !waitingForReady &&
                 <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
@@ -207,12 +282,28 @@ const DepositFormImpl = React.memo((props) => {
                 <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
               }
               SMART OTP
-            </Button>     
+            </Button>      */}
+              <GlobalButton
+                label='SMS OTP'
+                color={buttonColor}
+                outlined
+                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />}
+                onClick={() => undefined}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label='SMART OTP'
+                color={buttonColor} 
+                outlined
+                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />}
+                onClick={() => undefined}
+                disabled={!establishConnection || waitingForReady}
+              />
           </div>          
         }
       </main>
     );
   });
 
-const DepositForm = Form.create({ name: "deposit_form" })(DepositFormImpl);
+const DepositForm = Form.create({ name: 'deposit_form' })(DepositFormImpl);
 export default injectIntl(DepositForm);
