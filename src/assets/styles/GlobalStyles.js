@@ -31,8 +31,12 @@ export default createGlobalStyle`
       border-right: 0;
       border-top: 0;
       height: 40px;
-      padding: 6px 11px;
+      padding: 0 10px 10px 0;
       width: 100%;
+
+      &:focus {
+        outline: none;
+      }
     }
 
     label {

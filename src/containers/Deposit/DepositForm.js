@@ -63,15 +63,20 @@ const StyledMoreInfo = styled.ul`
   }
 `;
 
-const FormIconContainer = styled.fieldset`
-  margin-bottom: 25px;
+const FormIconContainer = styled.div`
+  display: flex;
 
   &:before {
-    content: '';
-    display: inline-block;
-    width: 20px;
-    height: 20px;
     background: url(${usernameIcon}) no-repeat center;
+    content: '';
+    display: block;
+    height: 20px;
+    margin: 15px 15px 0 0;
+    width: 20px;
+  }
+
+  > div {
+    flex-grow: 1;
   }
 `;
 
@@ -231,12 +236,16 @@ const DepositFormImpl = React.memo((props) => {
         </Spin> */}
         <form>
             <FormIconContainer icon='username'>
+              <div>
                 <label htmlFor='username'>Online Banking Login Name</label>
-                <input type='text' id='username' name='username' />
+                <input type='text' id='username' name='username' autoComplete='off' />
+              </div>
             </FormIconContainer>
             <FormIconContainer icon='password'>
+              <div>
                 <label htmlFor='password'>Password</label>
-                <input type='text' id='password' name='password' />
+                <input type='text' id='password' name='password' autoComplete='off' />
+              </div>
             </FormIconContainer>
         </form>
         {
