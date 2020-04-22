@@ -1,170 +1,194 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Select, Spin } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import messages from './messages';
-import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
+import { useFormContext } from 'react-hook-form';
+import styled from 'styled-components';
+import mobileIcon from '../../assets/icons/otp-reference.svg';
+import creditCardIcon from '../../assets/icons/credit-card.svg';
+import { checkBankIfKnown } from '../../utils/banks';
+import GlobalButton from '../../components/GlobalButton';
 
-const { Option } = Select;
+const FormIconContainer = styled.div`
+  display: flex;
+
+  &:before {
+    background: url(${props => {
+      if (props.icon === 'mobile') {
+        return mobileIcon;
+      } else if (props.icon === 'credit-card') {
+        return creditCardIcon;
+      }
+    }}) no-repeat center;
+    content: '';
+    display: block;
+    height: 20px;
+    margin: ${props => {
+        if (props.icon === 'mobile') {
+          return '15px 15px 15px 0';
+        } else if (props.icon === 'credit-card') {
+          return '15px 15px 15px 2px';
+        }
+      }};
+    width: 20px;
+    opacity: ${props => {
+        if (props.icon === 'mobile') {
+          return '1';
+        } else if (props.icon === 'credit-card') {
+          return '0.6';
+        }
+      }};
+  }
+
+  > div {
+    flex-grow: 1;
+  }
+`;
+
+const FormSelectField = styled.select`
+  margin-bottom: 23px;
+`;
+
+const StyledNoteText = styled.div`
+    font-size: 14px;
+    margin: 15px 0;
+    text-align: center;
+
+    > p {
+        color: #767676;
+        margin-bottom: 5px;
+    }
+`;
 
 const ScratchCardForm = React.memo((props) => {
-    const { handleSubmitScratchCard, waitingForReady, establishConnection } = props;
-    const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
+    const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props;
     const [telcoName, setTelcoName] = useState('VTT');
     const intl = useIntl();
+    const { register, errors, handleSubmit, reset } = useFormContext();
+    const isBankKnown = checkBankIfKnown(currency, bank);
+    const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
 
-    function validationRuleforCardPin () {
-        let validation = {};
-
-        if (telcoName === 'VTT') {
-            validation = {
-                pattern: /^\d{1,15}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 })
-            }
-        } else if (telcoName === 'VNP') {
-            validation = {
-                pattern: /^\d{1,14}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
-            } 
-        } else if (telcoName === 'VMS') {
-            validation = {
-                pattern: /^\d{1,12}$/,
-                message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
-            }
-        }
-
-        return [
-            {
-                required: true,
-                message: intl.formatMessage(messages.placeholders.inputCardPin)
-            },
-            validation
-        ];
+    function handleSubmitForm (values) {
+        handleSubmitScratchCard(values);
     }
 
-    function validationRuleforCardSerial () {
-        let validation = [];
+    function renderMaxLengthCardPin () {
+        switch (telcoName) {
+            case 'VTT':
+                return 15;
+            case 'VNP':
+                return 14; 
+            case 'VMS':
+                return 12;
+            default:
+                break;
+        }
+    }
 
+    function renderMaxLengthMessageCardPin () {
+        switch (telcoName) {
+            case 'VTT':
+                return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 });
+            case 'VNP':
+                return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 });
+            case 'VMS':
+                return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 });
+            default:
+                break;
+        }
+    }
+
+    function renderMaxLengthSerialNumber () {
         if (telcoName === 'VTT' || telcoName === 'VNP') {
-            validation = [
-                {
-                    required: true,
-                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
-                },
-                {
-                    pattern: /^\d{1,14}$/,
-                    message: intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
-                }
-            ];
+            return {
+                required: true,
+                maxLength: 14
+            };
         } else {
-            validation = [
-                {
-                    required: true,
-                    message: intl.formatMessage(messages.placeholders.inputSerialNumber)
-                }                
-            ];
+            return {
+                required: true
+            };
         }
-
-        return validation;
     }
 
-    function hasErrors (fieldsError) {
-        return Object.keys(fieldsError).some(field => fieldsError[field]);
+    function renderMaxLengthMessageSerialNumber () {
+        if (telcoName === 'VTT' || telcoName === 'VNP') {
+            return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 });
+        }
     }
 
     return (
         <main>
-            <Spin spinning={waitingForReady}>
-                <Form layout='vertical' hideRequiredMark={true} onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
-                    <div className='form-icon-container mobile'>
-                        <Form.Item label={intl.formatMessage(messages.placeholders.telcoName)}>
-                            {
-                                getFieldDecorator('telcoName', {
-                                    rules: [{
-                                        required: true,
-                                        message: intl.formatMessage(messages.placeholders.selectTelco)
-                                    }],
-                                    initialValue: telcoName
-                                })
-                                (
-                                    <Select
-                                        size='large'
-                                        onChange={(val) => {
-                                            setTelcoName(val)
-                                            resetFields()
-                                        }}
-                                        aria-owns='telco-1 telco-2 telco-3'
-                                    >
-                                        <Option value='VTT' id='telco-1'>Viettel</Option>
-                                        <Option value='VNP' id='telco-2'>Vinaphone</Option>
-                                        <Option value='VMS' id='telco-3'>Mobiphone</Option>
-                                    </Select>                            
-                                )
-                            }
-                        </Form.Item>
-                    </div>
-                    <div className='form-icon-container credit-card'>
-                        <Form.Item label={intl.formatMessage(messages.placeholders.cardPin)} htmlFor='scratch_card_form_cardPin'>
-                            {
-                                getFieldDecorator('cardPin', {
-                                    rules: validationRuleforCardPin()
-                                })
-                                (
-                                    <Input
-                                        type='number'
-                                        size='large'
-                                        allowClear
-                                        id='scratch_card_form_cardPin'
-                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
-                                        autoComplete='off'
-                                    />                            
-                                )
-                            }
-                        </Form.Item>
-                    </div>
-                    <div className='form-icon-container credit-card'>
-                        <Form.Item label={intl.formatMessage(messages.placeholders.cardSerialNo)} htmlFor='scratch_card_form_cardSerialNumber'>
-                            {
-                                getFieldDecorator('cardSerialNumber', {
-                                    rules: validationRuleforCardSerial()
-                                })
-                                (
-                                    <Input
-                                        type='number'
-                                        size='large'
-                                        allowClear
-                                        id='scratch_card_form_cardSerialNumber'
-                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
-                                        autoComplete='off'
-                                    />                         
-                                )
-                            }
-                        </Form.Item>
-                    </div>
-                    <div className='form-content-submit-container'>
-                        <Button
-                            className='button-precard'
-                            size='large'
-                            htmlType='submit'
-                            disabled={hasErrors(getFieldsError()) || !establishConnection}
-                            loading={waitingForReady}
+            <form>
+                <FormIconContainer icon='mobile'>
+                    <div>
+                        <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
+                        <FormSelectField 
+                            name='telcoName'
+                            id='telcoName'
+                            ref={register}
+                            aria-owns='telco-1 telco-2 telco-3'
+                            onChange={(e) => {
+                                setTelcoName(e.target.value)
+                                reset()
+                            }}
+                            value={telcoName}
                         >
-                            {
-                                !waitingForReady &&
-                                <>
-                                    <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
-                                </>
-                            }
-                        </Button>
+                            <option value='VTT' id='telco-1'>Viettel</option>
+                            <option value='VNP' id='telco-2'>Vinaphone</option>
+                            <option value='VMS' id='telco-3'>Mobiphone</option>
+                        </FormSelectField>
                     </div>
-                    <div className='note-text'>
-                        <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
-                        <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
+                </FormIconContainer>
+                <FormIconContainer icon='credit-card'>
+                    <div>
+                        <label htmlFor='cardPin'><FormattedMessage {...messages.placeholders.cardPin} /></label>
+                        <input 
+                            ref={register({ required: true, maxLength: renderMaxLengthCardPin() })}
+                            onKeyDown={e => e.which === 69 && e.preventDefault()} 
+                            type='number' 
+                            id='cardPin' 
+                            name='cardPin' 
+                            autoComplete='off' 
+                        />      
+                        <p className='input-errors'>
+                            {errors.cardPin?.type === 'required' && <FormattedMessage {...messages.placeholders.inputCardPin} />}
+                            {errors.cardPin?.type === 'maxLength' && renderMaxLengthMessageCardPin()}
+                        </p>   
                     </div>
-                </Form>
-            </Spin>
+                </FormIconContainer>
+                <FormIconContainer icon='credit-card'>
+                    <div>
+                        <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
+                        <input 
+                            ref={register(renderMaxLengthSerialNumber())}
+                            onKeyDown={e => e.which === 69 && e.preventDefault()}  
+                            type='number' 
+                            id='cardSerialNumber' 
+                            name='cardSerialNumber' 
+                            autoComplete='off' 
+                        /> 
+                        <p className='input-errors'>
+                            {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
+                            {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}
+                        </p>
+                    </div>
+                </FormIconContainer>
+                <div className='form-content-submit-container'>
+                    <GlobalButton
+                        label={<FormattedMessage {...messages.submit} />}
+                        color={buttonColor}
+                        icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
+                        onClick={handleSubmit(handleSubmitForm)}
+                        disabled={!establishConnection || waitingForReady}
+                    />
+                </div>
+                <StyledNoteText>
+                    <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
+                    <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
+                </StyledNoteText>
+            </form>
         </main>
     );
 });
 
-const WrappedScratchCardForm = Form.create({ name: 'scratch_card_form' })(ScratchCardForm);
-export default WrappedScratchCardForm;
+export default ScratchCardForm;

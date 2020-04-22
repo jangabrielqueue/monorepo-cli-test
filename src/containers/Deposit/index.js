@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert, Progress } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -16,7 +15,6 @@ import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
-import ConfirmationModal from '../../components/ConfirmationModal';
 import { checkBankIfKnown } from '../../utils/banks';
 import GlobalButton from '../../components/GlobalButton';
 import styled from 'styled-components';
@@ -24,6 +22,7 @@ import Statistics from '../../components/Statistics';
 import Countdown from '../../components/Countdown';
 import ErrorAlert from '../../components/ErrorAlert';
 import ProgressModal from '../../components/ProgressModal';
+import { useFormContext } from 'react-hook-form';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
@@ -42,7 +41,6 @@ const Deposit = props => {
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
-  const [deadline, setDeadline] = useState();
   const [windowDimensions, setWindowDimensions] = useState({
     width: window.outerWidth
   });
@@ -63,15 +61,16 @@ const Deposit = props => {
   const language = queryParams.get('l');
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const [hasFieldError, setHasFieldError] = useState(false);
-  const refFormSubmit = useRef(null);
   const showOtpMethod = currency === 'VND';
   analytics.setCurrentScreen('deposit');
   const isBankKnown = checkBankIfKnown(currency, bank);
   const themeColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  const { handleSubmit } = useFormContext();
 
-  async function handleSubmitDeposit(values) {
+  async function handleSubmitDeposit(values, e, type) {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
+
     analytics.logEvent('login', {
       reference,
     });
@@ -100,7 +99,16 @@ const Deposit = props => {
     await sleep(750);
     const result = await sendDepositRequest({
       ...values,
+      currency,
+      merchant,
+      requester,
+      bank,
+      signature,
       reference,
+      clientIp,
+      datetime,
+      amount,
+      otpMethod: otpType,
       language,
       note,
       successfulUrl,
@@ -200,16 +208,8 @@ const Deposit = props => {
         });
       }
     },
-    [],
+    [intl],
   );
-
-  function handleRefFormSubmit (type) {
-    refFormSubmit.current.props.onSubmit(type);
-  }
-
-  function handleHasFieldError (hasError) {
-    setHasFieldError(hasError);
-  }
 
   function handleWindowResize () {
     setWindowDimensions({
@@ -290,22 +290,12 @@ const Deposit = props => {
     analytics.setCurrentScreen('input_user_credentials');
     content = (
       <DepositForm
-        merchant={merchant}
-        requester={requester}
         currency={currency}
         bank={bank}
-        amount={amount}
         reference={reference}
-        clientIp={clientIp}
-        signature={signature}
-        datetime={datetime}
-        handleSubmit={handleSubmitDeposit}
-        refFormSubmit={refFormSubmit}
-        handleHasFieldError={handleHasFieldError}
+        handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
-        hasFieldError={hasFieldError}
         showOtpMethod={showOtpMethod}
-        handleRefFormSubmit={handleRefFormSubmit}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
       />
@@ -381,26 +371,12 @@ const Deposit = props => {
           (showOtpMethod && windowDimensions.width <= 576 && step === 0) &&
           <footer className='footer-submit-container'>
             <div className='deposit-submit-buttons'>
-              {/* <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-                {
-                  !waitingForReady &&
-                  <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
-                }
-                SMS OTP
-              </Button>
-              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-                {
-                  !waitingForReady &&
-                  <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
-                }
-                SMART OTP
-              </Button> */}
               <GlobalButton
                 label='SMS OTP'
                 color={themeColor}
                 outlined
                 icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />}
-                onClick={() => undefined}
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
                 disabled={!establishConnection || waitingForReady}
               />
               <GlobalButton
@@ -408,7 +384,7 @@ const Deposit = props => {
                 color={themeColor} 
                 outlined
                 icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />}
-                onClick={() => undefined}
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
                 disabled={!establishConnection || waitingForReady}
               />
             </div>  

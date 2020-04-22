@@ -1,7 +1,10 @@
 import React from "react";
-import { injectIntl } from 'react-intl';
-import messages from './messages';
 import Countdown from './Countdown';
+import styled from 'styled-components';
+
+const StyledRedirectContainer = styled.div`
+  padding: 0 15px;
+`;
 
 class AutoRedirect extends React.Component {
   constructor(props) {
@@ -22,12 +25,12 @@ class AutoRedirect extends React.Component {
   render() {    
     return (
       <main>
-        <div className='auto-redirect-statistic'>
+        <StyledRedirectContainer>
           <Countdown
             redirect
             delay={this.props.delay}
           />
-        </div>
+        </StyledRedirectContainer>
           {
             this.props.children
           }

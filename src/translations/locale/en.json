@@ -3,7 +3,7 @@
     "steps.authorization": "AUTHORIZATION",
     "steps.result": "RESULT",
     "deposit": "Deposit",
-    "placeholders.loginName": "Online banking login name",
+    "placeholders.loginName": "Online Banking Login Name",
     "placeholders.password": "Password",
     "submit": "Submit",
     "otp.sms": "SMS OTP",

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import * as firebase from "firebase/app";
-import "firebase/analytics";
-import "./App.scss";
-import ErrorBoundary from "react-error-boundary";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Layout from "./containers/Layout/Layout";
-import axios from "axios";
-import { IntlProvider } from "react-intl";
+import React, { useState, useEffect } from 'react';
+import * as firebase from 'firebase/app';
+import 'firebase/analytics';
+import './App.scss';
+import ErrorBoundary from 'react-error-boundary';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Layout from './containers/Layout/Layout';
+import axios from 'axios';
+import { IntlProvider } from 'react-intl';
 import locale_en from './translations/locale/en.json';
 import locale_vi from './translations/locale/vi.json';
 import locale_th from './translations/locale/th.json';
@@ -17,6 +17,8 @@ import '@rmwc/button/styles';
 import '@rmwc/dialog/styles';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './assets/styles/GlobalStyles';
+import { useForm, FormContext } from 'react-hook-form';
+import { getBanksByCurrency } from './utils/banks';
 
 const theme = {
   colors: {
@@ -45,7 +47,7 @@ const theme = {
 
 const errorHandler = (error, componentStack) => {
   const analytics = firebase.analytics();
-  analytics.logEvent("exception", {
+  analytics.logEvent('exception', {
     stack: componentStack,
     description: error,
     fatal: true,
@@ -70,7 +72,18 @@ const FallbackComponent = ({ componentStack, error }) => (
 const App = (props) => {
   const { REACT_APP_ENDPOINT } = process.env;
   axios.defaults.baseURL = REACT_APP_ENDPOINT;
-  axios.defaults.headers.post["Content-Type"] = "application/json";
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
+  const queryParams = new URLSearchParams(window.location.search);
+
+  function getDefaultBankByCurrency(currency) {
+    return getBanksByCurrency(currency)[0];
+  }
+
+  const methods = useForm({
+    defaultValues: {
+      bank: getDefaultBankByCurrency(queryParams.get('c1')).code
+    }
+  });
 
   // Initialize Firebase
   if (!firebase.apps.length) {
@@ -83,10 +96,10 @@ const App = (props) => {
     } = process.env;
     const firebaseConfig = {
       apiKey: REACT_APP_FIREBASE_API_KEY,
-      authDomain: "",
-      databaseURL: "",
+      authDomain: '',
+      databaseURL: '',
       projectId: REACT_APP_FIREBASE_PROJ_ID,
-      storageBucket: "",
+      storageBucket: '',
       messagingSenderId: REACT_APP_FIREBASE_MSG_SENDER_ID,
       appId: REACT_APP_FIREBASE_APP_ID,
       measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID,
@@ -122,18 +135,20 @@ const App = (props) => {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-        <IntlProvider locale={locale} messages={localeMessages[locale]}>
-          <GlobalStyles />
-          <Router>
-            <Switch>
-              <Route path="/" component={Layout} />
-            </Switch>
-          </Router>
-        </IntlProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <FormContext {...methods}>
+      <ThemeProvider theme={theme}>
+        <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+          <IntlProvider locale={locale} messages={localeMessages[locale]}>
+            <GlobalStyles />
+            <Router>
+              <Switch>
+                <Route path='/' component={Layout} />
+              </Switch>
+            </Router>
+          </IntlProvider>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </FormContext>
   );
 };
 

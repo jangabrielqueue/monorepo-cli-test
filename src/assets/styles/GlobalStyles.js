@@ -25,7 +25,9 @@ export default createGlobalStyle`
         font-size: 16px;
     }
 
-    input[type=text], select {
+    input[type=text],
+    input[type=number],
+    select {
       border-bottom: 1px solid #ccc;
       border-left: 0;
       border-right: 0;
@@ -41,6 +43,13 @@ export default createGlobalStyle`
 
     label {
       font-size: 14px;
+    }
+
+    .input-errors {
+      color: #f5222d;
+      font-size: 14px;
+      height: 21px;
+      margin: 2px 0 0;
     }
 
     .wrapper {
@@ -70,6 +79,7 @@ export default createGlobalStyle`
       
             > main {
                 padding: 20px;
+                position: relative;
       
               .form-content-submit-container {
                 margin-top: 5px;
