@@ -76,14 +76,21 @@ const Deposit = props => {
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.startingConnection),
     });
-    await sleep(1500);
+    await sleep(750);
     setProgress({
       currentStep: 2,
       totalSteps: 5,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
     });
-    await sleep(1500);
+    await sleep(750);
+    setProgress({
+      currentStep: 3.5,
+      totalSteps: 5,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+    });
+    await sleep(750);
     const result = await sendDepositRequest({
       ...values,
       reference,
@@ -99,26 +106,19 @@ const Deposit = props => {
         error: result.error,
       });
       setProgress({
-        currentStep: 3,
-        totalSteps: 5,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
-      });
-      await sleep(1500);
-      setProgress({
         currentStep: 4,
         totalSteps: 5,
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
       });
-      await sleep(1500);
+      await sleep(750);
       setProgress({
         currentStep: 5,
         totalSteps: 5,
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
       });
-      await sleep(1500);
+      await sleep(750);
       setProgress(undefined);
       setWaitingForReady(false);
       setError(result.error);
@@ -166,7 +166,6 @@ const Deposit = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
-      await sleep(1500);
       setProgress(undefined);
       setStep(1);
       setOtpReference(e.extraData);
@@ -184,14 +183,7 @@ const Deposit = props => {
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
         });
-      } else if ((e.currentStep + 2) === 3) {
-        setProgress({
-          currentStep: 3.5,
-          totalSteps: 5,
-          statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
-        });
-        await sleep(1500);
+      } else if ((e.currentStep + 2) >= 3) {
         setProgress({
           currentStep: 5,
           totalSteps: 5,
