@@ -170,6 +170,7 @@ const Deposit = props => {
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
+      setDeadline(Date.now() + 1000 * 180);
     },
     [],
   );
@@ -274,10 +275,6 @@ const Deposit = props => {
         return;
       }
     };
-
-    if (step === 1) {
-      setDeadline(Date.now() + 1000 * 180);
-    }
   }, [step]);
 
   let content;
@@ -315,6 +312,7 @@ const Deposit = props => {
         waitingForReady={waitingForReady}
         bank={bank}
         currency={currency}
+        progress={progress}
       />
     );
   } else if (step === 2 && isSuccessful) {

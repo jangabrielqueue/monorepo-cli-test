@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Spin } from 'antd';
 import { isNullOrWhitespace } from '../../utils/utils';
 import messages from './messages';
@@ -10,8 +10,8 @@ function hasErrors(fieldsError) {
 }
 
 const OTPFormImpl = React.memo((props) => {
-  const { getFieldDecorator, getFieldsError, validateFields } = props.form;
-  const { handleSubmit, otpReference, intl, waitingForReady } = props;
+  const { getFieldDecorator, getFieldsError, validateFields, resetFields } = props.form;
+  const { handleSubmit, otpReference, intl, waitingForReady, progress } = props;
 
   function handleSubmitForm (e) {
     e.preventDefault();
@@ -22,6 +22,12 @@ const OTPFormImpl = React.memo((props) => {
       }
     });
   };
+
+  useEffect(() => {
+    if (progress) {
+      resetFields();
+    }
+  }, [progress]);
 
   return (
     <main>

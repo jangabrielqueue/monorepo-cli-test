@@ -120,11 +120,11 @@ const TopUp = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
-      await sleep(750);
       setProgress(undefined);
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
+      setDeadline(Date.now() + 1000 * 180);
     },
     [],
   );
@@ -230,10 +230,6 @@ const TopUp = props => {
         return;
       }
     };
-
-    if (step === 1) {
-      setDeadline(Date.now() + 1000 * 180);
-    }
   }, [step]);
 
   let content;
@@ -265,6 +261,7 @@ const TopUp = props => {
         otpReference={otpReference}
         handleSubmit={handleSubmitOTP}
         waitingForReady={waitingForReady}
+        progress={progress}
       />
     );
   } else if (step === 2 && isSuccessful) {
