@@ -398,10 +398,7 @@ const Deposit = props => {
         }
         <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
-            {
-              (progress && (progress.currentStep / progress.totalSteps) * 100) <= 100 &&
-              <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-            }
+            <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
             <Progress
               percent={progress && (progress.currentStep / progress.totalSteps) * 100}
               status='active'
