@@ -139,7 +139,7 @@ const DepositForm = React.memo((props) => {
                 <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
                 <input 
                   ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}  
-                  type='text' 
+                  type='password' 
                   id='password' 
                   name='password' 
                   autoComplete='off' 

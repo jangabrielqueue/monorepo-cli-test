@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
 import DepositForm from './DepositForm';
 import OTPForm from './OTPForm';
 import {
@@ -12,12 +11,20 @@ import { useQuery, sleep } from '../../utils/utils';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import StepsBar from '../../components/StepsBar';
-import ConfirmationModal from '../../components/ConfirmationModal';
+import GlobalButton from '../../components/GlobalButton';
+import styled from 'styled-components';
+import Statistics from '../../components/Statistics';
+import Countdown from '../../components/Countdown';
+import ErrorAlert from '../../components/ErrorAlert';
+import ProgressModal from '../../components/ProgressModal';
+import { useFormContext } from 'react-hook-form';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
-const { Countdown } = Statistic;
+const WrapperBG = styled.div`
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
+`;
 
 const TopUp = props => {
   const [step, setStep] = useState(0);
@@ -28,7 +35,6 @@ const TopUp = props => {
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
-  const [deadline, setDeadline] = useState();
   const [windowDimensions, setWindowDimensions] = useState({
     width: window.outerWidth
   });
@@ -43,8 +49,8 @@ const TopUp = props => {
   const signature = queryParams.get('k');
   const session = `TOPUP-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const [hasFieldError, setHasFieldError] = useState(false);
-  const refFormSubmit = useRef(null);
+  const themeColor = 'topup';
+  const { handleSubmit } = useFormContext();
 
   async function handleSubmitDeposit(values) {
     setError(undefined);
@@ -150,14 +156,6 @@ const TopUp = props => {
     [],
   );
 
-  function handleRefFormSubmit (type) {
-    refFormSubmit.current.props.onSubmit(type);
-  }
-
-  function handleHasFieldError (hasError) {
-    setHasFieldError(hasError);
-  }
-
   function handleWindowResize () {
     setWindowDimensions({
       width: window.outerWidth
@@ -245,12 +243,8 @@ const TopUp = props => {
         clientIp={clientIp}
         signature={signature}
         datetime={datetime}
-        handleSubmit={handleSubmitDeposit}
-        refFormSubmit={refFormSubmit}
-        handleHasFieldError={handleHasFieldError}
+        handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
-        hasFieldError={hasFieldError}
-        handleRefFormSubmit={handleRefFormSubmit}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
       />
@@ -279,7 +273,7 @@ const TopUp = props => {
   }
 
   return (
-    <div className='wrapper bg-top-up'>
+    <WrapperBG className='wrapper' color={themeColor}>
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
@@ -288,26 +282,21 @@ const TopUp = props => {
             </section>
             {
               step === 0 &&
-              <Statistic
+              <Statistics
                 title={intl.formatMessage(messages.deposit)}
-                prefix={currency}
-                value={amount}
-                valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
-                precision={2}
+                language='en-US'
+                currency={currency}
+                amount={amount}
               />
             }
             {
               step === 1 &&
-              <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
+              <Countdown />
             }
             {
               error &&
-              <Alert
-                description={error.message}
-                type='error'
-                showIcon
-                closable
-                className='error-message'
+              <ErrorAlert
+                message={error.message}
               />
             }
           </header>
@@ -321,28 +310,34 @@ const TopUp = props => {
         (windowDimensions.width <= 576 && step === 0) &&
         <footer className='footer-submit-container'>
           <div className='deposit-submit-top-up-buttons'>
-            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-              SMS OTP
-            </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-              SMART OTP
-            </Button>
+              <GlobalButton
+                label='SMS OTP'
+                color={themeColor}
+                outlined
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor} 
+                outlined
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
+                disabled={!establishConnection || waitingForReady}
+              />
           </div>  
         </footer>
       }
-        <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-            <Progress
-              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-              status='active'
-              showInfo={false}
-              strokeColor='#34A220'
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
             />
             <p>{progress && progress.statusMessage}</p>
           </div>
-        </ConfirmationModal>      
-    </div>
+        </ProgressModal>    
+    </WrapperBG>
   );
 };
 

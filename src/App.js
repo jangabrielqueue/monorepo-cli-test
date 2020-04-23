@@ -18,7 +18,6 @@ import '@rmwc/dialog/styles';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './assets/styles/GlobalStyles';
 import { useForm, FormContext } from 'react-hook-form';
-import { getBanksByCurrency } from './utils/banks';
 
 const theme = {
   colors: {
@@ -73,17 +72,8 @@ const App = (props) => {
   const { REACT_APP_ENDPOINT } = process.env;
   axios.defaults.baseURL = REACT_APP_ENDPOINT;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
-  const queryParams = new URLSearchParams(window.location.search);
 
-  function getDefaultBankByCurrency(currency) {
-    return getBanksByCurrency(currency)[0];
-  }
-
-  const methods = useForm({
-    defaultValues: {
-      bank: getDefaultBankByCurrency(queryParams.get('c1')).code
-    }
-  });
+  const methods = useForm();
 
   // Initialize Firebase
   if (!firebase.apps.length) {
