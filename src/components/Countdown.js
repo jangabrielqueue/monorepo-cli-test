@@ -18,7 +18,7 @@ const StyledCountdown = styled.section`
     }
 `;
 
-const Countdown = ({ redirect, intl, delay }) => {
+const Countdown = ({ redirect, intl, delay, renderCountdownAgain }) => {
     const [minutes, setMinutes] = useState(redirect ? 0 : 3);
     const [seconds, setSeconds] = useState(redirect ? 10: 0);
 
@@ -41,7 +41,7 @@ const Countdown = ({ redirect, intl, delay }) => {
         return () => {
             clearInterval(timerInterval);
         }
-    }, [seconds, minutes]);
+    }, [seconds, minutes, renderCountdownAgain]);
 
     return (
         <StyledCountdown redirect={redirect}>

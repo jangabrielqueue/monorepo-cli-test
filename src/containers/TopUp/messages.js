@@ -35,6 +35,10 @@ export default defineMessages({
         id: 'submit',
         defaultMessage: 'Submit'
     },
+    moreInformation: {
+        id: 'moreInformation',
+        defaultMessage: 'More Information'
+    },
     countdown: {
         id: 'countdown',
         defaultMessage: 'Countdown'

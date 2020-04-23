@@ -21,19 +21,22 @@ export default createGlobalStyle`
 
     body {
         background-color: #ffffff;
+        color: #767676;
         font-family: ProductSansRegular;
         font-size: 16px;
+        margin: 0;
     }
 
     input[type=text],
     input[type=number],
+    input[type=password],
     select {
       border-bottom: 1px solid #ccc;
       border-left: 0;
       border-right: 0;
       border-top: 0;
       height: 40px;
-      padding: 0 10px 10px 0;
+      padding: 0 10px 0 0;
       width: 100%;
 
       &:focus {
@@ -55,7 +58,7 @@ export default createGlobalStyle`
     .wrapper {
         display: flex;
         flex-wrap: wrap;
-        height: 100vh;
+        height: 100%;
         justify-content: center;
         padding-top: 75px;
       
@@ -81,12 +84,7 @@ export default createGlobalStyle`
                 padding: 20px;
                 position: relative;
       
-              .form-content-submit-container {
-                margin-top: 5px;
-                padding: 10px 0 5px;
-                text-align: center;
-              }
-      
+              .form-content-submit-container,
               .form-content-submit-top-up-container {
                 margin-top: 5px;
                 padding: 10px 0 5px;
@@ -106,7 +104,7 @@ export default createGlobalStyle`
     }
 
     .deposit-submit-buttons,
-    deposit-submit-top-up-buttons {
+    .deposit-submit-top-up-buttons {
         text-align: center;
     }
 
@@ -118,19 +116,45 @@ export default createGlobalStyle`
         min-height: 500px;
     }
 
-    .mdc-button .mdc-button__icon {
+    .logo {
+      margin: 25px 0;
+      text-align: center;
+    
+      img {
         height: auto;
-        width: auto;
+        max-width: 200px;
+        width: 100%;
+      }
     }
 
-    .mdc-dialog .mdc-dialog__surface {
-      border-radius: 15px;
+    .steps-bar-container {
+      padding: 15px 0;
+      text-align: center;
+    }
+    
+    .progress-bar-container {
+      height: 200px;
+      text-align: center;
+    
+      > img {
+        animation: zoomInAndOut 0.5s ease-in-out;
+        margin: 30px 0 10px;
+      }
+    
+      > p {
+        font-weight: bold;
+        margin: 0;
+        text-align: center;
+        width: 100%;
+      }
     }
 
     progress {
       -webkit-appearance:none;
       border-radius: 7px;
       height: 10px;
+      margin-bottom: 10px;
+      width: 100%;
 
       &::-webkit-progress-bar {
           background: #f5f5f5;
@@ -147,11 +171,50 @@ export default createGlobalStyle`
       }
     }
 
-    @media only screen and(max-width: 23.438em) {
+    .mdc-button .mdc-button__icon {
+        height: auto;
+        width: auto;
+    }
+
+    .mdc-dialog .mdc-dialog__surface {
+      border-radius: 15px;
+    }
+
+    @media (min-width: 36em) {
+      .progress-bar-container {
+        min-width: 400px;
+      }
+    }
+
+    @media (max-width: 23.438em) {
         .deposit-submit-buttons {
           > button {
             margin: 0 15px 15px;
           }
         }
+    }
+
+    @media (max-width: 36em) {
+      .steps-container {
+        margin: 0rem 1rem;
+      }
+    }
+
+    @media (max-width: 47.999em) {
+      .steps-container {
+        display: none;
+      }
+    }
+    
+    @keyframes zoomInAndOut {
+      0% {
+          transform: scale(1,1);
+      }
+      50% {
+          transform: scale(1.2,1.2);
+      }
+      100% {
+          transform: scale(1,1);
+      }
     }
 `;

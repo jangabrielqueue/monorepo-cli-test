@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { isNullOrWhitespace } from '../../utils/utils';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
@@ -28,26 +28,26 @@ const FormIconContainer = styled.div`
   }
 
   > div {
-    flex-grow: 1;
+    flex: 0 1 415px;
   }
 `;
 
 const OTPForm = React.memo((props) => {
-  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency } = props;
+  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props;
   const isBankKnown = checkBankIfKnown(currency, bank);
   const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
 
-  const { register, errors, handleSubmit } = useFormContext();
+  const { register, errors, handleSubmit, reset } = useFormContext();
 
-  function handleSubmitForm ({ OTP }, e) {
+  function handleSubmitForm ({ OTP }) {
     handleSubmitOTP(OTP);
   }
 
   useEffect(() => {
     if (progress) {
-      resetFields();
+      reset();
     }
-  }, [progress]);
+  }, [progress, reset]);
 
   return (
     <main>
@@ -66,7 +66,7 @@ const OTPForm = React.memo((props) => {
             <label htmlFor='OTP'>Input OTP Received from Bank</label>
             <input 
               ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })} 
-              type='text' 
+              type='number' 
               id='OTP' 
               name='OTP' 
               autoComplete='off'

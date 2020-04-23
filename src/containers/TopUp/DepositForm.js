@@ -29,13 +29,25 @@ const StyledMoreInfo = styled.ul`
       width: 20px;
     }
 
-    &:first-child {
+    &:nth-child(1) {
       &:before {
         background: url(${accountIcon}) no-repeat center;
       }
     }
 
-    &:last-child {
+    &:nth-child(2) {
+      &:before {
+        background: url(${usernameIcon}) no-repeat center;
+      }
+    }
+
+    &:nth-child(3) {
+      &:before {
+        background: url(${usernameIcon}) no-repeat center;
+      }
+    }
+
+    &:nth-child(4) {
       &:before {
         background: url(${currencyIcon}) no-repeat center;
       }
@@ -64,7 +76,7 @@ const FormIconContainer = styled.div`
   }
 
   > div {
-    flex-grow: 1;
+    flex: 0 1 415px;
   }
 `;
 
@@ -77,14 +89,9 @@ const DepositForm = React.memo((props) => {
     currency,
     merchant,
     requester,
-    amount,
-    signature,
     reference,
-    clientIp,
-    datetime,
-    handleSubmitDeposit,
     waitingForReady,
-    intl,
+    handleSubmitDeposit,
     windowDimensions,
     establishConnection
   } = props;
@@ -94,25 +101,7 @@ const DepositForm = React.memo((props) => {
   const { register, errors, handleSubmit } = useFormContext();
 
   function handleSubmitForm (values, e, type) {
-    // const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
-    console.log('values, e, type', values, e, type)
-    // validateFields((err, values) => {
-    //   if (!err) {
-    //     handleSubmitDeposit({
-    //       currency,
-    //       merchant,
-    //       requester,
-    //       bank: getDefaultBankByCurrency(props.currency).code,
-    //       signature,
-    //       reference,
-    //       clientIp,
-    //       datetime,
-    //       amount,
-    //       otpMethod: otpType,
-    //       ...values
-    //     });
-    //   }
-    // });
+    handleSubmitDeposit(values, e, type);
   };
 
     return (
@@ -167,6 +156,7 @@ const DepositForm = React.memo((props) => {
           </FormIconContainer>
           <CollapsiblePanel
             title={<FormattedMessage {...messages.moreInformation} />}
+            topup
           >
           <StyledMoreInfo>
             <li>{reference}</li>
@@ -179,16 +169,11 @@ const DepositForm = React.memo((props) => {
         {
           (windowDimensions.width > 576) &&
           <div className='deposit-submit-top-up-buttons'>
-            {/* <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
-              SMS OTP
-            </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
-              SMART OTP
-            </Button>      */}
             <GlobalButton
               label='SMS OTP'
               color={buttonColor}
               outlined
+              topup='true'
               onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
             />
@@ -196,6 +181,7 @@ const DepositForm = React.memo((props) => {
               label='SMART OTP'
               color={buttonColor} 
               outlined
+              topup='true'
               onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
               disabled={!establishConnection || waitingForReady}
             />

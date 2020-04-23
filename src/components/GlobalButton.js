@@ -3,12 +3,14 @@ import { Button } from '@rmwc/button';
 import styled from 'styled-components';
 
 const OutlinedButton = styled(Button)`
+    background-color: ${props => props.topup === 'true' ? props.theme.colors[props.color] + '!important' : 'transparent'};
     border-radius: 8px;
-    border: 2px solid ${props => props.theme.colors[`${props.color}`]} !important;
-    color: ${props => props.theme.colors[`${props.color}`]} !important;
+    border: ${props => props.topup === 'true' ? '0' : '2px solid' + props.theme.colors[props.color] + '!important'};
+    color: ${props => props.topup === 'true' ? '#FFF !important' : props.theme.colors[props.color] + '!important'};
     font-family: ProductSansBold;
     height: 43px;
-    margin: 15px;
+    line-height: 0.5;
+    margin: 10px;
     max-width: 155px;
     width: 100%;
 

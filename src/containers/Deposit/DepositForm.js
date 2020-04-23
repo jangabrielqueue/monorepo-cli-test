@@ -64,7 +64,7 @@ const FormIconContainer = styled.div`
   }
 
   > div {
-    flex-grow: 1;
+    flex: 0 1 415px;
   }
 `;
 

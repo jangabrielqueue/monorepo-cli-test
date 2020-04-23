@@ -28,7 +28,7 @@ export default defineMessages({
         },
         pageDoesNoExist: {
             id: 'errors.pageDoesNoExist',
-            defaultMessage: 'Sorry, the page you have visited does not exist'
+            defaultMessage: 'Sorry, the page you have visited does not exist.'
         }
     },
     progress: {

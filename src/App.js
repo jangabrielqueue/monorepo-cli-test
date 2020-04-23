@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as firebase from 'firebase/app';
 import 'firebase/analytics';
-import './App.scss';
 import ErrorBoundary from 'react-error-boundary';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Layout from './containers/Layout/Layout';

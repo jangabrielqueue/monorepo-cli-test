@@ -31,14 +31,14 @@ const StyledHeader = styled.div`
 const StyledContent = styled.div`
     font-size: 12px;
 	overflow-y: hidden;
-	max-height: ${props => props.toggleCollapse ? '50px' : '0'};
+	max-height: ${props => props.toggleCollapse ? props.topup ? '100px' : '50px' : '0'};
 
 	transition-property: all;
 	transition-duration: .5s;
 	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 `;
 
-const CollapsiblePanel = ({ children, title }) => {
+const CollapsiblePanel = ({ children, title, topup }) => {
     const [toggleCollapse, setToggleCollapse] = useState(false);
 
     function handleToggleCollapse () {
@@ -54,7 +54,8 @@ const CollapsiblePanel = ({ children, title }) => {
                     title
                 }
             </StyledHeader>
-                <StyledContent 
+                <StyledContent
+                    topup={topup} 
                     toggleCollapse={toggleCollapse}>
                     {
                         children

@@ -67,6 +67,7 @@ const Deposit = props => {
   const themeColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
   const { handleSubmit } = useFormContext();
+  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
 
   async function handleSubmitDeposit(values, e, type) {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
@@ -91,7 +92,7 @@ const Deposit = props => {
     });
     await sleep(750);
     setProgress({
-      currentStep: 3.5,
+      currentStep: 3,
       totalSteps: 5,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
@@ -185,7 +186,7 @@ const Deposit = props => {
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
-      setDeadline(Date.now() + 1000 * 180);
+      setRenderCountdownAgain(prevState => !prevState);
     },
     [],
   );
@@ -201,7 +202,7 @@ const Deposit = props => {
         });
       } else if ((e.currentStep + 2) >= 3) {
         setProgress({
-          currentStep: 5,
+          currentStep: 4,
           totalSteps: 5,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
@@ -352,7 +353,7 @@ const Deposit = props => {
             }
             {
               step === 1 &&
-              <Countdown />
+              <Countdown renderCountdownAgain={renderCountdownAgain} />
             }
             {
               error &&

@@ -25,7 +25,7 @@
     "errors.error": "Error",
     "errors.submissionFailed": "Submission Failed!",
     "errors.invalidParameters": "Invalid Parameters",
-    "errors.pageDoesNoExist": "Sorry, the page you have visited does not exist",
+    "errors.pageDoesNoExist": "Sorry, the page you have visited does not exist.",
     "errors.transactionFailed": "Submitted Transaction Failed!",
     "success.successfullyDeposit": "Successfully deposit",
     "errors.connectionTimeout": "A server connection timeout error, please contact customer support for the transaction status.",

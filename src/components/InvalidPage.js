@@ -1,17 +1,29 @@
 import React from "react";
-import { Result } from 'antd';
 import messages from './messages';
-import { useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
+import styled from 'styled-components';
+
+const StyledInvalidContainer = styled.div`
+  text-align: center;
+
+  h1 {
+    font-size: 50px;
+    padding: 150px 0 0;
+    margin: 0;
+    line-height: 1;
+  }
+
+  p {
+    margin: 20px 0;
+  }
+`;
 
 const InvalidPage = (props) => {
-  const intl = useIntl();
-
   return (
-    <Result
-      status="error"
-      title={intl.formatMessage(messages.errors.submissionFailed)}
-      subTitle={intl.formatMessage(messages.errors.invalidParameters)}
-    />
+    <StyledInvalidContainer>
+      <h1><FormattedMessage {...messages.errors.submissionFailed} /></h1>
+      <p><FormattedMessage {...messages.errors.invalidParameters} /></p>
+    </StyledInvalidContainer>
   );
 };
 

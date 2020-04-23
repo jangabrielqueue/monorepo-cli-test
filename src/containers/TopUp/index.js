@@ -8,6 +8,7 @@ import {
 import { sendTopUpRequest, sendTopUpOtp } from './Requests';
 import * as signalR from '@microsoft/signalr';
 import { useQuery, sleep } from '../../utils/utils';
+import { getBanksByCurrencyForTopUp } from '../../utils/banks';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import StepsBar from '../../components/StepsBar';
@@ -26,8 +27,12 @@ const WrapperBG = styled.div`
   background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
 `;
 
+function getDefaultBankByCurrency(currency) {
+  return getBanksByCurrencyForTopUp(currency)[0];
+}
+
 const TopUp = props => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(false);
   const [establishConnection, setEstablishConnection] = useState(false);
@@ -51,8 +56,11 @@ const TopUp = props => {
   const intl = useIntl();
   const themeColor = 'topup';
   const { handleSubmit } = useFormContext();
+  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
 
-  async function handleSubmitDeposit(values) {
+  async function handleSubmitDeposit(values, e, type) {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
+
     setError(undefined);
     setWaitingForReady(true);
     setProgress({
@@ -70,15 +78,24 @@ const TopUp = props => {
     });
     await sleep(750);
     setProgress({
-      currentStep: 3.5,
+      currentStep: 3,
       totalSteps: 5,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
     });
-    await sleep(750);    
+    await sleep(750);
     const result = await sendTopUpRequest({
-      ...values,
-      reference: reference,
+          currency,
+          merchant,
+          requester,
+          bank: getDefaultBankByCurrency(currency).code,
+          signature,
+          reference,
+          clientIp,
+          datetime,
+          amount,
+          otpMethod: otpType,
+      ...values
     });
     if (result.error) {
       setProgress({
@@ -130,7 +147,7 @@ const TopUp = props => {
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
-      setDeadline(Date.now() + 1000 * 180);
+      setRenderCountdownAgain(prevState => !prevState);
     },
     [],
   );
@@ -146,14 +163,14 @@ const TopUp = props => {
         });
       } else if ((e.currentStep + 2) >= 3) {
         setProgress({
-          currentStep: 5,
+          currentStep: 4,
           totalSteps: 5,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
         });
       }
     },
-    [],
+    [intl],
   );
 
   function handleWindowResize () {
@@ -253,7 +270,7 @@ const TopUp = props => {
     content = (
       <OTPForm
         otpReference={otpReference}
-        handleSubmit={handleSubmitOTP}
+        handleSubmitOTP={handleSubmitOTP}
         waitingForReady={waitingForReady}
         progress={progress}
       />
@@ -291,7 +308,7 @@ const TopUp = props => {
             }
             {
               step === 1 &&
-              <Countdown />
+              <Countdown renderCountdownAgain={renderCountdownAgain} />
             }
             {
               error &&

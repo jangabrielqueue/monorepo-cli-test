@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 const StyledStatistics = styled.section`
     > h1 {
-        color: #767676;
         font-size: 16px;
-        margin-bottom: 4px;
+        font-weight: 400;
+        margin: 0 0 4px;
     }
 
     > p {
