@@ -40,5 +40,6 @@
     "errors.connectionError": "ปิดการเชื่อมต่อ โปรดรีเฟรชหน้าใหม่อีกครั้ง",
     "placeholders.inputMaxChar": "กรุณใส่จำนวนตัวอักษรสูงสุดไม่เกิน {maxLength} ตัวอักษร",
     "placeholders.inputSerialNumber": "กรุณากรอกหมายเลขซีเรียล",
-    "placeholders.telcoName": "ชื่อผู้ให้บริการ"
+    "placeholders.telcoName": "ชื่อผู้ให้บริการ",
+    "placeholders.bankName": "ธนาคาร"
 }

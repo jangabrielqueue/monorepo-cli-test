@@ -42,7 +42,7 @@ const OTPFormImpl = React.memo((props) => {
               <FormattedMessage {...messages.otpNewRecipient} />
             </div> :
             <div className='form-icon-container otp-reference'>
-              <Form.Item label={intl.formatMessage(messages.placeholders.otpReference)}>
+              <Form.Item label={intl.formatMessage(messages.otpReference)}>
                 {otpReference}
               </Form.Item>
             </div>

@@ -76,7 +76,7 @@ const ScratchCardForm = React.memo((props) => {
             <Spin spinning={waitingForReady}>
                 <Form layout='vertical' hideRequiredMark={true} onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
                     <div className='form-icon-container mobile'>
-                        <Form.Item label='Telco Name'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.telcoName)}>
                             {
                                 getFieldDecorator('telcoName', {
                                     rules: [{
@@ -103,7 +103,7 @@ const ScratchCardForm = React.memo((props) => {
                         </Form.Item>
                     </div>
                     <div className='form-icon-container credit-card'>
-                        <Form.Item label='Card Pin' htmlFor='scratch_card_form_cardPin'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.cardPin)} htmlFor='scratch_card_form_cardPin'>
                             {
                                 getFieldDecorator('cardPin', {
                                     rules: validationRuleforCardPin()
@@ -122,7 +122,7 @@ const ScratchCardForm = React.memo((props) => {
                         </Form.Item>
                     </div>
                     <div className='form-icon-container credit-card'>
-                        <Form.Item label='Card Serial Number' htmlFor='scratch_card_form_cardSerialNumber'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.cardSerialNo)} htmlFor='scratch_card_form_cardSerialNumber'>
                             {
                                 getFieldDecorator('cardSerialNumber', {
                                     rules: validationRuleforCardSerial()

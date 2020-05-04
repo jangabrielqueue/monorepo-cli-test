@@ -91,7 +91,7 @@ const DepositFormImpl = React.memo((props) => {
             {
               !isBankKnown &&
               <div className='form-icon-container bank-name'>
-                <Form.Item label='Bank Name'>
+                <Form.Item label={intl.formatMessage(messages.placeholders.bankName)}>
                   {
                     getFieldDecorator('bank', {
                       initialValue: getDefaultBankByCurrency(props.currency).code

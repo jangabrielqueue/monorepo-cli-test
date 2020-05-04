@@ -40,5 +40,6 @@
     "errors.connectionError": "Kết nối đã đóng, vui lòng làm mới trang.",
     "placeholders.inputMaxChar": "Vui lòng nhập (tối đa {maxLength} ký tự.)",
     "placeholders.inputSerialNumber": "Vui lòng nhập mã seri.",
-    "placeholders.telcoName": "Tên Nhà Mạng"
+    "placeholders.telcoName": "Tên Nhà Mạng",
+    "placeholders.bankName": "Ngân Hàng"
 }

@@ -25,6 +25,10 @@ export default defineMessages({
         inputOtp: {
             id: 'placeholders.inputOtp',
             defaultMessage: 'Please input OTP received from bank'
+        },
+        bankName: {
+            id: 'placeholders.bankName',
+            defaultMessage: 'Bank Name'
         }
     },
     submit: {
