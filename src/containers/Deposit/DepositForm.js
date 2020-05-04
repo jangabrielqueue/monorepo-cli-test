@@ -112,7 +112,7 @@ const DepositFormImpl = React.memo((props) => {
               </div>
             }
           <div className='form-icon-container username'>
-            <Form.Item label='Online Banking Login Name' htmlFor='deposit_form_username'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.loginName)} htmlFor='deposit_form_username'>
               {getFieldDecorator('username', {
                 rules: [
                   {
@@ -131,7 +131,7 @@ const DepositFormImpl = React.memo((props) => {
             </Form.Item>
           </div>
           <div className='form-icon-container password'>
-            <Form.Item label='Password' htmlFor='deposit_form_password'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.password)} htmlFor='deposit_form_password'>
               {getFieldDecorator('password', {
                 rules: [
                   { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },

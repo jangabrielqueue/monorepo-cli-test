@@ -42,13 +42,13 @@ const OTPFormImpl = React.memo((props) => {
               <FormattedMessage {...messages.otpNewRecipient} />
             </div> :
             <div className='form-icon-container otp-reference'>
-              <Form.Item label='OTP Reference'>
+              <Form.Item label={intl.formatMessage(messages.placeholders.otpReference)}>
                 {otpReference}
               </Form.Item>
             </div>
           }
           <div className='form-icon-container username'>
-            <Form.Item label='Input OTP Received from Bank' htmlFor='input_otp'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.inputOtp)} htmlFor='input_otp'>
               {
                 getFieldDecorator('OTP', {
                   rules: [
