@@ -63,7 +63,7 @@ const OTPForm = React.memo((props) => {
         }
         <FormIconContainer icon='username'>
           <div>
-            <label htmlFor='OTP'>Input OTP Received from Bank</label>
+            <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
             <input 
               ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })} 
               type='number' 

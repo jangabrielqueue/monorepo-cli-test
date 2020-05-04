@@ -101,7 +101,7 @@ const DepositForm = React.memo((props) => {
               !isBankKnown &&
               <FormIconContainer icon='bank'>
                 <div>
-                  <label htmlFor='bank'>Bank Name</label>
+                  <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
                   <FormSelectField 
                     name='bank'
                     id='bank'
