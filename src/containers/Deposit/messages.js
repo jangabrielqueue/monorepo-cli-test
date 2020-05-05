@@ -1,20 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-    steps: {
-        login: {
-            id: 'steps.login',
-            defaultMessage: 'LOGIN'
-        },
-        authorization: {
-            id: 'steps.authorization',
-            defaultMessage: 'AUTHORIZATION'
-        },
-        result: {
-            id: 'steps.result',
-            defaultMessage: 'RESULT'
-        }
-    },
     deposit: {
         id: 'deposit',
         defaultMessage: 'Deposit'
@@ -39,6 +25,10 @@ export default defineMessages({
         inputOtp: {
             id: 'placeholders.inputOtp',
             defaultMessage: 'Please input OTP received from bank'
+        },
+        bankName: {
+            id: 'placeholders.bankName',
+            defaultMessage: 'Bank Name'
         }
     },
     submit: {
@@ -76,9 +66,25 @@ export default defineMessages({
         }
     },
     progress: {
-        inProgress: {
-            id: 'progress.inProgress',
-            defaultMessage: 'In progress'
+        startingConnection: {
+            id: 'progress.startingConnection',
+            defaultMessage: 'Starting secured connection'
+        },
+        encryptedTransmission: {
+            id: 'progress.encryptedTransmission',
+            defaultMessage: 'Encrypted the transmission data'
+        },
+        beginningTransaction: {
+            id: 'progress.beginningTransaction',
+            defaultMessage: 'Beginning of the transaction'
+        },
+        submittingTransaction: {
+            id: 'progress.submittingTransaction',
+            defaultMessage: 'Submitting transaction via secured connection'
+        },
+        waitingTransaction: {
+            id: 'progress.waitingTransaction',
+            defaultMessage: 'Waiting transaction confirm'
         }
     }
 });

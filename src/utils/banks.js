@@ -32,7 +32,7 @@ const VND_ALL_BANKS_DEV = [
   EXIM,
   SACOM,
   AGRI,
-  FAKER,
+  FAKER
 ];
 
 const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB];
@@ -67,6 +67,14 @@ function getBanksByCurrency(currency) {
   return [];
 }
 
+function checkBankIfKnown (currency, bank) {
+    if (currency === 'VND') {
+      return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
+    } else if (currency === 'THB') {
+      return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
+    }
+}
+
 function getVndBanksByEnvForTopUp() {
   if (isUatOrDev) {
     return VND_TOPUP_BANKS_DEV;
@@ -93,4 +101,5 @@ function getBanksByCurrencyForTopUp(currency) {
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
+  checkBankIfKnown
 };

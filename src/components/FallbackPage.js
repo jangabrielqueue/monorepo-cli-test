@@ -1,28 +1,18 @@
-import React from "react";
-import { Spin, Card, Steps } from 'antd';
+import React from 'react';
+import { Spin } from 'antd';
 import '../containers/Layout/styles.scss';
 
-const FallbackPage = (props) => {
-  const { Step } = Steps;
-
+const FallbackPage = () => {
   return (
-    <>
-      <div className="steps-container">
-        <Steps size="small" current={0}>
-          <Step title='LOGIN' />
-          {
-            window.location.pathname === '/deposit/bank' &&
-            <Step title='AUTHORIZATION' />
-          }
-          <Step title='RESULT' />
-        </Steps>
+    <div className='wrapper'>
+      <div className='container'>
+        <div className='form-content'>
+          <div className='fallback-container'>
+            <Spin />
+          </div>
+        </div>
       </div>
-      <div className="fallback-container">
-        <Card>
-          <Spin />
-        </Card>
-      </div>
-    </>
+    </div>
   );
 };
 

@@ -28,6 +28,10 @@ export default defineMessages({
             id: 'placeholders.inputMaxChar',
             defaultMessage: 'Please input a maximum length of {maxLength} characters.'
         },
+        inputCardPin: {
+            id: 'placeholders.inputSerialNumber',
+            defaultMessage: 'Please input card pin.'
+        },
         inputSerialNumber: {
             id: 'placeholders.inputSerialNumber',
             defaultMessage: 'Please input serial number.'
@@ -66,17 +70,25 @@ export default defineMessages({
         }
     },
     progress: {
-        inProgress: {
-            id: 'progress.inProgress',
-            defaultMessage: 'In progress'
+        startingConnection: {
+            id: 'progress.startingConnection',
+            defaultMessage: 'Starting secured connection'
         },
-        waitingForProvider: {
-            id: 'progress.waitingForProvider',
-            defaultMessage: 'Waiting for provider confirmation'
+        encryptedTransmission: {
+            id: 'progress.encryptedTransmission',
+            defaultMessage: 'Encrypted the transmission data'
         },
-        transactionComplete: {
-            id: 'progress.transactionComplete',
-            defaultMessage: 'Transaction Complete'
+        beginningTransaction: {
+            id: 'progress.beginningTransaction',
+            defaultMessage: 'Beginning of the transaction'
+        },
+        submittingTransaction: {
+            id: 'progress.submittingTransaction',
+            defaultMessage: 'Submitting transaction via secured connection'
+        },
+        waitingTransaction: {
+            id: 'progress.waitingTransaction',
+            defaultMessage: 'Waiting transaction confirm'
         }
     },
     submit: {

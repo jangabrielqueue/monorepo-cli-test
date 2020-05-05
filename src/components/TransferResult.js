@@ -1,27 +1,25 @@
 import React from "react";
-import { Result, Statistic } from "antd";
 import { useIntl } from 'react-intl';
 import messages from './messages';
 
 let intl;
 
-export const TransferSuccessful = ({ transferResult }) => {
+export const TransferSuccessful = ({ transferResult, language }) => {
   intl = useIntl();
 
   return (
-    <Result
-      status="success"
-      title={intl.formatMessage(messages.success.successfullyDeposit)}
-      subTitle={"References: " + transferResult.reference}
-    >
-      <Statistic
-        title=""
-        prefix={transferResult.currency}
-        value={transferResult.amount}
-        valueStyle={{ color: "#000", fontWeight: 700 }}
-        precision={2}
-      />
-    </Result>
+    <div className='auto-redirect-content'>
+      <img alt='submit-success' src={require('../assets/icons/submit-success.svg')} />
+      <h1>{intl.formatMessage(messages.success.successfullyDeposit)}</h1>
+      <p>References: {`${transferResult.reference}`}</p>
+      <div className='transaction-amount'>
+        <span>
+          {
+            new Intl.NumberFormat(language, { style: 'currency', currency: transferResult.currency }).format(transferResult.amount)
+          }
+        </span>
+      </div>
+    </div>
   );
 };
 
@@ -29,11 +27,11 @@ export const TransferFailed = ({ transferResult }) => {
   intl = useIntl();
 
   return (
-    <Result
-      status="error"
-      title={intl.formatMessage(messages.errors.transactionFailed)}
-      subTitle={transferResult.message}
-    ></Result>
+    <div className='auto-redirect-content'>
+      <img alt='submit-failed' src={require('../assets/icons/submit-failed.svg')} />
+      <h1>{intl.formatMessage(messages.errors.transactionFailed)}</h1>
+      <p>{transferResult.message}</p>
+    </div>
   );
 };
 
@@ -41,10 +39,9 @@ export const TransferWaitForConfirm = ({ transferResult }) => {
   intl = useIntl();
 
   return (
-    <Result
-      status="success"
-      title={intl.formatMessage(messages.success.successfullyDeposit)}
-      subTitle={intl.formatMessage(messages.progress.pendingConfirmation)}
-    ></Result>
+    <div className='auto-redirect-content'>
+      <h2>{intl.formatMessage(messages.progress.pendingConfirmation)}</h2>
+      <p>{transferResult.message}</p>
+    </div>
   );
 };

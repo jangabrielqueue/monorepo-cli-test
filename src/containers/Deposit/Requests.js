@@ -1,8 +1,4 @@
 import axios from "axios";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 const API_DEPOSIT_SUBMIT_REQUEST = "/api/deposit/post?api-version=2.0";
 const API_DEPOSIT_SUBMIT_OTP = "/api/deposit/inputotp?api-version=2.0";

@@ -1,15 +1,17 @@
-import React, { Component } from "react";
+import React, { useEffect } from 'react';
 import {
-  Statistic,
   Form,
   Icon,
   Input,
   Button,
   Select,
-  Spin,
   Collapse,
-} from "antd";
-import { getBanksByCurrencyForTopUp } from "./../../utils/banks";
+  Spin
+} from 'antd';
+import { getBanksByCurrencyForTopUp } from './../../utils/banks';
+import messages from './messages';
+import { injectIntl } from 'react-intl';
+import './styles.scss';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -22,184 +24,166 @@ function getDefaultBankByCurrency(currency) {
   return getBanksByCurrencyForTopUp(currency)[0];
 }
 
-class DepositFormImpl extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currency: props.currency,
-      merchant: props.merchant,
-      requester: props.requester,
-      bank: getDefaultBankByCurrency(props.currency).code,
-      signature: props.signature,
-      reference: props.reference,
-      clientIp: props.clientIp,
-      datetime: props.datetime,
-      otpMethod: "1",
-    };
-  }
+const DepositFormImpl = React.memo((props) => {
+  const {
+    currency,
+    merchant,
+    requester,
+    amount,
+    signature,
+    reference,
+    clientIp,
+    datetime,
+    handleSubmit,
+    refFormSubmit,
+    handleHasFieldError,
+    waitingForReady,
+    intl,
+    hasFieldError,
+    handleRefFormSubmit,
+    windowDimensions,
+    establishConnection
+  } = props;
+  const {
+    validateFields,
+    getFieldDecorator,
+    getFieldsError
+  } = props.form;
+  const bankCodes = getBanksByCurrencyForTopUp(currency);
+  const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
 
-  handleBankCodeSelected = value => {
-    this.setState({
-      bank: value,
-    });
-  };
+  function handleSubmitForm (type) {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
-  handleLoginNameChanged = e => {
-    this.setState({
-      username: e.target.value,
-    });
-  };
-
-  handlePasswordChanged = e => {
-    this.setState({
-      password: e.target.value,
-    });
-  };
-
-  handleOtpMethodSelected = value => {
-    this.setState({
-      otpMethod: value,
-    });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    validateFields((err, values) => {
       if (!err) {
-        this.props.handleSubmit({
-          ...this.state,
-          amount: this.props.amount,
+        handleSubmit({
+          currency,
+          merchant,
+          requester,
+          bank: getDefaultBankByCurrency(props.currency).code,
+          signature,
+          reference,
+          clientIp,
+          datetime,
+          amount,
+          otpMethod: otpType,
+          ...values
         });
       }
     });
   };
 
-  render() {
-    const { getFieldDecorator, getFieldsError } = this.props.form;
-    const { reference } = this.props;
-    const { merchant, requester, currency, otpMethod, bank } = this.state;
-    const bankCodes = getBanksByCurrencyForTopUp(currency);
+  useEffect(() => {
+    handleHasFieldError(hasErrors(getFieldsError()))
+  }, [getFieldsErrorDepArray, getFieldsError, handleHasFieldError])
+
     return (
-      <Spin spinning={false}>
-        <Form onSubmit={this.handleSubmit}>
-          <Form.Item>
-            <Statistic
-              title="Deposit"
-              prefix={this.props.currency}
-              value={this.props.amount}
-              valueStyle={{ color: "#000", fontWeight: 700 }}
-              precision={2}
-            />
-          </Form.Item>
-          <Form.Item>
-            <Select
-              defaultValue={bank}
-              size="large"
-              onChange={this.handleBankCodeSelected}
-            >
-              {bankCodes.map(x => (
-                <Option key={x.code} value={x.code}>
-                  {x.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator("Login Name", {
-              rules: [
-                {
-                  required: true,
-                  message: "Please input your online banking login name!",
-                },
-              ],
-            })(
-              <Input
-                size="large"
-                allowClear
-                prefix={
-                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                placeholder="Online banking login name"
-                onChange={this.handleLoginNameChanged}
-              />
-            )}
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator("Password", {
-              rules: [
-                { required: true, message: "Please input your Password!" },
-              ],
-            })(
-              <Input.Password
-                size="large"
-                allowClear
-                prefix={
-                  <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                placeholder="Password"
-                onChange={this.handlePasswordChanged}
-              />
-            )}
-          </Form.Item>
-          <Form.Item>
-            <Select
-              defaultValue={otpMethod}
-              size="large"
-              onChange={this.handleOtpMethodSelected}
-            >
-              <Option value="1">SMS OTP</Option>
-              <Option value="2">Smart OTP</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              shape="round"
-              block
-              disabled={hasErrors(getFieldsError())}
-            >
-              Submit
-            </Button>
-          </Form.Item>
-          <Form.Item>
+      <main>
+        <Spin spinning={waitingForReady}>
+          <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
+          <div className='form-icon-container bank-name'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.bankName)}>
+              {
+                getFieldDecorator('bank', {
+                  initialValue: getDefaultBankByCurrency(props.currency).code
+                })(
+                  <Select
+                    size='large'
+                    aria-owns='1 2 3 4 5 6 7 8 9'
+                  >
+                    {bankCodes.map(x => (
+                      <Option key={x.code} value={x.code}>
+                        {x.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )
+              }
+              </Form.Item>
+          </div>
+          <div className='form-icon-container username'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.loginName)} htmlFor='deposit_form_username'>
+                {getFieldDecorator('username', {
+                  rules: [
+                    {
+                      required: true,
+                      message: intl.formatMessage(messages.placeholders.inputLoginName),
+                    },
+                  ],
+                })(
+                  <Input
+                    size='large'
+                    allowClear
+                    id='deposit_form_username'
+                    autoComplete='off'
+                  />
+                )}
+              </Form.Item>
+          </div>
+          <div className='form-icon-container password'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.password)} htmlFor='deposit_form_password'>
+                {getFieldDecorator('password', {
+                  rules: [
+                    { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
+                  ],
+                })(
+                  <Input.Password
+                    size='large'
+                    allowClear
+                    id='deposit_form_password'
+                    autoComplete='off'
+                  />
+                )}
+              </Form.Item>
+          </div>
+          <div className='more-info-form-item'>
             <Collapse bordered={false}>
-              <Panel
-                header={"More about deposit to " + merchant}
-                key="1"
-                style={{
-                  border: "0",
-                  fontWeight: 600,
-                }}
-              >
-                <div className="infos">
-                  <div className="info-item">
-                    <Icon type="key" />
-                    <span>{reference}</span>
+                <Panel
+                  header={'More about deposit to ' + merchant}
+                  key='1'
+                  style={{
+                    border: '0',
+                    fontWeight: 600,
+                  }}
+                >
+                  <div className='infos'>
+                    <div className='info-item'>
+                      <Icon type='key' />
+                      <span>{reference}</span>
+                    </div>
+                    <div className='info-item'>
+                      <Icon type='safety' />
+                      <span>{merchant}</span>
+                    </div>
+                    <div className='info-item'>
+                      <Icon type='user' />
+                      <span>{requester}</span>
+                    </div>
+                    <div className='info-item'>
+                      <Icon type='pay-circle' />
+                      <span>{currency}</span>
+                    </div>
                   </div>
-                  <div className="info-item">
-                    <Icon type="safety" />
-                    <span>{merchant}</span>
-                  </div>
-                  <div className="info-item">
-                    <Icon type="user" />
-                    <span>{requester}</span>
-                  </div>
-                  <div className="info-item">
-                    <Icon type="pay-circle" />
-                    <span>{currency}</span>
-                  </div>
-                </div>
-              </Panel>
-            </Collapse>
-          </Form.Item>
-        </Form>
-      </Spin>
+                </Panel>
+              </Collapse>
+            </div>
+          </Form>
+        </Spin>
+        {
+          (windowDimensions.width > 576) &&
+          <div className='deposit-submit-top-up-buttons'>
+            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
+              SMS OTP
+            </Button>
+            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
+              SMART OTP
+            </Button>     
+          </div>          
+        }
+      </main>
     );
-  }
-}
+  });
 
-const DepositForm = Form.create({ name: "deposit_form" })(DepositFormImpl);
-
-export default DepositForm;
+const DepositForm = Form.create({ name: 'deposit_form' })(DepositFormImpl);
+export default injectIntl(DepositForm);

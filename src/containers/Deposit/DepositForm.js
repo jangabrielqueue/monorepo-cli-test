@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
-  Statistic,
   Form,
   Icon,
   Input,
   Button,
   Select,
   Collapse,
+  Spin
 } from "antd";
-import { getBanksByCurrency } from "../../utils/banks";
+import { getBanksByCurrency, checkBankIfKnown } from "../../utils/banks";
 import messages from './messages';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './styles.scss';
+import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -36,21 +37,31 @@ const DepositFormImpl = React.memo((props) => {
     datetime,
     amount,
     handleSubmit,
-    intl
+    refFormSubmit,
+    handleHasFieldError,
+    intl,
+    waitingForReady,
+    hasFieldError,
+    showOtpMethod,
+    handleRefFormSubmit,
+    windowDimensions,
+    establishConnection
   } = props;
   const {
     validateFields,
     getFieldDecorator,
     getFieldsError
   } = props.form;
-  const showOtpMethod = currency === "VND";
   const bankCodes = getBanksByCurrency(currency);
-  const [otpMethodValue, setOtpMethodValue] = useState('1');
+  const isBankKnown = checkBankIfKnown(currency, bank);
+  const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
+  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
+  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  
+  function handleSubmitForm (type) {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
-  const handleSubmitForm = e => {
-    e.preventDefault();
     validateFields((err, values) => {
-
       if (!err) {
         handleSubmit({
           currency,
@@ -62,108 +73,80 @@ const DepositFormImpl = React.memo((props) => {
           clientIp,
           datetime,
           amount,
-          otpMethod: otpMethodValue,
+          otpMethod: otpType,
           ...values
         });
       }
     });
   };
 
+  useEffect(() => {
+    handleHasFieldError(hasErrors(getFieldsError()))
+  }, [getFieldsErrorDepArray, getFieldsError, handleHasFieldError])
+
     return (
-        <Form onSubmit={handleSubmitForm}>
-          <Form.Item>
-            <Statistic
-              title={intl.formatMessage(messages.deposit)}
-              prefix={currency}
-              value={amount}
-              valueStyle={{ color: "#000", fontWeight: 700 }}
-              precision={2}
-            />
-          </Form.Item>
-          <Form.Item>
+      <main>
+        <Spin spinning={waitingForReady}>
+          <Form layout='vertical' ref={refFormSubmit} hideRequiredMark={true} onSubmit={handleSubmitForm}>
             {
-              getFieldDecorator('bank', {
-                initialValue: bank || getDefaultBankByCurrency(props.currency).code
-              })(
-                <Select
-                  size="large"
-                  disabled={Boolean(bank)}
-                  aria-owns='1 2 3 4 5 6 7 8 9'
-                >
-                  {bankCodes.map((x, i)=> (
-                    <Option key={x.code} id={i} value={x.code}>
-                      {x.name}
-                    </Option>
-                  ))}
-                </Select>
-              )
+              !isBankKnown &&
+              <div className='form-icon-container bank-name'>
+                <Form.Item label={intl.formatMessage(messages.placeholders.bankName)}>
+                  {
+                    getFieldDecorator('bank', {
+                      initialValue: getDefaultBankByCurrency(props.currency).code
+                    })(
+                      <Select
+                        size="large"
+                        aria-owns='1 2 3 4 5 6 7 8 9'
+                      >
+                        {bankCodes.map((x, i)=> (
+                          <Option key={x.code} id={i} value={x.code}>
+                            {x.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    )
+                  }
+                </Form.Item>
+              </div>
             }
-          </Form.Item>
-          <Form.Item htmlFor='deposit_form_username'>
-            {getFieldDecorator('username', {
-              rules: [
-                {
-                  required: true,
-                  message: intl.formatMessage(messages.placeholders.inputLoginName),
-                },
-              ],
-            })(
-              <Input 
-                size="large"
-                allowClear
-                prefix={
-                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                placeholder={intl.formatMessage(messages.placeholders.loginName)}
-                id='deposit_form_username'
-              />
-            )}
-          </Form.Item>
-          <Form.Item htmlFor='deposit_form_password'>
-            {getFieldDecorator('password', {
-              rules: [
-                { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
-              ],
-            })(
-              <Input.Password
-                size="large"
-                allowClear
-                prefix={
-                  <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                placeholder={intl.formatMessage(messages.placeholders.password)}
-                id='deposit_form_password'
-              />
-            )}
-          </Form.Item>
-          {showOtpMethod && (
-            <Form.Item>
-              <Select
-                defaultValue={otpMethodValue}
-                size="large"
-                onChange={(val) => {
-                  setOtpMethodValue(val);
-                }}
-                aria-owns='otp-1 otp-2'
-              >
-                <Option value="1" id='otp-1'>SMS OTP</Option>
-                <Option value="2" id='otp-2'>Smart OTP</Option>
-              </Select>
+          <div className='form-icon-container username'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.loginName)} htmlFor='deposit_form_username'>
+              {getFieldDecorator('username', {
+                rules: [
+                  {
+                    required: true,
+                    message: intl.formatMessage(messages.placeholders.inputLoginName),
+                  },
+                ],
+              })(
+                <Input 
+                  size="large"
+                  allowClear
+                  id='deposit_form_username'
+                  autoComplete='off'
+                />
+              )}
             </Form.Item>
-          )}
-          <Form.Item>
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              shape="round"
-              block
-              disabled={hasErrors(getFieldsError())}
-            >
-              <FormattedMessage {...messages.submit} />
-            </Button>
-          </Form.Item>
-          <Form.Item>
+          </div>
+          <div className='form-icon-container password'>
+            <Form.Item label={intl.formatMessage(messages.placeholders.password)} htmlFor='deposit_form_password'>
+              {getFieldDecorator('password', {
+                rules: [
+                  { required: true, message: intl.formatMessage(messages.placeholders.inputPassword) },
+                ],
+              })(
+                <Input.Password
+                  size="large"
+                  allowClear
+                  id='deposit_form_password'
+                  autoComplete='off'
+                />
+              )}
+            </Form.Item>
+          </div>
+          <div className='more-info-form-item'>
             <Collapse bordered={false}>
               <Panel
                 header={intl.formatMessage(messages.moreInformation)}
@@ -185,8 +168,49 @@ const DepositFormImpl = React.memo((props) => {
                 </div>
               </Panel>
             </Collapse>
-          </Form.Item>
+          </div>
         </Form>
+        </Spin>
+        {
+          !showOtpMethod &&
+          <div className='form-content-submit-container'>
+            <Button
+              className={buttonBG}
+              size='large'
+              htmlType='submit'
+              disabled={hasFieldError || !establishConnection}
+              loading={waitingForReady}
+              onClick={() => handleRefFormSubmit(undefined)}
+            >
+              {
+                !waitingForReady &&
+                <>
+                  <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                </>
+              }
+            </Button>
+          </div>
+        }
+        {
+          (showOtpMethod && windowDimensions.width > 576) &&
+          <div className='deposit-submit-buttons'>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection}>
+              {
+                !waitingForReady &&
+                <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
+              }
+              SMS OTP
+            </Button>
+            <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection}>
+              {
+                !waitingForReady &&
+                <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
+              }
+              SMART OTP
+            </Button>     
+          </div>          
+        }
+      </main>
     );
   });
 

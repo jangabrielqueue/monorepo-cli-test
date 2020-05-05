@@ -30,13 +30,17 @@ class AutoRedirect extends React.Component {
     const { intl } = this.props;
     
     return (
-      <>
-        <Countdown
-          title={intl.formatMessage(messages.texts.redirected, { timeLeft: this.props.delay / 1000 })}
-          value={deadline}
-        />
-        {this.props.children}
-      </>
+      <main>
+        <div className='auto-redirect-statistic'>
+          <Countdown
+            title={intl.formatMessage(messages.texts.redirected, { timeLeft: this.props.delay / 1000 })}
+            value={deadline}
+          />
+        </div>
+          {
+            this.props.children
+          }
+      </main>
     );
   }
 }

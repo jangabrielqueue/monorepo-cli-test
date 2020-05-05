@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Select, Statistic } from 'antd';
-import { useQuery } from '../../utils/utils';
+import { Form, Input, Button, Select, Spin } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import messages from './messages';
+import { ReactComponent as OTPSubmitIcon } from '../../assets/icons/submit-otp.svg';
 
 const { Option } = Select;
 
 const ScratchCardForm = React.memo((props) => {
-    const { handleSubmitScratchCard } = props;
+    const { handleSubmitScratchCard, waitingForReady, establishConnection } = props;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
-    const queryParams = useQuery();
     const [telcoName, setTelcoName] = useState('VTT');
     const intl = useIntl();
 
@@ -36,7 +35,7 @@ const ScratchCardForm = React.memo((props) => {
         return [
             {
                 required: true,
-                message: intl.formatMessage(messages.placeholders.inputSerialNumber)
+                message: intl.formatMessage(messages.placeholders.inputCardPin)
             },
             validation
         ];
@@ -73,90 +72,97 @@ const ScratchCardForm = React.memo((props) => {
     }
 
     return (
-        <Form onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
-            <Form.Item>
-                <Statistic
-                    title={intl.formatMessage(messages.deposit)}
-                    prefix={queryParams.get('c1')}
-                    value={queryParams.get('a')}
-                    valueStyle={{ color: "#000", fontWeight: 700 }}
-                    precision={2}
-                />
-            </Form.Item>
-            <Form.Item>
-            {
-                getFieldDecorator('telcoName', {
-                    rules: [{
-                        required: true,
-                        message: intl.formatMessage(messages.placeholders.selectTelco)
-                    }],
-                    initialValue: telcoName
-                })
-                (
-                    <Select
-                        allowClear
-                        placeholder={intl.formatMessage(messages.placeholders.telcoName)}
-                        size='large'
-                        onChange={(val) => {
-                            setTelcoName(val)
-                            resetFields()
-                        }}
-                        aria-owns='telco-1 telco-2 telco-3'
-                    >
-                        <Option value='VTT' id='telco-1'>Viettel</Option>
-                        <Option value='VNP' id='telco-2'>Vinaphone</Option>
-                        <Option value='VMS' id='telco-3'>Mobiphone</Option>
-                    </Select>                            
-                )
-            }
-            </Form.Item>
-            <Form.Item htmlFor='scratch_card_form_cardPin'>
-            {
-                getFieldDecorator('cardPin', {
-                    rules: validationRuleforCardPin()
-                })
-                (
-                    <Input
-                        type='number'
-                        placeholder={intl.formatMessage(messages.placeholders.cardPin)}
-                        size='large'
-                        id='scratch_card_form_cardPin'
-                    />                            
-                )
-            }
-            </Form.Item>
-            <Form.Item htmlFor='scratch_card_form_cardSerialNumber'>
-            {
-                getFieldDecorator('cardSerialNumber', {
-                    rules: validationRuleforCardSerial()
-                })
-                (
-                    <Input
-                        type='number'
-                        placeholder={intl.formatMessage(messages.placeholders.cardSerialNo)}
-                        size='large'
-                        id='scratch_card_form_cardSerialNumber'
-                    />                         
-                )
-            }
-            </Form.Item>
-            <Form.Item>
-                <Button
-                    size='large'
-                    shape='round'
-                    type='primary'
-                    htmlType='submit'
-                    block
-                    disabled={hasErrors(getFieldsError())}
-                >
-                    <FormattedMessage {...messages.submit} />
-                </Button>
-            </Form.Item>
-            <div className='note-text'>
-                <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
-                <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
-            </div>
-        </Form>
+        <main>
+            <Spin spinning={waitingForReady}>
+                <Form layout='vertical' hideRequiredMark={true} onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
+                    <div className='form-icon-container mobile'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.telcoName)}>
+                            {
+                                getFieldDecorator('telcoName', {
+                                    rules: [{
+                                        required: true,
+                                        message: intl.formatMessage(messages.placeholders.selectTelco)
+                                    }],
+                                    initialValue: telcoName
+                                })
+                                (
+                                    <Select
+                                        size='large'
+                                        onChange={(val) => {
+                                            setTelcoName(val)
+                                            resetFields()
+                                        }}
+                                        aria-owns='telco-1 telco-2 telco-3'
+                                    >
+                                        <Option value='VTT' id='telco-1'>Viettel</Option>
+                                        <Option value='VNP' id='telco-2'>Vinaphone</Option>
+                                        <Option value='VMS' id='telco-3'>Mobiphone</Option>
+                                    </Select>                            
+                                )
+                            }
+                        </Form.Item>
+                    </div>
+                    <div className='form-icon-container credit-card'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.cardPin)} htmlFor='scratch_card_form_cardPin'>
+                            {
+                                getFieldDecorator('cardPin', {
+                                    rules: validationRuleforCardPin()
+                                })
+                                (
+                                    <Input
+                                        type='number'
+                                        size='large'
+                                        allowClear
+                                        id='scratch_card_form_cardPin'
+                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
+                                        autoComplete='off'
+                                    />                            
+                                )
+                            }
+                        </Form.Item>
+                    </div>
+                    <div className='form-icon-container credit-card'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.cardSerialNo)} htmlFor='scratch_card_form_cardSerialNumber'>
+                            {
+                                getFieldDecorator('cardSerialNumber', {
+                                    rules: validationRuleforCardSerial()
+                                })
+                                (
+                                    <Input
+                                        type='number'
+                                        size='large'
+                                        allowClear
+                                        id='scratch_card_form_cardSerialNumber'
+                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
+                                        autoComplete='off'
+                                    />                         
+                                )
+                            }
+                        </Form.Item>
+                    </div>
+                    <div className='form-content-submit-container'>
+                        <Button
+                            className='button-precard'
+                            size='large'
+                            htmlType='submit'
+                            disabled={hasErrors(getFieldsError()) || !establishConnection}
+                            loading={waitingForReady}
+                        >
+                            {
+                                !waitingForReady &&
+                                <>
+                                    <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
+                                </>
+                            }
+                        </Button>
+                    </div>
+                    <div className='note-text'>
+                        <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
+                        <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
+                    </div>
+                </Form>
+            </Spin>
+        </main>
     );
 });
 
