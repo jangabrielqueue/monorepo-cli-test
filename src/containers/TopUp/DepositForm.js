@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getBanksByCurrencyForTopUp } from './../../utils/banks';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
@@ -84,6 +84,53 @@ const FormSelectField = styled.select`
   margin-bottom: 23px;
 `;
 
+const InputFieldContainer = styled.div`
+  position: relative;
+
+  ul {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+
+    > li:nth-child(odd) {
+      height: 14px;
+      width: 14px;
+
+      span {
+        align-items: center;
+        background: #C0C0C0;
+        border-radius: 50%;
+        color: #FFF;
+        cursor: pointer;
+        display: flex;
+        font-size: 14px;
+        height: 100%;
+        justify-content: center;
+        line-height: 1.5;
+        width: 100%;
+      }
+    }
+
+    > li:nth-child(even) {
+      cursor: pointer;
+      height: 16px;
+      width: 16px;
+
+      > img {
+        width: 100%;
+      }
+    }
+  }
+`;
+
 const DepositForm = React.memo((props) => {
   const {
     currency,
@@ -97,8 +144,10 @@ const DepositForm = React.memo((props) => {
   } = props;
   const bankCodes = getBanksByCurrencyForTopUp(currency);
   const buttonColor = 'topup';
-
-  const { register, errors, handleSubmit } = useFormContext();
+  const [showPassword, setShowPassword] = useState(false);
+  const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext();
+  const { dirty } = formState;
+  const formValues = getValues();
 
   function handleSubmitForm (values, e, type) {
     handleSubmitDeposit(values, e, type);
@@ -131,26 +180,46 @@ const DepositForm = React.memo((props) => {
           <FormIconContainer icon='username'>
             <div>
               <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
-              <input 
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })} 
-                type='text' 
-                id='username' 
-                name='username' 
-                autoComplete='off' 
-              />
+              <InputFieldContainer>
+                <input 
+                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })} 
+                  type='text' 
+                  id='username' 
+                  name='username' 
+                  autoComplete='off' 
+                />
+                <ul>
+                  {
+                    (formValues.username !== '' && dirty) &&
+                    <li onClick={() => setValue('username', '')}><span>&times;</span></li>
+                  }
+                </ul>
+              </InputFieldContainer>
               <p className='input-errors'>{errors.username?.message}</p>
             </div>
           </FormIconContainer>
           <FormIconContainer icon='password'>
             <div>
               <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
-              <input 
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}  
-                type='password' 
-                id='password' 
-                name='password' 
-                autoComplete='off' 
-              />
+              <InputFieldContainer passwordIcon>
+                <input 
+                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}  
+                  type={showPassword ? 'text' : 'password'} 
+                  id='password' 
+                  name='password' 
+                  autoComplete='off' 
+                />
+                  <ul>
+                    {
+                      (formValues.password !== '' && dirty) ?
+                      <li onClick={() => setValue('password', '')}><span>&times;</span></li> :
+                      <li>&nbsp;</li>
+                    }
+                    <li onClick={() => setShowPassword(prevState => !prevState)}>
+                      <img src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                    </li>
+                  </ul>
+              </InputFieldContainer>
               <p className='input-errors'>{errors.password?.message}</p>
             </div>
           </FormIconContainer>

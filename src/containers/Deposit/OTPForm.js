@@ -32,12 +32,61 @@ const FormIconContainer = styled.div`
   }
 `;
 
+const InputFieldContainer = styled.div`
+  position: relative;
+
+  ul {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+
+    > li:nth-child(odd) {
+      height: 14px;
+      width: 14px;
+
+      span {
+        align-items: center;
+        background: #C0C0C0;
+        border-radius: 50%;
+        color: #FFF;
+        cursor: pointer;
+        display: flex;
+        font-size: 14px;
+        height: 100%;
+        justify-content: center;
+        line-height: 1.5;
+        width: 100%;
+      }
+    }
+
+    > li:nth-child(even) {
+      cursor: pointer;
+      height: 16px;
+      width: 16px;
+
+      > img {
+        width: 100%;
+      }
+    }
+  }
+`;
+
 const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props;
   const isBankKnown = checkBankIfKnown(currency, bank);
   const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
 
-  const { register, errors, handleSubmit, reset } = useFormContext();
+  const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
+  const { dirty } = formState;
+  const formValues = getValues();
 
   function handleSubmitForm ({ OTP }) {
     handleSubmitOTP(OTP);
@@ -64,13 +113,22 @@ const OTPForm = React.memo((props) => {
         <FormIconContainer icon='username'>
           <div>
             <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
-            <input 
-              ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })} 
-              type='number' 
-              id='OTP' 
-              name='OTP' 
-              autoComplete='off'
-            />
+            <InputFieldContainer>
+              <input 
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })} 
+                type='number' 
+                id='OTP' 
+                name='OTP' 
+                autoComplete='off'
+                onKeyDown={e => e.which === 69 && e.preventDefault()}
+              />
+              <ul>
+                {
+                  (formValues.OTP !== '' && dirty) &&
+                  <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
+                }
+              </ul>
+            </InputFieldContainer>
             <p className='input-errors'>{errors.OTP?.message}</p>
           </div>
         </FormIconContainer>

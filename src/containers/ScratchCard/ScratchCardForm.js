@@ -59,11 +59,60 @@ const StyledNoteText = styled.div`
     }
 `;
 
+const InputFieldContainer = styled.div`
+  position: relative;
+
+  ul {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+
+    > li:nth-child(odd) {
+      height: 14px;
+      width: 14px;
+
+      span {
+        align-items: center;
+        background: #C0C0C0;
+        border-radius: 50%;
+        color: #FFF;
+        cursor: pointer;
+        display: flex;
+        font-size: 14px;
+        height: 100%;
+        justify-content: center;
+        line-height: 1.5;
+        width: 100%;
+      }
+    }
+
+    > li:nth-child(even) {
+      cursor: pointer;
+      height: 16px;
+      width: 16px;
+
+      > img {
+        width: 100%;
+      }
+    }
+  }
+`;
+
 const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props;
     const [telcoName, setTelcoName] = useState('VTT');
     const intl = useIntl();
-    const { register, errors, handleSubmit, reset } = useFormContext();
+    const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
+    const { dirty } = formState;
+    const formValues = getValues();
     const isBankKnown = checkBankIfKnown(currency, bank);
     const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
 
@@ -142,14 +191,22 @@ const ScratchCardForm = React.memo((props) => {
                 <FormIconContainer icon='credit-card'>
                     <div>
                         <label htmlFor='cardPin'><FormattedMessage {...messages.placeholders.cardPin} /></label>
-                        <input 
-                            ref={register({ required: true, maxLength: renderMaxLengthCardPin() })}
-                            onKeyDown={e => e.which === 69 && e.preventDefault()} 
-                            type='number' 
-                            id='cardPin' 
-                            name='cardPin' 
-                            autoComplete='off' 
-                        />      
+                        <InputFieldContainer>
+                            <input 
+                                ref={register({ required: true, maxLength: renderMaxLengthCardPin() })}
+                                onKeyDown={e => e.which === 69 && e.preventDefault()} 
+                                type='number' 
+                                id='cardPin' 
+                                name='cardPin' 
+                                autoComplete='off' 
+                            />
+                            <ul>
+                                {
+                                    (formValues.cardPin !== '' && dirty) &&
+                                    <li onClick={() => setValue('cardPin', '')}><span>&times;</span></li>
+                                }
+                            </ul>
+                        </InputFieldContainer>    
                         <p className='input-errors'>
                             {errors.cardPin?.type === 'required' && <FormattedMessage {...messages.placeholders.inputCardPin} />}
                             {errors.cardPin?.type === 'maxLength' && renderMaxLengthMessageCardPin()}
@@ -159,14 +216,22 @@ const ScratchCardForm = React.memo((props) => {
                 <FormIconContainer icon='credit-card'>
                     <div>
                         <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
-                        <input 
-                            ref={register(renderMaxLengthSerialNumber())}
-                            onKeyDown={e => e.which === 69 && e.preventDefault()}  
-                            type='number' 
-                            id='cardSerialNumber' 
-                            name='cardSerialNumber' 
-                            autoComplete='off' 
-                        /> 
+                        <InputFieldContainer>
+                            <input 
+                                ref={register(renderMaxLengthSerialNumber())}
+                                onKeyDown={e => e.which === 69 && e.preventDefault()}  
+                                type='number' 
+                                id='cardSerialNumber' 
+                                name='cardSerialNumber' 
+                                autoComplete='off' 
+                            />
+                            <ul>
+                                {
+                                    (formValues.cardSerialNumber !== '' && dirty) &&
+                                    <li onClick={() => setValue('cardSerialNumber', '')}><span>&times;</span></li>
+                                }
+                            </ul>
+                        </InputFieldContainer>
                         <p className='input-errors'>
                             {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
                             {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}

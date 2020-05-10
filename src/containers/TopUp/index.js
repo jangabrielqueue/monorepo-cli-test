@@ -32,7 +32,7 @@ function getDefaultBankByCurrency(currency) {
 }
 
 const TopUp = props => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(false);
   const [establishConnection, setEstablishConnection] = useState(false);
