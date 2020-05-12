@@ -10,6 +10,8 @@ import currencyIcon from '../../assets/icons/currency.png';
 import usernameIcon from '../../assets/icons/username.svg';
 import passwordIcon from '../../assets/icons/password.svg';
 import bankIcon from '../../assets/icons/bank-name.svg';
+import downExpand from '../../assets/icons/down-expand.png';
+import upExpand from '../../assets/icons/up-expand.png';
 import { useFormContext } from 'react-hook-form';
 
 const StyledMoreInfo = styled.ul`
@@ -69,7 +71,13 @@ const FormIconContainer = styled.div`
 `;
 
 const FormSelectField = styled.select`
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -o-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
   margin-bottom: 23px;
+  background: url(${props => props.toggleSelect ? upExpand : downExpand}) no-repeat right;
 `;
 
 const InputFieldContainer = styled.div`
@@ -135,7 +143,7 @@ const DepositForm = React.memo((props) => {
   const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
   const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
   const [showPassword, setShowPassword] = useState(false);
-
+  const [toggleSelect, setToggleSelect] = useState(false);
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext();
   const { dirty } = formState;
   const formValues = getValues();
@@ -157,6 +165,8 @@ const DepositForm = React.memo((props) => {
                     id='bank'
                     ref={register}
                     aria-owns='1 2 3 4 5 6 7 8 9'
+                    onClick={() => setToggleSelect(prevState => !prevState)}
+                    toggleSelect={toggleSelect}
                   >
                     {
                       bankCodes.map((bc, i) => (
@@ -210,7 +220,7 @@ const DepositForm = React.memo((props) => {
                       <li>&nbsp;</li>
                     }
                     <li onClick={() => setShowPassword(prevState => !prevState)}>
-                      <img src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                      <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
                     </li>
                   </ul>
                 </InputFieldContainer>

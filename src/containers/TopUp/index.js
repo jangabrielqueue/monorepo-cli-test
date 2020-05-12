@@ -85,16 +85,16 @@ const TopUp = props => {
     });
     await sleep(750);
     const result = await sendTopUpRequest({
-          currency,
-          merchant,
-          requester,
-          bank: getDefaultBankByCurrency(currency).code,
-          signature,
-          reference,
-          clientIp,
-          datetime,
-          amount,
-          otpMethod: otpType,
+      currency,
+      merchant,
+      requester,
+      bank: getDefaultBankByCurrency(currency).code,
+      signature,
+      reference,
+      clientIp,
+      datetime,
+      amount,
+      otpMethod: otpType,
       ...values
     });
     if (result.error) {

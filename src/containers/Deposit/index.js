@@ -99,7 +99,6 @@ const Deposit = props => {
     });
     await sleep(750);
     const result = await sendDepositRequest({
-      ...values,
       currency,
       merchant,
       requester,
@@ -115,6 +114,7 @@ const Deposit = props => {
       successfulUrl,
       failedUrl,
       callbackUri,
+      ...values
     });
     if (result.error) {
       analytics.logEvent('login_failed', {
