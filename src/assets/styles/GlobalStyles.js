@@ -161,7 +161,6 @@ export default createGlobalStyle`
         font-weight: bold;
         margin: 0;
         text-align: center;
-        width: 100%;
       }
     }
 
@@ -226,6 +225,24 @@ export default createGlobalStyle`
     @media (max-width: 47.999em) {
       .steps-container {
         display: none;
+      }
+    }
+
+    @media only screen and (min-device-width : 25em) and (max-device-width : 26em) {
+      .progress-bar-container {
+          min-width: 325px;
+      }
+    }
+
+    @media only screen and (min-device-width : 22em) and (max-device-width : 24em) {
+      .progress-bar-container {
+          min-width: 270px;
+      }
+    }
+
+    @media (max-width: 22.438em) {
+      .progress-bar-container {
+          min-width: 232px;
       }
     }
     
