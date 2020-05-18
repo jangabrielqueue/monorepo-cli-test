@@ -17,6 +17,11 @@ const OutlinedButton = styled(Button)`
     &:disabled {
         opacity: 0.5;
     }
+
+    @media (max-width: 23.438em) {
+        max-width: 130px;
+        padding: 0;
+    }
 `;
 
 const DefaultButton = styled(Button)`

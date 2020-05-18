@@ -196,23 +196,9 @@ export default createGlobalStyle`
       border-radius: 15px;
     }
 
-    @media (min-width: 36em) {
-      .progress-bar-container {
-        min-width: 450px;
-      }
-    }
-
-    @media (max-width: 23.438em) {
-        .deposit-submit-buttons {
-          > button {
-            margin: 0 15px 15px;
-          }
-        }
-    }
-
-    @media (max-width: 36em) {
+    @media (max-width: 47.999em) {
       .steps-container {
-        margin: 0rem 1rem;
+        display: none;
       }
     }
 
@@ -222,9 +208,23 @@ export default createGlobalStyle`
       }
     }
 
-    @media (max-width: 47.999em) {
+    @media (max-width: 36em) {
       .steps-container {
-        display: none;
+        margin: 0rem 1rem;
+      }
+    }
+
+    @media (min-width: 36em) {
+      .progress-bar-container {
+        min-width: 450px;
+      }
+    }
+
+    @media (max-width: 23.438em) {
+      .deposit-submit-buttons {
+        > button {
+          margin: 0 10px 20px;
+        }
       }
     }
 
