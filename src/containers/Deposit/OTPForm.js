@@ -78,9 +78,9 @@ const OTPFormImpl = React.memo((props) => {
             >
               {
                 !waitingForReady &&
-                <>
+                <div className='button-content'>
                   <OTPSubmitIcon /> <FormattedMessage {...messages.submit} />
-                </>
+                </div>
               }
             </Button>
           </div>

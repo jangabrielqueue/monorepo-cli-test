@@ -44,10 +44,12 @@
             &:disabled {
               opacity: 0.5;
             }
-        
-            > svg {
+            
+            .button-content {
+              > svg {
                 float: left;
                 vertical-align: middle;
+              }
             }
           }
         }
@@ -72,9 +74,11 @@
               opacity: 0.5;
             }
         
-            > svg {
-              float: left;
-              vertical-align: middle;
+            .button-content {
+              > svg {
+                float: left;
+                vertical-align: middle;
+              }
             }
           }
         }
