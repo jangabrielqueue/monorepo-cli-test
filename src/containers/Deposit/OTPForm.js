@@ -13,8 +13,8 @@ function hasErrors(fieldsError) {
 const OTPFormImpl = React.memo((props) => {
   const { getFieldDecorator, getFieldsError, validateFields, resetFields } = props.form;
   const { handleSubmitOTP, otpReference, intl, waitingForReady, bank, currency, progress } = props;
-  const isBankKnown = checkBankIfKnown(currency, bank);
-  const buttonOtpBG = isBankKnown ? `button-otp-${bank.toLowerCase()}` : 'button-otp-unknown';
+  const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
+  const buttonOtpBG = isBankKnown ? `button-otp-${bank && bank.toLowerCase()}` : 'button-otp-unknown';
 
   function handleSubmitForm (e) {
     e.preventDefault();

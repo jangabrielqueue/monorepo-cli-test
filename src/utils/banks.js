@@ -69,9 +69,9 @@ function getBanksByCurrency(currency) {
 
 function checkBankIfKnown (currency, bank) {
     if (currency === 'VND') {
-      return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
+      return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank)
     } else if (currency === 'THB') {
-      return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
+      return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank)
     }
 }
 

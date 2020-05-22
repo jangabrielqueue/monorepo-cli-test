@@ -53,10 +53,10 @@ const DepositFormImpl = React.memo((props) => {
     getFieldsError
   } = props.form;
   const bankCodes = getBanksByCurrency(currency);
-  const isBankKnown = checkBankIfKnown(currency, bank);
+  const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
   const getFieldsErrorDepArray = getFieldsError(); // declared a variable for this dep array to remove warning from react hooks, but still uses the same props as well for dep array.
-  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
-  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  const buttonBG = isBankKnown ? `button-${bank && bank.toLowerCase()}` : `${showOtpMethod ? 'button-unknown' : 'button-otp-unknown'}`;
+  const renderIcon = isBankKnown ? `${bank && bank.toLowerCase()}`: 'unknown';
   
   function handleSubmitForm (type) {
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
