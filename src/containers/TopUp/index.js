@@ -165,8 +165,12 @@ const TopUp = props => {
   }
 
   useEffect(() => {
-    if (queryParams.toString().split('&').length < 8) {
-      return props.history.replace('/invalid');
+    const queryParamsKeys = ['m', 'c1', 'c2', 'c3', 'a', 'r', 'd', 'k'];
+
+    for (const param of queryParamsKeys) {
+      if (!queryParams.has(param)) {
+        return props.history.replace('/invalid');
+      }
     }
 
     window.addEventListener('resize', handleWindowResize);

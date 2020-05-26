@@ -59,10 +59,10 @@ const Deposit = props => {
   const refFormSubmit = useRef(null);
   const showOtpMethod = currency === 'VND';
   analytics.setCurrentScreen('deposit');
-  const isBankKnown = checkBankIfKnown(currency, bank);
-  const wrapperBG = isBankKnown ? `bg-${bank.toLowerCase()}` : 'bg-unknown';
-  const buttonBG = isBankKnown ? `button-${bank.toLowerCase()}` : 'button-unknown';
-  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
+  const wrapperBG = isBankKnown ? `bg-${bank && bank.toLowerCase()}` : 'bg-unknown';
+  const buttonBG = isBankKnown ? `button-${bank && bank.toLowerCase()}` : 'button-unknown';
+  const renderIcon = isBankKnown ? `${bank && bank.toLowerCase()}`: 'unknown';
 
   async function handleSubmitDeposit(values) {
     analytics.logEvent('login', {
@@ -211,8 +211,12 @@ const Deposit = props => {
   }
 
   useEffect(() => {
-    if (queryParams.toString().split('&').length < 14) {
-      return props.history.replace('/invalid');
+    const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
+
+    for (const param of queryParamsKeys) {
+      if (!queryParams.has(param)) {
+        return props.history.replace('/invalid');
+      }
     }
 
     window.addEventListener('resize', handleWindowResize);
@@ -343,7 +347,7 @@ const Deposit = props => {
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
-            <Logo bank={bank.toUpperCase()} currency={currency} />
+            <Logo bank={bank && bank.toUpperCase()} currency={currency} />
             {
               step === 0 &&
               <Statistic

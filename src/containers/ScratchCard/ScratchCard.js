@@ -33,9 +33,9 @@ const ScratchCard = (props) => {
     const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)];
     const queryParams = useQuery();
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
-    const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b'));
-    const wrapperBG = isBankKnown ? `bg-${queryParams.get('b').toLowerCase()}` : 'bg-unknown';
-
+    const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b') && queryParams.get('b').toUpperCase());
+    const wrapperBG = isBankKnown ? `bg-${queryParams.get('b') && queryParams.get('b').toLowerCase()}` : 'bg-unknown';
+    
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         e.preventDefault();
 
@@ -211,8 +211,12 @@ const ScratchCard = (props) => {
     );
 
     useEffect(() => {
-        if (queryParams.toString().split('&').length < 14) {
-          return props.history.replace('/invalid');
+        const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
+
+        for (const param of queryParamsKeys) {
+          if (!queryParams.has(param)) {
+            return props.history.replace('/invalid');
+          }
         }
     
         // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
