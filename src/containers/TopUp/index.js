@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Statistic, Alert, Progress, Button } from 'antd';
+import * as firebase from 'firebase/app';
 import DepositForm from './DepositForm';
 import OTPForm from './OTPForm';
 import {
@@ -20,6 +21,7 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 const { Countdown } = Statistic;
 
 const TopUp = props => {
+  const analytics = firebase.analytics();
   const [step, setStep] = useState(0);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(false);
@@ -45,8 +47,12 @@ const TopUp = props => {
   const intl = useIntl();
   const [hasFieldError, setHasFieldError] = useState(false);
   const refFormSubmit = useRef(null);
+  analytics.setCurrentScreen('deposit');
 
   async function handleSubmitDeposit(values) {
+    analytics.logEvent('login', {
+      reference,
+    });
     setError(undefined);
     setWaitingForReady(true);
     setProgress({
@@ -75,6 +81,10 @@ const TopUp = props => {
       reference: reference,
     });
     if (result.error) {
+      analytics.logEvent('login_failed', {
+        reference,
+        error: result.error,
+      });
       setProgress({
         currentStep: 4,
         totalSteps: 5,
@@ -96,26 +106,42 @@ const TopUp = props => {
   }
 
   async function handleSubmitOTP(value) {
+    analytics.logEvent('submitted_otp', {
+      reference: reference,
+      otp: value,
+    });
     setError(undefined);
     setWaitingForReady(true);
     const result = await sendTopUpOtp(reference, value);
     if (result.errors) {
+      analytics.logEvent('submitted_otp_failed', {
+        reference: reference,
+        otp: value,
+      });
       setError(result.error);
       setWaitingForReady(false);
     } else {
+      analytics.logEvent('submitted_otp_succeed', {
+        reference: reference,
+        otp: value,
+      });
       setStep(1);
     }
   }
 
   const handleCommandStatusUpdate = useCallback(
     (e) => {
+        analytics.logEvent('received_result', {
+          reference: reference,
+          result: e,
+        });
         setIsSuccessful(e.isSuccess);
         setProgress(undefined);
         setTransferResult(e);
         setWaitingForReady(false);
         setStep(2);
     },
-    [],
+    [analytics, reference],
   );
 
   const handleRequestOTP = useCallback(
@@ -239,6 +265,7 @@ const TopUp = props => {
   let content;
 
   if (step === 0) {
+    analytics.setCurrentScreen('input_user_credentials');
     content = (
       <DepositForm
         merchant={merchant}
@@ -260,6 +287,7 @@ const TopUp = props => {
       />
     );
   } else if (step === 1) {
+    analytics.setCurrentScreen('input_otp');
     content = (
       <OTPForm
         otpReference={otpReference}
@@ -269,12 +297,14 @@ const TopUp = props => {
       />
     );
   } else if (step === 2 && isSuccessful) {
+    analytics.setCurrentScreen('transfer_successful');
     content = (
       <main>
         <TransferSuccessful transferResult={transferResult} language='en-US' />
       </main>
     );
   } else if (step === 2) {
+    analytics.setCurrentScreen('transfer_failed');
     content = (
       <main>
         <TransferFailed transferResult={transferResult} />
