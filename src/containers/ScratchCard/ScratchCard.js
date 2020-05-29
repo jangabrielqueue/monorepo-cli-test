@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, Progress, Statistic } from 'antd';
+import * as firebase from 'firebase/app';
 import ScratchCardForm from './ScratchCardForm';
 import { useQuery, sleep } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
@@ -22,6 +23,7 @@ const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const ScratchCard = (props) => {
+    const analytics = firebase.analytics();
     const [step, setStep] = useState(0);
     const [waitingForReady, setWaitingForReady] = useState(false);
     const [establishConnection, setEstablishConnection] = useState(false);
@@ -35,8 +37,12 @@ const ScratchCard = (props) => {
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
     const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b') && queryParams.get('b').toUpperCase());
     const wrapperBG = isBankKnown ? `bg-${queryParams.get('b') && queryParams.get('b').toLowerCase()}` : 'bg-unknown';
-    
+    analytics.setCurrentScreen('deposit');
+
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
+        analytics.logEvent('login', {
+            reference: queryParams.get('r'),
+        });
         e.preventDefault();
 
         validateFieldsAndScroll(async (err, values) => {
@@ -113,6 +119,10 @@ const ScratchCard = (props) => {
                         });
                     }
                   } catch (error) {
+                        analytics.logEvent('login_failed', {
+                            reference: queryParams.get('r'),
+                            error: error,
+                        });
                         setWaitingForReady(false);
                         setProgress(undefined);
                         setError(error);
@@ -124,6 +134,7 @@ const ScratchCard = (props) => {
     function renderStepsContent (currentStep) {
         switch (currentStep) {
             case intl.formatMessage(messages.steps.fillInForm):
+                analytics.setCurrentScreen('input_user_credentials');
                 return (
                     <ScratchCardForm
                         handleSubmitScratchCard={handleSubmitScratchCard}
@@ -134,18 +145,21 @@ const ScratchCard = (props) => {
 
             case intl.formatMessage(messages.steps.result):
                 if (isSuccessful) {
+                    analytics.setCurrentScreen('transfer_successful');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('su')}>
                             <TransferSuccessful transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else if (transferResult.statusCode === '009') {
+                    analytics.setCurrentScreen('transfer_successful');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('su')}>
                             <TransferWaitForConfirm transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else {
+                    analytics.setCurrentScreen('transfer_failed');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('fu')}>
                             <TransferFailed transferResult={transferResult} />
@@ -160,6 +174,10 @@ const ScratchCard = (props) => {
 
     const handleCommandStatusUpdate = useCallback(
         async (result) => {
+            analytics.logEvent('received_result', {
+                reference: queryParams.get('r'),
+                result: result,
+            });
             let start, end;
 
             start = performance.now();
@@ -207,7 +225,7 @@ const ScratchCard = (props) => {
                 return;
             }
         },
-        [intl],
+        [intl, analytics, queryParams],
     );
 
     useEffect(() => {
