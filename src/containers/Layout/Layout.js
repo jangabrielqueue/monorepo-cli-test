@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as firebase from 'firebase/app';
 import './styles.scss';
@@ -9,7 +9,7 @@ import TopUp from '../TopUp';
 import InvalidPage from '../../components/InvalidPage';
 import NotFound from '../../components/NotFound';
 
-const Layout = () => {
+const Layout = (props) => {
   const analytics = firebase.analytics();
   const queryParams = useQuery();
   analytics.setUserProperties({
@@ -19,6 +19,14 @@ const Layout = () => {
     reference: queryParams.get('r'),
   });
   analytics.logEvent('page_loaded');
+
+  useEffect(() => {
+    const currencies = ['VND', 'THB'];
+
+    if (!currencies.includes(queryParams.get('c1'))) {
+      props.history.replace('/invalid');
+    }
+  }, [])
 
   return (
     <>
