@@ -83,7 +83,7 @@ const DepositFormImpl = React.memo((props) => {
   useEffect(() => {
     handleHasFieldError(hasErrors(getFieldsError()))
   }, [getFieldsErrorDepArray, getFieldsError, handleHasFieldError])
-
+  
     return (
       <main>
         <Spin spinning={waitingForReady}>
@@ -94,7 +94,7 @@ const DepositFormImpl = React.memo((props) => {
                 <Form.Item label={intl.formatMessage(messages.placeholders.bankName)}>
                   {
                     getFieldDecorator('bank', {
-                      initialValue: getDefaultBankByCurrency(props.currency).code
+                      initialValue: getDefaultBankByCurrency(props.currency) === undefined ? '' : getDefaultBankByCurrency(props.currency).code
                     })(
                       <Select
                         size="large"
