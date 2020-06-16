@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Countdown from './Countdown';
 import styled from 'styled-components';
 
@@ -6,37 +6,31 @@ const StyledRedirectContainer = styled.div`
   padding: 0 15px;
 `;
 
-class AutoRedirect extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const AutoRedirect = ({ children, delay, url }) => {
 
-  componentDidMount() {
-    this.id = setTimeout(() => {
-      window.location.href = this.props.url;
-    }, this.props.delay);
-  }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.location.href = url;
+    }, delay);
 
-  componentWillUnmount() {
-    clearTimeout(this.id);
-  }
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [delay, url]);
 
-  render() {    
-    return (
+  return (
       <main>
         <StyledRedirectContainer>
           <Countdown
             redirect
-            delay={this.props.delay}
+            delay={delay}
           />
         </StyledRedirectContainer>
           {
-            this.props.children
+            children
           }
       </main>
-    );
-  }
+  );
 }
 
 export default AutoRedirect;

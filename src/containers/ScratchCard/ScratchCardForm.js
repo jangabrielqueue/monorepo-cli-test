@@ -114,7 +114,7 @@ const ScratchCardForm = React.memo((props) => {
     const { dirty } = formState;
     const formValues = getValues();
     const isBankKnown = checkBankIfKnown(currency, bank);
-    const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
+    const buttonColor = isBankKnown ? `${bank}` : 'main';
 
     function handleSubmitForm (values) {
         handleSubmitScratchCard(values);

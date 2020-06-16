@@ -82,7 +82,7 @@ const InputFieldContainer = styled.div`
 const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props;
   const isBankKnown = checkBankIfKnown(currency, bank);
-  const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
+  const buttonColor = isBankKnown ? `${bank}` : 'main';
 
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
   const { dirty } = formState;

@@ -18,15 +18,17 @@ import Statistics from '../../components/Statistics';
 import styled from 'styled-components';
 import ErrorAlert from '../../components/ErrorAlert';
 import ProgressModal from '../../components/ProgressModal';
+import * as firebase from 'firebase/app';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const WrapperBG = styled.div`
-  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
 `;
 
 const ScratchCard = (props) => {
+    const analytics = firebase.analytics();
     const [step, setStep] = useState(0);
     const [waitingForReady, setWaitingForReady] = useState(false);
     const [establishConnection, setEstablishConnection] = useState(false);
@@ -39,9 +41,13 @@ const ScratchCard = (props) => {
     const queryParams = useQuery();
     const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
     const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b'));
-    const themeColor = isBankKnown ? `${queryParams.get('b').toLowerCase()}` : 'main';
+    const themeColor = isBankKnown ? `${queryParams.get('b')}` : 'main';
+    analytics.setCurrentScreen('deposit');
 
     async function handleSubmitScratchCard (values) {
+        analytics.logEvent('login', {
+            reference: queryParams.get('r'),
+        });
         const submitValues = {
             Telecom: values.telcoName,
             Pin: values.cardPin.toString(),
@@ -114,6 +120,10 @@ const ScratchCard = (props) => {
                 });
             }
             } catch (error) {
+                analytics.logEvent('login_failed', {
+                    reference: queryParams.get('r'),
+                    error: error,
+                });
                 setWaitingForReady(false);
                 setProgress(undefined);
                 setError(error);
@@ -123,6 +133,7 @@ const ScratchCard = (props) => {
     function renderStepsContent (currentStep) {
         switch (currentStep) {
             case intl.formatMessage(messages.steps.fillInForm):
+                analytics.setCurrentScreen('input_user_credentials');
                 return (
                     <ScratchCardForm
                         handleSubmitScratchCard={handleSubmitScratchCard}
@@ -135,18 +146,21 @@ const ScratchCard = (props) => {
 
             case intl.formatMessage(messages.steps.result):
                 if (isSuccessful) {
+                    analytics.setCurrentScreen('transfer_successful');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('su')}>
                             <TransferSuccessful transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else if (transferResult.statusCode === '009') {
+                    analytics.setCurrentScreen('transfer_successful');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('su')}>
                             <TransferWaitForConfirm transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else {
+                    analytics.setCurrentScreen('transfer_failed');
                     return (
                         <AutoRedirect delay={10000} url={queryParams.get('fu')}>
                             <TransferFailed transferResult={transferResult} />
@@ -161,6 +175,11 @@ const ScratchCard = (props) => {
 
     const handleCommandStatusUpdate = useCallback(
         async (result) => {
+            analytics.logEvent('received_result', {
+                reference: queryParams.get('r'),
+                result: result,
+            });
+
             let start, end;
 
             start = performance.now();
@@ -208,12 +227,21 @@ const ScratchCard = (props) => {
                 return;
             }
         },
-        [intl],
+        [intl, analytics, queryParams],
     );
 
     useEffect(() => {
-        if (queryParams.toString().split('&').length < 14) {
-          return props.history.replace('/invalid');
+        const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
+        const currencies = ['VND', 'THB'];
+        
+        for (const param of queryParamsKeys) {
+          if (!queryParams.has(param)) {
+            return props.history.replace('/invalid');
+          }
+        }
+
+        if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+            props.history.replace('/invalid');
         }
     
         // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
@@ -223,10 +251,7 @@ const ScratchCard = (props) => {
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl(API_USER_COMMAND_MONITOR, {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
-        })
+        .withUrl(API_USER_COMMAND_MONITOR)
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();
@@ -240,6 +265,7 @@ const ScratchCard = (props) => {
             try {
               await connection.start();
               await connection.invoke('Start', session);
+              setEstablishConnection(true);
             } catch (ex) {
               setError({
                 error: {
@@ -247,24 +273,17 @@ const ScratchCard = (props) => {
                     message: intl.formatMessage(messages.errors.networkError)
                   }
               });
+              setEstablishConnection(false);
             }
-            setEstablishConnection(true);
           }
-      
+
+        connection.onclose(async () => {
+            await start();
+        });
+
+        // Start the connection      
         start();
 
-        return () => {
-            connection.onclose(() => {
-                setEstablishConnection(false);
-                setError({
-                    error: {
-                        name: intl.formatMessage(messages.errors.networkErrorTitle),
-                        message: intl.formatMessage(messages.errors.connectionError)
-                      }
-                  });
-                setProgress(undefined);
-            });
-        };
     }, [session, handleCommandStatusUpdate, intl]);
 
     useEffect(() => {

@@ -3,10 +3,10 @@ import { Button } from '@rmwc/button';
 import styled from 'styled-components';
 
 const OutlinedButton = styled(Button)`
-    background-color: ${props => props.topup === 'true' ? props.theme.colors[props.color] + '!important' : 'transparent'};
+    background-color: ${props => props.topup === 'true' ? props.theme.colors[props.color.toLowerCase()] + '!important' : 'transparent'};
     border-radius: 8px;
-    border: ${props => props.topup === 'true' ? '0' : '2px solid' + props.theme.colors[props.color] + '!important'};
-    color: ${props => props.topup === 'true' ? '#FFF !important' : props.theme.colors[props.color] + '!important'};
+    border: ${props => props.topup === 'true' ? '0' : '2px solid' + props.theme.colors[props.color.toLowerCase()] + '!important'};
+    color: ${props => props.topup === 'true' ? '#FFF !important' : props.theme.colors[props.color.toLowerCase()] + '!important'};
     font-family: ProductSansBold;
     height: 43px;
     line-height: 0.5;
@@ -25,7 +25,7 @@ const OutlinedButton = styled(Button)`
 `;
 
 const DefaultButton = styled(Button)`
-    background-color: ${props => props.theme.colors[`${props.color}`]} !important;
+    background-color: ${props => props.theme.colors[`${props.color.toLowerCase()}`]} !important;
     border-radius: 11px;
     border: 0;
     color: #fff !important;

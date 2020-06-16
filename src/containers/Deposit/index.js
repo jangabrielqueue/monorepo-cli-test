@@ -28,7 +28,7 @@ const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const WrapperBG = styled.div`
-  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
 `;
 
 const Deposit = props => {
@@ -61,11 +61,11 @@ const Deposit = props => {
   const language = queryParams.get('l');
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const showOtpMethod = currency === 'VND';
+  const showOtpMethod = currency && currency.toUpperCase() === 'VND';
   analytics.setCurrentScreen('deposit');
   const isBankKnown = checkBankIfKnown(currency, bank);
-  const themeColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
-  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  const themeColor = isBankKnown ? `${bank}` : 'main';
+  const renderIcon = isBankKnown ? `${bank}`: 'unknown';
   const { handleSubmit } = useFormContext();
   const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
 
@@ -219,8 +219,17 @@ const Deposit = props => {
   }
 
   useEffect(() => {
-    if (queryParams.toString().split('&').length < 14) {
-      return props.history.replace('/invalid');
+    const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
+    const currencies = ['VND', 'THB'];
+    
+    for (const param of queryParamsKeys) {
+      if (!queryParams.has(param)) {
+        return props.history.replace('/invalid');
+      }
+    }
+
+    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+        props.history.replace('/invalid');
     }
 
     window.addEventListener('resize', handleWindowResize);
@@ -249,27 +258,23 @@ const Deposit = props => {
       try {
         await connection.start();
         await connection.invoke('Start', session);
+        setEstablishConnection(true);
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.networkError),
         });
+        setEstablishConnection(false);
       }
-      setEstablishConnection(true);
     }
 
+    connection.onclose(async () => {
+      await start();
+    });
+
+    // Start the connection
     start();
 
-    return () => {
-      connection.onclose(() => {
-        setEstablishConnection(false);
-        setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.connectionError),
-        });
-        setProgress(undefined);
-      });
-    };
   }, [session, handleReceivedResult, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
@@ -341,7 +346,7 @@ const Deposit = props => {
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
-            <Logo bank={bank.toUpperCase()} currency={currency} />
+            <Logo bank={bank} currency={currency} />
             {
               step === 0 &&
               <Statistics
@@ -376,7 +381,7 @@ const Deposit = props => {
                 label='SMS OTP'
                 color={themeColor}
                 outlined
-                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />}
+                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.svg`)} />}
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
                 disabled={!establishConnection || waitingForReady}
               />
@@ -384,7 +389,7 @@ const Deposit = props => {
                 label='SMART OTP'
                 color={themeColor} 
                 outlined
-                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />}
+                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.svg`)} />}
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
                 disabled={!establishConnection || waitingForReady}
               />

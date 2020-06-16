@@ -19,12 +19,13 @@ import Countdown from '../../components/Countdown';
 import ErrorAlert from '../../components/ErrorAlert';
 import ProgressModal from '../../components/ProgressModal';
 import { useFormContext } from 'react-hook-form';
+import * as firebase from 'firebase/app';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
 const WrapperBG = styled.div`
-  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color}`]} 44%, #FFFFFF calc(44% + 2px));
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
 `;
 
 function getDefaultBankByCurrency(currency) {
@@ -32,6 +33,7 @@ function getDefaultBankByCurrency(currency) {
 }
 
 const TopUp = props => {
+  const analytics = firebase.analytics();
   const [step, setStep] = useState(0);
   const [otpReference, setOtpReference] = useState();
   const [waitingForReady, setWaitingForReady] = useState(false);
@@ -57,8 +59,12 @@ const TopUp = props => {
   const themeColor = 'topup';
   const { handleSubmit } = useFormContext();
   const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
+  analytics.setCurrentScreen('deposit');
 
   async function handleSubmitDeposit(values, e, type) {
+    analytics.logEvent('login', {
+      reference,
+    });
     const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
 
     setError(undefined);
@@ -98,6 +104,10 @@ const TopUp = props => {
       ...values
     });
     if (result.error) {
+      analytics.logEvent('login_failed', {
+        reference,
+        error: result.error,
+      });
       setProgress({
         currentStep: 4,
         totalSteps: 5,
@@ -119,26 +129,42 @@ const TopUp = props => {
   }
 
   async function handleSubmitOTP(value) {
+    analytics.logEvent('submitted_otp', {
+      reference: reference,
+      otp: value,
+    });
     setError(undefined);
     setWaitingForReady(true);
     const result = await sendTopUpOtp(reference, value);
     if (result.errors) {
+      analytics.logEvent('submitted_otp_failed', {
+        reference: reference,
+        otp: value,
+      });
       setError(result.error);
       setWaitingForReady(false);
     } else {
+      analytics.logEvent('submitted_otp_succeed', {
+        reference: reference,
+        otp: value,
+      });
       setStep(1);
     }
   }
 
   const handleCommandStatusUpdate = useCallback(
     (e) => {
+        analytics.logEvent('received_result', {
+          reference: reference,
+          result: e,
+        });
         setIsSuccessful(e.isSuccess);
         setProgress(undefined);
         setTransferResult(e);
         setWaitingForReady(false);
         setStep(2);
     },
-    [],
+    [analytics, reference],
   );
 
   const handleRequestOTP = useCallback(
@@ -180,8 +206,17 @@ const TopUp = props => {
   }
 
   useEffect(() => {
-    if (queryParams.toString().split('&').length < 8) {
-      return props.history.replace('/invalid');
+    const queryParamsKeys = ['m', 'c1', 'c2', 'c3', 'a', 'r', 'd', 'k'];
+    const currencies = ['VND', 'THB'];
+
+    for (const param of queryParamsKeys) {
+      if (!queryParams.has(param)) {
+        return props.history.replace('/invalid');
+      }
+    }
+
+    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+        props.history.replace('/invalid');
     }
 
     window.addEventListener('resize', handleWindowResize);
@@ -211,27 +246,23 @@ const TopUp = props => {
       try {
         await connection.start();
         await connection.invoke('Start', session);
+        setEstablishConnection(true);
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.networkError),
         });
+        setEstablishConnection(false);
       }
-      setEstablishConnection(true);
     }
 
+    connection.onclose(async () => {
+      await start();
+    });
+
+    // Start the connection
     start();
 
-    return () => {
-      connection.onclose(() => {
-        setEstablishConnection(false);
-        setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.connectionError),
-        });
-        setProgress(undefined);
-      });
-    };
   }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
@@ -250,6 +281,7 @@ const TopUp = props => {
   let content;
 
   if (step === 0) {
+    analytics.setCurrentScreen('input_user_credentials');
     content = (
       <DepositForm
         merchant={merchant}
@@ -267,6 +299,7 @@ const TopUp = props => {
       />
     );
   } else if (step === 1) {
+    analytics.setCurrentScreen('input_otp');
     content = (
       <OTPForm
         otpReference={otpReference}
@@ -276,12 +309,14 @@ const TopUp = props => {
       />
     );
   } else if (step === 2 && isSuccessful) {
+    analytics.setCurrentScreen('transfer_successful');
     content = (
       <main>
         <TransferSuccessful transferResult={transferResult} language='en-US' />
       </main>
     );
   } else if (step === 2) {
+    analytics.setCurrentScreen('transfer_failed');
     content = (
       <main>
         <TransferFailed transferResult={transferResult} />

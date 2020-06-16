@@ -59,18 +59,18 @@ function getThbBanksByEnvForDeposit() {
 }
 
 function getBanksByCurrency(currency) {
-  if (currency === "VND") {
+  if (currency && currency.toUpperCase() === "VND") {
     return getVndBanksByEnvForDeposit();
-  } else if (currency === "THB") {
+  } else if (currency && currency.toUpperCase() === "THB") {
     return getThbBanksByEnvForDeposit();
   }
   return [];
 }
 
 function checkBankIfKnown (currency, bank) {
-    if (currency === 'VND') {
+    if (currency && currency.toUpperCase() === 'VND' && bank) {
       return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
-    } else if (currency === 'THB') {
+    } else if (currency && currency.toUpperCase() === 'THB' && bank) {
       return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
     }
 }
@@ -90,9 +90,9 @@ function getThbBanksByEnvForTopUp() {
 }
 
 function getBanksByCurrencyForTopUp(currency) {
-  if (currency === "VND") {
+  if (currency && currency.toUpperCase() === "VND") {
     return getVndBanksByEnvForTopUp();
-  } else if (currency === "THB") {
+  } else if (currency && currency.toUpperCase() === "THB") {
     return getThbBanksByEnvForTopUp();
   }
   return [];

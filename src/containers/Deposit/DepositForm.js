@@ -140,8 +140,8 @@ const DepositForm = React.memo((props) => {
   } = props;
   const bankCodes = getBanksByCurrency(currency);
   const isBankKnown = checkBankIfKnown(currency, bank);
-  const buttonColor = isBankKnown ? `${bank.toLowerCase()}` : 'main';
-  const renderIcon = isBankKnown ? `${bank.toLowerCase()}`: 'unknown';
+  const buttonColor = isBankKnown ? `${bank}` : 'main';
+  const renderIcon = isBankKnown ? `${bank}`: 'unknown';
   const [showPassword, setShowPassword] = useState(false);
   const [toggleSelect, setToggleSelect] = useState(false);
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext();
@@ -255,7 +255,7 @@ const DepositForm = React.memo((props) => {
                 label='SMS OTP'
                 color={buttonColor}
                 outlined
-                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />}
+                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.svg`)} />}
                 onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
                 disabled={!establishConnection || waitingForReady}
               />
@@ -263,7 +263,7 @@ const DepositForm = React.memo((props) => {
                 label='SMART OTP'
                 color={buttonColor} 
                 outlined
-                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />}
+                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.svg`)} />}
                 onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
                 disabled={!establishConnection || waitingForReady}
               />
