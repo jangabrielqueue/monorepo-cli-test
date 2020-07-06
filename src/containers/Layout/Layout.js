@@ -26,7 +26,7 @@ const Layout = (props) => {
     if (!currencies.includes(queryParams.get('c1'))) {
       props.history.replace('/invalid');
     }
-  }, [])
+  }, [props.history, queryParams])
 
   return (
     <>

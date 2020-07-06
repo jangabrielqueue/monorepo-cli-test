@@ -242,7 +242,7 @@ const ScratchCard = (props) => {
                 return;
             }
         },
-        [intl, analytics, queryParams],
+        [intl, analytics, reference],
     );
 
     useEffect(() => {

@@ -173,7 +173,7 @@ const TopUp = props => {
         });
       }
     },
-    [],
+    [intl],
   );
 
   function handleRefFormSubmit (type) {

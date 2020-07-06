@@ -27,7 +27,7 @@ const OTPFormImpl = React.memo((props) => {
     if (progress) {
       resetFields();
     }
-  }, [progress]);
+  }, [progress, resetFields]);
 
   return (
     <main>

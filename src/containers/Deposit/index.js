@@ -193,7 +193,7 @@ const Deposit = props => {
         });
       }
     },
-    [],
+    [intl],
   );
 
   function handleRefFormSubmit (type) {
