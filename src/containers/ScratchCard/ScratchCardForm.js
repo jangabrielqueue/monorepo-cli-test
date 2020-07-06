@@ -117,25 +117,6 @@ const ScratchCardForm = React.memo((props) => {
                         </div>
                     }
                     <div className='form-icon-container credit-card'>
-                        <Form.Item label={intl.formatMessage(messages.placeholders.cardPin)} htmlFor='scratch_card_form_cardPin'>
-                            {
-                                getFieldDecorator('cardPin', {
-                                    rules: validationRuleforCardPin()
-                                })
-                                (
-                                    <Input
-                                        type='number'
-                                        size='large'
-                                        allowClear
-                                        id='scratch_card_form_cardPin'
-                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
-                                        autoComplete='off'
-                                    />                            
-                                )
-                            }
-                        </Form.Item>
-                    </div>
-                    <div className='form-icon-container credit-card'>
                         <Form.Item label={intl.formatMessage(messages.placeholders.cardSerialNo)} htmlFor='scratch_card_form_cardSerialNumber'>
                             {
                                 getFieldDecorator('cardSerialNumber', {
@@ -150,6 +131,25 @@ const ScratchCardForm = React.memo((props) => {
                                         onKeyDown={e => e.which === 69 && e.preventDefault()}
                                         autoComplete='off'
                                     />                         
+                                )
+                            }
+                        </Form.Item>
+                    </div>
+                    <div className='form-icon-container credit-card'>
+                        <Form.Item label={intl.formatMessage(messages.placeholders.cardPin)} htmlFor='scratch_card_form_cardPin'>
+                            {
+                                getFieldDecorator('cardPin', {
+                                    rules: validationRuleforCardPin()
+                                })
+                                (
+                                    <Input
+                                        type='number'
+                                        size='large'
+                                        allowClear
+                                        id='scratch_card_form_cardPin'
+                                        onKeyDown={e => e.which === 69 && e.preventDefault()}
+                                        autoComplete='off'
+                                    />                            
                                 )
                             }
                         </Form.Item>
