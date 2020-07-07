@@ -119,20 +119,13 @@ const ScratchCard = (props) => {
                       method: 'POST',
                       data: submitValues
                     });
-                    if (response.data.statusCode === '001') {
-                        setProgress({
-                            currentStep: 5,
-                            totalSteps: 5,
-                            statusCode: '009',
-                            statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
-                          });
-                        await sleep(750);
+
+                    if (response.data.statusCode === '009') {
                         setProgress(undefined);
                         setWaitingForReady(false);
-                        setIsSuccessful(false);
-                        setError({
-                            message: response.data.statusMessage
-                        });
+                        setIsSuccessful(true);
+                        setTransferResult(response.data);
+                        setStep(1);
                     }
                   } catch (error) {
                         analytics.logEvent('login_failed', {
