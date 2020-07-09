@@ -9,7 +9,7 @@ const { Option } = Select;
 const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard, waitingForReady, establishConnection, bank } = props;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError, resetFields } = props.form;
-    const [telcoName, setTelcoName] = useState((bank === 'GWCVND' || bank === 'GWCTHB') ? 'GW' : 'VTT');
+    const [telcoName, setTelcoName] = useState(bank === 'GWC' ? 'GW' : 'VTT');
     const intl = useIntl();
 
     function validationRuleforCardPin () {
@@ -87,7 +87,7 @@ const ScratchCardForm = React.memo((props) => {
             <Spin spinning={waitingForReady}>
                 <Form layout='vertical' hideRequiredMark={true} onSubmit={(e) => handleSubmitScratchCard(e, validateFieldsAndScroll)}>
                     {
-                        (bank !== 'GWCVND' && bank !== 'GWCTHB') &&
+                        (bank !== 'GWC') &&
                         <div className='form-icon-container mobile'>
                             <Form.Item label={intl.formatMessage(messages.placeholders.telcoName)}>
                                 {
@@ -171,7 +171,7 @@ const ScratchCardForm = React.memo((props) => {
                         </Button>
                     </div>
                     {
-                        (bank !== 'GWCVND' && bank !== 'GWCTHB') &&
+                        (bank !== 'GWC') &&
                         <div className='note-text'>
                             <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
                             <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    

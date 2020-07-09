@@ -64,7 +64,7 @@ const ScratchCard = (props) => {
         validateFieldsAndScroll(async (err, values) => {
             if (!err) {
                 const submitValues = {
-                    Telecom: (bank === 'GWCVND' || bank === 'GWCTHB') ? 'GW' : values.telcoName,
+                    Telecom: bank === 'GWC' ? 'GW' : values.telcoName,
                     Pin: values.cardPin.toString(),
                     SerialNumber: values.cardSerialNumber.toString(),
                     ClientIp: clientIp,
@@ -119,11 +119,17 @@ const ScratchCard = (props) => {
                       method: 'POST',
                       data: submitValues
                     });
-
+                    
                     if (response.data.statusCode === '009') {
                         setProgress(undefined);
                         setWaitingForReady(false);
                         setIsSuccessful(true);
+                        setTransferResult(response.data);
+                        setStep(1);
+                    } else if (response.data.statusCode === '001') {
+                        setProgress(undefined);
+                        setWaitingForReady(false);
+                        setIsSuccessful(false);
                         setTransferResult(response.data);
                         setStep(1);
                     }
@@ -318,7 +324,7 @@ const ScratchCard = (props) => {
                     <header className={step === 1 ? null : 'header-bottom-border'}>
                         <Logo bank={bank && bank.toUpperCase()} type='scratch-card' currency={currency} />
                         {
-                            step === 0 && (bank !== 'GWCVND' && bank !== 'GWCTHB') &&
+                            (step === 0) && (bank !== 'GWC') &&
                             <Statistic
                                 title={intl.formatMessage(messages.deposit)}
                                 prefix={currency}
