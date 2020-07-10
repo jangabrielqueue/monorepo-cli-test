@@ -34,37 +34,53 @@ const ScratchCard = (props) => {
     const intl = useIntl();
     const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)];
     const queryParams = useQuery();
-    const session = `DEPOSIT-SCRATCHCARD-${queryParams.get('m')}-${queryParams.get('r')}`;
-    const isBankKnown = checkBankIfKnown(queryParams.get('c1'), queryParams.get('b') && queryParams.get('b').toUpperCase());
-    const wrapperBG = isBankKnown ? `bg-${queryParams.get('b') && queryParams.get('b').toLowerCase()}` : 'bg-unknown';
+
+    const merchant = queryParams.get('m');
+    const reference = queryParams.get('r');
+    const currency = queryParams.get('c1');
+    const bank = queryParams.get('b');
+    const clientIp = queryParams.get('c3');
+    const language = queryParams.get('l');
+    const successfulUrl = queryParams.get('su');
+    const failedUrl = queryParams.get('fu');
+    const callbackUri = queryParams.get('c4');
+    const dateTime = queryParams.get('d');
+    const key = queryParams.get('k');
+    const note = queryParams.get('n');
+    const customer = queryParams.get('c2');
+    const amount = queryParams.get('a');
+
+    const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`;
+    const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
+    const wrapperBG = isBankKnown ? `bg-${bank && bank.toLowerCase()}` : 'bg-unknown';
     analytics.setCurrentScreen('deposit');
 
     function handleSubmitScratchCard (e, validateFieldsAndScroll) {
         analytics.logEvent('login', {
-            reference: queryParams.get('r'),
+            reference: reference,
         });
         e.preventDefault();
 
         validateFieldsAndScroll(async (err, values) => {
             if (!err) {
                 const submitValues = {
-                    Telecom: values.telcoName,
+                    Telecom: bank === 'GWC' ? 'GW' : values.telcoName,
                     Pin: values.cardPin.toString(),
                     SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: queryParams.get('c3'),
-                    Language: queryParams.get('l'),
-                    SuccessfulUrl: queryParams.get('su'),
-                    FailedUrl: queryParams.get('fu'),
-                    CallbackUri: queryParams.get('c4'),
-                    Datetime: queryParams.get('d'),
-                    Key: queryParams.get('k'),
-                    Note: queryParams.get('n'),
-                    Merchant: queryParams.get('m'),
-                    Currency: queryParams.get('c1'),
-                    Bank: queryParams.get('b'),
-                    Customer: queryParams.get('c2'),
-                    Reference: queryParams.get('r'),
-                    Amount: queryParams.get('a')
+                    ClientIp: clientIp,
+                    Language: language,
+                    SuccessfulUrl: successfulUrl,
+                    FailedUrl: failedUrl,
+                    CallbackUri: callbackUri,
+                    Datetime: dateTime,
+                    Key: key,
+                    Note: note,
+                    Merchant: merchant,
+                    Currency: currency,
+                    Bank: bank,
+                    Customer: customer,
+                    Reference: reference,
+                    Amount: amount
                 };
 
                 setWaitingForReady(true);
@@ -103,24 +119,23 @@ const ScratchCard = (props) => {
                       method: 'POST',
                       data: submitValues
                     });
-                    if (response.data.statusCode === '001') {
-                        setProgress({
-                            currentStep: 5,
-                            totalSteps: 5,
-                            statusCode: '009',
-                            statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
-                          });
-                        await sleep(750);
+                    
+                    if (response.data.statusCode === '009') {
+                        setProgress(undefined);
+                        setWaitingForReady(false);
+                        setIsSuccessful(true);
+                        setTransferResult(response.data);
+                        setStep(1);
+                    } else if (response.data.statusCode === '001') {
                         setProgress(undefined);
                         setWaitingForReady(false);
                         setIsSuccessful(false);
-                        setError({
-                            message: response.data.statusMessage
-                        });
+                        setTransferResult(response.data);
+                        setStep(1);
                     }
                   } catch (error) {
                         analytics.logEvent('login_failed', {
-                            reference: queryParams.get('r'),
+                            reference: reference,
                             error: error,
                         });
                         setWaitingForReady(false);
@@ -140,6 +155,7 @@ const ScratchCard = (props) => {
                         handleSubmitScratchCard={handleSubmitScratchCard}
                         waitingForReady={waitingForReady}
                         establishConnection={establishConnection}
+                        bank={bank}
                     />
                 );
 
@@ -147,21 +163,21 @@ const ScratchCard = (props) => {
                 if (isSuccessful) {
                     analytics.setCurrentScreen('transfer_successful');
                     return (
-                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                        <AutoRedirect delay={10000} url={successfulUrl}>
                             <TransferSuccessful transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else if (transferResult.statusCode === '009') {
                     analytics.setCurrentScreen('transfer_successful');
                     return (
-                        <AutoRedirect delay={10000} url={queryParams.get('su')}>
+                        <AutoRedirect delay={10000} url={successfulUrl}>
                             <TransferWaitForConfirm transferResult={transferResult} />
                         </AutoRedirect>
                     );
                 } else {
                     analytics.setCurrentScreen('transfer_failed');
                     return (
-                        <AutoRedirect delay={10000} url={queryParams.get('fu')}>
+                        <AutoRedirect delay={10000} url={failedUrl}>
                             <TransferFailed transferResult={transferResult} />
                         </AutoRedirect>
                     );
@@ -175,7 +191,7 @@ const ScratchCard = (props) => {
     const handleCommandStatusUpdate = useCallback(
         async (result) => {
             analytics.logEvent('received_result', {
-                reference: queryParams.get('r'),
+                reference: reference,
                 result: result,
             });
             let start, end;
@@ -225,7 +241,7 @@ const ScratchCard = (props) => {
                 return;
             }
         },
-        [intl, analytics, queryParams],
+        [intl, analytics, reference],
     );
 
     useEffect(() => {
@@ -306,13 +322,13 @@ const ScratchCard = (props) => {
             <div className='container'>
                 <div className='form-content'>
                     <header className={step === 1 ? null : 'header-bottom-border'}>
-                        <Logo bank='PRECARD' type='scratch-card' currency={queryParams.get('c1')} />
+                        <Logo bank={bank && bank.toUpperCase()} type='scratch-card' currency={currency} />
                         {
-                            step === 0 &&
+                            (step === 0) && (bank !== 'GWC') &&
                             <Statistic
                                 title={intl.formatMessage(messages.deposit)}
-                                prefix={queryParams.get('c1')}
-                                value={queryParams.get('a')}
+                                prefix={currency}
+                                value={amount}
                                 valueStyle={{ color: "#000", fontWeight: 700 }}
                                 precision={2}
                             />

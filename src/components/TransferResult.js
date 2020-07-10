@@ -30,7 +30,7 @@ export const TransferFailed = ({ transferResult }) => {
     <div className='auto-redirect-content'>
       <img alt='submit-failed' src={require('../assets/icons/submit-failed.svg')} />
       <h1>{intl.formatMessage(messages.errors.transactionFailed)}</h1>
-      <p>{transferResult.message}</p>
+      <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
   );
 };
@@ -41,7 +41,7 @@ export const TransferWaitForConfirm = ({ transferResult }) => {
   return (
     <div className='auto-redirect-content'>
       <h2>{intl.formatMessage(messages.progress.pendingConfirmation)}</h2>
-      <p>{transferResult.message}</p>
+      <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
   );
 };
