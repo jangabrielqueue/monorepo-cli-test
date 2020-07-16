@@ -123,7 +123,7 @@ const ScratchCard = (props) => {
                 if (response.data.statusCode === '009') {
                     setProgress(undefined);
                     setWaitingForReady(false);
-                    setIsSuccessful(true);
+                    setIsSuccessful(false);
                     setTransferResult(response.data);
                     setStep(1);
                 } else if (response.data.statusCode === '001') {
