@@ -108,7 +108,7 @@ const InputFieldContainer = styled.div`
 
 const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props;
-    const [telcoName, setTelcoName] = useState('VTT');
+    const [telcoName, setTelcoName] = useState(bank.toUpperCase() === 'GWC' ? 'GW' : 'VTT');
     const intl = useIntl();
     const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
     const { dirty } = formState;
@@ -124,6 +124,8 @@ const ScratchCardForm = React.memo((props) => {
         switch (telcoName) {
             case 'VTT':
                 return 15;
+            case 'GW':
+                return 15;
             case 'VNP':
                 return 14; 
             case 'VMS':
@@ -136,6 +138,8 @@ const ScratchCardForm = React.memo((props) => {
     function renderMaxLengthMessageCardPin () {
         switch (telcoName) {
             case 'VTT':
+                return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 });
+            case 'GW':
                 return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 });
             case 'VNP':
                 return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 });
@@ -151,41 +155,76 @@ const ScratchCardForm = React.memo((props) => {
             return {
                 required: true,
                 maxLength: 14
-            };
+            }
+        } else if (telcoName === 'GW') {
+            return {
+                required: true,
+                maxLength: 15
+            }
         } else {
             return {
                 required: true
-            };
+            }
         }
     }
 
     function renderMaxLengthMessageSerialNumber () {
         if (telcoName === 'VTT' || telcoName === 'VNP') {
             return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 });
+        } else if (telcoName === 'GW') {
+            return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 });
         }
     }
 
     return (
         <main>
             <form>
-                <FormIconContainer icon='mobile'>
+                {
+                    (bank.toUpperCase() !== 'GWC') &&
+                    <FormIconContainer icon='mobile'>
+                        <div>
+                            <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
+                            <FormSelectField 
+                                name='telcoName'
+                                id='telcoName'
+                                ref={register}
+                                aria-owns='telco-1 telco-2 telco-3'
+                                onChange={(e) => {
+                                    setTelcoName(e.target.value)
+                                    reset()
+                                }}
+                                value={telcoName}
+                            >
+                                <option value='VTT' id='telco-1'>Viettel</option>
+                                <option value='VNP' id='telco-2'>Vinaphone</option>
+                                <option value='VMS' id='telco-3'>Mobiphone</option>
+                            </FormSelectField>
+                        </div>
+                    </FormIconContainer>
+                }
+                <FormIconContainer icon='credit-card'>
                     <div>
-                        <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
-                        <FormSelectField 
-                            name='telcoName'
-                            id='telcoName'
-                            ref={register}
-                            aria-owns='telco-1 telco-2 telco-3'
-                            onChange={(e) => {
-                                setTelcoName(e.target.value)
-                                reset()
-                            }}
-                            value={telcoName}
-                        >
-                            <option value='VTT' id='telco-1'>Viettel</option>
-                            <option value='VNP' id='telco-2'>Vinaphone</option>
-                            <option value='VMS' id='telco-3'>Mobiphone</option>
-                        </FormSelectField>
+                        <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
+                        <InputFieldContainer>
+                            <input 
+                                ref={register(renderMaxLengthSerialNumber())}
+                                onKeyDown={e => e.which === 69 && e.preventDefault()}  
+                                type='number' 
+                                id='cardSerialNumber' 
+                                name='cardSerialNumber' 
+                                autoComplete='off' 
+                            />
+                            <ul>
+                                {
+                                    (formValues.cardSerialNumber !== '' && dirty) &&
+                                    <li onClick={() => setValue('cardSerialNumber', '')}><span>&times;</span></li>
+                                }
+                            </ul>
+                        </InputFieldContainer>
+                        <p className='input-errors'>
+                            {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
+                            {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}
+                        </p>
                     </div>
                 </FormIconContainer>
                 <FormIconContainer icon='credit-card'>
@@ -213,31 +252,6 @@ const ScratchCardForm = React.memo((props) => {
                         </p>   
                     </div>
                 </FormIconContainer>
-                <FormIconContainer icon='credit-card'>
-                    <div>
-                        <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
-                        <InputFieldContainer>
-                            <input 
-                                ref={register(renderMaxLengthSerialNumber())}
-                                onKeyDown={e => e.which === 69 && e.preventDefault()}  
-                                type='number' 
-                                id='cardSerialNumber' 
-                                name='cardSerialNumber' 
-                                autoComplete='off' 
-                            />
-                            <ul>
-                                {
-                                    (formValues.cardSerialNumber !== '' && dirty) &&
-                                    <li onClick={() => setValue('cardSerialNumber', '')}><span>&times;</span></li>
-                                }
-                            </ul>
-                        </InputFieldContainer>
-                        <p className='input-errors'>
-                            {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
-                            {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}
-                        </p>
-                    </div>
-                </FormIconContainer>
                 <div className='form-content-submit-container'>
                     <GlobalButton
                         label={<FormattedMessage {...messages.submit} />}
@@ -247,10 +261,13 @@ const ScratchCardForm = React.memo((props) => {
                         disabled={!establishConnection || waitingForReady}
                     />
                 </div>
-                <StyledNoteText>
-                    <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
-                    <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
-                </StyledNoteText>
+                {
+                    (bank.toUpperCase() !== 'GWC') &&
+                    <StyledNoteText>
+                        <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
+                        <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>    
+                    </StyledNoteText>
+                }
             </form>
         </main>
     );

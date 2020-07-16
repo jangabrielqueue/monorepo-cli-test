@@ -65,7 +65,7 @@ export const TransferFailed = ({ transferResult }) => {
     <StyledRedirectContent>
       <img alt='submit-failed' src={require('../assets/icons/submit-failed.svg')} />
       <h1>{<FormattedMessage {...messages.errors.transactionFailed} />}</h1>
-      <p>{transferResult.message}</p>
+      <p>{transferResult.message || transferResult.statusMessage}</p>
     </StyledRedirectContent>
   );
 };
@@ -74,7 +74,7 @@ export const TransferWaitForConfirm = ({ transferResult }) => {
   return (
     <StyledRedirectContent>
       <h2>{<FormattedMessage {...messages.progress.pendingConfirmation} />}</h2>
-      <p>{transferResult.message}</p>
+      <p>{transferResult.message || transferResult.statusMessage}</p>
     </StyledRedirectContent>
   );
 };
