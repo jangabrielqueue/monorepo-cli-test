@@ -193,7 +193,6 @@ const ScratchCard = (props) => {
                 reference: reference,
                 result: result,
             });
-
             let start, end;
 
             start = performance.now();

@@ -19,6 +19,14 @@ const Layout = (props) => {
   });
   analytics.logEvent('page_loaded');
 
+  useEffect(() => {
+    const currencies = ['VND', 'THB'];
+
+    if (!currencies.includes(queryParams.get('c1'))) {
+      props.history.replace('/invalid');
+    }
+  }, [props.history, queryParams])
+
   return (
     <Switch>
       <Route exact path='/topup/bank' component={TopUp} />
