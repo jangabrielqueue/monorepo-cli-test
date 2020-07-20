@@ -110,11 +110,12 @@ const ScratchCardForm = React.memo((props) => {
     const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props;
     const [telcoName, setTelcoName] = useState(bank.toUpperCase() === 'GWC' ? 'GW' : 'VTT');
     const intl = useIntl();
-    const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
-    const { dirty } = formState;
-    const formValues = getValues();
+    const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext();
     const isBankKnown = checkBankIfKnown(currency, bank);
     const buttonColor = isBankKnown ? `${bank}` : 'main';
+    const watchCardSerialNumber = watch('cardSerialNumber', '');
+    const watchCardPin = watch('cardPin', '');
+    const formValues = getValues();
 
     function handleSubmitForm (values) {
         handleSubmitScratchCard(values);
@@ -191,7 +192,10 @@ const ScratchCardForm = React.memo((props) => {
                                 aria-owns='telco-1 telco-2 telco-3'
                                 onChange={(e) => {
                                     setTelcoName(e.target.value)
-                                    reset()
+                                    reset({
+                                        cardSerialNumber: '',
+                                        cardPin: ''
+                                    })
                                 }}
                                 value={telcoName}
                             >
@@ -216,8 +220,8 @@ const ScratchCardForm = React.memo((props) => {
                             />
                             <ul>
                                 {
-                                    (formValues.cardSerialNumber !== '' && dirty) &&
-                                    <li onClick={() => setValue('cardSerialNumber', '')}><span>&times;</span></li>
+                                    (watchCardSerialNumber || formValues.cardSerialNumber) &&
+                                    <li onClick={() => reset({ ...formValues, cardSerialNumber: '' })}><span>&times;</span></li>
                                 }
                             </ul>
                         </InputFieldContainer>
@@ -241,8 +245,8 @@ const ScratchCardForm = React.memo((props) => {
                             />
                             <ul>
                                 {
-                                    (formValues.cardPin !== '' && dirty) &&
-                                    <li onClick={() => setValue('cardPin', '')}><span>&times;</span></li>
+                                    (watchCardPin || formValues.cardPin) &&
+                                    <li onClick={() => reset({ ...formValues, cardPin: '' })}><span>&times;</span></li>
                                 }
                             </ul>
                         </InputFieldContainer>    

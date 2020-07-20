@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as firebase from 'firebase/app';
 import { useQuery } from "../../utils/utils";
