@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button } from 'antd';
-import * as firebase from 'firebase/app';
+import React, { useState, useEffect, useCallback } from 'react';
 import DepositForm from './DepositForm';
 import OTPForm from './OTPForm';
 import {
@@ -10,15 +8,29 @@ import {
 import { sendTopUpRequest, sendTopUpOtp } from './Requests';
 import * as signalR from '@microsoft/signalr';
 import { useQuery, sleep } from '../../utils/utils';
+import { getBanksByCurrencyForTopUp } from '../../utils/banks';
 import { useIntl } from 'react-intl';
 import messages from './messages';
 import StepsBar from '../../components/StepsBar';
-import ConfirmationModal from '../../components/ConfirmationModal';
+import GlobalButton from '../../components/GlobalButton';
+import styled from 'styled-components';
+import Statistics from '../../components/Statistics';
+import Countdown from '../../components/Countdown';
+import ErrorAlert from '../../components/ErrorAlert';
+import ProgressModal from '../../components/ProgressModal';
+import { useFormContext } from 'react-hook-form';
+import * as firebase from 'firebase/app';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
-const { Countdown } = Statistic;
+const WrapperBG = styled.div`
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
+`;
+
+function getDefaultBankByCurrency(currency) {
+  return getBanksByCurrencyForTopUp(currency)[0];
+}
 
 const TopUp = props => {
   const analytics = firebase.analytics();
@@ -30,7 +42,6 @@ const TopUp = props => {
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
-  const [deadline, setDeadline] = useState();
   const [windowDimensions, setWindowDimensions] = useState({
     width: window.outerWidth
   });
@@ -45,14 +56,17 @@ const TopUp = props => {
   const signature = queryParams.get('k');
   const session = `TOPUP-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const [hasFieldError, setHasFieldError] = useState(false);
-  const refFormSubmit = useRef(null);
+  const themeColor = 'topup';
+  const { handleSubmit } = useFormContext();
+  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
   analytics.setCurrentScreen('deposit');
 
-  async function handleSubmitDeposit(values) {
+  async function handleSubmitDeposit(values, e, type) {
     analytics.logEvent('login', {
       reference,
     });
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
+
     setError(undefined);
     setWaitingForReady(true);
     setProgress({
@@ -70,15 +84,24 @@ const TopUp = props => {
     });
     await sleep(750);
     setProgress({
-      currentStep: 3.5,
+      currentStep: 3,
       totalSteps: 5,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
     });
-    await sleep(750);    
+    await sleep(750);
     const result = await sendTopUpRequest({
-      ...values,
-      reference: reference,
+      currency,
+      merchant,
+      requester,
+      bank: getDefaultBankByCurrency(currency).code,
+      signature,
+      reference,
+      clientIp,
+      datetime,
+      amount,
+      otpMethod: otpType,
+      ...values
     });
     if (result.error) {
       analytics.logEvent('login_failed', {
@@ -150,7 +173,7 @@ const TopUp = props => {
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
-      setDeadline(Date.now() + 1000 * 180);
+      setRenderCountdownAgain(prevState => !prevState);
     },
     [],
   );
@@ -166,7 +189,7 @@ const TopUp = props => {
         });
       } else if ((e.currentStep + 2) >= 3) {
         setProgress({
-          currentStep: 5,
+          currentStep: 4,
           totalSteps: 5,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
@@ -176,14 +199,6 @@ const TopUp = props => {
     [intl],
   );
 
-  function handleRefFormSubmit (type) {
-    refFormSubmit.current.props.onSubmit(type);
-  }
-
-  function handleHasFieldError (hasError) {
-    setHasFieldError(hasError);
-  }
-
   function handleWindowResize () {
     setWindowDimensions({
       width: window.outerWidth
@@ -192,11 +207,16 @@ const TopUp = props => {
 
   useEffect(() => {
     const queryParamsKeys = ['m', 'c1', 'c2', 'c3', 'a', 'r', 'd', 'k'];
+    const currencies = ['VND', 'THB'];
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
         return props.history.replace('/invalid');
       }
+    }
+
+    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+        props.history.replace('/invalid');
     }
 
     window.addEventListener('resize', handleWindowResize);
@@ -226,27 +246,23 @@ const TopUp = props => {
       try {
         await connection.start();
         await connection.invoke('Start', session);
+        setEstablishConnection(true);
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.networkError),
         });
+        setEstablishConnection(false);
       }
-      setEstablishConnection(true);
     }
 
+    connection.onclose(async () => {
+      await start();
+    });
+
+    // Start the connection
     start();
 
-    return () => {
-      connection.onclose(() => {
-        setEstablishConnection(false);
-        setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.connectionError),
-        });
-        setProgress(undefined);
-      });
-    };
   }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
@@ -276,12 +292,8 @@ const TopUp = props => {
         clientIp={clientIp}
         signature={signature}
         datetime={datetime}
-        handleSubmit={handleSubmitDeposit}
-        refFormSubmit={refFormSubmit}
-        handleHasFieldError={handleHasFieldError}
+        handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
-        hasFieldError={hasFieldError}
-        handleRefFormSubmit={handleRefFormSubmit}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
       />
@@ -291,7 +303,7 @@ const TopUp = props => {
     content = (
       <OTPForm
         otpReference={otpReference}
-        handleSubmit={handleSubmitOTP}
+        handleSubmitOTP={handleSubmitOTP}
         waitingForReady={waitingForReady}
         progress={progress}
       />
@@ -313,7 +325,7 @@ const TopUp = props => {
   }
 
   return (
-    <div className='wrapper bg-top-up'>
+    <WrapperBG className='wrapper' color={themeColor}>
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
@@ -322,26 +334,21 @@ const TopUp = props => {
             </section>
             {
               step === 0 &&
-              <Statistic
+              <Statistics
                 title={intl.formatMessage(messages.deposit)}
-                prefix={currency}
-                value={amount}
-                valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
-                precision={2}
+                language='en-US'
+                currency={currency}
+                amount={amount}
               />
             }
             {
               step === 1 &&
-              <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
+              <Countdown renderCountdownAgain={renderCountdownAgain} />
             }
             {
               error &&
-              <Alert
-                description={error.message}
-                type='error'
-                showIcon
-                closable
-                className='error-message'
+              <ErrorAlert
+                message={error.message}
               />
             }
           </header>
@@ -355,28 +362,34 @@ const TopUp = props => {
         (windowDimensions.width <= 576 && step === 0) &&
         <footer className='footer-submit-container'>
           <div className='deposit-submit-top-up-buttons'>
-            <Button size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-              SMS OTP
-            </Button>
-            <Button size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-              SMART OTP
-            </Button>
+              <GlobalButton
+                label='SMS OTP'
+                color={themeColor}
+                outlined
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor} 
+                outlined
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
+                disabled={!establishConnection || waitingForReady}
+              />
           </div>  
         </footer>
       }
-        <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-            <Progress
-              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-              status='active'
-              showInfo={false}
-              strokeColor='#34A220'
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
             />
             <p>{progress && progress.statusMessage}</p>
           </div>
-        </ConfirmationModal>      
-    </div>
+        </ProgressModal>    
+    </WrapperBG>
   );
 };
 

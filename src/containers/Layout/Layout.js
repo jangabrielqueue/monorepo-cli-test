@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as firebase from 'firebase/app';
-import './styles.scss';
-import { useQuery } from '../../utils/utils';
+import { useQuery } from "../../utils/utils";
 import Deposit from '../Deposit';
 import ScratchCard from '../ScratchCard/ScratchCard';
 import TopUp from '../TopUp';
@@ -29,15 +28,13 @@ const Layout = (props) => {
   }, [props.history, queryParams])
 
   return (
-    <>
-      <Switch>
-        <Route exact path='/topup/bank' component={TopUp} />
-        <Route exact path='/deposit/bank' component={Deposit} />
-        <Route exact path='/deposit/scratch-card' component={ScratchCard} />
-        <Route path='/invalid' component={InvalidPage} />
-        <Route path='*' component={NotFound} />
-      </Switch>
-    </>
+    <Switch>
+      <Route exact path='/topup/bank' component={TopUp} />
+      <Route exact path='/deposit/bank' component={Deposit} />
+      <Route exact path='/deposit/scratch-card' component={ScratchCard} />
+      <Route path='/invalid' component={InvalidPage} />
+      <Route path='*' component={NotFound} />
+    </Switch>
   );
 };
 

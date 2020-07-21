@@ -8,7 +8,7 @@ export default defineMessages({
     placeholders: {
         loginName: {
             id: 'placeholders.loginName',
-            defaultMessage: 'Online banking login name'
+            defaultMessage: 'Online Banking Login Name'
         },
         password: {
             id: 'placeholders.password',
@@ -34,6 +34,10 @@ export default defineMessages({
     submit: {
         id: 'submit',
         defaultMessage: 'Submit'
+    },
+    moreInformation: {
+        id: 'moreInformation',
+        defaultMessage: 'More Information'
     },
     countdown: {
         id: 'countdown',

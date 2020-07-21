@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Statistic, Alert, Progress, Button } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
 import * as firebase from 'firebase/app';
 import AutoRedirect from '../../components/AutoRedirect';
 import DepositForm from './DepositForm';
@@ -16,13 +15,21 @@ import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
-import ConfirmationModal from '../../components/ConfirmationModal';
 import { checkBankIfKnown } from '../../utils/banks';
+import GlobalButton from '../../components/GlobalButton';
+import styled from 'styled-components';
+import Statistics from '../../components/Statistics';
+import Countdown from '../../components/Countdown';
+import ErrorAlert from '../../components/ErrorAlert';
+import ProgressModal from '../../components/ProgressModal';
+import { useFormContext } from 'react-hook-form';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
 
-const { Countdown } = Statistic;
+const WrapperBG = styled.div`
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
+`;
 
 const Deposit = props => {
   const analytics = firebase.analytics();
@@ -34,7 +41,6 @@ const Deposit = props => {
   const [progress, setProgress] = useState();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [transferResult, setTransferResult] = useState({});
-  const [deadline, setDeadline] = useState();
   const [windowDimensions, setWindowDimensions] = useState({
     width: window.outerWidth
   });
@@ -55,16 +61,17 @@ const Deposit = props => {
   const language = queryParams.get('l');
   const session = `DEPOSIT-BANK-${merchant}-${reference}`;
   const intl = useIntl();
-  const [hasFieldError, setHasFieldError] = useState(false);
-  const refFormSubmit = useRef(null);
-  const showOtpMethod = currency === 'VND';
+  const showOtpMethod = currency && currency.toUpperCase() === 'VND';
   analytics.setCurrentScreen('deposit');
-  const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
-  const wrapperBG = isBankKnown ? `bg-${bank && bank.toLowerCase()}` : 'bg-unknown';
-  const buttonBG = isBankKnown ? `button-${bank && bank.toLowerCase()}` : 'button-unknown';
-  const renderIcon = isBankKnown ? `${bank && bank.toLowerCase()}`: 'unknown';
+  const isBankKnown = checkBankIfKnown(currency, bank);
+  const themeColor = isBankKnown ? `${bank}` : 'main';
+  const renderIcon = isBankKnown ? `${bank}`: 'unknown';
+  const { handleSubmit } = useFormContext();
+  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false);
 
-  async function handleSubmitDeposit(values) {
+  async function handleSubmitDeposit(values, e, type) {
+    const otpType = (type === 'sms' || type === undefined) ? '1' : '2';
+
     analytics.logEvent('login', {
       reference,
     });
@@ -85,20 +92,29 @@ const Deposit = props => {
     });
     await sleep(750);
     setProgress({
-      currentStep: 3.5,
+      currentStep: 3,
       totalSteps: 5,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
     });
     await sleep(750);
     const result = await sendDepositRequest({
-      ...values,
+      currency,
+      merchant,
+      requester,
+      bank,
+      signature,
       reference,
+      clientIp,
+      datetime,
+      amount,
+      otpMethod: otpType,
       language,
       note,
       successfulUrl,
       failedUrl,
       callbackUri,
+      ...values
     });
     if (result.error) {
       analytics.logEvent('login_failed', {
@@ -170,7 +186,7 @@ const Deposit = props => {
       setStep(1);
       setOtpReference(e.extraData);
       setWaitingForReady(false);
-      setDeadline(Date.now() + 1000 * 180);
+      setRenderCountdownAgain(prevState => !prevState);
     },
     [],
   );
@@ -186,7 +202,7 @@ const Deposit = props => {
         });
       } else if ((e.currentStep + 2) >= 3) {
         setProgress({
-          currentStep: 5,
+          currentStep: 4,
           totalSteps: 5,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
@@ -196,14 +212,6 @@ const Deposit = props => {
     [intl],
   );
 
-  function handleRefFormSubmit (type) {
-    refFormSubmit.current.props.onSubmit(type);
-  }
-
-  function handleHasFieldError (hasError) {
-    setHasFieldError(hasError);
-  }
-
   function handleWindowResize () {
     setWindowDimensions({
       width: window.outerWidth
@@ -212,11 +220,16 @@ const Deposit = props => {
 
   useEffect(() => {
     const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
-
+    const currencies = ['VND', 'THB'];
+    
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
         return props.history.replace('/invalid');
       }
+    }
+
+    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+        props.history.replace('/invalid');
     }
 
     window.addEventListener('resize', handleWindowResize);
@@ -245,27 +258,23 @@ const Deposit = props => {
       try {
         await connection.start();
         await connection.invoke('Start', session);
+        setEstablishConnection(true);
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
           message: intl.formatMessage(messages.errors.networkError),
         });
+        setEstablishConnection(false);
       }
-      setEstablishConnection(true);
     }
 
+    connection.onclose(async () => {
+      await start();
+    });
+
+    // Start the connection
     start();
 
-    return () => {
-      connection.onclose(() => {
-        setEstablishConnection(false);
-        setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.connectionError),
-        });
-        setProgress(undefined);
-      });
-    };
   }, [session, handleReceivedResult, handleRequestOTP, handleUpdateProgress, intl]);
 
   useEffect(() => {
@@ -287,22 +296,12 @@ const Deposit = props => {
     analytics.setCurrentScreen('input_user_credentials');
     content = (
       <DepositForm
-        merchant={merchant}
-        requester={requester}
         currency={currency}
         bank={bank}
-        amount={amount}
         reference={reference}
-        clientIp={clientIp}
-        signature={signature}
-        datetime={datetime}
-        handleSubmit={handleSubmitDeposit}
-        refFormSubmit={refFormSubmit}
-        handleHasFieldError={handleHasFieldError}
+        handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
-        hasFieldError={hasFieldError}
         showOtpMethod={showOtpMethod}
-        handleRefFormSubmit={handleRefFormSubmit}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
       />
@@ -341,35 +340,30 @@ const Deposit = props => {
       </AutoRedirect>
     );
   }
-
+  
   return (
-    <div className={`wrapper ${wrapperBG}`}>
+    <WrapperBG className='wrapper' color={themeColor}>
       <div className='container'>
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
-            <Logo bank={bank && bank.toUpperCase()} currency={currency} />
+            <Logo bank={bank} currency={currency} />
             {
               step === 0 &&
-              <Statistic
+              <Statistics
                 title={intl.formatMessage(messages.deposit)}
-                prefix={currency}
-                value={amount}
-                valueStyle={{ color: '#3F3F3F', fontWeight: 700 }}
-                precision={2}
+                language={language}
+                currency={currency}
+                amount={amount}
               />
             }
             {
               step === 1 &&
-              <Countdown title={intl.formatMessage(messages.countdown)} value={deadline} />
+              <Countdown renderCountdownAgain={renderCountdownAgain} />
             }
             {
               error &&
-              <Alert
-                description={error.message}
-                type='error'
-                showIcon
-                closable
-                className='error-message'
+              <ErrorAlert
+                message={error.message}
               />
             }
           </header>
@@ -383,36 +377,36 @@ const Deposit = props => {
           (showOtpMethod && windowDimensions.width <= 576 && step === 0) &&
           <footer className='footer-submit-container'>
             <div className='deposit-submit-buttons'>
-              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('sms')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-                {
-                  !waitingForReady &&
-                  <img alt='sms' src={require(`../../assets/icons/${renderIcon}/sms-${renderIcon}.svg`)} />
-                }
-                SMS OTP
-              </Button>
-              <Button className={buttonBG} size='large' onClick={() => handleRefFormSubmit('smart')} disabled={hasFieldError || !establishConnection} loading={waitingForReady}>
-                {
-                  !waitingForReady &&
-                  <img alt='smart' src={require(`../../assets/icons/${renderIcon}/smart-${renderIcon}.svg`)} />
-                }
-                SMART OTP
-              </Button>
+              <GlobalButton
+                label='SMS OTP'
+                color={themeColor}
+                outlined
+                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.svg`)} />}
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor} 
+                outlined
+                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.svg`)} />}
+                onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
+                disabled={!establishConnection || waitingForReady}
+              />
             </div>  
           </footer>
         }
-        <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
           <div className='progress-bar-container'>
             <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-            <Progress
-              percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-              status='active'
-              showInfo={false}
-              strokeColor='#34A220'
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
             />
             <p>{progress && progress.statusMessage}</p>
           </div>
-        </ConfirmationModal>
-    </div>
+        </ProgressModal>
+    </WrapperBG>
   );
 };
 

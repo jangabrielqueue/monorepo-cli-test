@@ -5,7 +5,7 @@ const getFilePath = (bank, currency, type) => {
   const isBankKnown = checkBankIfKnown(currency, bank);
 
   if (isBankKnown) {
-    return require(`../assets/banks/${bank}_LOGO.png`);
+    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.png`);
   } else if (bank === 'PRECARD' && type === 'scratch-card') {
     return require(`../assets/banks/PRECARD_LOGO.png`);
   }

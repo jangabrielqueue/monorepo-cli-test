@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Alert, Progress, Statistic } from 'antd';
-import * as firebase from 'firebase/app';
 import ScratchCardForm from './ScratchCardForm';
 import { useQuery, sleep } from '../../utils/utils';
 import * as signalR from '@microsoft/signalr';
-import './styles.scss';
 import axios from 'axios';
 import AutoRedirect from "../../components/AutoRedirect";
 import {
@@ -16,11 +13,19 @@ import { useIntl } from 'react-intl';
 import messages from './messages';
 import Logo from '../../components/Logo';
 import StepsBar from '../../components/StepsBar';
-import ConfirmationModal from '../../components/ConfirmationModal';
 import { checkBankIfKnown } from '../../utils/banks';
+import Statistics from '../../components/Statistics';
+import styled from 'styled-components';
+import ErrorAlert from '../../components/ErrorAlert';
+import ProgressModal from '../../components/ProgressModal';
+import * as firebase from 'firebase/app';
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor';
+
+const WrapperBG = styled.div`
+  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
+`;
 
 const ScratchCard = (props) => {
     const analytics = firebase.analytics();
@@ -48,102 +53,95 @@ const ScratchCard = (props) => {
     const key = queryParams.get('k');
     const note = queryParams.get('n');
     const customer = queryParams.get('c2');
-    const amount = queryParams.get('a');
+    const amount = queryParams.get('a');    
 
     const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`;
-    const isBankKnown = checkBankIfKnown(currency, bank && bank.toUpperCase());
-    const wrapperBG = isBankKnown ? `bg-${bank && bank.toLowerCase()}` : 'bg-unknown';
+    const isBankKnown = checkBankIfKnown(currency, bank);
+    const themeColor = isBankKnown ? `${bank}` : 'main';
     analytics.setCurrentScreen('deposit');
 
-    function handleSubmitScratchCard (e, validateFieldsAndScroll) {
+    async function handleSubmitScratchCard (values) {
         analytics.logEvent('login', {
             reference: reference,
         });
-        e.preventDefault();
+        const submitValues = {
+            Telecom: bank.toUpperCase() === 'GWC' ? 'GW' : values.telcoName,
+            Pin: values.cardPin.toString(),
+            SerialNumber: values.cardSerialNumber.toString(),
+            ClientIp: clientIp,
+            Language: language,
+            SuccessfulUrl: successfulUrl,
+            FailedUrl: failedUrl,
+            CallbackUri: callbackUri,
+            Datetime: dateTime,
+            Key: key,
+            Note: note,
+            Merchant: merchant,
+            Currency: currency,
+            Bank: bank,
+            Customer: customer,
+            Reference: reference,
+            Amount: amount
+        };
 
-        validateFieldsAndScroll(async (err, values) => {
-            if (!err) {
-                const submitValues = {
-                    Telecom: bank === 'GWC' ? 'GW' : values.telcoName,
-                    Pin: values.cardPin.toString(),
-                    SerialNumber: values.cardSerialNumber.toString(),
-                    ClientIp: clientIp,
-                    Language: language,
-                    SuccessfulUrl: successfulUrl,
-                    FailedUrl: failedUrl,
-                    CallbackUri: callbackUri,
-                    Datetime: dateTime,
-                    Key: key,
-                    Note: note,
-                    Merchant: merchant,
-                    Currency: currency,
-                    Bank: bank,
-                    Customer: customer,
-                    Reference: reference,
-                    Amount: amount
-                };
-
-                setWaitingForReady(true);
-                setProgress({
-                    currentStep: 1,
-                    totalSteps: 5,
-                    statusCode: '009',
-                    statusMessage: intl.formatMessage(messages.progress.startingConnection),
-                  });
-                await sleep(750);
-                setProgress({
-                    currentStep: 2,
-                    totalSteps: 5,
-                    statusCode: '009',
-                    statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
-                  });
-                await sleep(750);
-                setProgress({
-                    currentStep: 3,
-                    totalSteps: 5,
-                    statusCode: '009',
-                    statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
-                });
-                await sleep(750);
-                setProgress({
-                  currentStep: 4,
-                  totalSteps: 5,
-                  statusCode: '009',
-                  statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
-                });
-                await sleep(750);
-
-                try {
-                    const response = await axios({
-                      url: 'api/ScratchCard/Deposit',
-                      method: 'POST',
-                      data: submitValues
-                    });
-                    
-                    if (response.data.statusCode === '009') {
-                        setProgress(undefined);
-                        setWaitingForReady(false);
-                        setIsSuccessful(true);
-                        setTransferResult(response.data);
-                        setStep(1);
-                    } else if (response.data.statusCode === '001') {
-                        setProgress(undefined);
-                        setWaitingForReady(false);
-                        setIsSuccessful(false);
-                        setTransferResult(response.data);
-                        setStep(1);
-                    }
-                  } catch (error) {
-                        analytics.logEvent('login_failed', {
-                            reference: reference,
-                            error: error,
-                        });
-                        setWaitingForReady(false);
-                        setProgress(undefined);
-                        setError(error);
-                  }
-            }
+        setWaitingForReady(true);
+        setProgress({
+            currentStep: 1,
+            totalSteps: 5,
+            statusCode: '009',
+            statusMessage: intl.formatMessage(messages.progress.startingConnection),
+            });
+        await sleep(750);
+        setProgress({
+            currentStep: 2,
+            totalSteps: 5,
+            statusCode: '009',
+            statusMessage: intl.formatMessage(messages.progress.encryptedTransmission),
+            });
+        await sleep(750);
+        setProgress({
+            currentStep: 3,
+            totalSteps: 5,
+            statusCode: '009',
+            statusMessage: intl.formatMessage(messages.progress.beginningTransaction),
         });
+        await sleep(750);
+        setProgress({
+            currentStep: 4,
+            totalSteps: 5,
+            statusCode: '009',
+            statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        });
+        await sleep(750);
+
+        try {
+            const response = await axios({
+                url: 'api/ScratchCard/Deposit',
+                method: 'POST',
+                data: submitValues
+            });
+                if (response.data.statusCode === '009') {
+                    setProgress(undefined);
+                    setWaitingForReady(false);
+                    setIsSuccessful(false);
+                    setTransferResult(response.data);
+                    setStep(1);
+                } else if (response.data.statusCode === '001') {
+                    setProgress(undefined);
+                    setWaitingForReady(false);
+                    setIsSuccessful(false);
+                    setTransferResult(response.data);
+                    setStep(1);
+                }
+            } catch (error) {
+                analytics.logEvent('login_failed', {
+                    reference: reference,
+                    error: error,
+                });
+                setWaitingForReady(false);
+                setProgress(undefined);
+                setError(error);
+            }
     }    
     
     function renderStepsContent (currentStep) {
@@ -156,6 +154,7 @@ const ScratchCard = (props) => {
                         waitingForReady={waitingForReady}
                         establishConnection={establishConnection}
                         bank={bank}
+                        currency={currency}
                     />
                 );
 
@@ -246,11 +245,16 @@ const ScratchCard = (props) => {
 
     useEffect(() => {
         const queryParamsKeys = ['b', 'm', 'c1', 'c2', 'c3', 'c4', 'a', 'r', 'd', 'k', 'su', 'fu', 'n', 'l'];
-
+        const currencies = ['VND', 'THB'];
+        
         for (const param of queryParamsKeys) {
           if (!queryParams.has(param)) {
             return props.history.replace('/invalid');
           }
+        }
+
+        if (!currencies.includes(currency && currency.toUpperCase())) {
+            props.history.replace('/invalid');
         }
     
         // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
@@ -260,10 +264,7 @@ const ScratchCard = (props) => {
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-        .withUrl(API_USER_COMMAND_MONITOR, {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
-        })
+        .withUrl(API_USER_COMMAND_MONITOR)
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();
@@ -277,6 +278,7 @@ const ScratchCard = (props) => {
             try {
               await connection.start();
               await connection.invoke('Start', session);
+              setEstablishConnection(true);
             } catch (ex) {
               setError({
                 error: {
@@ -284,24 +286,17 @@ const ScratchCard = (props) => {
                     message: intl.formatMessage(messages.errors.networkError)
                   }
               });
+              setEstablishConnection(false);
             }
-            setEstablishConnection(true);
           }
-      
+
+        connection.onclose(async () => {
+            await start();
+        });
+
+        // Start the connection      
         start();
 
-        return () => {
-            connection.onclose(() => {
-                setEstablishConnection(false);
-                setError({
-                    error: {
-                        name: intl.formatMessage(messages.errors.networkErrorTitle),
-                        message: intl.formatMessage(messages.errors.connectionError)
-                      }
-                  });
-                setProgress(undefined);
-            });
-        };
     }, [session, handleCommandStatusUpdate, intl]);
 
     useEffect(() => {
@@ -318,30 +313,24 @@ const ScratchCard = (props) => {
       }, [step]);
 
     return (
-        <div className={`wrapper ${wrapperBG}`}>
+        <WrapperBG className='wrapper' color={themeColor}>
             <div className='container'>
                 <div className='form-content'>
                     <header className={step === 1 ? null : 'header-bottom-border'}>
                         <Logo bank={bank && bank.toUpperCase()} type='scratch-card' currency={currency} />
                         {
-                            (step === 0) && (bank !== 'GWC') &&
-                            <Statistic
+                            (step === 0) && (bank.toUpperCase() !== 'GWC') &&
+                            <Statistics
                                 title={intl.formatMessage(messages.deposit)}
-                                prefix={currency}
-                                value={amount}
-                                valueStyle={{ color: "#000", fontWeight: 700 }}
-                                precision={2}
+                                language={language}
+                                currency={currency}
+                                amount={amount}
                             />
                         }
                         {
                             error &&
-                            <Alert
-                                message={error.name}
-                                description={error.message}
-                                type='error'
-                                showIcon
-                                closable
-                                className='error-message'
+                            <ErrorAlert
+                                message={error.message}
                             />
                         }
                     </header>
@@ -351,19 +340,17 @@ const ScratchCard = (props) => {
                 </div>
                 <StepsBar step={step === 1 ? 2 : step} />
             </div>
-            <ConfirmationModal visible={progress && (progress.statusCode === '009')}>
-              <div className='progress-bar-container'>
-                <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-                <Progress
-                    percent={progress && (progress.currentStep / progress.totalSteps) * 100}
-                    status='active'
-                    showInfo={false}
-                    strokeColor='#34A220'
-                />
-                <p>{progress && progress.statusMessage}</p>
-              </div>
-            </ConfirmationModal>
-        </div>
+            <ProgressModal open={progress && (progress.statusCode === '009')}>
+                <div className='progress-bar-container'>
+                    <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
+                    <progress
+                        value={progress && (progress.currentStep / progress.totalSteps) * 100}
+                        max={100}
+                    />
+                    <p>{progress && progress.statusMessage}</p>
+                </div>
+            </ProgressModal>
+        </WrapperBG>
     );
 }
 

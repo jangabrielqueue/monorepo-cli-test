@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "@microsoft/signalr": "^3.1.0",
-    "antd": "^3.26.12",
+    "@rmwc/button": "^6.0.14",
+    "@rmwc/dialog": "^6.0.14",
     "antd-dayjs-webpack-plugin": "0.0.8",
     "axios": "^0.19.0",
     "babel-plugin-import": "^1.13.0",
@@ -17,10 +18,12 @@
     "react-app-rewired": "^2.1.5",
     "react-dom": "^16.9.0",
     "react-error-boundary": "^1.2.5",
+    "react-hook-form": "^5.4.2",
     "react-intl": "^3.12.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.0",
     "source-map-explorer": "^2.0.1",
+    "styled-components": "^5.1.0",
     "url-search-params-polyfill": "^8.1.0"
   },
   "scripts": {

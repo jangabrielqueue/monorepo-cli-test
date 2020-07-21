@@ -1,48 +1,36 @@
-import React from "react";
-import { Statistic } from "antd";
-import { injectIntl } from 'react-intl';
-import messages from './messages';
+import React, { useEffect } from "react";
+import Countdown from './Countdown';
+import styled from 'styled-components';
 
-const { Countdown } = Statistic;
+const StyledRedirectContainer = styled.div`
+  padding: 0 15px;
+`;
 
-class AutoRedirect extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const AutoRedirect = ({ children, delay, url }) => {
 
-  componentDidMount() {
-    this.id = setTimeout(() => {
-      window.location.href = this.props.url;
-    }, this.props.delay);
-    const deadline = Date.now() + this.props.delay;
-    this.setState({
-      deadline,
-    });
-  }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.location.href = url;
+    }, delay);
 
-  componentWillUnmount() {
-    clearTimeout(this.id);
-  }
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [delay, url]);
 
-  render() {
-    const { deadline } = this.state;
-    const { intl } = this.props;
-    
-    return (
+  return (
       <main>
-        <div className='auto-redirect-statistic'>
+        <StyledRedirectContainer>
           <Countdown
-            title={intl.formatMessage(messages.texts.redirected, { timeLeft: this.props.delay / 1000 })}
-            value={deadline}
+            redirect
+            delay={delay}
           />
-        </div>
+        </StyledRedirectContainer>
           {
-            this.props.children
+            children
           }
       </main>
-    );
-  }
+  );
 }
 
-export default injectIntl(AutoRedirect);
+export default AutoRedirect;
