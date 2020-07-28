@@ -1,7 +1,7 @@
-import { createGlobalStyle } from 'styled-components';
-import ProductSansRegular from '../fonts/ProductSans-Regular.ttf';
-import ProductSansBold from '../fonts/ProductSans-Bold.ttf';
-import ProductSansMedium from '../fonts/ProductSans-Medium-500.ttf';
+import { createGlobalStyle } from "styled-components";
+import ProductSansRegular from "../fonts/ProductSans-Regular.ttf";
+import ProductSansBold from "../fonts/ProductSans-Bold.ttf";
+import ProductSansMedium from "../fonts/ProductSans-Medium-500.ttf";
 
 export default createGlobalStyle`
     @font-face {
@@ -73,7 +73,6 @@ export default createGlobalStyle`
         flex-wrap: wrap;
         height: 100%;
         justify-content: center;
-        padding-top: 75px;
       
         .container {
             margin: 0 20px;
@@ -114,6 +113,14 @@ export default createGlobalStyle`
             text-align: center;
             width: 100%;
         }
+    }
+
+    .wrapper-without-notifications {
+      padding-top: 75px;
+    }
+
+    .wrapper-with-notifications {
+      padding-top: 105px;
     }
 
     .deposit-submit-buttons,
