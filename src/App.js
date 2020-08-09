@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import * as firebase from 'firebase/app';
-import 'firebase/analytics';
-import ErrorBoundary from 'react-error-boundary';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Layout from './containers/Layout/Layout';
-import axios from 'axios';
-import { IntlProvider } from 'react-intl';
-import locale_en from './translations/locale/en.json';
-import locale_vi from './translations/locale/vi.json';
-import locale_th from './translations/locale/th.json';
-import './assets/fonts/ProductSans-Regular.ttf';
-import './assets/fonts/ProductSans-Bold.ttf';
-import './assets/fonts/ProductSans-Medium-500.ttf';
-import '@rmwc/button/styles';
-import '@rmwc/dialog/styles';
-import { ThemeProvider } from 'styled-components';
-import GlobalStyles from './assets/styles/GlobalStyles';
-import { useForm, FormContext } from 'react-hook-form';
+import React, { useState, useEffect } from 'react'
+import '@rmwc/button/styles'
+import '@rmwc/dialog/styles'
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
+import { ErrorBoundary } from 'react-error-boundary'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import Layout from './containers/Layout/Layout'
+import axios from 'axios'
+import { IntlProvider } from 'react-intl'
+import localeEn from './translations/locale/en.json'
+import localeVi from './translations/locale/vi.json'
+import localeTh from './translations/locale/th.json'
+import { ThemeProvider } from 'styled-components'
+import GlobalStyles from './assets/styles/GlobalStyles'
+import { useForm, FormContext } from 'react-hook-form'
+import { Portal } from '@rmwc/base'
 
 const theme = {
   colors: {
@@ -41,16 +39,16 @@ const theme = {
     sacom: '#0A74BE',
     vtb: '#055893'
   }
-};
+}
 
 const errorHandler = (error, componentStack) => {
-  const analytics = firebase.analytics();
+  const analytics = firebase.analytics()
   analytics.logEvent('exception', {
     stack: componentStack,
     description: error,
-    fatal: true,
-  });
-};
+    fatal: true
+  })
+}
 
 const FallbackComponent = ({ componentStack, error }) => (
   <div>
@@ -65,14 +63,14 @@ const FallbackComponent = ({ componentStack, error }) => (
       <strong>Stacktrace:</strong> {componentStack}
     </p>
   </div>
-);
+)
 
 const App = (props) => {
-  const { REACT_APP_ENDPOINT } = process.env;
-  axios.defaults.baseURL = REACT_APP_ENDPOINT;
-  axios.defaults.headers.post['Content-Type'] = 'application/json';
+  const { REACT_APP_ENDPOINT } = process.env
+  axios.defaults.baseURL = REACT_APP_ENDPOINT
+  axios.defaults.headers.post['Content-Type'] = 'application/json'
 
-  const methods = useForm();
+  const methods = useForm()
 
   // Initialize Firebase
   if (!firebase.apps.length) {
@@ -81,8 +79,8 @@ const App = (props) => {
       REACT_APP_FIREBASE_APP_ID,
       REACT_APP_FIREBASE_PROJ_ID,
       REACT_APP_FIREBASE_MSG_SENDER_ID,
-      REACT_APP_FIREBASE_MEASUREMENT_ID,
-    } = process.env;
+      REACT_APP_FIREBASE_MEASUREMENT_ID
+    } = process.env
     const firebaseConfig = {
       apiKey: REACT_APP_FIREBASE_API_KEY,
       authDomain: '',
@@ -91,37 +89,37 @@ const App = (props) => {
       storageBucket: '',
       messagingSenderId: REACT_APP_FIREBASE_MSG_SENDER_ID,
       appId: REACT_APP_FIREBASE_APP_ID,
-      measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID,
-    };
-    firebase.initializeApp(firebaseConfig);
+      measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID
+    }
+    firebase.initializeApp(firebaseConfig)
   }
 
-  const [locale, setLocale] = useState('en');
+  const [locale, setLocale] = useState('en')
   const localeMessages = {
-    'en': locale_en,
-    'vi': locale_vi,
-    'th': locale_th
-  };
+    en: localeEn,
+    vi: localeVi,
+    th: localeTh
+  }
 
   function handleSelectLanguage (param) {
     switch (param) {
       case 'vi-vn':
-        setLocale('vi');
-        break;
+        setLocale('vi')
+        break
       case 'th-th':
-        setLocale('th');
-        break;
+        setLocale('th')
+        break
       default:
-        setLocale('en');
+        setLocale('en')
     }
   }
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const urlParams = new URLSearchParams(url.search);
+    const url = new URL(window.location.href)
+    const urlParams = new URLSearchParams(url.search)
 
-    handleSelectLanguage(urlParams.get('l'));
-  }, []);
+    handleSelectLanguage(urlParams.get('l'))
+  }, [])
 
   return (
     <FormContext {...methods}>
@@ -129,16 +127,19 @@ const App = (props) => {
         <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
           <IntlProvider locale={locale} messages={localeMessages[locale]}>
             <GlobalStyles />
+            <Portal />
             <Router>
               <Switch>
-                <Route path='/' component={Layout} />
+                <Route path='/'>
+                  <Layout />
+                </Route>
               </Switch>
             </Router>
           </IntlProvider>
         </ErrorBoundary>
       </ThemeProvider>
     </FormContext>
-  );
-};
+  )
+}
 
-export default App;
+export default App

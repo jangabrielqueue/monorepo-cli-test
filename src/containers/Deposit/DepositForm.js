@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks';
-import messages from './messages';
-import { FormattedMessage } from 'react-intl';
-import GlobalButton from '../../components/GlobalButton';
-import CollapsiblePanel from '../../components/CollapsiblePanel';
-import styled from 'styled-components';
-import accountIcon from '../../assets/icons/account.png';
-import currencyIcon from '../../assets/icons/currency.png';
-import usernameIcon from '../../assets/icons/username.svg';
-import passwordIcon from '../../assets/icons/password.svg';
-import bankIcon from '../../assets/icons/bank-name.svg';
-import downExpand from '../../assets/icons/down-expand.png';
-import upExpand from '../../assets/icons/up-expand.png';
-import { useFormContext } from 'react-hook-form';
+import React, { useState } from 'react'
+import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks'
+import messages from './messages'
+import { FormattedMessage } from 'react-intl'
+import GlobalButton from '../../components/GlobalButton'
+import CollapsiblePanel from '../../components/CollapsiblePanel'
+import styled from 'styled-components'
+import accountIcon from '../../assets/icons/account.png'
+import currencyIcon from '../../assets/icons/currency.png'
+import usernameIcon from '../../assets/icons/username.png'
+import passwordIcon from '../../assets/icons/password.png'
+import bankIcon from '../../assets/icons/bank-name.png'
+import downExpand from '../../assets/icons/down-expand.png'
+import upExpand from '../../assets/icons/up-expand.png'
+import { useFormContext } from 'react-hook-form'
 
 const StyledMoreInfo = styled.ul`
   list-style: none;
@@ -21,7 +21,7 @@ const StyledMoreInfo = styled.ul`
 
   > li {
     padding-bottom: 5px;
-    
+
     &:before {
       content: '';
       display: inline-block;
@@ -43,7 +43,7 @@ const StyledMoreInfo = styled.ul`
       }
     }
   }
-`;
+`
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -51,11 +51,11 @@ const FormIconContainer = styled.div`
   &:before {
     background: url(${props => {
       if (props.icon === 'username') {
-        return usernameIcon;
+        return usernameIcon
       } else if (props.icon === 'password') {
-        return passwordIcon;
+        return passwordIcon
       } else if (props.icon === 'bank') {
-        return bankIcon;
+        return bankIcon
       }
     }}) no-repeat center;
     content: '';
@@ -68,7 +68,7 @@ const FormIconContainer = styled.div`
   > div {
     flex: 0 1 415px;
   }
-`;
+`
 
 const FormSelectField = styled.select`
   -moz-appearance: none;
@@ -78,7 +78,7 @@ const FormSelectField = styled.select`
   appearance: none;
   margin-bottom: 23px;
   background: url(${props => props.toggleSelect ? upExpand : downExpand}) no-repeat right;
-`;
+`
 
 const InputFieldContainer = styled.div`
   position: relative;
@@ -125,7 +125,7 @@ const InputFieldContainer = styled.div`
       }
     }
   }
-`;
+`
 
 const DepositForm = React.memo((props) => {
   const {
@@ -137,140 +137,140 @@ const DepositForm = React.memo((props) => {
     showOtpMethod,
     windowDimensions,
     establishConnection
-  } = props;
-  const bankCodes = getBanksByCurrency(currency);
-  const isBankKnown = checkBankIfKnown(currency, bank);
-  const buttonColor = isBankKnown ? `${bank}` : 'main';
-  const renderIcon = isBankKnown ? `${bank}`: 'unknown';
-  const [showPassword, setShowPassword] = useState(false);
-  const [toggleSelect, setToggleSelect] = useState(false);
-  const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext();
-  const { dirty } = formState;
-  const formValues = getValues();
+  } = props
+  const bankCodes = getBanksByCurrency(currency)
+  const isBankKnown = checkBankIfKnown(currency, bank)
+  const buttonColor = isBankKnown ? `${bank}` : 'main'
+  const renderIcon = isBankKnown ? `${bank}` : 'unknown'
+  const [showPassword, setShowPassword] = useState(false)
+  const [toggleSelect, setToggleSelect] = useState(false)
+  const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
+  const { dirty } = formState
+  const formValues = getValues()
 
   function handleSubmitForm (values, e, type) {
-    handleSubmitDeposit(values, e, type);
+    handleSubmitDeposit(values, e, type)
   };
 
-    return (
-      <main>
-        <form autoComplete='off'>
-          {
-              !isBankKnown &&
-              <FormIconContainer icon='bank'>
-                <div>
-                  <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
-                  <FormSelectField 
-                    name='bank'
-                    id='bank'
-                    ref={register}
-                    aria-owns='1 2 3 4 5 6 7 8 9'
-                    onClick={() => setToggleSelect(prevState => !prevState)}
-                    toggleSelect={toggleSelect}
-                  >
-                    {
-                      bankCodes.map((bc, i) => (
-                        <option key={bc.code} value={bc.code}>
-                          {
-                            bc.name
-                          }
-                        </option>
-                      ))
-                    }
-                  </FormSelectField>
-                </div>
-              </FormIconContainer>
-            }
-            <FormIconContainer icon='username'>
-              <div>
-                <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
-                <InputFieldContainer>
-                  <input 
-                    ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })} 
-                    type='text' 
-                    id='username' 
-                    name='username' 
-                    autoComplete='off' 
-                  />
-                  <ul>
-                    {
-                      (formValues.username !== '' && dirty) &&
-                      <li onClick={() => setValue('username', '')}><span>&times;</span></li>
-                    }
-                  </ul>
-                </InputFieldContainer>
-                <p className='input-errors'>{errors.username?.message}</p>
-              </div>
-            </FormIconContainer>
-            <FormIconContainer icon='password'>
-              <div>
-                <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
-                <InputFieldContainer passwordIcon>
-                  <input 
-                    ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}  
-                    type={showPassword ? 'text' : 'password'} 
-                    id='password' 
-                    name='password' 
-                    autoComplete='off' 
-                  />
-                  <ul>
-                    {
-                      (formValues.password !== '' && dirty) ?
-                      <li onClick={() => setValue('password', '')}><span>&times;</span></li> :
-                      <li>&nbsp;</li>
-                    }
-                    <li onClick={() => setShowPassword(prevState => !prevState)}>
-                      <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
-                    </li>
-                  </ul>
-                </InputFieldContainer>
-                <p className='input-errors'>{errors.password?.message}</p>
-              </div>
-            </FormIconContainer>
-            <CollapsiblePanel
-              title={<FormattedMessage {...messages.moreInformation} />}
-            >
-            <StyledMoreInfo>
-              <li>{reference}</li>
-              <li>{currency}</li>
-            </StyledMoreInfo>
-            </CollapsiblePanel>
-        </form>
+  return (
+    <main>
+      <form autoComplete='off'>
         {
-          !showOtpMethod &&
+          !isBankKnown &&
+            <FormIconContainer icon='bank'>
+              <div>
+                <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
+                <FormSelectField
+                  name='bank'
+                  id='bank'
+                  ref={register}
+                  aria-owns='1 2 3 4 5 6 7 8 9'
+                  onClick={() => setToggleSelect(prevState => !prevState)}
+                  toggleSelect={toggleSelect}
+                >
+                  {
+                    bankCodes.map((bc, i) => (
+                      <option key={bc.code} value={bc.code}>
+                        {
+                          bc.name
+                        }
+                      </option>
+                    ))
+                  }
+                </FormSelectField>
+              </div>
+            </FormIconContainer>
+        }
+        <FormIconContainer icon='username'>
+          <div>
+            <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
+            <InputFieldContainer>
+              <input
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
+                type='text'
+                id='username'
+                name='username'
+                autoComplete='off'
+              />
+              <ul>
+                {
+                  (formValues.username !== '' && dirty) &&
+                    <li onClick={() => setValue('username', '')}><span>&times;</span></li>
+                }
+              </ul>
+            </InputFieldContainer>
+            <p className='input-errors'>{errors.username?.message}</p>
+          </div>
+        </FormIconContainer>
+        <FormIconContainer icon='password'>
+          <div>
+            <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
+            <InputFieldContainer passwordIcon>
+              <input
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}
+                type={showPassword ? 'text' : 'password'}
+                id='password'
+                name='password'
+                autoComplete='off'
+              />
+              <ul>
+                {
+                  (formValues.password !== '' && dirty)
+                    ? <li onClick={() => setValue('password', '')}><span>&times;</span></li>
+                    : <li>&nbsp;</li>
+                }
+                <li onClick={() => setShowPassword(prevState => !prevState)}>
+                  <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                </li>
+              </ul>
+            </InputFieldContainer>
+            <p className='input-errors'>{errors.password?.message}</p>
+          </div>
+        </FormIconContainer>
+        <CollapsiblePanel
+          title={<FormattedMessage {...messages.moreInformation} />}
+        >
+          <StyledMoreInfo>
+            <li>{reference}</li>
+            <li>{currency}</li>
+          </StyledMoreInfo>
+        </CollapsiblePanel>
+      </form>
+      {
+        !showOtpMethod &&
           <div className='form-content-submit-container'>
             <GlobalButton
-                label={<FormattedMessage {...messages.submit} />}
-                color={buttonColor}
-                icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
-                onClick={handleSubmit(handleSubmitForm)}
-                disabled={!establishConnection || waitingForReady}
-              />
+              label={<FormattedMessage {...messages.submit} />}
+              color={buttonColor}
+              icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
+              onClick={handleSubmit(handleSubmitForm)}
+              disabled={!establishConnection || waitingForReady}
+            />
           </div>
-        }
-        {
-          (showOtpMethod && windowDimensions.width > 576) &&
+      }
+      {
+        (showOtpMethod && windowDimensions.width > 576) &&
           <div className='deposit-submit-buttons'>
-              <GlobalButton
-                label='SMS OTP'
-                color={buttonColor}
-                outlined
-                icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.svg`)} />}
-                onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
-                disabled={!establishConnection || waitingForReady}
-              />
-              <GlobalButton
-                label='SMART OTP'
-                color={buttonColor} 
-                outlined
-                icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.svg`)} />}
-                onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
-                disabled={!establishConnection || waitingForReady}
-              />
-          </div>          
-        }
-      </main>
-    );
-  });
+            <GlobalButton
+              label='SMS OTP'
+              color={buttonColor}
+              outlined
+              icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
+              disabled={!establishConnection || waitingForReady}
+            />
+            <GlobalButton
+              label='SMART OTP'
+              color={buttonColor}
+              outlined
+              icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
+              disabled={!establishConnection || waitingForReady}
+            />
+          </div>
+      }
+    </main>
+  )
+})
 
-export default DepositForm;
+export default DepositForm

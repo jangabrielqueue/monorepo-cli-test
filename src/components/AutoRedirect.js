@@ -1,36 +1,35 @@
-import React, { useEffect } from "react";
-import Countdown from './Countdown';
-import styled from 'styled-components';
+import React, { useEffect } from 'react'
+import Countdown from './Countdown'
+import styled from 'styled-components'
 
 const StyledRedirectContainer = styled.div`
   padding: 0 15px;
-`;
+`
 
 const AutoRedirect = ({ children, delay, url }) => {
-
   useEffect(() => {
     const timeout = setTimeout(() => {
-      window.location.href = url;
-    }, delay);
+      window.location.href = url
+    }, delay)
 
     return () => {
-      clearTimeout(timeout);
+      clearTimeout(timeout)
     }
-  }, [delay, url]);
+  }, [delay, url])
 
   return (
-      <main>
-        <StyledRedirectContainer>
-          <Countdown
-            redirect
-            delay={delay}
-          />
-        </StyledRedirectContainer>
-          {
-            children
-          }
-      </main>
-  );
+    <main>
+      <StyledRedirectContainer>
+        <Countdown
+          redirect
+          delay={delay}
+        />
+      </StyledRedirectContainer>
+      {
+        children
+      }
+    </main>
+  )
 }
 
-export default AutoRedirect;
+export default AutoRedirect

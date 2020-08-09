@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledStatistics = styled.section`
     > h1 {
@@ -14,15 +14,15 @@ const StyledStatistics = styled.section`
         font-size: 24px;
         margin: 0;
     }
-`;
+`
 
 const Statistics = ({ title, language, currency, amount }) => {
-    return (
-        <StyledStatistics>
-            <h1>{title}</h1>
-            <p>{`${currency} ${new Intl.NumberFormat(language).format(amount)}`}</p>
-        </StyledStatistics>
-    )
+  return (
+    <StyledStatistics>
+      <h1>{title}</h1>
+      <p>{`${currency} ${new Intl.NumberFormat(language).format(amount)}`}</p>
+    </StyledStatistics>
+  )
 }
 
-export default Statistics;
+export default Statistics

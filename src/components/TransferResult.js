@@ -1,7 +1,7 @@
-import React from "react";
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
-import styled from 'styled-components';
+import React from 'react'
+import { FormattedMessage } from 'react-intl'
+import messages from './messages'
+import styled from 'styled-components'
 
 const StyledRedirectContent = styled.div`
   text-align: center;
@@ -28,7 +28,7 @@ const StyledRedirectContent = styled.div`
     font-size: 16px;
     margin: 25px 0;
   }
-`;
+`
 
 const StyledTransactionAmount = styled.div`
   align-items: center;
@@ -41,7 +41,7 @@ const StyledTransactionAmount = styled.div`
   height: 50px;
   justify-content: center;
   width: 100%;
-`;
+`
 
 export const TransferSuccessful = ({ transferResult, language }) => {
   return (
@@ -57,8 +57,8 @@ export const TransferSuccessful = ({ transferResult, language }) => {
         </span>
       </StyledTransactionAmount>
     </StyledRedirectContent>
-  );
-};
+  )
+}
 
 export const TransferFailed = ({ transferResult }) => {
   return (
@@ -67,8 +67,8 @@ export const TransferFailed = ({ transferResult }) => {
       <h1>{<FormattedMessage {...messages.errors.transactionFailed} />}</h1>
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </StyledRedirectContent>
-  );
-};
+  )
+}
 
 export const TransferWaitForConfirm = ({ transferResult }) => {
   return (
@@ -76,5 +76,5 @@ export const TransferWaitForConfirm = ({ transferResult }) => {
       <h2>{<FormattedMessage {...messages.progress.pendingConfirmation} />}</h2>
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </StyledRedirectContent>
-  );
-};
+  )
+}

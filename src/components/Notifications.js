@@ -1,5 +1,7 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
+import messages from './messages'
+import { injectIntl } from 'react-intl'
 
 const StyledCountdown = styled.div`
   position: absolute;
@@ -12,39 +14,28 @@ const StyledCountdown = styled.div`
     font-weight: 700;
     color: black;
   }
-`;
 
-const en = (
-  <StyledCountdown>
-    <div>
-      - For customers already having VCB Digibank account:{" "}
-      <b>Username is Phone number registered for this service</b>
-    </div>
-    <div>
-      - For customers not having VCB Digibank account:{" "}
-      <b>Username is VCB-iB@nking username</b>, used to transform to VCB
-      Digibank.
-    </div>
-  </StyledCountdown>
-);
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+`
 
-const vn = (
-  <StyledCountdown>
-    <div>
-      - Với khách hàng đã có tài khoản VCB Digibank:{" "}
-      <b>Tên đăng nhập là Số điện thoại đăng ký dịch vụ.</b>
-    </div>
-    <div>
-      - Với khách hàng chưa có tài khoản VCB Digibank:{" "}
-      <b>Tên đăng nhập là Tên đăng nhập VCB-iB@nking</b>, để thực hiện chuyển
-      đổi sang dịch vụ VCB Digibank mới.
-    </div>
-  </StyledCountdown>
-);
+const Notifications = ({ bank, language, intl }) => {
+  return (
+    <>
+      {
+        bank === 'VCB' &&
+          <StyledCountdown>
+            <ul>
+              <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
+              <li>{intl.formatMessage(messages.notifications.noVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập VCB-iB@nking' : 'Username is VCB-iB@nking username'}</b> })}</li>
+            </ul>
+          </StyledCountdown>
+      }
+    </>
+  )
+}
 
-const Notifications = ({ bank, language }) => {
-  const element = language === "vi-vn" ? vn : en;
-  return bank === "VCB" && element;
-};
-
-export default Notifications;
+export default injectIntl(Notifications)

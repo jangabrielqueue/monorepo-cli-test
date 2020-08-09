@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledLoadingIcon = styled.div`
   position: absolute;
@@ -113,12 +113,12 @@ const StyledLoadingIcon = styled.div`
       transform: rotate(360deg);
     }
   }
-`;
+`
 
 const LoadingIcon = () => {
-    return (
-        <StyledLoadingIcon />
-    )
+  return (
+    <StyledLoadingIcon />
+  )
 }
 
-export default LoadingIcon;
+export default LoadingIcon

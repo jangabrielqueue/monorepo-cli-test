@@ -1,7 +1,7 @@
-import React from "react";
-import messages from './messages';
-import { FormattedMessage } from 'react-intl';
-import styled from 'styled-components';
+import React from 'react'
+import messages from './messages'
+import { FormattedMessage } from 'react-intl'
+import styled from 'styled-components'
 
 const StyledInvalidContainer = styled.div`
   text-align: center;
@@ -16,7 +16,7 @@ const StyledInvalidContainer = styled.div`
   p {
     margin: 20px 0;
   }
-`;
+`
 
 const InvalidPage = (props) => {
   return (
@@ -24,7 +24,7 @@ const InvalidPage = (props) => {
       <h1><FormattedMessage {...messages.errors.submissionFailed} /></h1>
       <p><FormattedMessage {...messages.errors.invalidParameters} /></p>
     </StyledInvalidContainer>
-  );
-};
+  )
+}
 
-export default InvalidPage;
+export default InvalidPage
