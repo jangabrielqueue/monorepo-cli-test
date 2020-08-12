@@ -16,14 +16,14 @@
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.2",
     "react-app-rewired": "^2.1.5",
-    "react-dom": "^16.9.0",
-    "react-error-boundary": "^1.2.5",
-    "react-hook-form": "^5.4.2",
+    "react-dom": "^16.13.1",
+    "react-error-boundary": "^2.3.1",
+    "react-hook-form": "^5.7.2",
     "react-intl": "^3.12.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^3.4.1",
     "source-map-explorer": "^2.0.1",
-    "styled-components": "^5.1.0",
+    "styled-components": "^5.1.1",
     "url-search-params-polyfill": "^8.1.0"
   },
   "scripts": {
@@ -33,6 +33,7 @@
     "deploy:uat": "env-cmd -f .env.uat react-app-rewired build && firebase use default && firebase deploy --only hosting:topup-uat-ezpay",
     "deploy:prod": "env-cmd -f .env.production react-app-rewired build && firebase use prod && firebase deploy --only hosting:deposit-prod-ezpay",
     "deploy:dev": "env-cmd -f .env.development react-app-rewired build && firebase use default && firebase deploy --only hosting:deposit-dev-ezpay",
+    "standard-lint": "standard --fix",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject"
   },
@@ -52,9 +53,11 @@
     ]
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.3.0",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-react-hooks": "^2.4.0"
+    "babel-eslint": "^10.1.0",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "standard": "^14.3.4"
+  },
+  "standard": {
+    "parser": "babel-eslint"
   }
 }

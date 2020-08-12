@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { getBanksByCurrencyForTopUp } from './../../utils/banks';
-import messages from './messages';
-import { FormattedMessage } from 'react-intl';
-import GlobalButton from '../../components/GlobalButton';
-import CollapsiblePanel from '../../components/CollapsiblePanel';
-import styled from 'styled-components';
-import accountIcon from '../../assets/icons/account.png';
-import currencyIcon from '../../assets/icons/currency.png';
-import usernameIcon from '../../assets/icons/username.svg';
-import passwordIcon from '../../assets/icons/password.svg';
-import bankIcon from '../../assets/icons/bank-name.svg';
-import { useFormContext } from 'react-hook-form';
+import React, { useState } from 'react'
+import { getBanksByCurrencyForTopUp } from './../../utils/banks'
+import messages from './messages'
+import { FormattedMessage } from 'react-intl'
+import GlobalButton from '../../components/GlobalButton'
+import CollapsiblePanel from '../../components/CollapsiblePanel'
+import styled from 'styled-components'
+import accountIcon from '../../assets/icons/account.png'
+import currencyIcon from '../../assets/icons/currency.png'
+import usernameIcon from '../../assets/icons/username.png'
+import passwordIcon from '../../assets/icons/password.png'
+import bankIcon from '../../assets/icons/bank-name.png'
+import { useFormContext } from 'react-hook-form'
 
 const StyledMoreInfo = styled.ul`
   list-style: none;
@@ -19,7 +19,7 @@ const StyledMoreInfo = styled.ul`
 
   > li {
     padding-bottom: 5px;
-    
+
     &:before {
       content: '';
       display: inline-block;
@@ -53,7 +53,7 @@ const StyledMoreInfo = styled.ul`
       }
     }
   }
-`;
+`
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -61,11 +61,11 @@ const FormIconContainer = styled.div`
   &:before {
     background: url(${props => {
       if (props.icon === 'username') {
-        return usernameIcon;
+        return usernameIcon
       } else if (props.icon === 'password') {
-        return passwordIcon;
+        return passwordIcon
       } else if (props.icon === 'bank') {
-        return bankIcon;
+        return bankIcon
       }
     }}) no-repeat center;
     content: '';
@@ -78,11 +78,11 @@ const FormIconContainer = styled.div`
   > div {
     flex: 0 1 415px;
   }
-`;
+`
 
 const FormSelectField = styled.select`
   margin-bottom: 23px;
-`;
+`
 
 const InputFieldContainer = styled.div`
   position: relative;
@@ -129,7 +129,7 @@ const InputFieldContainer = styled.div`
       }
     }
   }
-`;
+`
 
 const DepositForm = React.memo((props) => {
   const {
@@ -141,102 +141,102 @@ const DepositForm = React.memo((props) => {
     handleSubmitDeposit,
     windowDimensions,
     establishConnection
-  } = props;
-  const bankCodes = getBanksByCurrencyForTopUp(currency);
-  const buttonColor = 'topup';
-  const [showPassword, setShowPassword] = useState(false);
-  const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext();
-  const { dirty } = formState;
-  const formValues = getValues();
+  } = props
+  const bankCodes = getBanksByCurrencyForTopUp(currency)
+  const buttonColor = 'topup'
+  const [showPassword, setShowPassword] = useState(false)
+  const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
+  const { dirty } = formState
+  const formValues = getValues()
 
   function handleSubmitForm (values, e, type) {
-    handleSubmitDeposit(values, e, type);
+    handleSubmitDeposit(values, e, type)
   };
 
-    return (
-      <main>
-        <form>
-          <FormIconContainer icon='bank'>
-            <div>
-              <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
-              <FormSelectField 
-                name='bank'
-                id='bank'
-                ref={register}
-                aria-owns='1 2 3 4 5 6 7 8 9'
-              >
-                {
-                  bankCodes.map((bc, i) => (
-                    <option key={bc.code} value={bc.code}>
-                      {
-                        bc.name
-                      }
-                    </option>
-                  ))
-                }
-              </FormSelectField>
-            </div>
-          </FormIconContainer>
-          <FormIconContainer icon='username'>
-            <div>
-              <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
-              <InputFieldContainer>
-                <input 
-                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })} 
-                  type='text' 
-                  id='username' 
-                  name='username' 
-                  autoComplete='off' 
-                />
-                <ul>
-                  {
-                    (formValues.username !== '' && dirty) &&
-                    <li onClick={() => setValue('username', '')}><span>&times;</span></li>
-                  }
-                </ul>
-              </InputFieldContainer>
-              <p className='input-errors'>{errors.username?.message}</p>
-            </div>
-          </FormIconContainer>
-          <FormIconContainer icon='password'>
-            <div>
-              <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
-              <InputFieldContainer passwordIcon>
-                <input 
-                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}  
-                  type={showPassword ? 'text' : 'password'} 
-                  id='password' 
-                  name='password' 
-                  autoComplete='off' 
-                />
-                  <ul>
+  return (
+    <main>
+      <form>
+        <FormIconContainer icon='bank'>
+          <div>
+            <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
+            <FormSelectField
+              name='bank'
+              id='bank'
+              ref={register}
+              aria-owns='1 2 3 4 5 6 7 8 9'
+            >
+              {
+                bankCodes.map((bc, i) => (
+                  <option key={bc.code} value={bc.code}>
                     {
-                      (formValues.password !== '' && dirty) ?
-                      <li onClick={() => setValue('password', '')}><span>&times;</span></li> :
-                      <li>&nbsp;</li>
+                      bc.name
                     }
-                    <li onClick={() => setShowPassword(prevState => !prevState)}>
-                      <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
-                    </li>
-                  </ul>
-              </InputFieldContainer>
-              <p className='input-errors'>{errors.password?.message}</p>
-            </div>
-          </FormIconContainer>
-          <CollapsiblePanel
-            title={<FormattedMessage {...messages.moreInformation} />}
-            topup
-          >
+                  </option>
+                ))
+              }
+            </FormSelectField>
+          </div>
+        </FormIconContainer>
+        <FormIconContainer icon='username'>
+          <div>
+            <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
+            <InputFieldContainer>
+              <input
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
+                type='text'
+                id='username'
+                name='username'
+                autoComplete='off'
+              />
+              <ul>
+                {
+                  (formValues.username !== '' && dirty) &&
+                    <li onClick={() => setValue('username', '')}><span>&times;</span></li>
+                }
+              </ul>
+            </InputFieldContainer>
+            <p className='input-errors'>{errors.username?.message}</p>
+          </div>
+        </FormIconContainer>
+        <FormIconContainer icon='password'>
+          <div>
+            <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
+            <InputFieldContainer passwordIcon>
+              <input
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}
+                type={showPassword ? 'text' : 'password'}
+                id='password'
+                name='password'
+                autoComplete='off'
+              />
+              <ul>
+                {
+                  (formValues.password !== '' && dirty)
+                    ? <li onClick={() => setValue('password', '')}><span>&times;</span></li>
+                    : <li>&nbsp;</li>
+                }
+                <li onClick={() => setShowPassword(prevState => !prevState)}>
+                  <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                </li>
+              </ul>
+            </InputFieldContainer>
+            <p className='input-errors'>{errors.password?.message}</p>
+          </div>
+        </FormIconContainer>
+        <CollapsiblePanel
+          title={<FormattedMessage {...messages.moreInformation} />}
+          topup
+        >
           <StyledMoreInfo>
             <li>{reference}</li>
             <li>{merchant}</li>
             <li>{requester}</li>
             <li>{currency}</li>
           </StyledMoreInfo>
-          </CollapsiblePanel>
-        </form>
-        {
-          (windowDimensions.width > 576) &&
+        </CollapsiblePanel>
+      </form>
+      {
+        (windowDimensions.width > 576) &&
           <div className='deposit-submit-top-up-buttons'>
             <GlobalButton
               label='SMS OTP'
@@ -248,16 +248,16 @@ const DepositForm = React.memo((props) => {
             />
             <GlobalButton
               label='SMART OTP'
-              color={buttonColor} 
+              color={buttonColor}
               outlined
               topup='true'
               onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
               disabled={!establishConnection || waitingForReady}
             />
-          </div>          
-        }
-      </main>
-    );
-  });
+          </div>
+      }
+    </main>
+  )
+})
 
-export default DepositForm;
+export default DepositForm

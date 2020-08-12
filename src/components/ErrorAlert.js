@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledError = styled.section`
     background-color: #fff1f0;
@@ -20,17 +20,17 @@ const StyledError = styled.section`
             margin-right: 10px;
         }
     }
-`;
+`
 
 const ErrorAlert = ({ message }) => {
-    return (
-        <StyledError>
-            <p>
-                <img alt='error' width='24' src={require('../assets/icons/error.png')} />
-                {message}
-            </p>
-        </StyledError>
-    )
+  return (
+    <StyledError>
+      <p>
+        <img alt='error' width='24' src={require('../assets/icons/error.png')} />
+        {message}
+      </p>
+    </StyledError>
+  )
 }
 
-export default ErrorAlert;
+export default ErrorAlert

@@ -1,7 +1,7 @@
-import React from "react";
-import messages from './messages';
-import { FormattedMessage } from 'react-intl';
-import styled from 'styled-components';
+import React from 'react'
+import messages from './messages'
+import { FormattedMessage } from 'react-intl'
+import styled from 'styled-components'
 
 const StyledErrorContainer = styled.div`
   text-align: center;
@@ -16,15 +16,15 @@ const StyledErrorContainer = styled.div`
   p {
     margin: 20px 0;
   }
-`;
+`
 
 const NotFound = (props) => {
   return (
     <StyledErrorContainer>
-        <h1>404</h1>
-        <p><FormattedMessage {...messages.errors.pageDoesNoExist} /></p>
+      <h1>404</h1>
+      <p><FormattedMessage {...messages.errors.pageDoesNoExist} /></p>
     </StyledErrorContainer>
-  );
-};
+  )
+}
 
-export default NotFound;
+export default NotFound

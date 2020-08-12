@@ -1,7 +1,7 @@
-import { createGlobalStyle } from "styled-components";
-import ProductSansRegular from "../fonts/ProductSans-Regular.ttf";
-import ProductSansBold from "../fonts/ProductSans-Bold.ttf";
-import ProductSansMedium from "../fonts/ProductSans-Medium-500.ttf";
+import { createGlobalStyle } from 'styled-components'
+import ProductSansRegular from '../fonts/ProductSans-Regular.ttf'
+import ProductSansBold from '../fonts/ProductSans-Bold.ttf'
+import ProductSansMedium from '../fonts/ProductSans-Medium-500.ttf'
 
 export default createGlobalStyle`
     @font-face {
@@ -73,29 +73,29 @@ export default createGlobalStyle`
         flex-wrap: wrap;
         height: 100%;
         justify-content: center;
-      
+
         .container {
             margin: 0 20px;
             max-width: 500px;
             width: 100%;
-      
+
           .form-content {
             background: #FFFFFF;
             border-radius: 15px;
             box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
-      
+
             > header {
                 padding: 10px 20px;
             }
-      
+
             .header-bottom-border {
                 border-bottom: 0.5px solid #E3E3E3;
             }
-      
+
             > main {
                 padding: 20px;
                 position: relative;
-      
+
               .form-content-submit-container,
               .form-content-submit-top-up-container {
                 margin-top: 5px;
@@ -105,7 +105,7 @@ export default createGlobalStyle`
             }
           }
         }
-      
+
         .footer-submit-container {
             box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
             margin-top: 20px;
@@ -113,14 +113,6 @@ export default createGlobalStyle`
             text-align: center;
             width: 100%;
         }
-    }
-
-    .wrapper-without-notifications {
-      padding-top: 75px;
-    }
-
-    .wrapper-with-notifications {
-      padding-top: 105px;
     }
 
     .deposit-submit-buttons,
@@ -139,7 +131,7 @@ export default createGlobalStyle`
     .logo {
       margin: 25px 0;
       text-align: center;
-    
+
       img {
         height: auto;
         max-width: 200px;
@@ -151,7 +143,7 @@ export default createGlobalStyle`
       padding: 15px 0;
       text-align: center;
     }
-    
+
     .progress-bar-container {
       color: rgba(0, 0, 0, 0.65);
       height: 200px;
@@ -161,7 +153,7 @@ export default createGlobalStyle`
         animation: zoomInAndOut 0.5s ease-in-out;
         margin: 30px 0 2px;
       }
-    
+
       > p {
         font-family: ProductSansRegular;
         font-size: 14px;
@@ -252,7 +244,7 @@ export default createGlobalStyle`
           min-width: 232px;
       }
     }
-    
+
     @keyframes zoomInAndOut {
       0% {
           transform: scale(1,1);
@@ -264,4 +256,4 @@ export default createGlobalStyle`
           transform: scale(1,1);
       }
     }
-`;
+`

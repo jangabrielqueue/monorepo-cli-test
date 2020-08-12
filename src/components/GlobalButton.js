@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button } from '@rmwc/button';
-import styled from 'styled-components';
+import React from 'react'
+import { Button } from '@rmwc/button'
+import styled from 'styled-components'
 
 const OutlinedButton = styled(Button)`
     background-color: ${props => props.topup === 'true' ? props.theme.colors[props.color.toLowerCase()] + '!important' : 'transparent'};
@@ -22,7 +22,7 @@ const OutlinedButton = styled(Button)`
         max-width: 130px;
         padding: 0;
     }
-`;
+`
 
 const DefaultButton = styled(Button)`
     background-color: ${props => props.theme.colors[`${props.color.toLowerCase()}`]} !important;
@@ -45,16 +45,16 @@ const DefaultButton = styled(Button)`
         left: 20px;
         position: absolute;
     }
-`;
+`
 
 const GlobalButton = (props) => {
-    return (
-        <>
-            {
-                props.outlined ? <OutlinedButton {...props} /> : <DefaultButton {...props} />
-            }
-        </>
-    )
+  return (
+    <>
+      {
+        props.outlined ? <OutlinedButton {...props} /> : <DefaultButton {...props} />
+      }
+    </>
+  )
 }
 
-export default GlobalButton;
+export default GlobalButton

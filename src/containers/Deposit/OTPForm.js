@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { isNullOrWhitespace } from '../../utils/utils';
-import messages from './messages';
-import { FormattedMessage } from 'react-intl';
-import { checkBankIfKnown } from "../../utils/banks";
-import GlobalButton from '../../components/GlobalButton';
-import styled from 'styled-components';
-import otpReferenceIcon from '../../assets/icons/otp-reference.svg';
-import usernameIcon from '../../assets/icons/username.svg';
-import { useFormContext } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { isNullOrWhitespace } from '../../utils/utils'
+import messages from './messages'
+import { FormattedMessage } from 'react-intl'
+import { checkBankIfKnown } from '../../utils/banks'
+import GlobalButton from '../../components/GlobalButton'
+import styled from 'styled-components'
+import otpReferenceIcon from '../../assets/icons/otp-reference.svg'
+import usernameIcon from '../../assets/icons/username.png'
+import { useFormContext } from 'react-hook-form'
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -15,9 +15,9 @@ const FormIconContainer = styled.div`
   &:before {
     background: url(${props => {
       if (props.icon === 'username') {
-        return usernameIcon;
+        return usernameIcon
       } else if (props.icon === 'otp-reference') {
-        return otpReferenceIcon;
+        return otpReferenceIcon
       }
     }}) no-repeat center;
     content: '';
@@ -30,7 +30,7 @@ const FormIconContainer = styled.div`
   > div {
     flex: 0 1 415px;
   }
-`;
+`
 
 const InputFieldContainer = styled.div`
   position: relative;
@@ -77,55 +77,55 @@ const InputFieldContainer = styled.div`
       }
     }
   }
-`;
+`
 
 const OTPForm = React.memo((props) => {
-  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props;
-  const isBankKnown = checkBankIfKnown(currency, bank);
-  const buttonColor = isBankKnown ? `${bank}` : 'main';
+  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props
+  const isBankKnown = checkBankIfKnown(currency, bank)
+  const buttonColor = isBankKnown ? `${bank}` : 'main'
 
-  const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext();
-  const { dirty } = formState;
-  const formValues = getValues();
+  const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
+  const { dirty } = formState
+  const formValues = getValues()
 
   function handleSubmitForm ({ OTP }) {
-    handleSubmitOTP(OTP);
+    handleSubmitOTP(OTP)
   }
 
   useEffect(() => {
     if (progress) {
-      reset();
+      reset()
     }
-  }, [progress, reset]);
+  }, [progress, reset])
 
   return (
     <main>
       <form>
         {
           !isNullOrWhitespace(otpReference) &&
-          <FormIconContainer icon='otp-reference'>
-            <div>
-              <label><FormattedMessage {...messages.otpReference} /></label>
-              <p>{otpReference}</p>
-            </div>
-          </FormIconContainer>
+            <FormIconContainer icon='otp-reference'>
+              <div>
+                <label><FormattedMessage {...messages.otpReference} /></label>
+                <p>{otpReference}</p>
+              </div>
+            </FormIconContainer>
         }
         <FormIconContainer icon='username'>
           <div>
             <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
             <InputFieldContainer>
-              <input 
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })} 
-                type='number' 
-                id='OTP' 
-                name='OTP' 
+              <input
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
+                type='number'
+                id='OTP'
+                name='OTP'
                 autoComplete='off'
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
               />
               <ul>
                 {
                   (formValues.OTP !== '' && dirty) &&
-                  <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
+                    <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
                 }
               </ul>
             </InputFieldContainer>
@@ -134,16 +134,16 @@ const OTPForm = React.memo((props) => {
         </FormIconContainer>
         <div className='form-content-submit-container'>
           <GlobalButton
-              label={<FormattedMessage {...messages.submit} />}
-              color={buttonColor}
-              icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
-              onClick={handleSubmit(handleSubmitForm)}
-              disabled={waitingForReady}
-            />
+            label={<FormattedMessage {...messages.submit} />}
+            color={buttonColor}
+            icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
+            onClick={handleSubmit(handleSubmitForm)}
+            disabled={waitingForReady}
+          />
         </div>
       </form>
     </main>
-  );
-});
+  )
+})
 
-export default OTPForm;
+export default OTPForm

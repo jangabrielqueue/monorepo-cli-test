@@ -41,5 +41,7 @@
     "placeholders.inputMaxChar": "Please input a maximum length of {maxLength} characters.",
     "placeholders.inputSerialNumber": "Please input serial number.",
     "placeholders.telcoName": "Telco Name",
-    "placeholders.bankName": "Bank Name"
+    "placeholders.bankName": "Bank Name",
+    "notifications.hasVCB": "- For customers already having VCB Digibank account: {fontWeightText}",
+    "notifications.noVCB": "- For customers not having VCB Digibank account: {fontWeightText}, used to transform to VCB Digibank."
 }
