@@ -20,6 +20,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import ProgressModal from '../../components/ProgressModal'
 import { useFormContext } from 'react-hook-form'
 import * as firebase from 'firebase/app'
+import { useHistory } from 'react-router-dom'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -34,6 +35,7 @@ function getDefaultBankByCurrency (currency) {
 }
 
 const TopUp = props => {
+  const history = useHistory()
   const analytics = firebase.analytics()
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
@@ -212,12 +214,12 @@ const TopUp = props => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return props.history.replace('/invalid')
+        return history.replace('/invalid')
       }
     }
 
     if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
-      props.history.replace('/invalid')
+      history.replace('/invalid')
     }
 
     window.addEventListener('resize', handleWindowResize)
@@ -312,7 +314,7 @@ const TopUp = props => {
     analytics.setCurrentScreen('transfer_successful')
     content = (
       <main>
-        <TransferSuccessful transferResult={transferResult} language='en-US' />
+        <TransferSuccessful transferResult={transferResult} language={props.language} />
       </main>
     )
   } else if (step === 2) {
@@ -336,7 +338,7 @@ const TopUp = props => {
               step === 0 &&
                 <Statistics
                   title={intl.formatMessage(messages.deposit)}
-                  language='en-US'
+                  language={props.language}
                   currency={currency}
                   amount={amount}
                 />

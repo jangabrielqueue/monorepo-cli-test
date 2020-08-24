@@ -19,6 +19,7 @@ import styled from 'styled-components'
 import ErrorAlert from '../../components/ErrorAlert'
 import ProgressModal from '../../components/ProgressModal'
 import * as firebase from 'firebase/app'
+import { useHistory } from 'react-router-dom'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -29,6 +30,7 @@ const WrapperBG = styled.div`
 `
 
 const ScratchCard = (props) => {
+  const history = useHistory()
   const analytics = firebase.analytics()
   const [step, setStep] = useState(0)
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -46,7 +48,7 @@ const ScratchCard = (props) => {
   const currency = queryParams.get('c1')
   const bank = queryParams.get('b')
   const clientIp = queryParams.get('c3')
-  const language = queryParams.get('l')
+  const language = props.language // language was handled at root component not at the queryparams
   const successfulUrl = queryParams.get('su')
   const failedUrl = queryParams.get('fu')
   const callbackUri = queryParams.get('c4')
@@ -66,7 +68,7 @@ const ScratchCard = (props) => {
       reference: reference
     })
     const submitValues = {
-      Telecom: bank.toUpperCase() === 'GWC' ? 'GW' : values.telcoName,
+      Telecom: bank && bank.toUpperCase() === 'GWC' ? 'GW' : values.telcoName,
       Pin: values.cardPin.toString(),
       SerialNumber: values.cardSerialNumber.toString(),
       ClientIp: clientIp,
@@ -243,12 +245,12 @@ const ScratchCard = (props) => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return props.history.replace('/invalid')
+        return history.replace('/invalid')
       }
     }
 
     if (!currencies.includes(currency && currency.toUpperCase())) {
-      props.history.replace('/invalid')
+      history.replace('/invalid')
     }
 
     // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
@@ -310,9 +312,9 @@ const ScratchCard = (props) => {
       <div className='container'>
         <div className='form-content'>
           <header className={step === 1 ? null : 'header-bottom-border'}>
-            <Logo bank={bank && bank.toUpperCase()} type='scratch-card' currency={currency} />
+            <Logo bank={bank} type='scratch-card' currency={currency} />
             {
-              (step === 0) && (bank.toUpperCase() !== 'GWC') &&
+              (step === 0) && (bank && bank.toUpperCase() !== 'GWC') &&
                 <Statistics
                   title={intl.formatMessage(messages.deposit)}
                   language={language}

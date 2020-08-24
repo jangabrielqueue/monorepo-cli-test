@@ -108,7 +108,7 @@ const InputFieldContainer = styled.div`
 
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
-  const [telcoName, setTelcoName] = useState(bank.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
+  const [telcoName, setTelcoName] = useState(bank && bank.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const intl = useIntl()
   const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext()
   const isBankKnown = checkBankIfKnown(currency, bank)
@@ -181,7 +181,7 @@ const ScratchCardForm = React.memo((props) => {
     <main>
       <form>
         {
-          (bank.toUpperCase() !== 'GWC') &&
+          (bank && bank.toUpperCase() !== 'GWC') &&
             <FormIconContainer icon='mobile'>
               <div>
                 <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
@@ -266,7 +266,7 @@ const ScratchCardForm = React.memo((props) => {
           />
         </div>
         {
-          (bank.toUpperCase() !== 'GWC') &&
+          (bank && bank.toUpperCase() !== 'GWC') &&
             <StyledNoteText>
               <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
               <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>

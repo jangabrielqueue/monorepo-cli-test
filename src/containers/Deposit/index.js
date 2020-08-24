@@ -24,6 +24,7 @@ import Countdown from '../../components/Countdown'
 import ErrorAlert from '../../components/ErrorAlert'
 import ProgressModal from '../../components/ProgressModal'
 import { useFormContext } from 'react-hook-form'
+import { useHistory } from 'react-router-dom'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -38,6 +39,7 @@ const WrapperBG = styled.div`
 `
 
 const Deposit = (props) => {
+  const history = useHistory()
   const analytics = firebase.analytics()
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
@@ -64,7 +66,7 @@ const Deposit = (props) => {
   const successfulUrl = queryParams.get('su')
   const failedUrl = queryParams.get('fu')
   const note = queryParams.get('n')
-  const language = queryParams.get('l')
+  const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const intl = useIntl()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
@@ -250,7 +252,7 @@ const Deposit = (props) => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return props.history.replace('/invalid')
+        return history.replace('/invalid')
       }
     }
 
@@ -259,7 +261,7 @@ const Deposit = (props) => {
         queryParams.get('c1') && queryParams.get('c1').toUpperCase()
       )
     ) {
-      props.history.replace('/invalid')
+      history.replace('/invalid')
     }
 
     window.addEventListener('resize', handleWindowResize)
