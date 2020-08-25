@@ -23,6 +23,7 @@ const InvalidPage = (props) => {
     <StyledInvalidContainer>
       <h1><FormattedMessage {...messages.errors.submissionFailed} /></h1>
       <p><FormattedMessage {...messages.errors.invalidParameters} /></p>
+      <p><FormattedMessage {...messages.errors.contactCustomerSupport} /></p>
     </StyledInvalidContainer>
   )
 }

@@ -126,6 +126,7 @@ const Deposit = (props) => {
       callbackUri,
       ...values
     })
+
     if (result.error) {
       analytics.logEvent('login_failed', {
         reference,
@@ -150,6 +151,8 @@ const Deposit = (props) => {
       setProgress(undefined)
       setWaitingForReady(false)
       setError(result.error)
+    } else if (result.errors) { // errors means one of the params value were missing or manipulated
+      history.replace('/invalid')
     }
   }
 

@@ -29,6 +29,10 @@ export default defineMessages({
     pageDoesNoExist: {
       id: 'errors.pageDoesNoExist',
       defaultMessage: 'Sorry, the page you have visited does not exist.'
+    },
+    contactCustomerSupport: {
+      id: 'errors.contactCustomerSupport',
+      defaultMessage: 'Please contact customer support.'
     }
   },
   progress: {
