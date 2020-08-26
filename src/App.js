@@ -19,7 +19,6 @@ import FallbackPage from './components/FallbackPage'
 const Deposit = lazy(() => import('./containers/Deposit'))
 const ScratchCard = lazy(() => import('./containers/ScratchCard/ScratchCard'))
 const TopUp = lazy(() => import('./containers/TopUp'))
-const InvalidPage = lazy(() => import('./components/InvalidPage'))
 const NotFound = lazy(() => import('./components/NotFound'))
 
 const theme = {
@@ -151,9 +150,6 @@ const App = () => {
                   </Route>
                   <Route exact path='/deposit/scratch-card'>
                     <ScratchCard language={language} />
-                  </Route>
-                  <Route path='/invalid'>
-                    <InvalidPage />
                   </Route>
                   <Route path='*'>
                     <NotFound />

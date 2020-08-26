@@ -19,7 +19,6 @@ import styled from 'styled-components'
 import ErrorAlert from '../../components/ErrorAlert'
 import ProgressModal from '../../components/ProgressModal'
 import * as firebase from 'firebase/app'
-import { useHistory } from 'react-router-dom'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -30,7 +29,6 @@ const WrapperBG = styled.div`
 `
 
 const ScratchCard = (props) => {
-  const history = useHistory()
   const analytics = firebase.analytics()
   const [step, setStep] = useState(0)
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -136,14 +134,27 @@ const ScratchCard = (props) => {
         setTransferResult(response.data)
         setStep(1)
       }
-    } catch (error) {
+    } catch (errors) {
       analytics.logEvent('login_failed', {
         reference: reference,
-        error: error
+        error: errors
       })
-      setWaitingForReady(false)
-      setProgress(undefined)
-      setError(error)
+
+      if (errors.response.data && errors.response.data.errors) {
+        setWaitingForReady(false)
+        setProgress(undefined)
+        setTransferResult({
+          statusCode: '001',
+          isSuccess: false,
+          message: intl.formatMessage(messages.errors.verificationFailed)
+        })
+        setIsSuccessful(false)
+        setStep(1)
+      } else {
+        setWaitingForReady(false)
+        setProgress(undefined)
+        setError(errors)
+      }
     }
   }
 
@@ -245,12 +256,24 @@ const ScratchCard = (props) => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return history.replace('/invalid')
+        setTransferResult({
+          statusCode: '001',
+          isSuccess: false,
+          message: intl.formatMessage(messages.errors.verificationFailed)
+        })
+        setIsSuccessful(false)
+        setStep(1)
       }
     }
 
     if (!currencies.includes(currency && currency.toUpperCase())) {
-      history.replace('/invalid')
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setIsSuccessful(false)
+      setStep(1)
     }
 
     // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array

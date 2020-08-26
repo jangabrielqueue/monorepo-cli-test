@@ -63,6 +63,10 @@ export default defineMessages({
     connectionError: {
       id: 'errors.connectionError',
       defaultMessage: 'Connection is closed, please refresh the page.'
+    },
+    verificationFailed: {
+      id: 'errors.verificationFailed',
+      defaultMessage: 'Verification failed. Please check again.'
     }
   },
   progress: {

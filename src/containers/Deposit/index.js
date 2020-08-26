@@ -24,7 +24,6 @@ import Countdown from '../../components/Countdown'
 import ErrorAlert from '../../components/ErrorAlert'
 import ProgressModal from '../../components/ProgressModal'
 import { useFormContext } from 'react-hook-form'
-import { useHistory } from 'react-router-dom'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -39,7 +38,6 @@ const WrapperBG = styled.div`
 `
 
 const Deposit = (props) => {
-  const history = useHistory()
   const analytics = firebase.analytics()
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
@@ -152,7 +150,13 @@ const Deposit = (props) => {
       setWaitingForReady(false)
       setError(result.error)
     } else if (result.errors) { // errors means one of the params value were missing or manipulated
-      history.replace('/invalid')
+      setProgress(undefined)
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
   }
 
@@ -255,7 +259,12 @@ const Deposit = (props) => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return history.replace('/invalid')
+        setTransferResult({
+          statusCode: '001',
+          isSuccess: false,
+          message: intl.formatMessage(messages.errors.verificationFailed)
+        })
+        setStep(2)
       }
     }
 
@@ -264,7 +273,12 @@ const Deposit = (props) => {
         queryParams.get('c1') && queryParams.get('c1').toUpperCase()
       )
     ) {
-      history.replace('/invalid')
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
 
     window.addEventListener('resize', handleWindowResize)
