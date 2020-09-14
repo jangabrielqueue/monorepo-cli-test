@@ -18,14 +18,6 @@ export default defineMessages({
       id: 'errors.transactionFailed',
       defaultMessage: 'Submitted Transaction Failed!'
     },
-    submissionFailed: {
-      id: 'errors.submissionFailed',
-      defaultMessage: 'Submission Failed!'
-    },
-    invalidParameters: {
-      id: 'errors.invalidParameters',
-      defaultMessage: 'Invalid Parameters'
-    },
     pageDoesNoExist: {
       id: 'errors.pageDoesNoExist',
       defaultMessage: 'Sorry, the page you have visited does not exist.'

@@ -64,7 +64,7 @@ const Deposit = (props) => {
   const successfulUrl = queryParams.get('su')
   const failedUrl = queryParams.get('fu')
   const note = queryParams.get('n')
-  const language = queryParams.get('l')
+  const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const intl = useIntl()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
@@ -124,6 +124,7 @@ const Deposit = (props) => {
       callbackUri,
       ...values
     })
+
     if (result.error) {
       analytics.logEvent('login_failed', {
         reference,
@@ -148,6 +149,14 @@ const Deposit = (props) => {
       setProgress(undefined)
       setWaitingForReady(false)
       setError(result.error)
+    } else if (result.errors) { // errors means one of the params value were missing or manipulated
+      setProgress(undefined)
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
   }
 
@@ -250,7 +259,12 @@ const Deposit = (props) => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return props.history.replace('/invalid')
+        setTransferResult({
+          statusCode: '001',
+          isSuccess: false,
+          message: intl.formatMessage(messages.errors.verificationFailed)
+        })
+        setStep(2)
       }
     }
 
@@ -259,7 +273,12 @@ const Deposit = (props) => {
         queryParams.get('c1') && queryParams.get('c1').toUpperCase()
       )
     ) {
-      props.history.replace('/invalid')
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
 
     window.addEventListener('resize', handleWindowResize)

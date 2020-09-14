@@ -126,6 +126,14 @@ const TopUp = props => {
       setProgress(undefined)
       setWaitingForReady(false)
       setError(result.error)
+    } else if (result.errors) { // errors means one of the params value were missing or manipulated
+      setProgress(undefined)
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
   }
 
@@ -212,12 +220,22 @@ const TopUp = props => {
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
-        return props.history.replace('/invalid')
+        setTransferResult({
+          statusCode: '001',
+          isSuccess: false,
+          message: intl.formatMessage(messages.errors.verificationFailed)
+        })
+        setStep(2)
       }
     }
 
     if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
-      props.history.replace('/invalid')
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
     }
 
     window.addEventListener('resize', handleWindowResize)
@@ -312,7 +330,7 @@ const TopUp = props => {
     analytics.setCurrentScreen('transfer_successful')
     content = (
       <main>
-        <TransferSuccessful transferResult={transferResult} language='en-US' />
+        <TransferSuccessful transferResult={transferResult} language={props.language} />
       </main>
     )
   } else if (step === 2) {
@@ -336,7 +354,7 @@ const TopUp = props => {
               step === 0 &&
                 <Statistics
                   title={intl.formatMessage(messages.deposit)}
-                  language='en-US'
+                  language={props.language}
                   currency={currency}
                   amount={amount}
                 />
