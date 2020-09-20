@@ -20,6 +20,7 @@ const Deposit = lazy(() => import('./containers/Deposit'))
 const ScratchCard = lazy(() => import('./containers/ScratchCard/ScratchCard'))
 const TopUp = lazy(() => import('./containers/TopUp'))
 const NotFound = lazy(() => import('./components/NotFound'))
+const QRCode = lazy(() => import('./containers/QRCode'))
 
 const theme = {
   colors: {
@@ -147,6 +148,9 @@ const App = () => {
                   </Route>
                   <Route exact path='/deposit/bank'>
                     <Deposit language={language} />
+                  </Route>
+                  <Route exact path='/deposit/qrcode'>
+                    <QRCode language={language} />
                   </Route>
                   <Route exact path='/deposit/scratch-card'>
                     <ScratchCard language={language} />

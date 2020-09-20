@@ -21,7 +21,10 @@
     "placeholders.inputOtp": "Please input OTP received from bank",
     "otpReference": "OTP Reference",
     "countdown": "Countdown",
+    "account.amount": "Amount",
+    "account.accountName": "Account Name",
     "texts.redirected": "You will be redirected in {timeLeft} seconds",
+    "texts.countdown": "Countdown",
     "errors.error": "Error",
     "errors.pageDoesNoExist": "Sorry, the page you have visited does not exist.",
     "errors.transactionFailed": "Submitted Transaction Failed!",
@@ -42,5 +45,9 @@
     "placeholders.telcoName": "Telco Name",
     "placeholders.bankName": "Bank Name",
     "notifications.hasVCB": "- For customers already having VCB Digibank account: {fontWeightText}",
-    "notifications.noVCB": "- For customers not having VCB Digibank account: {fontWeightText}, used to transform to VCB Digibank."
+    "notifications.noVCB": "- For customers not having VCB Digibank account: {fontWeightText}, used to transform to VCB Digibank.",
+    "important.note": "IMPORTANT NOTE",
+    "important.keyIn": "Please key-in the exact amount generated in the screen for faster and smooth transaction.",
+    "important.noRefresh": "Please do not refresh your browser.",
+    "important.noSave": "Please do not save old QRcode."
 }

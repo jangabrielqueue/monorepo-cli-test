@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { injectIntl } from 'react-intl'
 import messages from './messages'
 import styled from 'styled-components'
@@ -9,43 +9,68 @@ const StyledCountdown = styled.section`
         font-size: 16px;
         margin-bottom: ${props => props.redirect ? '10px' : '4px'};
     }
-
-    > p {
-        color: #3f3f3f;
-        font-family: ProductSansBold;
-        font-size: 24px;
-        margin: 0;
-    }
+`
+const StyledCountdownTimer = styled.p`
+  color: #3f3f3f;
+  font-family: ProductSansBold;
+  font-size: 24px;
+  margin: 0;
 `
 
-const Countdown = ({ redirect, intl, delay, renderCountdownAgain }) => {
-  const [minutes, setMinutes] = useState(redirect ? 0 : 3)
-  const [seconds, setSeconds] = useState(redirect ? 10 : 0)
+const StyledCountdownTimerQR = styled.p`
+  margin: 0 0 25px;
 
-  useEffect(() => {
-    const timerInterval = setInterval(() => {
-      if (seconds > 0) {
-        setSeconds(seconds - 1)
-      }
-      if (seconds === 0) {
-        if (minutes === 0) {
-          clearInterval(timerInterval)
-        } else {
-          setMinutes(minutes - 1)
-          setSeconds(59)
-        }
+  > span {
+    color: #3f3f3f;
+    font-family: ProductSansBold;
+  }
+`
+
+const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
+  const [timerMinutes, setTimerMinutes] = useState(minutes)
+  const [timerSeconds, setTimerSeconds] = useState(seconds)
+
+  let interval = useRef()
+
+  const timer = () => {
+    const dateTime = new Date()
+    const countdownTime = dateTime.setMinutes(dateTime.getMinutes() + minutes, dateTime.getSeconds() + seconds)
+
+    interval = setInterval(() => {
+      const now = new Date().getTime()
+      const distance = countdownTime - now
+
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+
+      if (distance < 0) {
+        // stop timer
+        clearInterval(interval.current)
+      } else {
+        // update timer
+        setTimerMinutes(minutes)
+        setTimerSeconds(seconds)
       }
     }, 1000)
+  }
+
+  useEffect(() => {
+    timer() // start the countdown timer
 
     return () => {
-      clearInterval(timerInterval)
+      clearInterval(interval.current) // clear the timer on unmount
     }
-  }, [seconds, minutes, renderCountdownAgain])
+  }, [])
 
   return (
     <StyledCountdown redirect={redirect}>
-      <h1>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: delay / 1000 }) : 'Countdown'}</h1>
-      <p>00:0{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+      {
+        !qrCode && <h1>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1000 }) : intl.formatMessage(messages.texts.countdown)}</h1>
+      }
+      {
+        !qrCode ? <StyledCountdownTimer>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</StyledCountdownTimer>
+          : <StyledCountdownTimerQR>{intl.formatMessage(messages.texts.countdown)}: <span>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></StyledCountdownTimerQR>
+      }
     </StyledCountdown>
   )
 }

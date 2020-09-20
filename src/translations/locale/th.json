@@ -21,7 +21,10 @@
     "placeholders.inputOtp": "กรุณากรอกรหัส OTP ที่ได้จากธนาคาร",
     "otpReference": "OTP อ้างอิง",
     "countdown": "ระยะเวลานับถอยหลัง",
+    "account.amount": "จำนวน",
+    "account.accountName": "ชื่อบัญชี",
     "texts.redirected": "กำลังลิงค์ไปยังอีกหน้าภายใน {timeLeft} วินาที",
+    "texts.countdown": "ระยะเวลานับถอยหลัง",
     "errors.error": "เกิดข้อผิดพลาด",
     "errors.pageDoesNoExist": "ขออภัย, ไม่พบหน้าที่คุณต้องการเข้า",
     "errors.transactionFailed": "การดำเนินธุรกรรมล้มเหลว",
@@ -40,5 +43,9 @@
     "placeholders.inputMaxChar": "กรุณใส่จำนวนตัวอักษรสูงสุดไม่เกิน {maxLength} ตัวอักษร",
     "placeholders.inputSerialNumber": "กรุณากรอกหมายเลขซีเรียล",
     "placeholders.telcoName": "ชื่อผู้ให้บริการ",
-    "placeholders.bankName": "ธนาคาร"
+    "placeholders.bankName": "ธนาคาร",
+    "important.note": "หมายเหตุ",
+    "important.keyIn": "กรุณาระบุข้อมูลที่ถูกต้องสำหรับการสร้างQRcode.",
+    "important.noRefresh": "กรุณาอย่ารีเฟรชเบราว์เซอร์.",
+    "important.noSave": "และอย่าบันทึก QRcode เก่าเก็บไว้."
 }
