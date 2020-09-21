@@ -4,18 +4,16 @@ import GlobalButton from '../../components/GlobalButton'
 import { checkBankIfKnown } from '../../utils/banks'
 import { FormattedMessage } from 'react-intl'
 import messages from './messages'
+import { CircularProgress } from '@rmwc/circular-progress'
+import QRCode from 'qrcode.react'
 
-const StyledQRImage = styled.img`
-  height: auto;
-  max-width: 100%;
-`
 const StyledImageContainer = styled.div`
   text-align: center;
 `
 const StyledSubmitContainer = styled.div`
   margin: 0 auto;
   padding: 25px 0;
-  max-width: 320px;
+  max-width: 230px;
 `
 const StyledImportantNote = styled.p`
   color: #3f3f3f;
@@ -28,24 +26,32 @@ const StyledImportantList = styled.ol`
   margin: 0;
   padding: 0 0 0 15px;
 `
+const StyledCircularProgress = styled(CircularProgress)`
+  color: ${props => props.theme.colors[props.color.toLowerCase()]};
+`
 
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
     bank,
-    waitingForReady
+    waitingForReady,
+    color,
+    responseData,
+    handleSubmitQRCode
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
 
   function handleSubmitForm () {
-    console.log('trigger')
+    handleSubmitQRCode()
   }
 
   return (
     <main>
       <StyledImageContainer>
-        <StyledQRImage src='https://via.placeholder.com/300.jpeg' alt='qr-code' />
+        {
+          waitingForReady ? <StyledCircularProgress size='xlarge' color={color} /> : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
+        }
       </StyledImageContainer>
       <StyledSubmitContainer>
         <GlobalButton

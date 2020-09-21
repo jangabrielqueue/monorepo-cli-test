@@ -23,7 +23,7 @@
     "countdown": "Đếm ngược",
     "account.amount": "Số Tiền",
     "account.accountName": "Tên tài khoản",
-    "texts.redirected": "Bạn sẽ được chuyển hướng trong {timeLeft} giây",
+    "texts.redirected": "Bạn sẽ được chuyển hướng trong {timeLeft} giây..",
     "texts.countdown": "Đếm ngược",
     "errors.error": "Lỗi",
     "errors.pageDoesNoExist": "Xin lỗi, website bạn truy cập không tồn tại",

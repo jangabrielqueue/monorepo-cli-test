@@ -14,7 +14,7 @@ export default defineMessages({
   texts: {
     redirected: {
       id: 'texts.redirected',
-      defaultMessage: 'You will be redirected in {timeLeft} seconds'
+      defaultMessage: 'You will be redirected in {timeLeft} seconds..'
     },
     countdown: {
       id: 'texts.countdown',

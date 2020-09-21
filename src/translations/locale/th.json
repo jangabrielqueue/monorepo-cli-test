@@ -23,7 +23,7 @@
     "countdown": "ระยะเวลานับถอยหลัง",
     "account.amount": "จำนวน",
     "account.accountName": "ชื่อบัญชี",
-    "texts.redirected": "กำลังลิงค์ไปยังอีกหน้าภายใน {timeLeft} วินาที",
+    "texts.redirected": "กำลังลิงค์ไปยังอีกหน้าภายใน {timeLeft} วินาที..",
     "texts.countdown": "ระยะเวลานับถอยหลัง",
     "errors.error": "เกิดข้อผิดพลาด",
     "errors.pageDoesNoExist": "ขออภัย, ไม่พบหน้าที่คุณต้องการเข้า",

@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { injectIntl } from 'react-intl'
 import messages from './messages'
 import styled from 'styled-components'
 
 const StyledCountdown = styled.section`
-    > h1 {
-        color: #767676;
-        font-size: 16px;
-        margin-bottom: ${props => props.redirect ? '10px' : '4px'};
-    }
+  > h1 {
+      color: #767676;
+      font-size: 16px;
+      margin-bottom: ${props => props.redirect ? '10px' : '4px'};
+  }
 `
 const StyledCountdownTimer = styled.p`
   color: #3f3f3f;
@@ -30,13 +30,11 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
   const [timerMinutes, setTimerMinutes] = useState(minutes)
   const [timerSeconds, setTimerSeconds] = useState(seconds)
 
-  let interval = useRef()
-
-  const timer = () => {
+  useEffect(() => {
     const dateTime = new Date()
     const countdownTime = dateTime.setMinutes(dateTime.getMinutes() + minutes, dateTime.getSeconds() + seconds)
 
-    interval = setInterval(() => {
+    const timer = setInterval(() => {
       const now = new Date().getTime()
       const distance = countdownTime - now
 
@@ -45,27 +43,23 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
 
       if (distance < 0) {
         // stop timer
-        clearInterval(interval.current)
+        clearInterval(timer)
       } else {
         // update timer
         setTimerMinutes(minutes)
         setTimerSeconds(seconds)
       }
     }, 1000)
-  }
-
-  useEffect(() => {
-    timer() // start the countdown timer
 
     return () => {
-      clearInterval(interval.current) // clear the timer on unmount
+      clearInterval(timer) // clear the timer on unmount
     }
-  }, [])
+  }, [minutes, seconds])
 
   return (
     <StyledCountdown redirect={redirect}>
       {
-        !qrCode && <h1>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1000 }) : intl.formatMessage(messages.texts.countdown)}</h1>
+        !qrCode && <h1>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1 }) : intl.formatMessage(messages.texts.countdown)}</h1>
       }
       {
         !qrCode ? <StyledCountdownTimer>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</StyledCountdownTimer>

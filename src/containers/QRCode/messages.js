@@ -40,5 +40,11 @@ export default defineMessages({
       id: 'progress.waitingTransaction',
       defaultMessage: 'Waiting transaction confirm'
     }
+  },
+  errors: {
+    verificationFailed: {
+      id: 'errors.verificationFailed',
+      defaultMessage: 'Verification failed. Please check again.'
+    }
   }
 })
