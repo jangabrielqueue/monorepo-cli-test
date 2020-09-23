@@ -29,15 +29,24 @@ const StyledImportantList = styled.ol`
 const StyledCircularProgress = styled(CircularProgress)`
   color: ${props => props.theme.colors[props.color.toLowerCase()]};
 `
+const StyledQRCodeError = styled.p`
+  align-items: center;
+  display: flex;
+  margin: 0;
+  min-height: 200px;
+}
+`
 
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
     bank,
     waitingForReady,
+    loadingButton,
     color,
     responseData,
-    handleSubmitQRCode
+    handleSubmitQRCode,
+    error
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
@@ -50,7 +59,9 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     <main>
       <StyledImageContainer>
         {
-          waitingForReady ? <StyledCircularProgress size='xlarge' color={color} /> : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
+          waitingForReady ? <StyledCircularProgress size='xlarge' color={color} />
+            : error || responseData.encodedImage === null ? <StyledQRCodeError>{error && error.message}</StyledQRCodeError> : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
+
         }
       </StyledImageContainer>
       <StyledSubmitContainer>
@@ -58,7 +69,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
           label='Done'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled={waitingForReady}
+          disabled={waitingForReady || loadingButton || error || responseData.encodedImage === null}
         />
       </StyledSubmitContainer>
       <StyledImportantNote>{<FormattedMessage {...messages.important.note} />}</StyledImportantNote>

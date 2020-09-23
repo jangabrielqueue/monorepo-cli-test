@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Logo from '../../components/Logo'
 import { checkBankIfKnown } from '../../utils/banks'
 import ErrorAlert from '../../components/ErrorAlert'
-import { useQuery } from '../../utils/utils'
+import { useQuery, sleep } from '../../utils/utils'
 import AccountStatistics from '../../components/AccountStatistics'
 import AutoRedirectRQ from '../../components/AutoRedirectQR'
 import AutoRedirect from '../../components/AutoRedirect'
@@ -16,6 +16,7 @@ import {
 import messages from './messages'
 import { useIntl } from 'react-intl'
 import axios from 'axios'
+import ProgressModal from '../../components/ProgressModal'
 
 const WrapperBG = styled.div`
   background-image: linear-gradient(
@@ -30,14 +31,20 @@ const QRCode = (props) => {
   const [step, setStep] = useState(0)
   const [waitingForReady, setWaitingForReady] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
-  const [error, setError] = useState()
+  const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
-    encodedImage: '',
+    encodedImage: null,
     toAccountId: null
   })
-  const [progress, setProgress] = useState()
-  const [isSuccessful, setIsSuccessful] = useState(undefined)
-  const [transferResult, setTransferResult] = useState({})
+  const [progress, setProgress] = useState(undefined)
+  const [transferResult, setTransferResult] = useState({
+    statusCode: '',
+    reference: '',
+    statusMessage: '',
+    amount: '',
+    currency: '',
+    isSuccessful: false
+  })
   const queryParams = useQuery()
   const intl = useIntl()
   const bank = queryParams.get('b')
@@ -77,7 +84,37 @@ const QRCode = (props) => {
       successfulUrl: successfulUrl,
       toAccountId: responseData.toAccountId
     }
+    setError(undefined)
     setLoadingButton(true)
+    setProgress({
+      currentStep: 1,
+      totalSteps: 5,
+      statusMessage: intl.formatMessage(messages.progress.startingConnection)
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 2,
+      totalSteps: 5,
+      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 3,
+      totalSteps: 5,
+      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 4,
+      totalSteps: 5,
+      statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 5,
+      totalSteps: 5,
+      statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+    })
 
     try {
       const response = await axios({
@@ -85,8 +122,27 @@ const QRCode = (props) => {
         method: 'POST',
         data: submitValues
       })
+      const responseSubmitQRData = JSON.parse(response.data.data)
+      setTransferResult({
+        statusCode: responseSubmitQRData.StatusCode,
+        reference: responseSubmitQRData.Reference,
+        statusMessage: responseSubmitQRData.StatusMessage,
+        amount: responseSubmitQRData.Amount,
+        currency: responseSubmitQRData.Currency,
+        isSuccessful: responseSubmitQRData.StatusCode === '006'
+      })
+      setLoadingButton(false)
+      setProgress(undefined)
+      setStep(1)
     } catch (error) {
-      setError(error)
+      setTransferResult({
+        statusCode: '001',
+        statusMessage: error.response.data && error.response.data.error.message,
+        isSuccessful: false
+      })
+      setLoadingButton(false)
+      setProgress(undefined)
+      setStep(1)
     }
   }
 
@@ -94,29 +150,31 @@ const QRCode = (props) => {
     switch (currentStep) {
       case 0:
         return (
-          <AutoRedirectRQ delay={180000} setStep={setStep} step={step}>
+          <AutoRedirectRQ delay={180000} setStep={setStep}>
             <QRCodeForm
               currency={currency}
               bank={bank}
               waitingForReady={waitingForReady}
+              loadingButton={loadingButton}
               responseData={responseData}
               color={themeColor}
               handleSubmitQRCode={handleSubmitQRCode}
+              error={error}
             />
           </AutoRedirectRQ>
         )
 
       case 1:
-        if (isSuccessful) {
+        if (transferResult.isSuccessful) {
           return (
             <AutoRedirect delay={10000} url={successfulUrl}>
-              <TransferSuccessful transferResult={transferResult} />
+              <TransferSuccessful transferResult={transferResult} language={language} />
             </AutoRedirect>
           )
         } else {
           return (
             <AutoRedirect delay={10000} url={failedUrl}>
-              <TransferFailed transferResult={transferResult} />
+              <TransferFailed transferResult={transferResult} language={language} />
             </AutoRedirect>
           )
         }
@@ -145,7 +203,10 @@ const QRCode = (props) => {
       setResponseData(response.data)
       setWaitingForReady(false)
     } catch (error) {
-      setError(error)
+      setError({
+        code: error.response.status,
+        message: intl.formatMessage(messages.errors.connectionTimeout)
+      })
       setWaitingForReady(false)
     }
   }
@@ -230,6 +291,7 @@ const QRCode = (props) => {
                 amount={amount}
               />
             )}
+            {error && <ErrorAlert message={`Error ${error.code}`} />}
           </header>
           {
             renderStepsContent(step)
@@ -237,6 +299,22 @@ const QRCode = (props) => {
         </div>
         <StepsBar step={step === 1 ? 2 : step} />
       </div>
+      <ProgressModal open={progress}>
+        <div className='progress-bar-container'>
+          <img
+            alt='submit-transaction'
+            width='80'
+            src={require('../../assets/icons/in-progress.svg')}
+          />
+          <progress
+            value={
+              progress && (progress.currentStep / progress.totalSteps) * 100
+            }
+            max={100}
+          />
+          <p>{progress && progress.statusMessage}</p>
+        </div>
+      </ProgressModal>
     </WrapperBG>
   )
 }

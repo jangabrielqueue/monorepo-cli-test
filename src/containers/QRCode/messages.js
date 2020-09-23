@@ -42,6 +42,10 @@ export default defineMessages({
     }
   },
   errors: {
+    connectionTimeout: {
+      id: 'errors.connectionTimeout',
+      defaultMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
+    },
     verificationFailed: {
       id: 'errors.verificationFailed',
       defaultMessage: 'Verification failed. Please check again.'

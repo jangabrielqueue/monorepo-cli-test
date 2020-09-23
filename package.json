@@ -13,7 +13,7 @@
     "customize-cra": "^0.9.1",
     "env-cmd": "^10.0.1",
     "firebase": "^7.7.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.14.1",
     "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.2",
@@ -23,7 +23,7 @@
     "react-hook-form": "^5.7.2",
     "react-intl": "^3.12.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^3.4.3",
     "source-map-explorer": "^2.0.1",
     "styled-components": "^5.1.1",
     "url-search-params-polyfill": "^8.1.0"
