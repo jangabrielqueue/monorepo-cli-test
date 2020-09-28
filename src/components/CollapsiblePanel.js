@@ -31,7 +31,7 @@ const StyledHeader = styled.div`
 const StyledContent = styled.div`
   font-size: 12px;
   overflow-y: hidden;
-  max-height: ${props => props.toggleCollapse ? props.topup ? '100px' : '50px' : '0'};
+  max-height: ${props => props.toggleCollapse ? props.topup ? '100px' : '155px' : '0'};
 
   transition-property: all;
   transition-duration: .5s;

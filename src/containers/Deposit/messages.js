@@ -5,6 +5,10 @@ export default defineMessages({
     id: 'deposit',
     defaultMessage: 'Deposit'
   },
+  secureBankingText: {
+    id: 'secureBankingText',
+    defaultMessage: '*Secure Online Banking: Please use your Internet Banking account and password to log in.'
+  },
   placeholders: {
     loginName: {
       id: 'placeholders.loginName',
@@ -38,6 +42,28 @@ export default defineMessages({
   moreInformation: {
     id: 'moreInformation',
     defaultMessage: 'More Information'
+  },
+  importantNotes: {
+    id: 'importantNotes',
+    defaultMessage: 'Important Notes:'
+  },
+  importantNotesText: {
+    kindlyEnsureActivated: {
+      id: 'importantNotesText.kindlyEnsureActivated',
+      defaultMessage: 'Kindly ensure your bank account has been activated for online payment processing.'
+    },
+    doNotSubmitMoreThanOne: {
+      id: 'importantNotesText.doNotSubmitMoreThanOne',
+      defaultMessage: 'Please do not click on any submit button more than once.'
+    },
+    doNotRefresh: {
+      id: 'importantNotesText.doNotRefresh',
+      defaultMessage: 'Please do not refresh your browser.'
+    },
+    takeNoteReference: {
+      id: 'importantNotesText.takeNoteReference',
+      defaultMessage: 'Please take note of the Bank reference number if any case you need to contact our Customer Service for further verification.'
+    }
   },
   countdown: {
     id: 'countdown',

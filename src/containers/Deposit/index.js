@@ -352,7 +352,6 @@ const Deposit = (props) => {
       <DepositForm
         currency={currency}
         bank={bank}
-        reference={reference}
         handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
         showOtpMethod={showOtpMethod}
@@ -411,6 +410,7 @@ const Deposit = (props) => {
                 language={language}
                 currency={currency}
                 amount={amount}
+                reference={reference}
               />
             )}
             {step === 1 && (

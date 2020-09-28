@@ -5,8 +5,6 @@ import { FormattedMessage } from 'react-intl'
 import GlobalButton from '../../components/GlobalButton'
 import CollapsiblePanel from '../../components/CollapsiblePanel'
 import styled from 'styled-components'
-import accountIcon from '../../assets/icons/account.png'
-import currencyIcon from '../../assets/icons/currency.png'
 import usernameIcon from '../../assets/icons/username.png'
 import passwordIcon from '../../assets/icons/password.png'
 import bankIcon from '../../assets/icons/bank-name.png'
@@ -23,24 +21,12 @@ const StyledMoreInfo = styled.ul`
     padding-bottom: 5px;
 
     &:before {
-      content: '';
+      content: '-';
       display: inline-block;
       height: 20px;
       margin-right: 5px;
       vertical-align: middle;
       width: 20px;
-    }
-
-    &:first-child {
-      &:before {
-        background: url(${accountIcon}) no-repeat center;
-      }
-    }
-
-    &:last-child {
-      &:before {
-        background: url(${currencyIcon}) no-repeat center;
-      }
     }
   }
 `
@@ -126,12 +112,17 @@ const InputFieldContainer = styled.div`
     }
   }
 `
+const StyledSecureBankingText = styled.p`
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+  padding-left: 35px;
+`
 
 const DepositForm = React.memo((props) => {
   const {
     currency,
     bank,
-    reference,
     handleSubmitDeposit,
     waitingForReady,
     showOtpMethod,
@@ -227,12 +218,15 @@ const DepositForm = React.memo((props) => {
             <p className='input-errors'>{errors.password?.message}</p>
           </div>
         </FormIconContainer>
+        <StyledSecureBankingText><FormattedMessage {...messages.secureBankingText} /></StyledSecureBankingText>
         <CollapsiblePanel
-          title={<FormattedMessage {...messages.moreInformation} />}
+          title={<FormattedMessage {...messages.importantNotes} />}
         >
           <StyledMoreInfo>
-            <li>{reference}</li>
-            <li>{currency}</li>
+            <li><FormattedMessage {...messages.importantNotesText.kindlyEnsureActivated} /></li>
+            <li><FormattedMessage {...messages.importantNotesText.doNotSubmitMoreThanOne} /></li>
+            <li><FormattedMessage {...messages.importantNotesText.doNotRefresh} /></li>
+            <li><FormattedMessage {...messages.importantNotesText.takeNoteReference} /></li>
           </StyledMoreInfo>
         </CollapsiblePanel>
       </form>
