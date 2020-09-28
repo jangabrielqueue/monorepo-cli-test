@@ -31,6 +31,7 @@
     "errors.verificationFailed": "Verification failed. Please check again.",
     "success.successfullyDeposit": "Successfully deposit",
     "errors.connectionTimeout": "A server connection timeout error, please contact customer support for the transaction status.",
+    "errors.bankError": "Currency/Bank is not supported, please contact customer support.",
     "steps.fillInForm": "FILL IN FORM",
     "placeholders.selectTelco": "Please select telco name",
     "placeholders.cardSerialNo": "Card Serial No.",

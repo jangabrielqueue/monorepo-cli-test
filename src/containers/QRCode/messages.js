@@ -42,9 +42,9 @@ export default defineMessages({
     }
   },
   errors: {
-    connectionTimeout: {
-      id: 'errors.connectionTimeout',
-      defaultMessage: 'A server connection timeout error, please contact customer support for the transaction status.'
+    bankError: {
+      id: 'errors.bankError',
+      defaultMessage: 'Currency/Bank is not supported, please contact customer support.'
     },
     verificationFailed: {
       id: 'errors.verificationFailed',

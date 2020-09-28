@@ -31,6 +31,7 @@
     "errors.verificationFailed": "การยืนยันล้มเหลว. กรุณาตรวจสอบอีกครั้ง",
     "success.successfullyDeposit": "ฝากเงินสำเร็จ",
     "errors.connectionTimeout": "หมดเวลาการเชื่อมต่อจากเซิฟเวอร์ , กรุณาติดต่อฝ่ายบริการลูกค้าเพื่อตรวจสอบสถานะการทำธุรกรรม",
+    "errors.bankError": "ไม่รองรับสกุลเงิน / ธนาคาร, โปรดติดต่อฝ่ายสนับสนุนลูกค้า",
     "steps.fillInForm": "กรอกข้อมูลในฟอร์ม",
     "placeholders.selectTelco": "โปรดเลือกผู้ให้บริการ",
     "placeholders.cardSerialNo": "เลขที่บัตร",

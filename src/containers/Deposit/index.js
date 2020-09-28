@@ -336,8 +336,6 @@ const Deposit = (props) => {
         // However on modern and latest browsers their own default message will override this custom message.
         // as of the moment only applicable on browsers. there's no definite implementation on mobile
         e.returnValue = 'Do you really want to leave current page?'
-      } else {
-
       }
     }
   }, [step])

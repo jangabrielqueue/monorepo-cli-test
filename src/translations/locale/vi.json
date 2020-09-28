@@ -31,6 +31,7 @@
     "errors.verificationFailed": "Xác minh không hoàn thành. Vui lòng thử lại.",
     "success.successfullyDeposit": "Gửi tiền thành công",
     "errors.connectionTimeout": "Hệ thống kết nối bị lỗi, vui lòng liên hệ bộ phận chăm sóc khách hàng để được hỗ trợ giao dịch",
+    "errors.bankError": "Tiền tệ / Ngân hàng không được hỗ trợ, vui lòng liên hệ với bộ phận hỗ trợ khách hàng.",
     "steps.fillInForm": "Điền vào mẫu",
     "placeholders.selectTelco": "Vui lòng chọn tên nhà mạng",
     "placeholders.cardSerialNo": "Mã Seri",

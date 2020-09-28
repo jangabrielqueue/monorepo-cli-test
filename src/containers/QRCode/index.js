@@ -33,7 +33,9 @@ const QRCode = (props) => {
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
+    accountName: null,
     encodedImage: null,
+    message: null,
     toAccountId: null
   })
   const [progress, setProgress] = useState(undefined)
@@ -202,10 +204,17 @@ const QRCode = (props) => {
       })
       setResponseData(response.data)
       setWaitingForReady(false)
+
+      if (response.data.message !== null) {
+        setError({
+          code: '404',
+          message: intl.formatMessage(messages.errors.bankError)
+        })
+      }
     } catch (error) {
       setError({
         code: error.response.status,
-        message: intl.formatMessage(messages.errors.connectionTimeout)
+        message: intl.formatMessage(messages.errors.bankError)
       })
       setWaitingForReady(false)
     }
@@ -262,7 +271,11 @@ const QRCode = (props) => {
   useEffect(() => {
     // get qr code
     getQRCodeDetails()
-  }, [])
+
+    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
+    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+    // avoid unnecessary warning
+  }, []) // eslint-disable-line
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
@@ -271,8 +284,6 @@ const QRCode = (props) => {
         // However on modern and latest browsers their own default message will override this custom message.
         // as of the moment only applicable on browsers. there's no definite implementation on mobile
         e.returnValue = 'Do you really want to leave current page?'
-      } else {
-
       }
     }
   }, [step])
@@ -285,10 +296,12 @@ const QRCode = (props) => {
             <Logo bank={bank} currency={currency} />
             {step === 0 && (
               <AccountStatistics
-                accountName={requester}
+                accountName={responseData.accountName}
                 language={language}
                 currency={currency}
                 amount={amount}
+                color={themeColor}
+                loading={waitingForReady}
               />
             )}
             {error && <ErrorAlert message={`Error ${error.code}`} />}
