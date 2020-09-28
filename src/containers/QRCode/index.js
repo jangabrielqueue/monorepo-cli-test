@@ -190,15 +190,28 @@ const QRCode = (props) => {
     setWaitingForReady(true)
 
     const requestBody = {
+      amount: amount,
       bank: bank,
-      merchant: merchant,
+      callbackUri: callbackUri,
+      clientIp: clientIp,
       currency: currency,
-      amount: amount
+      customer: requester,
+      datetime: datetime,
+      failedUrl: failedUrl,
+      key: signature,
+      language: language,
+      merchant: merchant,
+      note: note,
+      reference: reference,
+      requester: requester,
+      signature: signature,
+      successfulUrl: successfulUrl,
+      toAccountId: 0
     }
 
     try {
       const response = await axios({
-        url: 'api/depositqrcode/get-qrcode',
+        url: 'api/depositQRCode/get-qrcode-v2',
         method: 'POST',
         data: requestBody
       })
