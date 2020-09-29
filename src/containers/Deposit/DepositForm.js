@@ -114,9 +114,10 @@ const InputFieldContainer = styled.div`
 `
 const StyledSecureBankingText = styled.p`
   font-size: 14px;
+  font-style: italic;
   line-height: 1.5;
   margin: 0 0 15px 0;
-  padding-left: 35px;
+  padding-left: 5px;
 `
 
 const DepositForm = React.memo((props) => {
