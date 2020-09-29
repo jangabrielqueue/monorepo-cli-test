@@ -3,10 +3,6 @@ import styled from 'styled-components'
 import rightExpand from '../assets/icons/right-expand.png'
 import downExpand from '../assets/icons/down-expand.png'
 
-const StyledPanel = styled.section`
-    margin: 0 10px;
-`
-
 const StyledHeader = styled.div`
     cursor: pointer;
     font-family: ProductSansMedium;
@@ -23,7 +19,7 @@ const StyledHeader = styled.div`
         display: block;
         float: left;
         height: 20px;
-        margin-right: 5px;
+        margin-right: 15px;
         width: 20px;
     }
 `
@@ -46,7 +42,7 @@ const CollapsiblePanel = ({ children, title, topup }) => {
   }
 
   return (
-    <StyledPanel>
+    <section>
       <StyledHeader
         onClick={handleToggleCollapse}
         toggleCollapse={toggleCollapse}
@@ -63,7 +59,7 @@ const CollapsiblePanel = ({ children, title, topup }) => {
           children
         }
       </StyledContent>
-    </StyledPanel>
+    </section>
   )
 }
 

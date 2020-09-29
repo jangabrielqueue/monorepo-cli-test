@@ -5,9 +5,13 @@ export default defineMessages({
     id: 'deposit',
     defaultMessage: 'Deposit'
   },
+  secureBankingTitle: {
+    id: 'secureBankingTitle',
+    defaultMessage: 'Secure Online Banking:'
+  },
   secureBankingText: {
     id: 'secureBankingText',
-    defaultMessage: '*Secure Online Banking: Please use your Internet Banking account and password to log in.'
+    defaultMessage: 'Please use your Internet Banking account and password to log in.'
   },
   placeholders: {
     loginName: {

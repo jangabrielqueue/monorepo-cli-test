@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import usernameIcon from '../../assets/icons/username.png'
 import passwordIcon from '../../assets/icons/password.png'
 import bankIcon from '../../assets/icons/bank-name.png'
+import lockIcon from '../../assets/icons/lock.png'
 import downExpand from '../../assets/icons/down-expand.png'
 import upExpand from '../../assets/icons/up-expand.png'
 import { useFormContext } from 'react-hook-form'
@@ -42,6 +43,8 @@ const FormIconContainer = styled.div`
         return passwordIcon
       } else if (props.icon === 'bank') {
         return bankIcon
+      } else if (props.icon === 'secure') {
+        return lockIcon
       }
     }}) no-repeat center;
     content: '';
@@ -49,6 +52,7 @@ const FormIconContainer = styled.div`
     height: 20px;
     margin: 15px 15px 0 0;
     width: 20px;
+    background-size: ${props => props.icon === 'secure' && 'contain'}
   }
 
   > div {
@@ -116,8 +120,7 @@ const StyledSecureBankingText = styled.p`
   font-size: 14px;
   font-style: italic;
   line-height: 1.5;
-  margin: 0 0 15px 0;
-  padding-left: 5px;
+  margin: 0 0 20px 0;
 `
 
 const DepositForm = React.memo((props) => {
@@ -219,7 +222,13 @@ const DepositForm = React.memo((props) => {
             <p className='input-errors'>{errors.password?.message}</p>
           </div>
         </FormIconContainer>
-        <StyledSecureBankingText><FormattedMessage {...messages.secureBankingText} /></StyledSecureBankingText>
+        <FormIconContainer icon='secure'>
+          <div>
+            <StyledSecureBankingText>
+              <FormattedMessage {...messages.secureBankingTitle} /><br /><FormattedMessage {...messages.secureBankingText} />
+            </StyledSecureBankingText>
+          </div>
+        </FormIconContainer>
         <CollapsiblePanel
           title={<FormattedMessage {...messages.importantNotes} />}
         >
