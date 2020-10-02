@@ -20,11 +20,11 @@ const StyledCircularProgress = styled(CircularProgress)`
   color: ${props => props.theme.colors[props.color.toLowerCase()]};
 `
 
-const AccountStatistics = ({ accountName, language, currency, amount, color, loading }) => {
+const AccountStatistics = ({ accountName, language, currency, amount, color, loading, establishConnection }) => {
   return (
     <StyledAccountStatistics>
       <div>{<FormattedMessage {...messages.account.amount} />}: <span>{`${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></div>
-      <div>{<FormattedMessage {...messages.account.accountName} />}: <span>{loading ? <StyledCircularProgress size='small' color={color} /> : accountName}</span></div>
+      <div>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <StyledCircularProgress size='small' color={color} /> : accountName}</span></div>
     </StyledAccountStatistics>
   )
 }

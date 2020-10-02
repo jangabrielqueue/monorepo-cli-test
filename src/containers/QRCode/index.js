@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Logo from '../../components/Logo'
 import { checkBankIfKnown } from '../../utils/banks'
@@ -17,6 +17,10 @@ import messages from './messages'
 import { useIntl } from 'react-intl'
 import axios from 'axios'
 import ProgressModal from '../../components/ProgressModal'
+import * as signalR from '@microsoft/signalr'
+
+const ENDPOINT = process.env.REACT_APP_ENDPOINT
+const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 const WrapperBG = styled.div`
   background-image: linear-gradient(
@@ -29,7 +33,8 @@ const WrapperBG = styled.div`
 
 const QRCode = (props) => {
   const [step, setStep] = useState(0)
-  const [waitingForReady, setWaitingForReady] = useState(false)
+  const [hubConnection, setHubConnection] = useState(null)
+  const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
@@ -65,6 +70,32 @@ const QRCode = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const isBankKnown = checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
+  const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
+  const getQRCodePayload = {
+    amount: amount,
+    bank: bank,
+    callbackUri: callbackUri,
+    clientIp: clientIp,
+    currency: currency,
+    customer: requester,
+    datetime: datetime,
+    failedUrl: failedUrl,
+    key: signature,
+    language: language,
+    merchant: merchant,
+    note: note,
+    reference: reference,
+    requester: requester,
+    signature: signature,
+    successfulUrl: successfulUrl,
+    toAccountId: 0
+  }
+  const timeoutPayload = {
+    currency: currency,
+    merchant: merchant,
+    reference: reference,
+    statusCode: 698
+  }
 
   async function handleSubmitQRCode () {
     const submitValues = {
@@ -152,11 +183,11 @@ const QRCode = (props) => {
     switch (currentStep) {
       case 0:
         return (
-          <AutoRedirectRQ delay={180000} setStep={setStep}>
+          <AutoRedirectRQ delay={180000} setStep={setStep} hubConnection={hubConnection} timeoutPayload={timeoutPayload}>
             <QRCodeForm
               currency={currency}
               bank={bank}
-              waitingForReady={waitingForReady}
+              establishConnection={establishConnection}
               loadingButton={loadingButton}
               responseData={responseData}
               color={themeColor}
@@ -186,52 +217,17 @@ const QRCode = (props) => {
     }
   }
 
-  async function getQRCodeDetails () {
-    setWaitingForReady(true)
-
-    const requestBody = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
-      customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
-      key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
-      requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
-      toAccountId: 0
-    }
-
-    try {
-      const response = await axios({
-        url: 'api/depositQRCode/get-qrcode-v2',
-        method: 'POST',
-        data: requestBody
-      })
-      setResponseData(response.data)
-      setWaitingForReady(false)
-
-      if (response.data.message !== null) {
+  const handleQrCodeResult = useCallback(
+    (resultQrCode) => {
+      setResponseData(resultQrCode)
+      if (resultQrCode.message !== null) {
         setError({
-          code: '404',
+          code: '',
           message: intl.formatMessage(messages.errors.bankError)
         })
       }
-    } catch (error) {
-      setError({
-        code: error.response.status,
-        message: intl.formatMessage(messages.errors.bankError)
-      })
-      setWaitingForReady(false)
-    }
-  }
+    }, [intl]
+  )
 
   useEffect(() => {
     const queryParamsKeys = [
@@ -282,13 +278,46 @@ const QRCode = (props) => {
   }, []) // eslint-disable-line
 
   useEffect(() => {
-    // get qr code
-    getQRCodeDetails()
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(API_USER_COMMAND_MONITOR)
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build()
 
-    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
-    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-    // avoid unnecessary warning
-  }, []) // eslint-disable-line
+    setHubConnection(connection)
+
+    connection.on('ReceiveQRCode', handleQrCodeResult)
+    connection.onreconnected(async (e) => {
+      await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+    })
+
+    async function start () {
+      try {
+        await connection.start()
+        await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+        setEstablishConnection(true)
+      } catch (error) {
+        setError({
+          code: '',
+          message: intl.formatMessage(messages.errors.bankError)
+        })
+        setEstablishConnection(true)
+      }
+    }
+
+    connection.onclose(async () => {
+      await start()
+    })
+
+    // Start the connection
+    start()
+  }, [
+    session,
+    handleQrCodeResult,
+    intl
+  ]) // disabling the react hooks recommended rule on this case because it forces to add getQRCodePayload as dependencies array
+  // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+  // avoid unnecessary warning
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
@@ -314,10 +343,10 @@ const QRCode = (props) => {
                 currency={currency}
                 amount={amount}
                 color={themeColor}
-                loading={waitingForReady}
+                establishConnection={establishConnection}
               />
             )}
-            {error && <ErrorAlert message={`Error ${error.code}`} />}
+            {error && step === 0 && <ErrorAlert message={`Error ${error.code}`} />}
           </header>
           {
             renderStepsContent(step)
