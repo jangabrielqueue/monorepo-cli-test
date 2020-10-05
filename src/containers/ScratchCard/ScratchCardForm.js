@@ -213,8 +213,11 @@ const ScratchCardForm = React.memo((props) => {
                   value={telcoName}
                 >
                   <option value='VTT' id='telco-1'>Viettel</option>
-                  <option value='VNP' id='telco-2'>Vinaphone</option>
-                  <option value='VMS' id='telco-3'>Mobiphone</option>
+                  <option value='VMS' id='telco-2'>Mobiphone</option>
+                  <option value='VNP' id='telco-3'>Vinaphone</option>
+                  <option value='ZING' id='telco-3'>Zing</option>
+                  <option value='GATE' id='telco-3'>Gate</option>
+                  <option value='VNM' id='telco-3'>Vietnamobile</option>
                 </FormSelectField>
               </div>
             </FormIconContainer>
