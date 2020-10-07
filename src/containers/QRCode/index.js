@@ -5,7 +5,7 @@ import { checkBankIfKnown } from '../../utils/banks'
 import ErrorAlert from '../../components/ErrorAlert'
 import { useQuery, sleep } from '../../utils/utils'
 import AccountStatistics from '../../components/AccountStatistics'
-import AutoRedirectRQ from '../../components/AutoRedirectQR'
+import AutoRedirectQR from '../../components/AutoRedirectQR'
 import AutoRedirect from '../../components/AutoRedirect'
 import QRCodeForm from './QRCodeForm'
 import StepsBar from '../../components/StepsBar'
@@ -183,7 +183,7 @@ const QRCode = (props) => {
     switch (currentStep) {
       case 0:
         return (
-          <AutoRedirectRQ delay={180000} setStep={setStep} hubConnection={hubConnection} timeoutPayload={timeoutPayload}>
+          <AutoRedirectQR delay={180000} setStep={setStep} hubConnection={hubConnection} timeoutPayload={timeoutPayload}>
             <QRCodeForm
               currency={currency}
               bank={bank}
@@ -194,7 +194,7 @@ const QRCode = (props) => {
               handleSubmitQRCode={handleSubmitQRCode}
               error={error}
             />
-          </AutoRedirectRQ>
+          </AutoRedirectQR>
         )
 
       case 1:
@@ -223,10 +223,10 @@ const QRCode = (props) => {
       if (resultQrCode.message !== null) {
         setError({
           code: '',
-          message: intl.formatMessage(messages.errors.bankError)
+          message: resultQrCode.message
         })
       }
-    }, [intl]
+    }, []
   )
 
   useEffect(() => {
@@ -336,7 +336,7 @@ const QRCode = (props) => {
         <div className='form-content'>
           <header className={step === 1 ? null : 'header-bottom-border'}>
             <Logo bank={bank} currency={currency} />
-            {step === 0 && (
+            {step === 0 && !error && (
               <AccountStatistics
                 accountName={responseData.accountName}
                 language={language}
@@ -346,7 +346,7 @@ const QRCode = (props) => {
                 establishConnection={establishConnection}
               />
             )}
-            {error && step === 0 && <ErrorAlert message={`Error ${error.code}`} />}
+            {error && step === 0 && <ErrorAlert message={`Error ${error.code}: ${error.message}`} />}
           </header>
           {
             renderStepsContent(step)

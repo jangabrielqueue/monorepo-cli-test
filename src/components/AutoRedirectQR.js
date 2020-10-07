@@ -11,7 +11,7 @@ const AutoRedirectQR = ({ children, delay, setStep, hubConnection, timeoutPayloa
     return () => {
       clearTimeout(timeout)
     }
-  }, [delay, setStep, hubConnection])
+  }, [delay, setStep, hubConnection, timeoutPayload])
 
   return (
     <main>

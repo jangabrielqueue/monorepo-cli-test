@@ -29,14 +29,6 @@ const StyledImportantList = styled.ol`
 const StyledCircularProgress = styled(CircularProgress)`
   color: ${props => props.theme.colors[props.color.toLowerCase()]};
 `
-const StyledQRCodeError = styled.p`
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  min-height: 200px;
-}
-`
 
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
@@ -61,8 +53,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       <StyledImageContainer>
         {
           !establishConnection ? <StyledCircularProgress size='xlarge' color={color} />
-            : error || responseData.encodedImage === null ? <StyledQRCodeError>{error && error.message}</StyledQRCodeError> : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
-
+            : error || responseData.encodedImage === null ? null : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
         }
       </StyledImageContainer>
       <StyledSubmitContainer>

@@ -23,7 +23,7 @@ const StyledCircularProgress = styled(CircularProgress)`
 const AccountStatistics = ({ accountName, language, currency, amount, color, loading, establishConnection }) => {
   return (
     <StyledAccountStatistics>
-      <div>{<FormattedMessage {...messages.account.amount} />}: <span>{`${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></div>
+      <div>{<FormattedMessage {...messages.account.amount} />}: <span>{!establishConnection ? <StyledCircularProgress size='small' color={color} /> : `${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></div>
       <div>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <StyledCircularProgress size='small' color={color} /> : accountName}</span></div>
     </StyledAccountStatistics>
   )
