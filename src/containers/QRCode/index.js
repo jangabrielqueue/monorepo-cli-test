@@ -39,7 +39,7 @@ const QRCode = (props) => {
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
     accountName: null,
-    encodedImage: null,
+    decodedImage: null,
     message: null,
     toAccountId: null
   })
@@ -99,7 +99,7 @@ const QRCode = (props) => {
 
   async function handleSubmitQRCode () {
     const submitValues = {
-      amount: responseData.amount,
+      amount: amount,
       bank: bank,
       callbackUri: callbackUri,
       clientIp: clientIp,
@@ -115,7 +115,8 @@ const QRCode = (props) => {
       requester: requester,
       signature: signature,
       successfulUrl: successfulUrl,
-      toAccountId: responseData.toAccountId
+      toAccountId: responseData.toAccountId,
+      uniqueAmount: responseData.amount
     }
     setError(undefined)
     setLoadingButton(true)

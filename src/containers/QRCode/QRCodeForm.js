@@ -53,7 +53,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       <StyledImageContainer>
         {
           !establishConnection ? <StyledCircularProgress size='xlarge' color={color} />
-            : error || responseData.encodedImage === null ? null : <QRCode value={responseData.encodedImage} size={200} renderAs='svg' />
+            : error || responseData.decodedImage === null ? null : <QRCode value={responseData.decodedImage} size={200} renderAs='svg' />
         }
       </StyledImageContainer>
       <StyledSubmitContainer>
@@ -61,7 +61,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
           label='Done'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled={!establishConnection || loadingButton || error || responseData.encodedImage === null}
+          disabled={!establishConnection || loadingButton || error || responseData.decodedImage === null}
         />
       </StyledSubmitContainer>
       <StyledImportantNote>{<FormattedMessage {...messages.important.note} />}</StyledImportantNote>
