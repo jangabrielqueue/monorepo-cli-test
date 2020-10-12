@@ -99,7 +99,7 @@ const QRCode = (props) => {
 
   async function handleSubmitQRCode () {
     const submitValues = {
-      amount: amount,
+      amount: responseData.amount,
       bank: bank,
       callbackUri: callbackUri,
       clientIp: clientIp,
@@ -341,7 +341,7 @@ const QRCode = (props) => {
                 accountName={responseData.accountName}
                 language={language}
                 currency={currency}
-                amount={amount}
+                amount={responseData.amount}
                 color={themeColor}
                 establishConnection={establishConnection}
               />
