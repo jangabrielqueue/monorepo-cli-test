@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import '@rmwc/button/styles'
 import '@rmwc/dialog/styles'
+import '@rmwc/tooltip/styles'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import { ErrorBoundary } from 'react-error-boundary'

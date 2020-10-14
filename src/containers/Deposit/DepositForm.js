@@ -3,7 +3,7 @@ import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks'
 import messages from './messages'
 import { FormattedMessage } from 'react-intl'
 import GlobalButton from '../../components/GlobalButton'
-import CollapsiblePanel from '../../components/CollapsiblePanel'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import styled from 'styled-components'
 import usernameIcon from '../../assets/icons/username.png'
 import passwordIcon from '../../assets/icons/password.png'
@@ -12,25 +12,7 @@ import lockIcon from '../../assets/icons/lock.png'
 import downExpand from '../../assets/icons/down-expand.png'
 import upExpand from '../../assets/icons/up-expand.png'
 import { useFormContext } from 'react-hook-form'
-
-const StyledMoreInfo = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0 25px;
-
-  > li {
-    padding-bottom: 5px;
-
-    &:before {
-      content: '-';
-      display: inline-block;
-      height: 20px;
-      margin-right: 5px;
-      vertical-align: middle;
-      width: 20px;
-    }
-  }
-`
+import { Tooltip } from '@rmwc/tooltip'
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -116,17 +98,53 @@ const InputFieldContainer = styled.div`
     }
   }
 `
-const StyledSecureBankingText = styled.p`
-  font-size: 14px;
-  font-style: italic;
-  line-height: 1.5;
-  margin: 0 0 20px 0;
+const StyledSecureBankingText = styled.ul`
+  line-height: 1.7;
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+
+  > li {
+    font-size: 14px;
+  }
+
+  > li:nth-child(odd) {
+    font-family: ProductSansMedium;
+  }
+
+  > li:nth-child(even) {
+    font-style: italic;
+  }
+`
+
+const StyledReferenceTexts = styled.ul`
+  line-height: 1.7;
+  list-style: none;
+  margin: 0 0 16px;
+  padding-left: 35px;
+
+  > li {
+    font-size: 14px;
+  }
+
+  > li:nth-child(odd) {
+    font-family: ProductSansMedium;
+  }
+
+  > li:nth-child(even) {
+    cursor: pointer;
+  }
+
+  @media (max-width: 31.250em) {
+    padding-left: 28px;
+  }
 `
 
 const DepositForm = React.memo((props) => {
   const {
     currency,
     bank,
+    reference,
     handleSubmitDeposit,
     waitingForReady,
     showOtpMethod,
@@ -139,6 +157,7 @@ const DepositForm = React.memo((props) => {
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
+  const [isCopy, setIsCopy] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
@@ -225,20 +244,19 @@ const DepositForm = React.memo((props) => {
         <FormIconContainer icon='secure'>
           <div>
             <StyledSecureBankingText>
-              <FormattedMessage {...messages.secureBankingTitle} /><br /><FormattedMessage {...messages.secureBankingText} />
+              <li><FormattedMessage {...messages.secureBankingTitle} /></li>
+              <li><FormattedMessage {...messages.secureBankingText} /></li>
             </StyledSecureBankingText>
           </div>
         </FormIconContainer>
-        <CollapsiblePanel
-          title={<FormattedMessage {...messages.importantNotes} />}
-        >
-          <StyledMoreInfo>
-            <li><FormattedMessage {...messages.importantNotesText.kindlyEnsureActivated} /></li>
-            <li><FormattedMessage {...messages.importantNotesText.doNotSubmitMoreThanOne} /></li>
-            <li><FormattedMessage {...messages.importantNotesText.doNotRefresh} /></li>
-            <li><FormattedMessage {...messages.importantNotesText.takeNoteReference} /></li>
-          </StyledMoreInfo>
-        </CollapsiblePanel>
+        <StyledReferenceTexts>
+          <li><FormattedMessage {...messages.reference} />:</li>
+          <Tooltip content='reference copied!' showArrow open={isCopy}>
+            <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
+              <li>{reference}</li>
+            </CopyToClipboard>
+          </Tooltip>
+        </StyledReferenceTexts>
       </form>
       {
         !showOtpMethod &&

@@ -13,6 +13,10 @@ export default defineMessages({
     id: 'secureBankingText',
     defaultMessage: 'Please use your Internet Banking account and password to log in.'
   },
+  reference: {
+    id: 'reference',
+    defaultMessage: 'Reference'
+  },
   placeholders: {
     loginName: {
       id: 'placeholders.loginName',

@@ -357,6 +357,7 @@ const Deposit = (props) => {
         showOtpMethod={showOtpMethod}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
+        reference={reference}
       />
     )
   } else if (step === 1) {
@@ -410,7 +411,6 @@ const Deposit = (props) => {
                 language={language}
                 currency={currency}
                 amount={amount}
-                reference={reference}
               />
             )}
             {step === 1 && (
