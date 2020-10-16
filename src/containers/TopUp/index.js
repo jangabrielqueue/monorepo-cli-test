@@ -60,7 +60,7 @@ const TopUp = props => {
   const themeColor = 'topup'
   const { handleSubmit } = useFormContext()
   const [renderCountdownAgain, setRenderCountdownAgain] = useState(false)
-  analytics.setCurrentScreen('deposit')
+  analytics.setCurrentScreen('top_up')
 
   async function handleSubmitDeposit (values, e, type) {
     analytics.logEvent('login', {

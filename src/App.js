@@ -72,11 +72,17 @@ const FallbackComponent = ({ componentStack, error }) => {
   )
 }
 
-const App = () => {
+const App = (props) => {
   const { REACT_APP_ENDPOINT } = process.env
   axios.defaults.baseURL = REACT_APP_ENDPOINT
   axios.defaults.headers.post['Content-Type'] = 'application/json'
-
+  const queryString = window.location.search
+  const urlParams = new URLSearchParams(queryString)
+  const bank = urlParams.get('b')
+  const merchant = urlParams.get('m')
+  const reference = urlParams.get('r')
+  const currency = urlParams.get('c1')
+  const amount = urlParams.get('a')
   const methods = useForm()
 
   // Initialize Firebase
@@ -100,6 +106,15 @@ const App = () => {
     }
     firebase.initializeApp(firebaseConfig)
   }
+
+  const analytics = firebase.analytics()
+  analytics.logEvent('open_deposit_page', {
+    bank,
+    merchant,
+    reference,
+    currency,
+    amount
+  })
 
   const [locale, setLocale] = useState('en')
   const [language, setLanguage] = useState('en-us')
