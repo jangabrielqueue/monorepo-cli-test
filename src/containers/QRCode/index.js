@@ -33,7 +33,6 @@ const WrapperBG = styled.div`
 
 const QRCode = (props) => {
   const [step, setStep] = useState(0)
-  const [hubConnection, setHubConnection] = useState(null)
   const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
@@ -184,7 +183,7 @@ const QRCode = (props) => {
     switch (currentStep) {
       case 0:
         return (
-          <AutoRedirectQR delay={180000} setStep={setStep} hubConnection={hubConnection} timeoutPayload={timeoutPayload}>
+          <AutoRedirectQR delay={180000} setStep={setStep} timeoutPayload={timeoutPayload}>
             <QRCodeForm
               currency={currency}
               bank={bank}
@@ -284,8 +283,6 @@ const QRCode = (props) => {
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build()
-
-    setHubConnection(connection)
 
     connection.on('ReceiveQRCode', handleQrCodeResult)
     connection.onreconnected(async (e) => {
