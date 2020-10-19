@@ -44,6 +44,7 @@ const DefaultButton = styled(Button)`
     > i {
         left: 20px;
         position: absolute;
+        top: 13px;
     }
 `
 

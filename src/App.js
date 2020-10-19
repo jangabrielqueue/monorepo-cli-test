@@ -45,7 +45,9 @@ const theme = {
     vcb: '#00613F',
     acb: '#0038A6',
     sacom: '#0A74BE',
-    vtb: '#055893'
+    vtb: '#055893',
+    permata: '#23343f',
+    cimb: '#82162e'
   }
 }
 

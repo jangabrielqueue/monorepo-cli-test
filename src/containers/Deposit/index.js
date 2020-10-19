@@ -256,7 +256,7 @@ const Deposit = (props) => {
       'n',
       'l'
     ]
-    const currencies = ['VND', 'THB']
+    const currencies = ['VND', 'THB', 'IDR']
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
