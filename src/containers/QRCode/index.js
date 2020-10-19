@@ -40,7 +40,13 @@ const QRCode = (props) => {
     accountName: null,
     decodedImage: null,
     message: null,
-    toAccountId: null
+    toAccountId: null,
+    timer: 0,
+    timerExtend: 0
+  })
+  const [timeout, setTimeout] = useState({
+    minutes: 0,
+    seconds: 0
   })
   const [progress, setProgress] = useState(undefined)
   const [transferResult, setTransferResult] = useState({
@@ -89,12 +95,6 @@ const QRCode = (props) => {
     successfulUrl: successfulUrl,
     toAccountId: 0
   }
-  const timeoutPayload = {
-    currency: currency,
-    merchant: merchant,
-    reference: reference,
-    statusCode: 698
-  }
 
   async function handleSubmitQRCode () {
     const submitValues = {
@@ -117,6 +117,10 @@ const QRCode = (props) => {
       toAccountId: responseData.toAccountId,
       uniqueAmount: responseData.amount
     }
+    setTimeout({
+      minutes: 0,
+      seconds: responseData.timerExtend
+    })
     setError(undefined)
     setLoadingButton(true)
     setProgress({
@@ -183,7 +187,7 @@ const QRCode = (props) => {
     switch (currentStep) {
       case 0:
         return (
-          <AutoRedirectQR delay={180000} setStep={setStep} timeoutPayload={timeoutPayload}>
+          <AutoRedirectQR delay={180000} setStep={setStep} time={timeout}>
             <QRCodeForm
               currency={currency}
               bank={bank}
@@ -220,6 +224,10 @@ const QRCode = (props) => {
   const handleQrCodeResult = useCallback(
     (resultQrCode) => {
       setResponseData(resultQrCode)
+      setTimeout({
+        minutes: resultQrCode.timer / 60,
+        seconds: 0
+      })
       if (resultQrCode.message !== null) {
         setError({
           code: '',

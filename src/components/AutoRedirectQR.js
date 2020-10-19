@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Countdown from './Countdown'
 
-const AutoRedirectQR = ({ children, delay, setStep, timeoutPayload }) => {
+const AutoRedirectQR = ({ children, delay, setStep, time }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setStep(1)
@@ -10,14 +10,14 @@ const AutoRedirectQR = ({ children, delay, setStep, timeoutPayload }) => {
     return () => {
       clearTimeout(timeout)
     }
-  }, [delay, setStep, timeoutPayload])
+  }, [delay, setStep, time])
 
   return (
     <main>
       <Countdown
         qrCode
-        minutes={5}
-        seconds={0}
+        minutes={time.minutes}
+        seconds={time.seconds}
       />
       {
         children
