@@ -25,7 +25,7 @@ const OutlinedButton = styled(Button)`
 `
 
 const DefaultButton = styled(Button)`
-    background-color: ${props => props.theme.colors[`${props.color.toLowerCase()}`]} !important;
+    background-color: ${props => props.theme.colors[`${props.permata === 'PERMATA' ? 'buttonPermata' : props.color.toLowerCase()}`]} !important;
     border-radius: 11px;
     border: 0;
     color: #fff !important;
