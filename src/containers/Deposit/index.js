@@ -34,7 +34,11 @@ const WrapperBG = styled.div`
     ${(props) => props.theme.colors[`${props.color.toLowerCase()}`]} 44%,
     #ffffff calc(44% + 2px)
   );
-  padding-top: ${props => props.bank === 'VCB' ? '105px' : '75px'}
+  padding-top: ${props => props.bank === 'VCB' ? '105px' : '75px'};
+
+  @media (max-width: 33.750em) {
+    padding-top: 35px;
+  }
 `
 
 const Deposit = (props) => {
@@ -220,7 +224,7 @@ const Deposit = (props) => {
         })
       } else if (e.currentStep + 2 >= 3) {
         setProgress({
-          currentStep: 4,
+          currentStep: 5,
           totalSteps: 5,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(
