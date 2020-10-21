@@ -154,23 +154,11 @@ const QRCode = (props) => {
     })
 
     try {
-      const response = await axios({
-        url: 'api/depositqrcode',
+      await axios({
+        url: 'api/depositqrcode/post',
         method: 'POST',
         data: submitValues
       })
-      const responseSubmitQRData = JSON.parse(response.data.data)
-      setTransferResult({
-        statusCode: responseSubmitQRData.StatusCode,
-        reference: responseSubmitQRData.Reference,
-        statusMessage: responseSubmitQRData.StatusMessage,
-        amount: responseSubmitQRData.Amount,
-        currency: responseSubmitQRData.Currency,
-        isSuccessful: responseSubmitQRData.StatusCode === '006'
-      })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
     } catch (error) {
       setTransferResult({
         statusCode: '001',
@@ -237,6 +225,22 @@ const QRCode = (props) => {
     }, []
   )
 
+  const handleQRCodeSubmitResult = useCallback(
+    (resultQrCodeSubmit) => {
+      setTransferResult({
+        statusCode: resultQrCodeSubmit.statusCode,
+        reference: resultQrCodeSubmit.reference,
+        statusMessage: resultQrCodeSubmit.statusMessage,
+        amount: resultQrCodeSubmit.amount,
+        currency: resultQrCodeSubmit.currency,
+        isSuccessful: resultQrCodeSubmit.statusCode === '006'
+      })
+      setLoadingButton(false)
+      setProgress(undefined)
+      setStep(1)
+    }
+  )
+
   useEffect(() => {
     const queryParamsKeys = [
       'b',
@@ -293,6 +297,7 @@ const QRCode = (props) => {
       .build()
 
     connection.on('ReceiveQRCode', handleQrCodeResult)
+    connection.on('receivedResult', handleQRCodeSubmitResult)
     connection.onreconnected(async (e) => {
       await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
     })
