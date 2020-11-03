@@ -31,7 +31,6 @@ const FormIconContainer = styled.div`
     flex: 0 1 415px;
   }
 `
-
 const InputFieldContainer = styled.div`
   position: relative;
 
@@ -78,9 +77,32 @@ const InputFieldContainer = styled.div`
     }
   }
 `
+const FormHeader = styled.h1`
+  font-size: 14px;
+  font-weight: normal;
+  margin: 0 0 20px;
+`
+const FormDABContainer = styled.div`
+  align-items: center;
+  display: flex;
+  margin-bottom: 15px;
+
+  label {
+    margin-right: 10px;
+  }
+
+  input {
+    &:nth-child(2) {
+      margin-right: 5px;
+    }
+  }
+`
+const FormDABInput = styled.input`
+  border: 1px solid #CCC !important;
+`
 
 const OTPForm = React.memo((props) => {
-  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress } = props
+  const { handleSubmitOTP, otpReference, waitingForReady, bank, currency, progress, isCardOTP } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
 
@@ -88,8 +110,10 @@ const OTPForm = React.memo((props) => {
   const { dirty } = formState
   const formValues = getValues()
 
-  function handleSubmitForm ({ OTP }) {
-    handleSubmitOTP(OTP)
+  function handleSubmitForm ({ OTP, OTP1, OTP2 }) {
+    const OTPValue = isCardOTP ? `${OTP1}-${OTP2}` : OTP
+
+    handleSubmitOTP(OTPValue)
   }
 
   useEffect(() => {
@@ -110,28 +134,69 @@ const OTPForm = React.memo((props) => {
               </div>
             </FormIconContainer>
         }
-        <FormIconContainer icon='username'>
-          <div>
-            <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
-            <InputFieldContainer>
-              <input
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
-                type='number'
-                id='OTP'
-                name='OTP'
-                autoComplete='off'
-                onKeyDown={e => e.which === 69 && e.preventDefault()}
-              />
-              <ul>
-                {
-                  (formValues.OTP !== '' && dirty) &&
-                    <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
-                }
-              </ul>
-            </InputFieldContainer>
-            <p className='input-errors'>{errors.OTP?.message}</p>
-          </div>
-        </FormIconContainer>
+        {
+          !isCardOTP &&
+            <FormIconContainer icon='username'>
+              <div>
+                <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
+                <InputFieldContainer>
+                  <input
+                    ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
+                    type='number'
+                    id='OTP'
+                    name='OTP'
+                    autoComplete='off'
+                    onKeyDown={e => e.which === 69 && e.preventDefault()}
+                  />
+                  <ul>
+                    {
+                      (formValues.OTP !== '' && dirty) &&
+                        <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
+                    }
+                  </ul>
+                </InputFieldContainer>
+                <p className='input-errors'>{errors.OTP?.message}</p>
+              </div>
+            </FormIconContainer>
+        }
+        {
+          isCardOTP &&
+            <div>
+              <FormHeader><FormattedMessage {...messages.otpDABLabel} /></FormHeader>
+              <FormDABContainer>
+                <label htmlFor='OTP1'>Ref1</label>
+                <FormDABInput
+                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
+                  type='number'
+                  id='OTP1'
+                  name='OTP1'
+                  autoComplete='off'
+                  onKeyDown={e => e.which === 69 && e.preventDefault()}
+                />
+                <label htmlFor='OTP2'>Ref2</label>
+                <FormDABInput
+                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
+                  type='number'
+                  id='OTP2'
+                  name='OTP2'
+                  autoComplete='off'
+                  onKeyDown={e => e.which === 69 && e.preventDefault()}
+                />
+              </FormDABContainer>
+              {
+                (errors.OTP1?.type === 'required' || errors.OTP2?.type === 'required') &&
+                  <p className='input-errors'>
+                    {errors.OTP1?.message || errors.OTP2?.message}
+                  </p>
+              }
+              {
+                (errors.OTP1?.type === 'maxLength' || errors.OTP2?.type === 'maxLength') &&
+                  <p className='input-errors'>
+                    Please input a maximum length of 3 digits.
+                  </p>
+              }
+            </div>
+        }
         <div className='form-content-submit-container'>
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}

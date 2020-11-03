@@ -81,6 +81,10 @@ export default defineMessages({
     id: 'otpReference',
     defaultMessage: 'OTP Reference'
   },
+  otpDABLabel: {
+    id: 'otpDABLabel',
+    defaultMessage: 'Please enter the value at position 2 numeric box on the Authentication Card'
+  },
   otpNewRecipient: {
     id: 'otpNewRecipient',
     defaultMessage: 'OTP for new recipient'

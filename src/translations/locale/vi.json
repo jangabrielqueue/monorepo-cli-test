@@ -28,6 +28,7 @@
     "secureBankingText": "Vui lòng sử dụng tài khoản và mật khẩu Internet Banking của bạn để đăng nhập",
     "otpReference": "Mã tham chiếu OTP",
     "reference": "hông tin",
+    "otpDABLabel": "Vui lòng nhập giá trị tại vị trí 2 ô số trên Thẻ xác thực",
     "countdown": "Đếm ngược",
     "account.amount": "Số Tiền",
     "account.accountName": "Tên tài khoản",

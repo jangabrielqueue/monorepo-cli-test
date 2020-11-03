@@ -28,6 +28,7 @@
     "secureBankingText": "Please use your Internet Banking account and password to log in.",
     "otpReference": "OTP Reference",
     "reference": "Reference",
+    "otpDABLabel": "Please enter the value at position 2 numeric box on the Authentication Card",
     "countdown": "Countdown",
     "account.amount": "Amount",
     "account.accountName": "Account Name",
