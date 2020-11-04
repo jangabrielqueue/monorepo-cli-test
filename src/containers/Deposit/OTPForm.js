@@ -195,7 +195,7 @@ const OTPForm = React.memo((props) => {
               {
                 (errors.OTP1?.type === 'maxLength' || errors.OTP2?.type === 'maxLength') &&
                   <p className='input-errors'>
-                    Please input a maximum length of 3 digits.
+                    <FormattedMessage {...messages.placeholders.inputOtpDAB} />
                   </p>
               }
             </div>

@@ -38,6 +38,10 @@ export default defineMessages({
       id: 'placeholders.inputOtp',
       defaultMessage: 'Please input OTP received from bank'
     },
+    inputOtpDAB: {
+      id: 'placeholders.inputOtpDAB',
+      defaultMessage: 'Please input a 3 digit number'
+    },
     bankName: {
       id: 'placeholders.bankName',
       defaultMessage: 'Bank Name'

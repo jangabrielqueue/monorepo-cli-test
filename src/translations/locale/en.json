@@ -26,6 +26,7 @@
     "placeholders.inputOtp": "Please input OTP received from bank",
     "secureBankingTitle": "Secure Online Banking:",
     "secureBankingText": "Please use your Internet Banking account and password to log in.",
+    "placeholders.inputOtpDAB": "Please input a 3 digit number",
     "otpReference": "OTP Reference",
     "reference": "Reference",
     "otpDABLabel": "Please enter the value at position 2 numeric box on the Authentication Card",
