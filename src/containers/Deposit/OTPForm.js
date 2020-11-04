@@ -109,6 +109,9 @@ const OTPForm = React.memo((props) => {
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
+  const cardOTPReferenceArray = otpReference?.split('-')
+  const cardOTP1 = cardOTPReferenceArray?.[0]
+  const cardOTP2 = cardOTPReferenceArray?.[1]
 
   function handleSubmitForm ({ OTP, OTP1, OTP2 }) {
     const OTPValue = isCardOTP ? `${OTP1}-${OTP2}` : OTP
@@ -126,7 +129,7 @@ const OTPForm = React.memo((props) => {
     <main>
       <form>
         {
-          !isNullOrWhitespace(otpReference) &&
+          !isNullOrWhitespace(otpReference) && !isCardOTP &&
             <FormIconContainer icon='otp-reference'>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>
@@ -164,7 +167,7 @@ const OTPForm = React.memo((props) => {
             <div>
               <FormHeader><FormattedMessage {...messages.otpDABLabel} /></FormHeader>
               <FormDABContainer>
-                <label htmlFor='OTP1'>Ref1</label>
+                <label htmlFor='OTP1'>{cardOTP1}</label>
                 <FormDABInput
                   ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
                   type='number'
@@ -173,7 +176,7 @@ const OTPForm = React.memo((props) => {
                   autoComplete='off'
                   onKeyDown={e => e.which === 69 && e.preventDefault()}
                 />
-                <label htmlFor='OTP2'>Ref2</label>
+                <label htmlFor='OTP2'>{cardOTP2}</label>
                 <FormDABInput
                   ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
                   type='number'
