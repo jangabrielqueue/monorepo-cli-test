@@ -12,6 +12,7 @@ import { IntlProvider } from 'react-intl'
 import localeEn from './translations/locale/en.json'
 import localeVi from './translations/locale/vi.json'
 import localeTh from './translations/locale/th.json'
+import localeId from './translations/locale/id.json'
 import { ThemeProvider } from 'styled-components'
 import GlobalStyles from './assets/styles/GlobalStyles'
 import { useForm, FormContext } from 'react-hook-form'
@@ -133,7 +134,8 @@ const App = (props) => {
   const localeMessages = {
     en: localeEn,
     vi: localeVi,
-    th: localeTh
+    th: localeTh,
+    id: localeId
   }
 
   function handleSelectLanguage (param) {
@@ -145,6 +147,10 @@ const App = (props) => {
       case 'th-th':
         setLocale('th')
         setLanguage('th-th')
+        break
+      case 'id-id':
+        setLocale('id')
+        setLanguage('id-id')
         break
       default:
         setLocale('en')
