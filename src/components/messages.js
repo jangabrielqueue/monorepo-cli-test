@@ -11,14 +11,14 @@ export default defineMessages({
       defaultMessage: 'Account Name'
     }
   },
+  countdown: {
+    id: 'countdown',
+    defaultMessage: 'Countdown'
+  },
   texts: {
     redirected: {
       id: 'texts.redirected',
       defaultMessage: 'You will be redirected in {timeLeft} seconds..'
-    },
-    countdown: {
-      id: 'texts.countdown',
-      defaultMessage: 'Countdown'
     }
   },
   success: {
