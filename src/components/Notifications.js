@@ -9,7 +9,8 @@ const StyledCountdown = styled.div`
   padding: 10px;
   background: #ffffcc;
   color: #3e3e3e;
-  font-size: smaller;
+  font-size: 14px;
+
   b {
     font-weight: 700;
     color: black;
@@ -20,13 +21,17 @@ const StyledCountdown = styled.div`
     margin: 0;
     padding: 0;
   }
+
+  @media (max-width: 33.750em) {
+    font-size: 12px;
+  }
 `
 
 const Notifications = ({ bank, language, intl }) => {
   return (
     <>
       {
-        bank === 'VCB' &&
+        bank?.toUpperCase() === 'VCB' &&
           <StyledCountdown>
             <ul>
               <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
