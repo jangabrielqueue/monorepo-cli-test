@@ -5,8 +5,8 @@ const getFilePathWebP = (bank, currency, type) => {
   const isBankKnown = checkBankIfKnown(currency, bank)
 
   if (isBankKnown) {
-    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.webp`)
-  } else if (bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
+    return require(`../assets/banks/${bank && bank.toUpperCase()}_LOGO.webp`)
+  } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
     return require('../assets/banks/PRECARD_LOGO.webp')
   }
 
@@ -17,8 +17,8 @@ const getFilePathPng = (bank, currency, type) => {
   const isBankKnown = checkBankIfKnown(currency, bank)
 
   if (isBankKnown) {
-    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.png`)
-  } else if (bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
+    return require(`../assets/banks/${bank && bank.toUpperCase()}_LOGO.png`)
+  } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
     return require('../assets/banks/PRECARD_LOGO.png')
   }
 
@@ -26,7 +26,7 @@ const getFilePathPng = (bank, currency, type) => {
 }
 
 const Logo = ({ bank, currency, type }) => {
-  const scratchCardLogoStyle = (bank.toUpperCase() === 'PRECARD' && type === 'scratch-card' && { className: 'scratch-card-logo' }) || null
+  const scratchCardLogoStyle = (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card' && { className: 'scratch-card-logo' })
 
   return (
     <section className='logo'>
