@@ -10,7 +10,7 @@ import {
 } from '../../components/TransferResult'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
 import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep } from '../../utils/utils'
+import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
 import { useIntl } from 'react-intl'
 import messages from './messages'
 import Logo from '../../components/Logo'
@@ -207,10 +207,7 @@ const Deposit = (props) => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
-      const currentStep = Math.max(e.currentStep, (e.currentStep / e.totalSteps) * 3 + 10)
-      // Math.max returns whichever is the largest number to move forward
-      // 13 totalSteps = 3 fake steps + 10 dynamic steps (steps from update)
-      // (update step/update totalstep) and then multiple by (fake steps + dynamic steps)
+      const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
         // check if the currentStep is not equal to totalSteps then move the progress bar
