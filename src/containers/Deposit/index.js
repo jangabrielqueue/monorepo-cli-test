@@ -34,10 +34,10 @@ const WrapperBG = styled.div`
     ${(props) => props.theme.colors[`${props.color.toLowerCase()}`]} 44%,
     #ffffff calc(44% + 2px)
   );
-  padding-top: ${props => props.bank?.toUpperCase() === 'VCB' ? '105px' : '75px'};
+  padding-top: ${props => props.bank && props.bank.toUpperCase() === 'VCB' ? '105px' : '75px'};
 
   @media (max-width: 33.750em) {
-    padding-top: ${props => props.bank?.toUpperCase() !== 'VCB' && '35px'};
+    padding-top: ${props => props.bank && props.bank.toUpperCase() !== 'VCB' && '35px'};
   }
 `
 

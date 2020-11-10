@@ -31,7 +31,7 @@ const Notifications = ({ bank, language, intl }) => {
   return (
     <>
       {
-        bank?.toUpperCase() === 'VCB' &&
+        bank && bank.toUpperCase() === 'VCB' &&
           <StyledCountdown>
             <ul>
               <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
