@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react'
 import '@rmwc/button/styles'
 import '@rmwc/dialog/styles'
 import '@rmwc/tooltip/styles'
+import '@rmwc/circular-progress/styles'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -21,6 +22,7 @@ const Deposit = lazy(() => import('./containers/Deposit'))
 const ScratchCard = lazy(() => import('./containers/ScratchCard/ScratchCard'))
 const TopUp = lazy(() => import('./containers/TopUp'))
 const NotFound = lazy(() => import('./components/NotFound'))
+const QRCode = lazy(() => import('./containers/QRCode'))
 
 const theme = {
   colors: {
@@ -110,7 +112,7 @@ const App = () => {
     th: localeTh
   }
 
-  function handleSelectLanguage (param) {
+  function handleSelectLanguage(param) {
     switch (param) {
       case 'vi-vn':
         setLocale('vi')
@@ -148,6 +150,9 @@ const App = () => {
                   </Route>
                   <Route exact path='/deposit/bank'>
                     <Deposit language={language} />
+                  </Route>
+                  <Route exact path='/deposit/qrcode'>
+                    <QRCode language={language} />
                   </Route>
                   <Route exact path='/deposit/scratch-card'>
                     <ScratchCard language={language} />
