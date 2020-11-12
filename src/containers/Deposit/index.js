@@ -346,12 +346,12 @@ const Deposit = (props) => {
       <DepositForm
         currency={currency}
         bank={bank}
-        reference={reference}
         handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
         showOtpMethod={showOtpMethod}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
+        reference={reference}
       />
     )
   } else if (step === 1) {

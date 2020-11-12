@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import '@rmwc/button/styles'
 import '@rmwc/dialog/styles'
+import '@rmwc/tooltip/styles'
 import '@rmwc/circular-progress/styles'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
@@ -111,7 +112,7 @@ const App = () => {
     th: localeTh
   }
 
-  function handleSelectLanguage (param) {
+  function handleSelectLanguage(param) {
     switch (param) {
       case 'vi-vn':
         setLocale('vi')

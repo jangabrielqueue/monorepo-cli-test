@@ -3,47 +3,16 @@ import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks'
 import messages from './messages'
 import { FormattedMessage } from 'react-intl'
 import GlobalButton from '../../components/GlobalButton'
-import CollapsiblePanel from '../../components/CollapsiblePanel'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import styled from 'styled-components'
-import accountIcon from '../../assets/icons/account.png'
-import currencyIcon from '../../assets/icons/currency.png'
 import usernameIcon from '../../assets/icons/username.png'
 import passwordIcon from '../../assets/icons/password.png'
 import bankIcon from '../../assets/icons/bank-name.png'
+import lockIcon from '../../assets/icons/lock.png'
 import downExpand from '../../assets/icons/down-expand.png'
 import upExpand from '../../assets/icons/up-expand.png'
 import { useFormContext } from 'react-hook-form'
-
-const StyledMoreInfo = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0 25px;
-
-  > li {
-    padding-bottom: 5px;
-
-    &:before {
-      content: '';
-      display: inline-block;
-      height: 20px;
-      margin-right: 5px;
-      vertical-align: middle;
-      width: 20px;
-    }
-
-    &:first-child {
-      &:before {
-        background: url(${accountIcon}) no-repeat center;
-      }
-    }
-
-    &:last-child {
-      &:before {
-        background: url(${currencyIcon}) no-repeat center;
-      }
-    }
-  }
-`
+import { Tooltip } from '@rmwc/tooltip'
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -56,6 +25,8 @@ const FormIconContainer = styled.div`
         return passwordIcon
       } else if (props.icon === 'bank') {
         return bankIcon
+      } else if (props.icon === 'secure') {
+        return lockIcon
       }
     }}) no-repeat center;
     content: '';
@@ -63,6 +34,7 @@ const FormIconContainer = styled.div`
     height: 20px;
     margin: 15px 15px 0 0;
     width: 20px;
+    background-size: ${props => props.icon === 'secure' && 'contain'}
   }
 
   > div {
@@ -126,6 +98,47 @@ const InputFieldContainer = styled.div`
     }
   }
 `
+const StyledSecureBankingText = styled.ul`
+  line-height: 1.7;
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+
+  > li {
+    font-size: 14px;
+  }
+
+  > li:nth-child(odd) {
+    font-family: ProductSansMedium;
+  }
+
+  > li:nth-child(even) {
+    font-style: italic;
+  }
+`
+
+const StyledReferenceTexts = styled.ul`
+  line-height: 1.7;
+  list-style: none;
+  margin: 0 0 16px;
+  padding-left: 35px;
+
+  > li {
+    font-size: 14px;
+  }
+
+  > li:nth-child(odd) {
+    font-family: ProductSansMedium;
+  }
+
+  > li:nth-child(even) {
+    cursor: pointer;
+  }
+
+  @media (max-width: 31.250em) {
+    padding-left: 28px;
+  }
+`
 
 const DepositForm = React.memo((props) => {
   const {
@@ -144,6 +157,7 @@ const DepositForm = React.memo((props) => {
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
+  const [isCopy, setIsCopy] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
@@ -227,14 +241,22 @@ const DepositForm = React.memo((props) => {
             <p className='input-errors'>{errors.password?.message}</p>
           </div>
         </FormIconContainer>
-        <CollapsiblePanel
-          title={<FormattedMessage {...messages.moreInformation} />}
-        >
-          <StyledMoreInfo>
-            <li>{reference}</li>
-            <li>{currency}</li>
-          </StyledMoreInfo>
-        </CollapsiblePanel>
+        <FormIconContainer icon='secure'>
+          <div>
+            <StyledSecureBankingText>
+              <li><FormattedMessage {...messages.secureBankingTitle} /></li>
+              <li><FormattedMessage {...messages.secureBankingText} /></li>
+            </StyledSecureBankingText>
+          </div>
+        </FormIconContainer>
+        <StyledReferenceTexts>
+          <li><FormattedMessage {...messages.reference} />:</li>
+          <Tooltip content='reference copied!' showArrow open={isCopy}>
+            <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
+              <li>{reference}</li>
+            </CopyToClipboard>
+          </Tooltip>
+        </StyledReferenceTexts>
       </form>
       {
         !showOtpMethod &&
