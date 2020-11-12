@@ -10,7 +10,7 @@ import {
 } from '../../components/TransferResult'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
 import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep } from '../../utils/utils'
+import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
 import { useIntl } from 'react-intl'
 import messages from './messages'
 import Logo from '../../components/Logo'
@@ -34,7 +34,11 @@ const WrapperBG = styled.div`
     ${(props) => props.theme.colors[`${props.color.toLowerCase()}`]} 44%,
     #ffffff calc(44% + 2px)
   );
-  padding-top: ${props => props.bank === 'VCB' ? '105px' : '75px'}
+  padding-top: ${props => props.bank && props.bank.toUpperCase() === 'VCB' ? '105px' : '75px'};
+
+  @media (max-width: 33.750em) {
+    padding-top: ${props => props.bank && props.bank.toUpperCase() !== 'VCB' && '35px'};
+  }
 `
 
 const Deposit = (props) => {
@@ -44,7 +48,7 @@ const Deposit = (props) => {
   const [waitingForReady, setWaitingForReady] = useState(false)
   const [establishConnection, setEstablishConnection] = useState(false)
   const [error, setError] = useState()
-  const [progress, setProgress] = useState()
+  const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
   const [windowDimensions, setWindowDimensions] = useState({
@@ -73,7 +77,6 @@ const Deposit = (props) => {
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const { handleSubmit } = useFormContext()
-  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false)
 
   async function handleSubmitDeposit (values, e, type) {
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -85,14 +88,14 @@ const Deposit = (props) => {
     setWaitingForReady(true)
     setProgress({
       currentStep: 1,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.startingConnection)
     })
     await sleep(750)
     setProgress({
       currentStep: 2,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(
         messages.progress.encryptedTransmission
@@ -101,7 +104,7 @@ const Deposit = (props) => {
     await sleep(750)
     setProgress({
       currentStep: 3,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
     })
@@ -130,20 +133,14 @@ const Deposit = (props) => {
         reference,
         error: result.error
       })
+      // until step 4 since it not complete because of error
       setProgress({
         currentStep: 4,
-        totalSteps: 5,
+        totalSteps: 13,
         statusCode: '009',
         statusMessage: intl.formatMessage(
           messages.progress.submittingTransaction
         )
-      })
-      await sleep(750)
-      setProgress({
-        currentStep: 5,
-        totalSteps: 5,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
       })
       await sleep(750)
       setProgress(undefined)
@@ -204,28 +201,27 @@ const Deposit = (props) => {
     setStep(1)
     setOtpReference(e.extraData)
     setWaitingForReady(false)
-    setRenderCountdownAgain((prevState) => !prevState)
   }, [])
 
   const handleUpdateProgress = useCallback(
     async (e) => {
-      if (e.currentStep + 2 === e.totalSteps + 2) {
+      const currentStep = calculateCurrentProgress(e)
+
+      if (e.currentStep !== e.totalSteps) {
+        // check if the currentStep is not equal to totalSteps then move the progress bar
         setProgress({
-          currentStep: 5,
-          totalSteps: 5,
+          currentStep: currentStep,
+          totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(
-            messages.progress.waitingTransaction
-          )
+          statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
         })
-      } else if (e.currentStep + 2 >= 3) {
+      } else {
+        // else return the final step
         setProgress({
-          currentStep: 4,
-          totalSteps: 5,
+          currentStep: 13,
+          totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(
-            messages.progress.submittingTransaction
-          )
+          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
         })
       }
     },
@@ -338,8 +334,6 @@ const Deposit = (props) => {
         // However on modern and latest browsers their own default message will override this custom message.
         // as of the moment only applicable on browsers. there's no definite implementation on mobile
         e.returnValue = 'Do you really want to leave current page?'
-      } else {
-
       }
     }
   }, [step])
@@ -352,12 +346,12 @@ const Deposit = (props) => {
       <DepositForm
         currency={currency}
         bank={bank}
-        reference={reference}
         handleSubmitDeposit={handleSubmitDeposit}
         waitingForReady={waitingForReady}
         showOtpMethod={showOtpMethod}
         windowDimensions={windowDimensions}
         establishConnection={establishConnection}
+        reference={reference}
       />
     )
   } else if (step === 1) {
@@ -414,7 +408,7 @@ const Deposit = (props) => {
               />
             )}
             {step === 1 && (
-              <Countdown renderCountdownAgain={renderCountdownAgain} />
+              <Countdown minutes={3} seconds={0} />
             )}
             {error && <ErrorAlert message={error.message} />}
           </header>

@@ -22,7 +22,8 @@ const AutoRedirect = ({ children, delay, url }) => {
       <StyledRedirectContainer>
         <Countdown
           redirect
-          delay={delay}
+          minutes={0}
+          seconds={10}
         />
       </StyledRedirectContainer>
       {
