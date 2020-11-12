@@ -73,7 +73,6 @@ const Deposit = (props) => {
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const { handleSubmit } = useFormContext()
-  const [renderCountdownAgain, setRenderCountdownAgain] = useState(false)
 
   async function handleSubmitDeposit (values, e, type) {
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -204,7 +203,6 @@ const Deposit = (props) => {
     setStep(1)
     setOtpReference(e.extraData)
     setWaitingForReady(false)
-    setRenderCountdownAgain((prevState) => !prevState)
   }, [])
 
   const handleUpdateProgress = useCallback(
@@ -338,8 +336,6 @@ const Deposit = (props) => {
         // However on modern and latest browsers their own default message will override this custom message.
         // as of the moment only applicable on browsers. there's no definite implementation on mobile
         e.returnValue = 'Do you really want to leave current page?'
-      } else {
-
       }
     }
   }, [step])
@@ -414,7 +410,7 @@ const Deposit = (props) => {
               />
             )}
             {step === 1 && (
-              <Countdown renderCountdownAgain={renderCountdownAgain} />
+              <Countdown minutes={3} seconds={0} />
             )}
             {error && <ErrorAlert message={error.message} />}
           </header>

@@ -1,10 +1,24 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
+  account: {
+    amount: {
+      id: 'account.amount',
+      defaultMessage: 'Amount'
+    },
+    accountName: {
+      id: 'account.accountName',
+      defaultMessage: 'Account Name'
+    }
+  },
+  countdown: {
+    id: 'countdown',
+    defaultMessage: 'Countdown'
+  },
   texts: {
     redirected: {
       id: 'texts.redirected',
-      defaultMessage: 'You will be redirected in {timeLeft} seconds'
+      defaultMessage: 'You will be redirected in {timeLeft} seconds..'
     }
   },
   success: {
