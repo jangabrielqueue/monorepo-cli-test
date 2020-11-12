@@ -7,7 +7,7 @@ import {
 } from '../../components/TransferResult'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
 import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep } from '../../utils/utils'
+import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
 import { getBanksByCurrencyForTopUp } from '../../utils/banks'
 import { useIntl } from 'react-intl'
 import messages from './messages'
@@ -40,7 +40,7 @@ const TopUp = props => {
   const [waitingForReady, setWaitingForReady] = useState(false)
   const [establishConnection, setEstablishConnection] = useState(false)
   const [error, setError] = useState()
-  const [progress, setProgress] = useState()
+  const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
   const [windowDimensions, setWindowDimensions] = useState({
@@ -71,21 +71,21 @@ const TopUp = props => {
     setWaitingForReady(true)
     setProgress({
       currentStep: 1,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.startingConnection)
     })
     await sleep(750)
     setProgress({
       currentStep: 2,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
     })
     await sleep(750)
     setProgress({
       currentStep: 3,
-      totalSteps: 5,
+      totalSteps: 13,
       statusCode: '009',
       statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
     })
@@ -108,18 +108,12 @@ const TopUp = props => {
         reference,
         error: result.error
       })
+      // until step 4 since it not complete because of error
       setProgress({
         currentStep: 4,
-        totalSteps: 5,
+        totalSteps: 13,
         statusCode: '009',
         statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
-      })
-      await sleep(750)
-      setProgress({
-        currentStep: 5,
-        totalSteps: 5,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
       })
       await sleep(750)
       setProgress(undefined)
@@ -187,19 +181,23 @@ const TopUp = props => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
-      if ((e.currentStep + 2) === (e.totalSteps + 2)) {
+      const currentStep = calculateCurrentProgress(e)
+
+      if (e.currentStep !== e.totalSteps) {
+        // check if the currentStep is not equal to totalSteps then move the progress bar
         setProgress({
-          currentStep: 5,
-          totalSteps: 5,
-          statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
-        })
-      } else if ((e.currentStep + 2) >= 3) {
-        setProgress({
-          currentStep: 4,
-          totalSteps: 5,
+          currentStep: currentStep,
+          totalSteps: 13,
           statusCode: e.statusCode,
           statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        })
+      } else {
+        // else return the final step
+        setProgress({
+          currentStep: 13,
+          totalSteps: 13,
+          statusCode: e.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
         })
       }
     },
