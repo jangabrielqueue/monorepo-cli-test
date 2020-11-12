@@ -59,7 +59,7 @@ const ScratchCard = (props) => {
   const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`
   const isBankKnown = checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
-  analytics.setCurrentScreen('deposit')
+  analytics.setCurrentScreen('scratch_card')
 
   async function handleSubmitScratchCard (values) {
     analytics.logEvent('login', {
