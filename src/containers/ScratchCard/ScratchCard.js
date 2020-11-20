@@ -25,7 +25,7 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 const WrapperBG = styled.div`
   background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
-  padding-top: 75px;
+  padding-top: 25px;
 `
 
 const ScratchCard = (props) => {

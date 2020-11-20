@@ -48,14 +48,27 @@ const FormSelectField = styled.select`
   margin-bottom: 23px;
 `
 
-const StyledNoteText = styled.div`
+const StyledNoteText = styled.ul`
     font-size: 14px;
+    line-height: 1.5;
     margin: 15px 0;
-    text-align: center;
+    padding-left: 20px;
 
-    > p {
+    > li {
         color: #767676;
         margin-bottom: 5px;
+    }
+
+    > ul {
+      box-sizing: border-box;
+      list-style-type: circle;
+      padding-left: 25px;
+      width: 100%;
+
+      > li {
+        color: #767676;
+        margin-bottom: 5px;
+      }
     }
 `
 
@@ -268,8 +281,19 @@ const ScratchCardForm = React.memo((props) => {
         {
           (bank && bank.toUpperCase() !== 'GWC') &&
             <StyledNoteText>
-              <p>- <FormattedMessage {...messages.texts.submitCorrectCardDetails} /></p>
-              <p>- <FormattedMessage {...messages.texts.submitIncorrectCardDetails} /></p>
+              <li><FormattedMessage {...messages.notes.notesOne} /></li>
+              <li><FormattedMessage {...messages.notes.notesTwo} /></li>
+              <li><FormattedMessage {...messages.notes.notesThree} /></li>
+              <ul>
+                <li><FormattedMessage {...messages.notes.notesFour} /></li>
+                <li><FormattedMessage {...messages.notes.notesFive} /></li>
+              </ul>
+              <li><FormattedMessage {...messages.notes.notesSix} /></li>
+              <ul>
+                <li>VIETTEL: 29%</li>
+                <li>MOBI: 27%</li>
+                <li>VINA: 24%</li>
+              </ul>
             </StyledNoteText>
         }
       </form>

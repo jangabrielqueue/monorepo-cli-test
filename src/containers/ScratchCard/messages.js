@@ -41,14 +41,30 @@ export default defineMessages({
       defaultMessage: 'Telco Name'
     }
   },
-  texts: {
-    submitCorrectCardDetails: {
-      id: 'texts.submitCorrectCardDetails',
-      defaultMessage: 'Please submit the correct amount, card pin and serial number.'
+  notes: {
+    notesOne: {
+      id: 'notes.notesOne',
+      defaultMessage: 'For loading money from scratch card, memeber will shoulder a transaction fee.'
     },
-    submitIncorrectCardDetails: {
-      id: 'texts.submitIncorrectCardDetails',
-      defaultMessage: 'If submitted with incorrect amount, member will be penalized.'
+    notesTwo: {
+      id: 'notes.notesTwo',
+      defaultMessage: 'Please submit the correct amount, card number and serial number. If input incorrect details, we will not credit deposit amount.'
+    },
+    notesThree: {
+      id: 'notes.notesThree',
+      defaultMessage: 'If submitted with incorrect amount:'
+    },
+    notesFour: {
+      id: 'notes.notesFour',
+      defaultMessage: 'Request amount < real amount, will return request amount + penalised 2% of Request amount.'
+    },
+    notesFive: {
+      id: 'notes.notesFive',
+      defaultMessage: 'Request amount > real amount, will return real amount + penalized 15% of the received amount.'
+    },
+    notesSix: {
+      id: 'notes.notesSix',
+      defaultMessage: 'Transaction Fee:'
     }
   },
   errors: {
