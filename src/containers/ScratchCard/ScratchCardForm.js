@@ -288,6 +288,12 @@ const ScratchCardForm = React.memo((props) => {
                 <li><FormattedMessage {...messages.notes.notesFour} /></li>
                 <li><FormattedMessage {...messages.notes.notesFive} /></li>
               </ul>
+              <li><FormattedMessage {...messages.notes.notesSix} /></li>
+              <ul>
+                <li><FormattedMessage {...messages.notes.notesSeven} /></li>
+                <li><FormattedMessage {...messages.notes.notesEight} /></li>
+                <li><FormattedMessage {...messages.notes.notesNine} /></li>
+              </ul>
             </StyledNoteText>
         }
       </form>
