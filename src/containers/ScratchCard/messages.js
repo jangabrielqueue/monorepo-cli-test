@@ -65,18 +65,6 @@ export default defineMessages({
     notesSix: {
       id: 'notes.notesSix',
       defaultMessage: 'Transaction Fee:'
-    },
-    notesSeven: {
-      id: 'notes.notesSeven',
-      defaultMessage: 'VIETTEL: 29%'
-    },
-    notesEight: {
-      id: 'notes.notesEight',
-      defaultMessage: 'MOBI: 27%'
-    },
-    notesNine: {
-      id: 'notes.notesNine',
-      defaultMessage: 'VINA: 24%'
     }
   },
   errors: {
