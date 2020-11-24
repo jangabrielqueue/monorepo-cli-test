@@ -16,7 +16,7 @@ import messages from './messages'
 import Logo from '../../components/Logo'
 import Notifications from '../../components/Notifications'
 import StepsBar from '../../components/StepsBar'
-import { checkBankIfKnown } from '../../utils/banks'
+import { checkBankIfKnown, checkIfDABBank } from '../../utils/banks'
 import GlobalButton from '../../components/GlobalButton'
 import styled from 'styled-components'
 import Statistics from '../../components/Statistics'
@@ -77,8 +77,13 @@ const Deposit = (props) => {
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const { handleSubmit } = useFormContext()
+  const [isCardOTP, setIsCardOTP] = useState(false)
 
   async function handleSubmitDeposit (values, e, type) {
+    if (type === 'card') { // this is to check if the otp type is card otp
+      setIsCardOTP(prevState => !prevState)
+    }
+
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
 
     analytics.logEvent('login', {
@@ -364,6 +369,7 @@ const Deposit = (props) => {
         bank={bank}
         currency={currency}
         progress={progress}
+        isCardOTP={isCardOTP}
       />
     )
   } else if (step === 2 && isSuccessful) {
@@ -435,17 +441,17 @@ const Deposit = (props) => {
               disabled={!establishConnection || waitingForReady}
             />
             <GlobalButton
-              label='SMART OTP'
+              label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={themeColor}
               outlined
               icon={
                 <img
-                  alt='smart'
+                  alt={checkIfDABBank(bank) ? 'card' : 'smart'}
                   src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
                 />
               }
               onClick={handleSubmit((values, e) =>
-                handleSubmitDeposit(values, e, 'smart')
+                handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart')
               )}
               disabled={!establishConnection || waitingForReady}
             />

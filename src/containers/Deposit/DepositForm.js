@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { getBanksByCurrency, checkBankIfKnown } from '../../utils/banks'
+import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../utils/banks'
 import messages from './messages'
 import { FormattedMessage } from 'react-intl'
 import GlobalButton from '../../components/GlobalButton'
@@ -282,11 +282,11 @@ const DepositForm = React.memo((props) => {
               disabled={!establishConnection || waitingForReady}
             />
             <GlobalButton
-              label='SMART OTP'
+              label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              icon={<img alt='smart' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
-              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
+              icon={<img alt={checkIfDABBank(bank) ? 'card' : 'smart'} src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             />
           </div>

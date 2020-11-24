@@ -38,6 +38,10 @@ export default defineMessages({
       id: 'placeholders.inputOtp',
       defaultMessage: 'Please input OTP received from bank'
     },
+    inputOtpDAB: {
+      id: 'placeholders.inputOtpDAB',
+      defaultMessage: 'Please input a 3 digit number'
+    },
     bankName: {
       id: 'placeholders.bankName',
       defaultMessage: 'Bank Name'
@@ -80,6 +84,10 @@ export default defineMessages({
   otpReference: {
     id: 'otpReference',
     defaultMessage: 'OTP Reference'
+  },
+  otpDABLabel: {
+    id: 'otpDABLabel',
+    defaultMessage: 'Please enter the value at position 2 numeric box on the Authentication Card'
   },
   otpNewRecipient: {
     id: 'otpNewRecipient',

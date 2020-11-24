@@ -98,8 +98,13 @@ function getBanksByCurrencyForTopUp (currency) {
   return []
 }
 
+function checkIfDABBank (bank) {
+  return bank && bank.toUpperCase() === 'DAB'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
-  checkBankIfKnown
+  checkBankIfKnown,
+  checkIfDABBank
 }
