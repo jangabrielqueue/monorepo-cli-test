@@ -48,7 +48,9 @@ const theme = {
     vtb: '#055893',
     permata: '#172D51',
     buttonPermata: '#008873',
-    cimb: '#82162E'
+    cimb: '#82162E',
+    mandiri: '#0A4A8A',
+    buttonMandiri: '#479DDA'
   }
 }
 
@@ -130,7 +132,7 @@ const App = (props) => {
     th: localeTh
   }
 
-  function handleSelectLanguage(param) {
+  function handleSelectLanguage (param) {
     switch (param) {
       case 'vi-vn':
         setLocale('vi')

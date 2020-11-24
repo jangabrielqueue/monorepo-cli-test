@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '@rmwc/button'
 import styled from 'styled-components'
+import { renderButtonColors } from '../utils/utils'
 
 const OutlinedButton = styled(Button)`
     background-color: ${props => props.topup === 'true' ? props.theme.colors[props.color.toLowerCase()] + '!important' : 'transparent'};
@@ -25,7 +26,7 @@ const OutlinedButton = styled(Button)`
 `
 
 const DefaultButton = styled(Button)`
-    background-color: ${props => props.theme.colors[`${props.permata === 'PERMATA' ? 'buttonPermata' : props.color.toLowerCase()}`]} !important;
+    background-color: ${props => props.theme.colors[`${renderButtonColors(props.bank, props.color)}`]} !important;
     border-radius: 11px;
     border: 0;
     color: #fff !important;

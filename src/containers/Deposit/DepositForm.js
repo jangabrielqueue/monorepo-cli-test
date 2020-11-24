@@ -267,7 +267,7 @@ const DepositForm = React.memo((props) => {
               icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
               onClick={handleSubmit(handleSubmitForm)}
               disabled={!establishConnection || waitingForReady}
-              permata={bank && bank.toUpperCase()}
+              bank={bank && bank.toUpperCase()}
             />
           </div>
       }
