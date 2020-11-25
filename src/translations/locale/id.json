@@ -58,5 +58,8 @@
   "important.note": "CATATAN PENTING",
   "important.keyIn": "Harap masukkan jumlah persis yang dihasilkan di layar untuk transaksi yang lebih cepat dan lancar.",
   "important.noRefresh": "Mohon jangan refresh browser Anda.",
-  "important.noSave": "Tolong jangan simpan QRcode yang lama."
+  "important.noSave": "Tolong jangan simpan QRcode yang lama.",
+  "pleaseUseMandiri": "Transaksi Anda akan dijalankan setelah persetujuan melalui Aplikasi Mandiri Online telah dilakukan.",
+  "clickDone": "Klik Selesai jika Anda telah melakukan persetujuan.",
+  "done": "Selesai"
 }
