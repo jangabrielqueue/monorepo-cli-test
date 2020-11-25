@@ -44,7 +44,7 @@ const WrapperBG = styled.div`
 
 const Deposit = (props) => {
   const analytics = firebase.analytics()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
   const [waitingForReady, setWaitingForReady] = useState(false)
   const [establishConnection, setEstablishConnection] = useState(false)
