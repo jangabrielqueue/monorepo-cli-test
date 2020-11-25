@@ -65,5 +65,8 @@
     "important.note": "IMPORTANT NOTE",
     "important.keyIn": "Please key-in the exact amount generated in the screen for faster and smooth transaction.",
     "important.noRefresh": "Please do not refresh your browser.",
-    "important.noSave": "Please do not save old QRcode."
+    "important.noSave": "Please do not save old QRcode.",
+    "pleaseUseMandiri": "Please use your Mandiri Online Application to approve the transaction.",
+    "clickDone": "Click on DONE if you have done the approval.",
+    "done": "Done"
 }

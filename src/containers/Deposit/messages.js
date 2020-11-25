@@ -17,6 +17,18 @@ export default defineMessages({
     id: 'reference',
     defaultMessage: 'Reference'
   },
+  pleaseUseMandiri: {
+    id: 'pleaseUseMandiri',
+    defaultMessage: 'Please use your Mandiri Online Application to approve the transaction.'
+  },
+  clickDone: {
+    id: 'clickDone',
+    defaultMessage: 'Click on DONE if you have done the approval.'
+  },
+  done: {
+    id: 'done',
+    defaultMessage: 'Done'
+  },
   placeholders: {
     loginName: {
       id: 'placeholders.loginName',

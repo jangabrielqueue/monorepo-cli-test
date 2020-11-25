@@ -120,9 +120,14 @@ function checkIfDABBank (bank) {
   return bank && bank.toUpperCase() === 'DAB'
 }
 
+function checkIfMandiriBank (bank) {
+  return bank && bank.toUpperCase() === 'MANDIRI'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
   checkBankIfKnown,
-  checkIfDABBank
+  checkIfDABBank,
+  checkIfMandiriBank
 }
