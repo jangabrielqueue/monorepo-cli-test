@@ -50,7 +50,9 @@ const theme = {
     buttonPermata: '#008873',
     cimb: '#82162E',
     mandiri: '#0A4A8A',
-    buttonMandiri: '#479DDA'
+    buttonMandiri: '#479DDA',
+    bca: '#005caa',
+    buttonBca: '#00b7f1'
   }
 }
 
