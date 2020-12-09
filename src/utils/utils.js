@@ -33,6 +33,8 @@ function renderButtonColors (bank, color) {
       return 'buttonMandiri'
     case 'BCA':
       return 'buttonBca'
+    case 'BRI':
+      return 'buttonBri'
     default:
       return color.toLowerCase()
   }

@@ -52,7 +52,9 @@ const theme = {
     mandiri: '#0A4A8A',
     buttonMandiri: '#479DDA',
     bca: '#005caa',
-    buttonBca: '#00b7f1'
+    buttonBca: '#00b7f1',
+    bri: '#014a94',
+    buttonBri: '#f59823'
   }
 }
 
