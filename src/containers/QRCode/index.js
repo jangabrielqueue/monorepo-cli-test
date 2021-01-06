@@ -238,7 +238,7 @@ const QRCode = (props) => {
       setLoadingButton(false)
       setProgress(undefined)
       setStep(1)
-    }
+    }, []
   )
 
   useEffect(() => {
@@ -324,6 +324,8 @@ const QRCode = (props) => {
     start()
   }, [
     session,
+    getQRCodePayload,
+    handleQRCodeSubmitResult,
     handleQrCodeResult,
     intl
   ]) // disabling the react hooks recommended rule on this case because it forces to add getQRCodePayload as dependencies array
