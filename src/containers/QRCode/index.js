@@ -322,15 +322,15 @@ const QRCode = (props) => {
 
     // Start the connection
     start()
-  }, [
+
+    // disabling the react hooks recommended rule on this case because it forces to add getQRCodePayload as dependencies array
+    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
+    // avoid unnecessary warning
+  }, [// eslint-disable-line
     session,
-    getQRCodePayload,
-    handleQRCodeSubmitResult,
     handleQrCodeResult,
     intl
-  ]) // disabling the react hooks recommended rule on this case because it forces to add getQRCodePayload as dependencies array
-  // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-  // avoid unnecessary warning
+  ])
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
