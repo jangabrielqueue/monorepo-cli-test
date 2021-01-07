@@ -24,7 +24,6 @@ const FAKERTHB = { code: 'FAKERTHB', name: 'Faker THB' }
 const PERMATA = { code: 'PERMATA', name: 'Permata Bank' }
 const CIMB = { code: 'CIMB', name: 'CIMB Niaga' }
 const MANDIRI = { code: 'MANDIRI', name: 'MANDIRI Bank' }
-const BCA = { code: 'BCA', name: 'Bank Central Asia' }
 const BRI = { code: 'BRI', name: 'Bank BRI' }
 
 const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI]
