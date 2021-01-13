@@ -291,7 +291,7 @@ const ScratchCardForm = React.memo((props) => {
               <li><FormattedMessage {...messages.notes.notesSix} /></li>
               <ul>
                 <li>VIETTEL: 29%</li>
-                <li>MOBI: 27%</li>
+                <li>MOBI: 29%</li>
                 <li>VINA: 27%</li>
               </ul>
             </StyledNoteText>
