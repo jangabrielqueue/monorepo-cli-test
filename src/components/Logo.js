@@ -5,7 +5,7 @@ const getFilePathWebP = (bank, currency, type) => {
   const isBankKnown = checkBankIfKnown(currency, bank)
 
   if (isBankKnown) {
-    return require(`../assets/banks/${bank && bank.toUpperCase()}_LOGO.webp`)
+    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.webp`)
   } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
     return require('../assets/banks/PRECARD_LOGO.webp')
   }
@@ -17,7 +17,7 @@ const getFilePathPng = (bank, currency, type) => {
   const isBankKnown = checkBankIfKnown(currency, bank)
 
   if (isBankKnown) {
-    return require(`../assets/banks/${bank && bank.toUpperCase()}_LOGO.png`)
+    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.png`)
   } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
     return require('../assets/banks/PRECARD_LOGO.png')
   }
