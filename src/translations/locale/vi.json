@@ -59,6 +59,7 @@
     "placeholders.inputSerialNumber": "Vui lòng nhập mã seri.",
     "placeholders.telcoName": "Tên Nhà Mạng",
     "placeholders.bankName": "Ngân Hàng",
+    "placeholders.inputPattern": "{numberLetter} chữ số đầu tiên là chữ cái. {digitNumber} chữ số tiếp theo là số.",
     "notifications.hasVCB": "- Với khách hàng đã có tài khoản VCB Digibank: {fontWeightText}",
     "notifications.noVCB": "- Với khách hàng chưa có tài khoản VCB Digibank: {fontWeightText}, để thực hiện chuyển đổi sang dịch vụ VCB Digibank mới.",
     "important.note": "LƯU Ý QUAN TRỌNG",

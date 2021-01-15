@@ -137,6 +137,12 @@ export default createGlobalStyle`
         max-width: 200px;
         width: 100%;
       }
+
+      img.scratch-card-logo {
+        height: auto;
+        max-width: 400px;
+        width: 100%;
+      }
     }
 
     .steps-bar-container {

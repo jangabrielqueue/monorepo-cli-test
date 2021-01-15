@@ -39,6 +39,10 @@ export default defineMessages({
     telcoName: {
       id: 'placeholders.telcoName',
       defaultMessage: 'Telco Name'
+    },
+    inputPattern: {
+      id: 'placeholders.inputPattern',
+      defaultMessage: 'First {numberLetter} are letters and the next {digitNumber} digits are numbers.'
     }
   },
   notes: {

@@ -134,18 +134,32 @@ const ScratchCardForm = React.memo((props) => {
     handleSubmitScratchCard(values)
   }
 
-  function renderMaxLengthCardPin () {
-    switch (telcoName) {
-      case 'VTT':
-        return 15
-      case 'GW':
-        return 15
-      case 'VNP':
-        return 14
-      case 'VMS':
-        return 12
-      default:
-        break
+  function renderCardPinValidations () {
+    if (telcoName === 'VTT' || telcoName === 'GW') {
+      return {
+        required: true,
+        maxLength: 15
+      }
+    } else if (telcoName === 'VNP') {
+      return {
+        required: true,
+        maxLength: 14
+      }
+    } else if (telcoName === 'VMS' || telcoName === 'VNM') {
+      return {
+        required: true,
+        maxLength: 12
+      }
+    } else if (telcoName === 'ZING') {
+      return {
+        required: true,
+        maxLength: 9
+      }
+    } else if (telcoName === 'GATE') {
+      return {
+        required: true,
+        maxLength: 10
+      }
     }
   }
 
@@ -159,12 +173,18 @@ const ScratchCardForm = React.memo((props) => {
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
       case 'VMS':
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+      case 'VNM':
+        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+      case 'ZING':
+        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
+      case 'GATE':
+        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
       default:
         break
     }
   }
 
-  function renderMaxLengthSerialNumber () {
+  function renderSerialNumberValidations () {
     if (telcoName === 'VTT' || telcoName === 'VNP') {
       return {
         required: true,
@@ -174,6 +194,23 @@ const ScratchCardForm = React.memo((props) => {
       return {
         required: true,
         maxLength: 15
+      }
+    } else if (telcoName === 'ZING') {
+      return {
+        required: true,
+        maxLength: 12,
+        pattern: /^([a-z]{2})(\d{10})/i
+      }
+    } else if (telcoName === 'GATE') {
+      return {
+        required: true,
+        maxLength: 10,
+        pattern: /^([a-z]{2})(\d{8})/i
+      }
+    } else if (telcoName === 'VNM') {
+      return {
+        required: true,
+        maxLength: 11
       }
     } else {
       return {
@@ -187,6 +224,23 @@ const ScratchCardForm = React.memo((props) => {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
     } else if (telcoName === 'GW') {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 })
+    } else if (telcoName === 'ZING') {
+      return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+    } else if (telcoName === 'GATE') {
+      return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
+    } else if (telcoName === 'VNM') {
+      return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 11 })
+    }
+  }
+
+  function renderPatternMessageSerialNumber () {
+    switch (telcoName) {
+      case 'ZING':
+        return intl.formatMessage(messages.placeholders.inputPattern, { numberLetter: 2, digitNumber: 10 })
+      case 'GATE':
+        return intl.formatMessage(messages.placeholders.inputPattern, { numberLetter: 2, digitNumber: 8 })
+      default:
+        break
     }
   }
 
@@ -213,8 +267,11 @@ const ScratchCardForm = React.memo((props) => {
                   value={telcoName}
                 >
                   <option value='VTT' id='telco-1'>Viettel</option>
-                  <option value='VNP' id='telco-2'>Vinaphone</option>
-                  <option value='VMS' id='telco-3'>Mobiphone</option>
+                  <option value='VMS' id='telco-2'>Mobiphone</option>
+                  <option value='VNP' id='telco-3'>Vinaphone</option>
+                  <option value='ZING' id='telco-3'>Zing</option>
+                  <option value='GATE' id='telco-3'>Gate</option>
+                  <option value='VNM' id='telco-3'>Vietnamobile</option>
                 </FormSelectField>
               </div>
             </FormIconContainer>
@@ -224,9 +281,9 @@ const ScratchCardForm = React.memo((props) => {
             <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
             <InputFieldContainer>
               <input
-                ref={register(renderMaxLengthSerialNumber())}
+                ref={register(renderSerialNumberValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type='number'
+                type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
                 id='cardSerialNumber'
                 name='cardSerialNumber'
                 autoComplete='off'
@@ -241,6 +298,7 @@ const ScratchCardForm = React.memo((props) => {
             <p className='input-errors'>
               {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
               {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}
+              {errors.cardSerialNumber?.type === 'pattern' && renderPatternMessageSerialNumber()}
             </p>
           </div>
         </FormIconContainer>
@@ -249,7 +307,7 @@ const ScratchCardForm = React.memo((props) => {
             <label htmlFor='cardPin'><FormattedMessage {...messages.placeholders.cardPin} /></label>
             <InputFieldContainer>
               <input
-                ref={register({ required: true, maxLength: renderMaxLengthCardPin() })}
+                ref={register(renderCardPinValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
                 type='number'
                 id='cardPin'
@@ -293,6 +351,9 @@ const ScratchCardForm = React.memo((props) => {
                 <li>VIETTEL: 29%</li>
                 <li>MOBI: 29%</li>
                 <li>VINA: 27%</li>
+                <li>ZING: 25%</li>
+                <li>GATE: 28%</li>
+                <li>VIETNAMOBILE: 25%</li>
               </ul>
             </StyledNoteText>
         }
