@@ -25,9 +25,25 @@ function calculateCurrentProgress (e) {
   return Math.max(e.currentStep, (e.currentStep / e.totalSteps) * dynamicSteps + fakeSteps)
 }
 
+function renderButtonColors (bank, color) {
+  switch (bank) {
+    case 'PERMATA':
+      return 'buttonPermata'
+    case 'MANDIRI':
+      return 'buttonMandiri'
+    case 'BCA':
+      return 'buttonBca'
+    case 'BRI':
+      return 'buttonBri'
+    default:
+      return color.toLowerCase()
+  }
+}
+
 export {
   useQuery,
   isNullOrWhitespace,
   sleep,
-  calculateCurrentProgress
+  calculateCurrentProgress,
+  renderButtonColors
 }

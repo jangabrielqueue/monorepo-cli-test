@@ -164,7 +164,7 @@ const DepositForm = React.memo((props) => {
 
   function handleSubmitForm (values, e, type) {
     handleSubmitDeposit(values, e, type)
-  };
+  }
 
   return (
     <main>
@@ -267,6 +267,7 @@ const DepositForm = React.memo((props) => {
               icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
               onClick={handleSubmit(handleSubmitForm)}
               disabled={!establishConnection || waitingForReady}
+              bank={bank && bank.toUpperCase()}
             />
           </div>
       }

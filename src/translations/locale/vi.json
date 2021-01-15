@@ -65,5 +65,8 @@
     "important.note": "LƯU Ý QUAN TRỌNG",
     "important.keyIn": "Vui lòng nhập chính xác số tiền được tạo trên màn hình để giao dịch nhanh chóng và thuận tiện hơn.",
     "important.noRefresh": "Vui lòng không làm mới trình duyệt của bạn.",
-    "important.noSave": "Vui lòng không sử dụng mã QR cũ."
+    "important.noSave": "Vui lòng không sử dụng mã QR cũ.",
+    "pleaseUseMandiri": "Vui lòng sử dụng ứng dụng trực tuyến Mandiri của bạn để chấp thuận giao dịch.",
+    "clickDone": "Nhấp vào Hoàn Tất nếu bạn đã thực hiện xong việc chấp thuận.",
+    "done": "Hoàn Tất"
 }

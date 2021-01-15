@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app'
 import AutoRedirect from '../../components/AutoRedirect'
 import DepositForm from './DepositForm'
 import OTPForm from './OTPForm'
+import MandiriForm from './otp-bank-forms/MandiriForm'
 import {
   TransferSuccessful,
   TransferFailed,
@@ -16,7 +17,7 @@ import messages from './messages'
 import Logo from '../../components/Logo'
 import Notifications from '../../components/Notifications'
 import StepsBar from '../../components/StepsBar'
-import { checkBankIfKnown, checkIfDABBank } from '../../utils/banks'
+import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 import GlobalButton from '../../components/GlobalButton'
 import styled from 'styled-components'
 import Statistics from '../../components/Statistics'
@@ -256,7 +257,7 @@ const Deposit = (props) => {
       'n',
       'l'
     ]
-    const currencies = ['VND', 'THB']
+    const currencies = ['VND', 'THB', 'IDR']
 
     for (const param of queryParamsKeys) {
       if (!queryParams.has(param)) {
@@ -359,6 +360,16 @@ const Deposit = (props) => {
         reference={reference}
       />
     )
+  } else if (checkIfMandiriBank(bank) && step === 1) {
+    analytics.setCurrentScreen('input_otp')
+    content = (
+      <MandiriForm
+        otpReference={otpReference}
+        handleSubmitOTP={handleSubmitOTP}
+        waitingForReady={waitingForReady}
+        bank={bank}
+      />
+    )
   } else if (step === 1) {
     analytics.setCurrentScreen('input_otp')
     content = (
@@ -413,7 +424,7 @@ const Deposit = (props) => {
                 amount={amount}
               />
             )}
-            {step === 1 && (
+            {step === 1 && !checkIfMandiriBank(bank) && (
               <Countdown minutes={3} seconds={0} />
             )}
             {error && <ErrorAlert message={error.message} />}
