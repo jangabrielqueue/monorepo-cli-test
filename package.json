@@ -9,7 +9,7 @@
     "@rmwc/dialog": "^6.0.14",
     "@rmwc/tooltip": "^6.1.4",
     "antd-dayjs-webpack-plugin": "0.0.8",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
     "env-cmd": "^10.0.1",
