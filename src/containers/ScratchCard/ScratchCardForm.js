@@ -282,7 +282,7 @@ const ScratchCardForm = React.memo((props) => {
               <input
                 ref={register(renderSerialNumberValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type={telcoName === 'GATE' ? 'text' : 'number'}
+                type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
                 id='cardSerialNumber'
                 name='cardSerialNumber'
                 autoComplete='off'
@@ -308,7 +308,7 @@ const ScratchCardForm = React.memo((props) => {
               <input
                 ref={register(renderCardPinValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type='number'
+                type={telcoName === 'ZING' ? 'text' : 'number'}
                 id='cardPin'
                 name='cardPin'
                 autoComplete='off'
