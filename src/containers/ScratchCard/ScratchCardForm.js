@@ -198,8 +198,7 @@ const ScratchCardForm = React.memo((props) => {
     } else if (telcoName === 'ZING') {
       return {
         required: true,
-        maxLength: 12,
-        pattern: /^([a-z]{2})(\d{10})/i
+        maxLength: 12
       }
     } else if (telcoName === 'GATE') {
       return {
@@ -283,7 +282,7 @@ const ScratchCardForm = React.memo((props) => {
               <input
                 ref={register(renderSerialNumberValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type={(telcoName === 'ZING' || telcoName === 'GATE') ? 'text' : 'number'}
+                type={telcoName === 'GATE' ? 'text' : 'number'}
                 id='cardSerialNumber'
                 name='cardSerialNumber'
                 autoComplete='off'
