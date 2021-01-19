@@ -308,7 +308,7 @@ const ScratchCardForm = React.memo((props) => {
               <input
                 ref={register(renderCardPinValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type='number'
+                type={telcoName === 'ZING' ? 'text' : 'number'}
                 id='cardPin'
                 name='cardPin'
                 autoComplete='off'
