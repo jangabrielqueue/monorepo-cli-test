@@ -4,11 +4,9 @@ import { useQuery, sleep } from '../../utils/utils'
 import * as signalR from '@microsoft/signalr'
 import axios from 'axios'
 import AutoRedirect from '../../components/AutoRedirect'
-import {
-  TransferSuccessful,
-  TransferFailed,
-  TransferWaitForConfirm
-} from '../../components/TransferResult'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
+import TransferWaitForConfirm from '../../components/TransferWaitForConfirm'
 import { useIntl } from 'react-intl'
 import messages from './messages'
 import Logo from '../../components/Logo'
@@ -358,7 +356,7 @@ const ScratchCard = (props) => {
       </div>
       <ProgressModal open={progress && (progress.statusCode === '009')}>
         <div className='progress-bar-container'>
-          <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
+          <img alt='submit-transaction' width='80' height='auto' src={require('../../assets/icons/in-progress.svg')} />
           <progress
             value={progress && (progress.currentStep / progress.totalSteps) * 100}
             max={100}

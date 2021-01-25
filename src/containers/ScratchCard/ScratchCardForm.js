@@ -203,7 +203,8 @@ const ScratchCardForm = React.memo((props) => {
     } else if (telcoName === 'ZING') {
       return {
         required: true,
-        maxLength: 12
+        maxLength: 12,
+        pattern: /^([a-z]{2})(\d{10})/i
       }
     } else if (telcoName === 'GATE') {
       return {
@@ -310,7 +311,7 @@ const ScratchCardForm = React.memo((props) => {
               <input
                 ref={register(renderCardPinValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
-                type={telcoName === 'ZING' ? 'text' : 'number'}
+                type='number'
                 id='cardPin'
                 name='cardPin'
                 autoComplete='off'
@@ -332,7 +333,7 @@ const ScratchCardForm = React.memo((props) => {
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
-            icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
+            icon={<img alt='submit' width='24' height='24' src={require('../../assets/icons/submit-otp.svg')} />}
             onClick={handleSubmit(handleSubmitForm)}
             disabled={!establishConnection || waitingForReady}
           />

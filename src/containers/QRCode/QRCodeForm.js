@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl'
 import messages from './messages'
 import { CircularProgress } from '@rmwc/circular-progress'
 import QRCode from 'qrcode.react'
+import '@rmwc/circular-progress/circular-progress.css'
 
 const StyledImageContainer = styled.div`
   text-align: center;
@@ -27,7 +28,9 @@ const StyledImportantList = styled.ol`
   padding: 0 0 0 15px;
 `
 const StyledCircularProgress = styled(CircularProgress)`
-  color: ${props => props.theme.colors[props.color.toLowerCase()]};
+  && {
+    color: ${props => props.theme.colors[props.color.toLowerCase()]};
+  }
 `
 
 const QRCodeForm = memo(function QRCodeForm (props) {

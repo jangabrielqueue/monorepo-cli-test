@@ -38,7 +38,7 @@ const MandiriForm = memo(function MandiriForm (props) {
       <GlobalButton
         label={<FormattedMessage {...messages.done} />}
         color='MANDIRI'
-        icon={<img alt='submit' src={require('../../../assets/icons/submit-otp.svg')} />}
+        icon={<img alt='submit' width='24' height='24' src={require('../../../assets/icons/submit-otp.svg')} />}
         onClick={handleSubmitForm}
         disabled={waitingForReady}
         bank={bank && bank.toUpperCase()}

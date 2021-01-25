@@ -1,8 +1,4 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
-import '@rmwc/button/styles'
-import '@rmwc/dialog/styles'
-import '@rmwc/tooltip/styles'
-import '@rmwc/circular-progress/styles'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -85,7 +81,7 @@ const FallbackComponent = ({ componentStack, error }) => {
   )
 }
 
-const App = (props) => {
+const App = () => {
   const { REACT_APP_ENDPOINT } = process.env
   axios.defaults.baseURL = REACT_APP_ENDPOINT
   axios.defaults.headers.post['Content-Type'] = 'application/json'

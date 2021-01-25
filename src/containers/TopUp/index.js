@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import DepositForm from './DepositForm'
 import OTPForm from './OTPForm'
-import {
-  TransferSuccessful,
-  TransferFailed
-} from '../../components/TransferResult'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
 import * as signalR from '@microsoft/signalr'
 import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
@@ -343,7 +341,7 @@ const TopUp = props => {
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
             <section className='logo'>
-              <img alt='GameWallet' src={require('../../assets/banks/GW_LOGO.png')} />
+              <img alt='GameWallet' width='200' height='auto' src={require('../../assets/banks/GW_LOGO.png')} />
             </section>
             {
               step === 0 &&
@@ -394,7 +392,7 @@ const TopUp = props => {
       }
       <ProgressModal open={progress && (progress.statusCode === '009')}>
         <div className='progress-bar-container'>
-          <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
+          <img alt='submit-transaction' width='80' height='auto' src={require('../../assets/icons/in-progress.svg')} />
           <progress
             value={progress && (progress.currentStep / progress.totalSteps) * 100}
             max={100}

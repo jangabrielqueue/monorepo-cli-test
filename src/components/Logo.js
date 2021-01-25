@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { checkBankIfKnown } from '../utils/banks'
 
 const getFilePathWebP = (bank, currency, type) => {
@@ -26,17 +26,20 @@ const getFilePathPng = (bank, currency, type) => {
 }
 
 const Logo = ({ bank, currency, type }) => {
-  const scratchCardLogoStyle = (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card' && { className: 'scratch-card-logo' })
-
   return (
-    <section className='logo'>
+    <section className={(bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? 'scratch-card-logo' : 'logo'}>
       <picture>
         <source type='image/webp' srcSet={getFilePathWebP(bank, currency, type)} />
         <source type='image/png' srcSet={getFilePathPng(bank, currency, type)} />
-        <img {...scratchCardLogoStyle} alt={bank} src={getFilePathPng(bank, currency, type)} />
+        <img
+          alt={bank}
+          width={(bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+          height={(bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+          src={getFilePathPng(bank, currency, type)}
+        />
       </picture>
     </section>
   )
 }
 
-export default Logo
+export default memo(Logo)

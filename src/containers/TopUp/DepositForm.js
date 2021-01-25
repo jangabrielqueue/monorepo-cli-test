@@ -216,7 +216,7 @@ const DepositForm = React.memo((props) => {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
                 </li>
               </ul>
             </InputFieldContainer>

@@ -6,17 +6,17 @@ import ProductSansMedium from '../fonts/ProductSans-Medium-500.ttf'
 export default createGlobalStyle`
     @font-face {
         font-family: 'ProductSansRegular';
-        src: url(${ProductSansRegular});
+        src: url(${ProductSansRegular}) format('truetype');
     }
 
     @font-face {
         font-family: 'ProductSansBold';
-        src: url(${ProductSansBold});
+        src: url(${ProductSansBold}) format('truetype');
     }
 
     @font-face {
         font-family: 'ProductSansMedium';
-        src: url(${ProductSansMedium});
+        src: url(${ProductSansMedium}) format('truetype');
     }
 
     body {
@@ -132,16 +132,31 @@ export default createGlobalStyle`
       margin: 25px 0;
       text-align: center;
 
-      img {
-        height: auto;
+      picture {
+        display: block;
+        margin: 0 auto;
         max-width: 200px;
-        width: 100%;
-      }
 
-      img.scratch-card-logo {
-        height: auto;
+        > img {
+          height: auto;
+          width: 100%;
+        }
+      }
+    }
+
+    .scratch-card-logo {
+      margin: 25px 0;
+      text-align: center;
+
+      picture {
+        display: block;
+        margin: 0 auto;
         max-width: 400px;
-        width: 100%;
+
+        > img {
+          height: auto;
+          width: 100%;
+        }
       }
     }
 
@@ -192,24 +207,9 @@ export default createGlobalStyle`
       }
     }
 
-    .mdc-button .mdc-button__icon {
-        height: auto;
-        width: auto;
-    }
-
-    .mdc-dialog .mdc-dialog__surface {
-      border-radius: 15px;
-    }
-
     @media (max-width: 47.999em) {
       .steps-container {
         display: none;
-      }
-    }
-
-    @media (max-width: 37em) {
-      .mdc-dialog .mdc-dialog__surface {
-        max-width: calc(100vw - 41px);
       }
     }
 

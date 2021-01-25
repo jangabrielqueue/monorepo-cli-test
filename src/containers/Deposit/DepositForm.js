@@ -13,6 +13,7 @@ import downExpand from '../../assets/icons/down-expand.png'
 import upExpand from '../../assets/icons/up-expand.png'
 import { useFormContext } from 'react-hook-form'
 import { Tooltip } from '@rmwc/tooltip'
+import '@rmwc/tooltip/tooltip.css'
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -162,10 +163,6 @@ const DepositForm = React.memo((props) => {
   const { dirty } = formState
   const formValues = getValues()
 
-  function handleSubmitForm (values, e, type) {
-    handleSubmitDeposit(values, e, type)
-  }
-
   return (
     <main>
       <form autoComplete='off'>
@@ -234,7 +231,7 @@ const DepositForm = React.memo((props) => {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
                 </li>
               </ul>
             </InputFieldContainer>
@@ -264,8 +261,8 @@ const DepositForm = React.memo((props) => {
             <GlobalButton
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
-              icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
-              onClick={handleSubmit(handleSubmitForm)}
+              icon={<img alt='submit' width='24' height='24' src={require('../../assets/icons/submit-otp.svg')} />}
+              onClick={handleSubmit(handleSubmitDeposit)}
               disabled={!establishConnection || waitingForReady}
               bank={bank && bank.toUpperCase()}
             />
@@ -278,16 +275,16 @@ const DepositForm = React.memo((props) => {
               label='SMS OTP'
               color={buttonColor}
               outlined
-              icon={<img alt='sms' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
-              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
+              icon={<img alt='sms' width='24' height='24' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
             />
             <GlobalButton
               label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              icon={<img alt={checkIfDABBank(bank) ? 'card' : 'smart'} src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
-              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
+              icon={<img alt={checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             />
           </div>

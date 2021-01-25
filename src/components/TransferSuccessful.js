@@ -43,7 +43,7 @@ const StyledTransactionAmount = styled.div`
   width: 100%;
 `
 
-export const TransferSuccessful = ({ transferResult, language }) => {
+const TransferSuccessful = ({ transferResult, language }) => {
   return (
     <StyledRedirectContent>
       <img alt='submit-success' src={require('../assets/icons/submit-success.svg')} />
@@ -60,21 +60,4 @@ export const TransferSuccessful = ({ transferResult, language }) => {
   )
 }
 
-export const TransferFailed = ({ transferResult }) => {
-  return (
-    <StyledRedirectContent>
-      <img alt='submit-failed' src={require('../assets/icons/submit-failed.svg')} />
-      <h1>{<FormattedMessage {...messages.errors.transactionFailed} />}</h1>
-      <p>{transferResult.message || transferResult.statusMessage}</p>
-    </StyledRedirectContent>
-  )
-}
-
-export const TransferWaitForConfirm = ({ transferResult }) => {
-  return (
-    <StyledRedirectContent>
-      <h2>{<FormattedMessage {...messages.progress.pendingConfirmation} />}</h2>
-      <p>{transferResult.message || transferResult.statusMessage}</p>
-    </StyledRedirectContent>
-  )
-}
+export default TransferSuccessful

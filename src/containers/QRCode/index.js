@@ -9,10 +9,8 @@ import AutoRedirectQR from '../../components/AutoRedirectQR'
 import AutoRedirect from '../../components/AutoRedirect'
 import QRCodeForm from './QRCodeForm'
 import StepsBar from '../../components/StepsBar'
-import {
-  TransferSuccessful,
-  TransferFailed
-} from '../../components/TransferResult'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
 import messages from './messages'
 import { useIntl } from 'react-intl'
 import axios from 'axios'
@@ -372,6 +370,7 @@ const QRCode = (props) => {
           <img
             alt='submit-transaction'
             width='80'
+            height='auto'
             src={require('../../assets/icons/in-progress.svg')}
           />
           <progress

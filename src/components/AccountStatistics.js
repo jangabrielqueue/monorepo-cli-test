@@ -3,8 +3,10 @@ import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 import messages from './messages'
 import { CircularProgress } from '@rmwc/circular-progress'
+import '@rmwc/circular-progress/circular-progress.css'
 
 const StyledAccountStatistics = styled.section`
+  && {
     > div {
       font-size: 16px;
       font-weight: 400;
@@ -15,6 +17,7 @@ const StyledAccountStatistics = styled.section`
         font-family: ProductSansBold;
       }
     }
+  }
 `
 const StyledCircularProgress = styled(CircularProgress)`
   color: ${props => props.theme.colors[props.color.toLowerCase()]};
