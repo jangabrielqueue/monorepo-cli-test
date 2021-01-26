@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
+import 'firebase/performance'
 import { ErrorBoundary } from 'react-error-boundary'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import axios from 'axios'
@@ -118,6 +119,7 @@ const App = () => {
       measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID
     }
     firebase.initializeApp(firebaseConfig)
+    firebase.performance()
   }
 
   const analytics = firebase.analytics()
