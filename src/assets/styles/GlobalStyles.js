@@ -7,16 +7,19 @@ export default createGlobalStyle`
     @font-face {
         font-family: 'ProductSansRegular';
         src: url(${ProductSansRegular}) format('truetype');
+        font-display: swap;
     }
 
     @font-face {
         font-family: 'ProductSansBold';
         src: url(${ProductSansBold}) format('truetype');
+        font-display: swap;
     }
 
     @font-face {
         font-family: 'ProductSansMedium';
         src: url(${ProductSansMedium}) format('truetype');
+        font-display: swap;
     }
 
     body {

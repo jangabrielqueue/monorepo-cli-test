@@ -1,28 +1,23 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
-import * as firebase from 'firebase/app'
-import 'firebase/analytics'
-import 'firebase/performance'
-import { ErrorBoundary } from 'react-error-boundary'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import axios from 'axios'
 import { IntlProvider } from 'react-intl'
-import localeEn from './translations/locale/en.json'
-import localeVi from './translations/locale/vi.json'
-import localeTh from './translations/locale/th.json'
-import localeId from './translations/locale/id.json'
-import { ThemeProvider } from 'styled-components'
-import GlobalStyles from './assets/styles/GlobalStyles'
+import { createUseStyles, ThemeProvider } from 'react-jss'
 import { useForm, FormContext } from 'react-hook-form'
-import { Portal } from '@rmwc/base'
 import FallbackPage from './components/FallbackPage'
+import QueryParamsContext from './contexts/QueryParamsContext'
+import FirebaseContext from './contexts/FirebaseContext'
+import GlobalStyles from '../src/assets/styles/GlobalStyles'
 
-const Deposit = lazy(() => import('./containers/Deposit'))
-const ScratchCard = lazy(() => import('./containers/ScratchCard/ScratchCard'))
-const TopUp = lazy(() => import('./containers/TopUp'))
-const NotFound = lazy(() => import('./components/NotFound'))
-const QRCode = lazy(() => import('./containers/QRCode'))
+// lazy loaded components
+const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
+// const ScratchCard = lazy(() => import('./containers/ScratchCard'))
+// const TopUp = lazy(() => import('./containers/TopUp'))
+// const NotFound = lazy(() => import('./components/NotFound'))
+// const QRCode = lazy(() => import('./containers/QRCode'))
 
-const theme = {
+// themes
+const appTheme = {
   colors: {
     main: '#91C431',
     faker: '#91C431',
@@ -56,89 +51,49 @@ const theme = {
   }
 }
 
-const errorHandler = (error, componentStack) => {
-  const analytics = firebase.analytics()
-  analytics.logEvent('exception', {
-    stack: componentStack,
-    description: error,
-    fatal: true
-  })
-}
+const useStyles = createUseStyles({
+  wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    height: '100%',
+    justifyContent: 'center',
+    backgroundImage: (props) => `linear-gradient(190deg, ${appTheme.colors[`${props.themeColor?.toLowerCase()}`]} 44%,
+    #FFFFFF calc(44% + 2px))`,
+    paddingTop: (props) => props.bank?.toUpperCase() === 'VCB' ? '105px' : '75px',
+    '@media (max-width: 33.750em)': {
+      paddingTop: (props) => props.bank?.toUpperCase() !== 'VCB' && '35px'
+    }
+  }
+})
 
-const FallbackComponent = ({ componentStack, error }) => {
-  return (
-    <div>
-      <p>
-        <strong>Oops! An error occured!</strong>
-      </p>
-      <p>Please contact customer service</p>
-      <p>
-        <strong>Error:</strong> {error.toString()}
-      </p>
-      <p>
-        <strong>Stacktrace:</strong> {componentStack}
-      </p>
-    </div>
-  )
-}
+const queryString = window.location.search
+const urlQueryString = new URLSearchParams(queryString)
+const bank = urlQueryString.get('b')
+const currency = urlQueryString.get('c1')
 
 const App = () => {
+  GlobalStyles()
   const { REACT_APP_ENDPOINT } = process.env
   axios.defaults.baseURL = REACT_APP_ENDPOINT
   axios.defaults.headers.post['Content-Type'] = 'application/json'
-  const queryString = window.location.search
-  const urlParams = new URLSearchParams(queryString)
-  const bank = urlParams.get('b')
-  const merchant = urlParams.get('m')
-  const reference = urlParams.get('r')
-  const currency = urlParams.get('c1')
-  const amount = urlParams.get('a')
+  const [locale, setLocale] = useState('en')
+  const [language, setLanguage] = useState('en-us')
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const topUpTheme = window.location.pathname.includes('topup')
+  const themeColor = topUpTheme ? 'topup' : isBankKnown ? `${bank}` : 'main'
+  const localeMessages = {
+    en: dynamicLoadBankUtils?.localeEn,
+    vi: dynamicLoadBankUtils?.localeVi,
+    th: dynamicLoadBankUtils?.localeTh,
+    id: dynamicLoadBankUtils?.localeId
+  }
   const methods = useForm({
     defaultValues: {
       telcoName: bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT'
     }
   })
-
-  // Initialize Firebase
-  if (!firebase.apps.length) {
-    const {
-      REACT_APP_FIREBASE_API_KEY,
-      REACT_APP_FIREBASE_APP_ID,
-      REACT_APP_FIREBASE_PROJ_ID,
-      REACT_APP_FIREBASE_MSG_SENDER_ID,
-      REACT_APP_FIREBASE_MEASUREMENT_ID
-    } = process.env
-    const firebaseConfig = {
-      apiKey: REACT_APP_FIREBASE_API_KEY,
-      authDomain: '',
-      databaseURL: '',
-      projectId: REACT_APP_FIREBASE_PROJ_ID,
-      storageBucket: '',
-      messagingSenderId: REACT_APP_FIREBASE_MSG_SENDER_ID,
-      appId: REACT_APP_FIREBASE_APP_ID,
-      measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID
-    }
-    firebase.initializeApp(firebaseConfig)
-    firebase.performance()
-  }
-
-  const analytics = firebase.analytics()
-  analytics.logEvent('open_deposit_page', {
-    bank,
-    merchant,
-    reference,
-    currency,
-    amount
-  })
-
-  const [locale, setLocale] = useState('en')
-  const [language, setLanguage] = useState('en-us')
-  const localeMessages = {
-    en: localeEn,
-    vi: localeVi,
-    th: localeTh,
-    id: localeId
-  }
+  const classes = useStyles({ bank, themeColor })
 
   function handleSelectLanguage (param) {
     switch (param) {
@@ -163,42 +118,61 @@ const App = () => {
   useEffect(() => {
     const url = new URL(window.location.href)
     const urlParams = new URLSearchParams(url.search)
+    const language = urlParams.get('l')
 
-    handleSelectLanguage(urlParams.get('l'))
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('./utils/banks')
+      const localeEn = await import('./translations/locale/en.json')
+      const localeVi = await import('./translations/locale/vi.json')
+      const localeTh = await import('./translations/locale/th.json')
+      const localeId = await import('./translations/locale/id.json')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown,
+        localeEn,
+        localeVi,
+        localeTh,
+        localeId
+      })
+    }
+
+    dynamicLoadModules()
+    handleSelectLanguage(language)
   }, [])
 
   return (
-    <FormContext {...methods}>
-      <ThemeProvider theme={theme}>
-        <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-          <IntlProvider locale={locale} messages={localeMessages[locale]}>
-            <GlobalStyles />
-            <Portal />
-            <Router>
-              <Suspense fallback={<FallbackPage />}>
-                <Switch>
-                  <Route exact path='/topup/bank'>
-                    <TopUp language={language} />
-                  </Route>
-                  <Route exact path='/deposit/bank'>
-                    <Deposit language={language} />
-                  </Route>
-                  <Route exact path='/deposit/qrcode'>
-                    <QRCode language={language} />
-                  </Route>
-                  <Route exact path='/deposit/scratch-card'>
-                    <ScratchCard language={language} />
-                  </Route>
-                  <Route path='*'>
-                    <NotFound />
-                  </Route>
-                </Switch>
-              </Suspense>
-            </Router>
-          </IntlProvider>
-        </ErrorBoundary>
-      </ThemeProvider>
-    </FormContext>
+    <FirebaseContext>
+      <QueryParamsContext>
+        <FormContext {...methods}>
+          <ThemeProvider theme={appTheme}>
+            <IntlProvider locale={locale} messages={localeMessages[locale]}>
+              <div className={classes.wrapper}>
+                <Suspense fallback={<FallbackPage />}>
+                  <Router>
+                    <Switch>
+                      <Route exact path='/deposit/bank'>
+                        <Deposit language={language} />
+                      </Route>
+                      {/* <Route exact path='/deposit/scratch-card'>
+                        <ScratchCard language={language} />
+                      </Route>
+                      <Route exact path='/topup/bank'>
+                        <TopUp language={language} />
+                      </Route>
+                      <Route exact path='/deposit/qrcode'>
+                        <QRCode language={language} />
+                      </Route>
+                      <Route path='*'>
+                        <NotFound />
+                      </Route> */}
+                    </Switch>
+                  </Router>
+                </Suspense>
+              </div>
+            </IntlProvider>
+          </ThemeProvider>
+        </FormContext>
+      </QueryParamsContext>
+    </FirebaseContext>
   )
 }
 
