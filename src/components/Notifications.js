@@ -27,19 +27,14 @@ const StyledCountdown = styled.div`
   }
 `
 
-const Notifications = ({ bank, language, intl }) => {
+const Notifications = ({ language, intl }) => {
   return (
-    <>
-      {
-        bank && bank.toUpperCase() === 'VCB' &&
-          <StyledCountdown>
-            <ul>
-              <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
-              <li>{intl.formatMessage(messages.notifications.noVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập VCB-iB@nking' : 'Username is VCB-iB@nking username'}</b> })}</li>
-            </ul>
-          </StyledCountdown>
-      }
-    </>
+    <StyledCountdown>
+      <ul>
+        <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
+        <li>{intl.formatMessage(messages.notifications.noVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập VCB-iB@nking' : 'Username is VCB-iB@nking username'}</b> })}</li>
+      </ul>
+    </StyledCountdown>
   )
 }
 

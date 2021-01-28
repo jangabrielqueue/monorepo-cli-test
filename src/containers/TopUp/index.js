@@ -341,7 +341,7 @@ const TopUp = props => {
         <div className='form-content'>
           <header className={step === 2 ? null : 'header-bottom-border'}>
             <section className='logo'>
-              <img alt='GameWallet' width='200' height='auto' src={require('../../assets/banks/GW_LOGO.png')} />
+              <img alt='GameWallet' width='200' height='auto' src={require('../../assets/banks/GW_LOGO.webp')} />
             </section>
             {
               step === 0 &&

@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
+  deposit: {
+    id: 'deposit',
+    defaultMessage: 'Deposit'
+  },
   account: {
     amount: {
       id: 'account.amount',

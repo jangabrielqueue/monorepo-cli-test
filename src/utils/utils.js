@@ -1,5 +1,4 @@
 // Utility Functions
-
 import { useLocation } from 'react-router-dom'
 
 function useQuery () {

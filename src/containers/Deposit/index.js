@@ -1,52 +1,122 @@
-import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react'
+import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
 import * as firebase from 'firebase/app'
-import AutoRedirect from '../../components/AutoRedirect'
-import { sendDepositRequest, sendDepositOtp } from './Requests'
 import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
 import { useIntl } from 'react-intl'
 import messages from './messages'
-import Notifications from '../../components/Notifications'
-import StepsBar from '../../components/StepsBar'
-import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
-import GlobalButton from '../../components/GlobalButton'
-import styled from 'styled-components'
-import Statistics from '../../components/Statistics'
-import Countdown from '../../components/Countdown'
-import ErrorAlert from '../../components/ErrorAlert'
 import { useFormContext } from 'react-hook-form'
-import LoadingIcon from '../../components/LoadingIcon'
-
-// lazy loaded components
-const Logo = lazy(() => import('../../components/Logo'))
-const DepositForm = lazy(() => import('./DepositForm'))
-const OTPForm = lazy(() => import('./OTPForm'))
-const MandiriForm = lazy(() => import('./otp-bank-forms/MandiriForm'))
-const TransferSuccessful = lazy(() => import('../../components/TransferSuccessful'))
-const TransferFailed = lazy(() => import('../../components/TransferFailed'))
-const TransferWaitForConfirm = lazy(() => import('../../components/TransferWaitForConfirm'))
-const ProgressModal = lazy(() => import('../../components/ProgressModal'))
-
+import styled from 'styled-components'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
-// styled components
-const WrapperBG = styled.div`
-  background-image: linear-gradient(
-    190deg,
-    ${(props) => props.theme.colors[`${props.color.toLowerCase()}`]} 44%,
-    #ffffff calc(44% + 2px)
-  );
-  padding-top: ${props => props.bank && props.bank.toUpperCase() === 'VCB' ? '105px' : '75px'};
+// lazy loaded components
+const Notifications = lazy(() => import('../../components/Notifications'))
+const Header = lazy(() => import('../../components/Header'))
+const Content = lazy(() => import('./Content'))
+const StepsBar = lazy(() => import('../../components/StepsBar'))
+const ProgressModal = lazy(() => import('../../components/ProgressModal'))
+const GlobalButton = lazy(() => import('../../components/GlobalButton'))
 
-  @media (max-width: 33.750em) {
-    padding-top: ${props => props.bank && props.bank.toUpperCase() !== 'VCB' && '35px'};
+// styling
+const StyledContainer = styled.div`
+  margin: 0 20px;
+  max-width: 500px;
+  width: 100%;
+`
+const StyledContent = styled.div`
+  background: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
+`
+const StyledFooter = styled.footer`
+  display: none;
+
+  @media (max-width: 36em) {
+    display: block;
+    box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
+    margin-top: 20px;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+  }
+`
+const StyledProgressBarContainer = styled.div`
+  color: rgba(0, 0, 0, 0.65);
+  height: 200px;
+  text-align: center;
+
+  > img {
+      animation: zoomInAndOut 0.5s ease-in-out;
+      margin: 30px 0 2px;
+    }
+
+  > progress {
+      -webkit-appearance:none;
+      border-radius: 7px;
+      height: 8px;
+      margin-bottom: 2px;
+      width: 100%;
+
+      &::-webkit-progress-bar {
+          background: #f5f5f5;
+          border-radius: 7px;
+      }
+
+      &::-webkit-progress-value {
+          background: #34A220;
+          border-radius: 7px;
+          transition: width 0.5s linear;
+      }
+
+      &::-moz-progress-bar {
+          background: #34A220;
+      }
+    }
+
+  > p {
+      font-family: ProductSansRegular;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0;
+      text-align: center;
+    }
+
+  @media (min-width: 36em) {
+    min-width: 450px;
+  }
+
+  @media only screen and (min-device-width : 25em) and (max-device-width : 26em) {
+    min-width: 325px;
+  }
+
+  @media only screen and (min-device-width : 22em) and (max-device-width : 24em) {
+    min-width: 270px;
+  }
+
+  @media (max-width: 22.438em) {
+    min-width: 232px;
   }
 `
 
 const Deposit = (props) => {
   const analytics = firebase.analytics()
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const {
+    bank,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    callbackUri,
+    amount,
+    reference,
+    datetime,
+    signature,
+    successfulUrl,
+    failedUrl,
+    note
+  } = useContext(QueryParamsContext)
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -55,138 +125,106 @@ const Deposit = (props) => {
   const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: window.outerWidth
-  })
-  const queryParams = useQuery()
-  const bank = queryParams.get('b')
-  const merchant = queryParams.get('m')
-  const currency = queryParams.get('c1')
-  const requester = queryParams.get('c2')
-  const clientIp = queryParams.get('c3')
-  const callbackUri = queryParams.get('c4')
-  const amount = queryParams.get('a')
-  const reference = queryParams.get('r')
-  const datetime = queryParams.get('d')
-  const signature = queryParams.get('k')
-  const successfulUrl = queryParams.get('su')
-  const failedUrl = queryParams.get('fu')
-  const note = queryParams.get('n')
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const intl = useIntl()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  analytics.setCurrentScreen('deposit')
-  const isBankKnown = checkBankIfKnown(currency, bank)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
+  analytics.setCurrentScreen('deposit')
 
-  const handleSubmitDeposit = useCallback(
-    async (values, e, type) => {
-      if (type === 'card') { // this is to check if the otp type is card otp
-        setIsCardOTP(prevState => !prevState)
-      }
+  async function handleSubmitDeposit (values, e, type) {
+    const { sleep } = await import('../../utils/utils')
+    const { sendDepositRequest } = await import('./Requests')
 
-      const otpType = type === 'sms' || type === undefined ? '1' : '2'
+    if (type === 'card') { // this is to check if the otp type is card otp
+      setIsCardOTP(prevState => !prevState)
+    }
 
-      analytics.logEvent('login', {
-        reference
+    const otpType = type === 'sms' || type === undefined ? '1' : '2'
+
+    analytics.logEvent('login', {
+      reference
+    })
+    setError(undefined)
+    setWaitingForReady(true)
+    setProgress({
+      currentStep: 1,
+      totalSteps: 13,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.startingConnection)
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 2,
+      totalSteps: 13,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(
+        messages.progress.encryptedTransmission
+      )
+    })
+    await sleep(750)
+    setProgress({
+      currentStep: 3,
+      totalSteps: 13,
+      statusCode: '009',
+      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+    })
+    await sleep(750)
+    const result = await sendDepositRequest({
+      currency,
+      merchant,
+      requester,
+      bank,
+      signature,
+      reference,
+      clientIp,
+      datetime,
+      amount,
+      otpMethod: otpType,
+      language,
+      note,
+      successfulUrl,
+      failedUrl,
+      callbackUri,
+      ...values
+    })
+
+    if (result.error) {
+      analytics.logEvent('login_failed', {
+        reference,
+        error: result.error
       })
-      setError(undefined)
-      setWaitingForReady(true)
+      // until step 4 since it not complete because of error
       setProgress({
-        currentStep: 1,
-        totalSteps: 13,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.startingConnection)
-      })
-      await sleep(750)
-      setProgress({
-        currentStep: 2,
+        currentStep: 4,
         totalSteps: 13,
         statusCode: '009',
         statusMessage: intl.formatMessage(
-          messages.progress.encryptedTransmission
+          messages.progress.submittingTransaction
         )
       })
       await sleep(750)
-      setProgress({
-        currentStep: 3,
-        totalSteps: 13,
-        statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      setProgress(undefined)
+      setWaitingForReady(false)
+      setError(result.error)
+    } else if (result.errors) { // errors means one of the params value were missing or manipulated
+      setProgress(undefined)
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
       })
-      await sleep(750)
-      const result = await sendDepositRequest({
-        currency,
-        merchant,
-        requester,
-        bank,
-        signature,
-        reference,
-        clientIp,
-        datetime,
-        amount,
-        otpMethod: otpType,
-        language,
-        note,
-        successfulUrl,
-        failedUrl,
-        callbackUri,
-        ...values
-      })
-
-      if (result.error) {
-        analytics.logEvent('login_failed', {
-          reference,
-          error: result.error
-        })
-        // until step 4 since it not complete because of error
-        setProgress({
-          currentStep: 4,
-          totalSteps: 13,
-          statusCode: '009',
-          statusMessage: intl.formatMessage(
-            messages.progress.submittingTransaction
-          )
-        })
-        await sleep(750)
-        setProgress(undefined)
-        setWaitingForReady(false)
-        setError(result.error)
-      } else if (result.errors) { // errors means one of the params value were missing or manipulated
-        setProgress(undefined)
-        setTransferResult({
-          statusCode: '001',
-          isSuccess: false,
-          message: intl.formatMessage(messages.errors.verificationFailed)
-        })
-        setStep(2)
-      }
-    }, [
-      amount,
-      analytics,
-      bank,
-      callbackUri,
-      clientIp,
-      currency,
-      datetime,
-      failedUrl,
-      intl,
-      language,
-      merchant,
-      note,
-      reference,
-      requester,
-      signature,
-      successfulUrl
-    ]
-  )
+      setStep(2)
+    }
+  }
 
   const handleSubmitOTP = useCallback(
     async (value) => {
+      const { sendDepositOtp } = await import('./Requests')
       analytics.logEvent('submitted_otp', {
         reference: reference,
         otp: value
@@ -231,7 +269,8 @@ const Deposit = (props) => {
   )
 
   const handleUpdateProgress = useCallback(
-    (e) => {
+    async (e) => {
+      const { calculateCurrentProgress } = await import('../../utils/utils')
       const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
@@ -255,91 +294,6 @@ const Deposit = (props) => {
     [intl]
   )
 
-  const renderStepContents = useMemo(() => () => {
-    if (step === 0) {
-      analytics.setCurrentScreen('input_user_credentials')
-      return (
-        <DepositForm
-          currency={currency}
-          bank={bank}
-          handleSubmitDeposit={handleSubmitDeposit}
-          waitingForReady={waitingForReady}
-          showOtpMethod={showOtpMethod}
-          windowDimensions={windowDimensions}
-          establishConnection={establishConnection}
-          reference={reference}
-        />
-      )
-    } else if (checkIfMandiriBank(bank) && step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <MandiriForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-          bank={bank}
-        />
-      )
-    } else if (step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <OTPForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-          bank={bank}
-          currency={currency}
-          progress={progress}
-          isCardOTP={isCardOTP}
-        />
-      )
-    } else if (step === 2 && isSuccessful) {
-      analytics.setCurrentScreen('transfer_successful')
-      return (
-        <AutoRedirect delay={10000} url={successfulUrl}>
-          <TransferSuccessful
-            transferResult={transferResult}
-            language={language}
-          />
-        </AutoRedirect>
-      )
-    } else if (step === 2 && transferResult.statusCode === '000') {
-      analytics.setCurrentScreen('transfer_successful')
-      return (
-        <AutoRedirect delay={10000} url={successfulUrl}>
-          <TransferWaitForConfirm transferResult={transferResult} />
-        </AutoRedirect>
-      )
-    } else if (step === 2) {
-      analytics.setCurrentScreen('transfer_failed')
-      return (
-        <AutoRedirect delay={10000} url={failedUrl}>
-          <TransferFailed transferResult={transferResult} />
-        </AutoRedirect>
-      )
-    }
-  }, [
-    analytics,
-    bank,
-    currency,
-    establishConnection,
-    failedUrl,
-    handleSubmitDeposit,
-    handleSubmitOTP,
-    isCardOTP,
-    isSuccessful,
-    language,
-    otpReference,
-    progress,
-    reference,
-    showOtpMethod,
-    step,
-    successfulUrl,
-    transferResult,
-    waitingForReady,
-    windowDimensions
-  ])
-
   function handleRequestOTP (e) {
     setProgress(undefined)
     setStep(1)
@@ -347,47 +301,25 @@ const Deposit = (props) => {
     setWaitingForReady(false)
   }
 
-  function handleWindowResize () {
-    setWindowDimensions({
-      width: window.outerWidth
-    })
-  }
-
   useEffect(() => {
-    const queryParamsKeys = [
-      'b',
-      'm',
-      'c1',
-      'c2',
-      'c3',
-      'c4',
-      'a',
-      'r',
-      'd',
-      'k',
-      'su',
-      'fu',
-      'n',
-      'l'
+    const queryParams = [
+      bank,
+      merchant,
+      currency,
+      requester,
+      clientIp,
+      callbackUri,
+      amount,
+      reference,
+      datetime,
+      signature,
+      successfulUrl,
+      failedUrl,
+      note
     ]
     const currencies = ['VND', 'THB', 'IDR']
 
-    for (const param of queryParamsKeys) {
-      if (!queryParams.has(param)) {
-        setTransferResult({
-          statusCode: '001',
-          isSuccess: false,
-          message: intl.formatMessage(messages.errors.verificationFailed)
-        })
-        setStep(2)
-      }
-    }
-
-    if (
-      !currencies.includes(
-        queryParams.get('c1') && queryParams.get('c1').toUpperCase()
-      )
-    ) {
+    if (queryParams.includes(null)) {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
@@ -396,12 +328,39 @@ const Deposit = (props) => {
       setStep(2)
     }
 
-    window.addEventListener('resize', handleWindowResize)
+    if (!currencies.includes(currency && currency.toUpperCase())) {
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
+    }
 
-    return () => window.removeEventListener('resize', handleWindowResize)
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown, checkIfDABBank } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown,
+        checkIfDABBank
+      })
+    }
+
+    dynamicLoadModules()
   }, [
     intl,
-    queryParams
+    bank,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    callbackUri,
+    amount,
+    reference,
+    datetime,
+    signature,
+    successfulUrl,
+    failedUrl,
+    note
   ])
 
   useEffect(() => {
@@ -457,101 +416,93 @@ const Deposit = (props) => {
   }, [step])
 
   return (
-    <WrapperBG className='wrapper' bank={bank} color={themeColor}>
-      <Notifications bank={bank} language={language} />
-      <div className='container'>
-        <div className='form-content'>
-          <header className={step === 2 ? null : 'header-bottom-border'}>
-            <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
-              <Logo bank={bank} currency={currency} />
-            </Suspense>
-            {
-              step === 0 && (
-                <Statistics
-                  title={intl.formatMessage(messages.deposit)}
-                  language={language}
-                  currency={currency}
-                  amount={amount}
-                />
-              )
-            }
-            {
-              step === 1 && !checkIfMandiriBank(bank) && (
-                <Countdown minutes={3} seconds={0} />
-              )
-            }
-            {
-              error && <ErrorAlert message={error.message} />
-            }
-          </header>
-          <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
-            {renderStepContents()}
-          </Suspense>
-        </div>
-        <StepsBar step={step} />
-      </div>
+    <>
       {
-        showOtpMethod && windowDimensions.width <= 576 && step === 0 && (
-          <footer className='footer-submit-container'>
-            <div className='deposit-submit-buttons'>
-              <GlobalButton
-                label='SMS OTP'
-                color={themeColor}
-                outlined
-                icon={
-                  <img
-                    alt='sms'
-                    width='24'
-                    height='24'
-                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)}
-                  />
-                }
-                onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, 'sms')
-                )}
-                disabled={!establishConnection || waitingForReady}
-              />
-              <GlobalButton
-                label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
-                color={themeColor}
-                outlined
-                icon={
-                  <img
-                    alt={checkIfDABBank(bank) ? 'card' : 'smart'}
-                    width='24'
-                    height='24'
-                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
-                  />
-                }
-                onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart')
-                )}
-                disabled={!establishConnection || waitingForReady}
-              />
-            </div>
-          </footer>
-        )
+        bank && bank.toUpperCase() === 'VCB' &&
+          <Notifications bank={bank} language={language} />
       }
-      <Suspense fallback={null}>
-        <ProgressModal open={progress && progress.statusCode === '009'}>
-          <div className='progress-bar-container'>
-            <img
-              alt='submit-transaction'
-              width='80'
-              height='80'
-              src={require('../../assets/icons/in-progress.svg')}
-            />
-            <progress
-              value={
-                progress && (progress.currentStep / progress.totalSteps) * 100
+      <StyledContainer>
+        <StyledContent>
+          <Header
+            themeColor={themeColor}
+            step={step}
+            language={language}
+            error={error}
+          />
+          <Content
+            step={step}
+            handleSubmitDeposit={handleSubmitDeposit}
+            handleSubmitOTP={handleSubmitOTP}
+            waitingForReady={waitingForReady}
+            establishConnection={establishConnection}
+            transferResult={transferResult}
+            isCardOTP={isCardOTP}
+            otpReference={otpReference}
+            progress={progress}
+            isSuccessful={isSuccessful}
+            language={language}
+            analytics={analytics}
+          />
+        </StyledContent>
+        <StepsBar step={step} />
+      </StyledContainer>
+      {
+        showOtpMethod && step === 0 &&
+          <StyledFooter>
+            <GlobalButton
+              label='SMS OTP'
+              color={themeColor}
+              outlined
+              icon={
+                <img
+                  alt='sms'
+                  width='24'
+                  height='24'
+                  src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)}
+                />
               }
-              max={100}
+              onClick={handleSubmit((values, e) =>
+                handleSubmitDeposit(values, e, 'sms')
+              )}
+              disabled={!establishConnection || waitingForReady}
             />
-            <p>{progress && progress.statusMessage}</p>
-          </div>
-        </ProgressModal>
-      </Suspense>
-    </WrapperBG>
+            <GlobalButton
+              label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+              color={themeColor}
+              outlined
+              icon={
+                <img
+                  alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
+                />
+              }
+              onClick={handleSubmit((values, e) =>
+                handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart')
+              )}
+              disabled={!establishConnection || waitingForReady}
+            />
+          </StyledFooter>
+      }
+      <ProgressModal open={progress && progress.statusCode === '009'}>
+        <StyledProgressBarContainer>
+          <img
+            alt='submit-transaction'
+            width='80'
+            height='80'
+            src={require('../../assets/icons/in-progress.svg')}
+          />
+          <progress
+            value={
+              progress && (progress.currentStep / progress.totalSteps) * 100
+            }
+            max={100}
+          />
+          <p>{progress && progress.statusMessage}</p>
+        </StyledProgressBarContainer>
+      </ProgressModal>
+    </>
   )
 }
 

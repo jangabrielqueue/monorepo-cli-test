@@ -12,29 +12,29 @@
       ],
       "headers": [
         {
-          "source": "**/*.@(jpg|jpeg|gif|png|webp|svg)",
+          "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
           "headers": [
             {
-              "key": "Cache-Control",
-              "value": "max-age=8380800"
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
             }
           ]
         },
         {
-          "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css|css)",
+          "source": "**/*.@(jpg|jpeg|gif|png|webp)",
           "headers": [
             {
               "key": "Cache-Control",
-              "value": "max-age=8380800"
+              "value": "max-age=31536000"
             }
           ]
         },
         {
-          "source": "**/*.@(js)",
+          "source": "**/*.@(js|css)",
           "headers": [
             {
               "key": "Cache-Control",
-              "value": "max-age=8380800"
+              "value": "max-age=31536000"
             }
           ]
         }

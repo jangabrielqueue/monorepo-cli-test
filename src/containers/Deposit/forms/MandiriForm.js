@@ -1,9 +1,13 @@
-import React, { memo } from 'react'
+import React, { memo, useContext, lazy } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import styled from 'styled-components'
-import GlobalButton from '../../../components/GlobalButton'
+import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
+
+// styling
 const StyledHeader = styled.h1`
   font-size: 16px;
   font-weight: normal;
@@ -23,7 +27,10 @@ const StyledReference = styled.p`
 `
 
 const MandiriForm = memo(function MandiriForm (props) {
-  const { waitingForReady, handleSubmitOTP, bank, otpReference } = props
+  const {
+    bank
+  } = useContext(QueryParamsContext)
+  const { waitingForReady, handleSubmitOTP, otpReference } = props
 
   function handleSubmitForm () {
     // submit 'DONE' as OTP value
@@ -31,7 +38,7 @@ const MandiriForm = memo(function MandiriForm (props) {
   }
 
   return (
-    <main>
+    <>
       <StyledHeader><FormattedMessage {...messages.pleaseUseMandiri} /></StyledHeader>
       <StyledSubHeader><FormattedMessage {...messages.clickDone} /></StyledSubHeader>
       <StyledReference>Ref: {otpReference}</StyledReference>
@@ -43,7 +50,7 @@ const MandiriForm = memo(function MandiriForm (props) {
         disabled={waitingForReady}
         bank={bank && bank.toUpperCase()}
       />
-    </main>
+    </>
   )
 })
 

@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
-import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../utils/banks'
-import messages from './messages'
+import React, { useState, useContext, lazy, useEffect } from 'react'
+import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import GlobalButton from '../../components/GlobalButton'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import styled from 'styled-components'
-import usernameIcon from '../../assets/icons/username.png'
-import passwordIcon from '../../assets/icons/password.png'
-import bankIcon from '../../assets/icons/bank-name.png'
-import lockIcon from '../../assets/icons/lock.png'
-import downExpand from '../../assets/icons/down-expand.png'
-import upExpand from '../../assets/icons/up-expand.png'
 import { useFormContext } from 'react-hook-form'
 import { Tooltip } from '@rmwc/tooltip'
 import '@rmwc/tooltip/tooltip.css'
+import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
+import usernameIcon from '../../../assets/icons/username.png'
+import passwordIcon from '../../../assets/icons/password.png'
+import bankIcon from '../../../assets/icons/bank-name.png'
+import lockIcon from '../../../assets/icons/lock.png'
+import downExpand from '../../../assets/icons/down-expand.png'
+import upExpand from '../../../assets/icons/up-expand.png'
 
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
+
+// styling
 const FormIconContainer = styled.div`
   display: flex;
 
@@ -42,7 +45,6 @@ const FormIconContainer = styled.div`
     flex: 0 1 415px;
   }
 `
-
 const FormSelectField = styled.select`
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -52,7 +54,6 @@ const FormSelectField = styled.select`
   margin-bottom: 23px;
   background: url(${props => props.toggleSelect ? upExpand : downExpand}) no-repeat right;
 `
-
 const InputFieldContainer = styled.div`
   position: relative;
 
@@ -117,7 +118,6 @@ const StyledSecureBankingText = styled.ul`
     font-style: italic;
   }
 `
-
 const StyledReferenceTexts = styled.ul`
   line-height: 1.7;
   list-style: none;
@@ -140,20 +140,33 @@ const StyledReferenceTexts = styled.ul`
     padding-left: 28px;
   }
 `
+const StyledSingleFormFooter = styled.section`
+  margin-top: 5px;
+  padding: 10px 0 5px;
+  text-align: center;
+`
+const StyledDoubleFormFooter = styled.section`
+  text-align: center;
 
-const DepositForm = React.memo((props) => {
+  @media (max-width: 36em) {
+    display: none;
+  }
+`
+
+export default function DepositForm (props) {
   const {
-    currency,
     bank,
-    reference,
+    currency,
+    reference
+  } = useContext(QueryParamsContext)
+  const {
     handleSubmitDeposit,
     waitingForReady,
-    showOtpMethod,
-    windowDimensions,
     establishConnection
   } = props
-  const bankCodes = getBanksByCurrency(currency)
-  const isBankKnown = checkBankIfKnown(currency, bank)
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const bankCodes = dynamicLoadBankUtils?.getBanksByCurrency(currency)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const [showPassword, setShowPassword] = useState(false)
@@ -162,9 +175,23 @@ const DepositForm = React.memo((props) => {
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
+  const showOtpMethod = currency && currency.toUpperCase() === 'VND'
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } = await import('../../../utils/banks')
+      setDynamicLoadBankUtils({
+        getBanksByCurrency,
+        checkBankIfKnown,
+        checkIfDABBank
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   return (
-    <main>
+    <>
       <form autoComplete='off'>
         {
           !isBankKnown &&
@@ -180,7 +207,7 @@ const DepositForm = React.memo((props) => {
                   toggleSelect={toggleSelect}
                 >
                   {
-                    bankCodes.map((bc, i) => (
+                    bankCodes?.map((bc, i) => (
                       <option key={bc.code} value={bc.code}>
                         {
                           bc.name
@@ -231,7 +258,7 @@ const DepositForm = React.memo((props) => {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' width='20' height='20' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={require(`../../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
                 </li>
               </ul>
             </InputFieldContainer>
@@ -257,40 +284,38 @@ const DepositForm = React.memo((props) => {
       </form>
       {
         !showOtpMethod &&
-          <div className='form-content-submit-container'>
+          <StyledSingleFormFooter>
             <GlobalButton
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
-              icon={<img alt='submit' width='24' height='24' src={require('../../assets/icons/submit-otp.svg')} />}
+              icon={<img alt='submit' width='24' height='24' src={require('../../../assets/icons/submit-otp.svg')} />}
               onClick={handleSubmit(handleSubmitDeposit)}
               disabled={!establishConnection || waitingForReady}
               bank={bank && bank.toUpperCase()}
             />
-          </div>
+          </StyledSingleFormFooter>
       }
       {
-        (showOtpMethod && windowDimensions.width > 576) &&
-          <div className='deposit-submit-buttons'>
+        showOtpMethod &&
+          <StyledDoubleFormFooter>
             <GlobalButton
               label='SMS OTP'
               color={buttonColor}
               outlined
-              icon={<img alt='sms' width='24' height='24' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
+              icon={<img alt='sms' width='24' height='24' src={require(`../../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
             />
             <GlobalButton
-              label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+              label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              icon={<img alt={checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
-              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
+              icon={<img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={require(`../../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             />
-          </div>
+          </StyledDoubleFormFooter>
       }
-    </main>
+    </>
   )
-})
-
-export default DepositForm
+}
