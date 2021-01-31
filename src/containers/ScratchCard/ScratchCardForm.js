@@ -145,10 +145,15 @@ const ScratchCardForm = React.memo((props) => {
         required: true,
         maxLength: 14
       }
-    } else if (telcoName === 'VMS' || telcoName === 'VNM') {
+    } else if (telcoName === 'VMS') {
       return {
         required: true,
         maxLength: 12
+      }
+    } else if (telcoName === 'VNM') {
+      return {
+        required: true,
+        maxLength: 18
       }
     } else if (telcoName === 'ZING') {
       return {
@@ -174,7 +179,7 @@ const ScratchCardForm = React.memo((props) => {
       case 'VMS':
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
       case 'VNM':
-        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
+        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 18 })
       case 'ZING':
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
       case 'GATE':
@@ -209,7 +214,7 @@ const ScratchCardForm = React.memo((props) => {
     } else if (telcoName === 'VNM') {
       return {
         required: true,
-        maxLength: 11
+        maxLength: 16
       }
     } else {
       return {
@@ -228,7 +233,7 @@ const ScratchCardForm = React.memo((props) => {
     } else if (telcoName === 'GATE') {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 10 })
     } else if (telcoName === 'VNM') {
-      return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 11 })
+      return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 16 })
     }
   }
 
