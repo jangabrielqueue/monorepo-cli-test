@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
-import * as firebase from 'firebase/app'
 import * as signalR from '@microsoft/signalr'
 import { useIntl } from 'react-intl'
 import messages from './messages'
 import { useFormContext } from 'react-hook-form'
 import styled from 'styled-components'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { FirebaseContext } from '../../contexts/FirebaseContext'
+import { ErrorBoundary } from 'react-error-boundary'
+
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
@@ -100,7 +102,6 @@ const StyledProgressBarContainer = styled.div`
 `
 
 const Deposit = (props) => {
-  const analytics = firebase.analytics()
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
@@ -117,6 +118,7 @@ const Deposit = (props) => {
     failedUrl,
     note
   } = useContext(QueryParamsContext)
+  const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -301,6 +303,31 @@ const Deposit = (props) => {
     setWaitingForReady(false)
   }
 
+  function errorHandler (error, componentStack) {
+    analytics.logEvent('exception', {
+      stack: componentStack,
+      description: error,
+      fatal: true
+    })
+  }
+
+  function FallbackComponent ({ componentStack, error }) {
+    return (
+      <div>
+        <p>
+          <strong>Oops! An error occured!</strong>
+        </p>
+        <p>Please contact customer service</p>
+        <p>
+          <strong>Error:</strong> {error.toString()}
+        </p>
+        <p>
+          <strong>Stacktrace:</strong> {componentStack}
+        </p>
+      </div>
+    )
+  }
+
   useEffect(() => {
     const queryParams = [
       bank,
@@ -417,91 +444,93 @@ const Deposit = (props) => {
 
   return (
     <>
-      {
-        bank && bank.toUpperCase() === 'VCB' &&
-          <Notifications bank={bank} language={language} />
-      }
-      <StyledContainer>
-        <StyledContent>
-          <Header
-            themeColor={themeColor}
-            step={step}
-            language={language}
-            error={error}
-          />
-          <Content
-            step={step}
-            handleSubmitDeposit={handleSubmitDeposit}
-            handleSubmitOTP={handleSubmitOTP}
-            waitingForReady={waitingForReady}
-            establishConnection={establishConnection}
-            transferResult={transferResult}
-            isCardOTP={isCardOTP}
-            otpReference={otpReference}
-            progress={progress}
-            isSuccessful={isSuccessful}
-            language={language}
-            analytics={analytics}
-          />
-        </StyledContent>
-        <StepsBar step={step} />
-      </StyledContainer>
-      {
-        showOtpMethod && step === 0 &&
-          <StyledFooter>
-            <GlobalButton
-              label='SMS OTP'
-              color={themeColor}
-              outlined
-              icon={
-                <img
-                  alt='sms'
-                  width='24'
-                  height='24'
-                  src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)}
-                />
-              }
-              onClick={handleSubmit((values, e) =>
-                handleSubmitDeposit(values, e, 'sms')
-              )}
-              disabled={!establishConnection || waitingForReady}
+      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        {
+          bank && bank.toUpperCase() === 'VCB' &&
+            <Notifications bank={bank} language={language} />
+        }
+        <StyledContainer>
+          <StyledContent>
+            <Header
+              themeColor={themeColor}
+              step={step}
+              language={language}
+              error={error}
             />
-            <GlobalButton
-              label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
-              color={themeColor}
-              outlined
-              icon={
-                <img
-                  alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
-                  width='24'
-                  height='24'
-                  src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
-                />
-              }
-              onClick={handleSubmit((values, e) =>
-                handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart')
-              )}
-              disabled={!establishConnection || waitingForReady}
+            <Content
+              step={step}
+              handleSubmitDeposit={handleSubmitDeposit}
+              handleSubmitOTP={handleSubmitOTP}
+              waitingForReady={waitingForReady}
+              establishConnection={establishConnection}
+              transferResult={transferResult}
+              isCardOTP={isCardOTP}
+              otpReference={otpReference}
+              progress={progress}
+              isSuccessful={isSuccessful}
+              language={language}
+              analytics={analytics}
             />
-          </StyledFooter>
-      }
-      <ProgressModal open={progress && progress.statusCode === '009'}>
-        <StyledProgressBarContainer>
-          <img
-            alt='submit-transaction'
-            width='80'
-            height='80'
-            src={require('../../assets/icons/in-progress.svg')}
-          />
-          <progress
-            value={
-              progress && (progress.currentStep / progress.totalSteps) * 100
-            }
-            max={100}
-          />
-          <p>{progress && progress.statusMessage}</p>
-        </StyledProgressBarContainer>
-      </ProgressModal>
+          </StyledContent>
+          <StepsBar step={step} />
+        </StyledContainer>
+        {
+          showOtpMethod && step === 0 &&
+            <StyledFooter>
+              <GlobalButton
+                label='SMS OTP'
+                color={themeColor}
+                outlined
+                icon={
+                  <img
+                    alt='sms'
+                    width='24'
+                    height='24'
+                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)}
+                  />
+                }
+                onClick={handleSubmit((values, e) =>
+                  handleSubmitDeposit(values, e, 'sms')
+                )}
+                disabled={!establishConnection || waitingForReady}
+              />
+              <GlobalButton
+                label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+                color={themeColor}
+                outlined
+                icon={
+                  <img
+                    alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
+                    width='24'
+                    height='24'
+                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
+                  />
+                }
+                onClick={handleSubmit((values, e) =>
+                  handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart')
+                )}
+                disabled={!establishConnection || waitingForReady}
+              />
+            </StyledFooter>
+        }
+        <ProgressModal open={progress && progress.statusCode === '009'}>
+          <StyledProgressBarContainer>
+            <img
+              alt='submit-transaction'
+              width='80'
+              height='80'
+              src={require('../../assets/icons/in-progress.svg')}
+            />
+            <progress
+              value={
+                progress && (progress.currentStep / progress.totalSteps) * 100
+              }
+              max={100}
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </StyledProgressBarContainer>
+        </ProgressModal>
+      </ErrorBoundary>
     </>
   )
 }

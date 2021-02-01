@@ -74,22 +74,22 @@ function getIdrBanksByEnvForDeposit () {
 }
 
 function getBanksByCurrency (currency) {
-  if (currency && currency.toUpperCase() === 'VND') {
+  if (currency?.toUpperCase() === 'VND') {
     return getVndBanksByEnvForDeposit()
-  } else if (currency && currency.toUpperCase() === 'THB') {
+  } else if (currency?.toUpperCase() === 'THB') {
     return getThbBanksByEnvForDeposit()
-  } else if (currency && currency.toUpperCase() === 'IDR') {
+  } else if (currency?.toUpperCase() === 'IDR') {
     return getIdrBanksByEnvForDeposit()
   }
   return []
 }
 
 function checkBankIfKnown (currency, bank) {
-  if (currency && currency.toUpperCase() === 'VND' && bank) {
+  if (currency?.toUpperCase() === 'VND' && bank) {
     return getVndBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
-  } else if (currency && currency.toUpperCase() === 'THB' && bank) {
+  } else if (currency?.toUpperCase() === 'THB' && bank) {
     return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
-  } else if (currency && currency.toUpperCase() === 'IDR' && bank) {
+  } else if (currency?.toUpperCase() === 'IDR' && bank) {
     return getIdrBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
   }
 }
@@ -109,20 +109,20 @@ function getThbBanksByEnvForTopUp () {
 }
 
 function getBanksByCurrencyForTopUp (currency) {
-  if (currency && currency.toUpperCase() === 'VND') {
+  if (currency?.toUpperCase() === 'VND') {
     return getVndBanksByEnvForTopUp()
-  } else if (currency && currency.toUpperCase() === 'THB') {
+  } else if (currency?.toUpperCase() === 'THB') {
     return getThbBanksByEnvForTopUp()
   }
   return []
 }
 
 function checkIfDABBank (bank) {
-  return bank && bank.toUpperCase() === 'DAB'
+  return bank?.toUpperCase() === 'DAB'
 }
 
 function checkIfMandiriBank (bank) {
-  return bank && bank.toUpperCase() === 'MANDIRI'
+  return bank?.toUpperCase() === 'MANDIRI'
 }
 
 module.exports = {

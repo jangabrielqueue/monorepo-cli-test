@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import styled from 'styled-components'
 
 // styling
@@ -30,4 +30,4 @@ const FallbackPage = () => {
   )
 }
 
-export default FallbackPage
+export default memo(FallbackPage)
