@@ -153,7 +153,7 @@ const ScratchCardForm = React.memo((props) => {
     } else if (telcoName === 'VNM') {
       return {
         required: true,
-        maxLength: 18
+        maxLength: 12
       }
     } else if (telcoName === 'ZING') {
       return {
@@ -179,7 +179,7 @@ const ScratchCardForm = React.memo((props) => {
       case 'VMS':
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
       case 'VNM':
-        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 18 })
+        return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
       case 'ZING':
         return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 9 })
       case 'GATE':
@@ -195,7 +195,7 @@ const ScratchCardForm = React.memo((props) => {
         required: true,
         maxLength: 14
       }
-    } else if (telcoName === 'GW') {
+    } else if (telcoName === 'GW' || telcoName === 'VMS') {
       return {
         required: true,
         maxLength: 15
@@ -226,7 +226,7 @@ const ScratchCardForm = React.memo((props) => {
   function renderMaxLengthMessageSerialNumber () {
     if (telcoName === 'VTT' || telcoName === 'VNP') {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 14 })
-    } else if (telcoName === 'GW') {
+    } else if (telcoName === 'GW' || telcoName === 'VMS') {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 15 })
     } else if (telcoName === 'ZING') {
       return intl.formatMessage(messages.placeholders.inputMaxChar, { maxLength: 12 })
@@ -352,9 +352,9 @@ const ScratchCardForm = React.memo((props) => {
               </ul>
               <li><FormattedMessage {...messages.notes.notesSix} /></li>
               <ul>
-                <li>VIETTEL: 29%</li>
-                <li>MOBI: 29%</li>
-                <li>VINA: 27%</li>
+                <li>VIETTEL: 25%</li>
+                <li>MOBI: 27% (card value 10-20-30-50-100) and 30% (card value 200-300-500)</li>
+                <li>VINA: 22%</li>
                 <li>ZING: 25%</li>
                 <li>GATE: 28%</li>
                 <li>VIETNAMOBILE: 25%</li>
