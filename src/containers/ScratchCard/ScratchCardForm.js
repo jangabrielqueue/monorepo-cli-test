@@ -121,7 +121,7 @@ const InputFieldContainer = styled.div`
 
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
-  const [telcoName, setTelcoName] = useState(bank && bank.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
+  const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const intl = useIntl()
   const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext()
   const isBankKnown = checkBankIfKnown(currency, bank)
@@ -239,13 +239,18 @@ const ScratchCardForm = React.memo((props) => {
 
   function renderPatternMessageSerialNumber () {
     switch (telcoName) {
-      case 'ZING':
-        return intl.formatMessage(messages.placeholders.inputPattern, { numberLetter: 2, digitNumber: 10 })
       case 'GATE':
         return intl.formatMessage(messages.placeholders.inputPattern, { numberLetter: 2, digitNumber: 8 })
       default:
         break
     }
+  }
+
+  function handleSelectTelco (e) {
+    setTelcoName(e.target.value)
+    reset({
+      telcoName: e.target.value
+    })
   }
 
   return (
@@ -260,9 +265,7 @@ const ScratchCardForm = React.memo((props) => {
                   name='telcoName'
                   id='telcoName'
                   ref={register}
-                  aria-owns='telco-1 telco-2 telco-3 telco-4 telco-5 telco-6'
-                  onChange={(e) => setTelcoName(e.target.value)}
-                  value={telcoName}
+                  onChange={handleSelectTelco}
                 >
                   <option value='VTT' id='telco-1'>Viettel</option>
                   <option value='VMS' id='telco-2'>Mobiphone</option>

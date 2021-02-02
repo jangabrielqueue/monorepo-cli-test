@@ -96,7 +96,11 @@ const App = (props) => {
   const reference = urlParams.get('r')
   const currency = urlParams.get('c1')
   const amount = urlParams.get('a')
-  const methods = useForm()
+  const methods = useForm({
+    defaultValues: {
+      telcoName: bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT'
+    }
+  })
 
   // Initialize Firebase
   if (!firebase.apps.length) {
