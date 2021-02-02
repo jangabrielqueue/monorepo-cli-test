@@ -261,13 +261,7 @@ const ScratchCardForm = React.memo((props) => {
                   id='telcoName'
                   ref={register}
                   aria-owns='telco-1 telco-2 telco-3 telco-4 telco-5 telco-6'
-                  onChange={(e) => {
-                    setTelcoName(e.target.value)
-                    reset({
-                      cardSerialNumber: '',
-                      cardPin: ''
-                    })
-                  }}
+                  onChange={(e) => setTelcoName(e.target.value)}
                   value={telcoName}
                 >
                   <option value='VTT' id='telco-1'>Viettel</option>
