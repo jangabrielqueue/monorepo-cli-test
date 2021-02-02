@@ -260,7 +260,7 @@ const ScratchCardForm = React.memo((props) => {
                   name='telcoName'
                   id='telcoName'
                   ref={register}
-                  aria-owns='telco-1 telco-2 telco-3'
+                  aria-owns='telco-1 telco-2 telco-3 telco-4 telco-5 telco-6'
                   onChange={(e) => {
                     setTelcoName(e.target.value)
                     reset({
@@ -273,9 +273,9 @@ const ScratchCardForm = React.memo((props) => {
                   <option value='VTT' id='telco-1'>Viettel</option>
                   <option value='VMS' id='telco-2'>Mobiphone</option>
                   <option value='VNP' id='telco-3'>Vinaphone</option>
-                  <option value='ZING' id='telco-3'>Zing</option>
-                  <option value='GATE' id='telco-3'>Gate</option>
-                  <option value='VNM' id='telco-3'>Vietnamobile</option>
+                  <option value='ZING' id='telco-4'>Zing</option>
+                  <option value='GATE' id='telco-5'>Gate</option>
+                  <option value='VNM' id='telco-6'>Vietnamobile</option>
                 </FormSelectField>
               </div>
             </FormIconContainer>
