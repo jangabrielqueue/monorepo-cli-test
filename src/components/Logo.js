@@ -24,10 +24,7 @@ const Logo = ({ bank, currency, type }) => {
       return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.webp`)
     } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
       return requestImageFileWebp('./PRECARD_LOGO.webp')
-    } else if (!isBankKnown &&
-      bank?.toUpperCase() !== 'PRECARD' && type !== 'scratch-card' &&
-      isBankKnown !== undefined
-    ) {
+    } else {
       return requestImageFileWebp('./GW_LOGO.webp')
     }
   }

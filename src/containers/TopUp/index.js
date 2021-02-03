@@ -1,38 +1,118 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import DepositForm from './DepositForm'
-import OTPForm from './OTPForm'
-import TransferSuccessful from '../../components/TransferSuccessful'
-import TransferFailed from '../../components/TransferFailed'
-import { sendTopUpRequest, sendTopUpOtp } from './Requests'
+import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
 import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
-import { getBanksByCurrencyForTopUp } from '../../utils/banks'
 import { useIntl } from 'react-intl'
 import messages from './messages'
-import StepsBar from '../../components/StepsBar'
-import GlobalButton from '../../components/GlobalButton'
 import styled from 'styled-components'
-import Statistics from '../../components/Statistics'
-import Countdown from '../../components/Countdown'
-import ErrorAlert from '../../components/ErrorAlert'
-import ProgressModal from '../../components/ProgressModal'
 import { useFormContext } from 'react-hook-form'
-import * as firebase from 'firebase/app'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { FirebaseContext } from '../../contexts/FirebaseContext'
+import { ErrorBoundary } from 'react-error-boundary'
 
+// endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
-const WrapperBG = styled.div`
-  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
-  padding-top: 75px;
+// lazy loaded components
+const Header = lazy(() => import('./Header'))
+const Content = lazy(() => import('./Content'))
+const StepsBar = lazy(() => import('../../components/StepsBar'))
+const ProgressModal = lazy(() => import('../../components/ProgressModal'))
+const GlobalButton = lazy(() => import('../../components/GlobalButton'))
+
+// styling
+const StyledContainer = styled.div`
+  margin: 0 20px;
+  max-width: 500px;
+  width: 100%;
+`
+const StyledContent = styled.div`
+  background: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
+`
+const StyledFooter = styled.footer`
+  display: none;
+
+  @media (max-width: 36em) {
+    display: block;
+    box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
+    margin-top: 20px;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+  }
+`
+const StyledProgressBarContainer = styled.div`
+  color: rgba(0, 0, 0, 0.65);
+  height: 200px;
+  text-align: center;
+
+  > img {
+      animation: zoomInAndOut 0.5s ease-in-out;
+      margin: 30px 0 2px;
+    }
+
+  > progress {
+      -webkit-appearance:none;
+      border-radius: 7px;
+      height: 8px;
+      margin-bottom: 2px;
+      width: 100%;
+
+      &::-webkit-progress-bar {
+          background: #f5f5f5;
+          border-radius: 7px;
+      }
+
+      &::-webkit-progress-value {
+          background: #34A220;
+          border-radius: 7px;
+          transition: width 0.5s linear;
+      }
+
+      &::-moz-progress-bar {
+          background: #34A220;
+      }
+    }
+
+  > p {
+      font-family: ProductSansRegular;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0;
+      text-align: center;
+    }
+
+  @media (min-width: 36em) {
+    min-width: 450px;
+  }
+
+  @media only screen and (min-device-width : 25em) and (max-device-width : 26em) {
+    min-width: 325px;
+  }
+
+  @media only screen and (min-device-width : 22em) and (max-device-width : 24em) {
+    min-width: 270px;
+  }
+
+  @media (max-width: 22.438em) {
+    min-width: 232px;
+  }
 `
 
-function getDefaultBankByCurrency (currency) {
-  return getBanksByCurrencyForTopUp(currency)[0]
-}
-
 const TopUp = props => {
-  const analytics = firebase.analytics()
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const {
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    amount,
+    reference,
+    datetime,
+    signature
+  } = useContext(QueryParamsContext)
+  const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -41,26 +121,20 @@ const TopUp = props => {
   const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: window.outerWidth
-  })
-  const queryParams = useQuery()
-  const merchant = queryParams.get('m')
-  const currency = queryParams.get('c1')
-  const requester = queryParams.get('c2')
-  const clientIp = queryParams.get('c3')
-  const amount = queryParams.get('a')
-  const reference = queryParams.get('r')
-  const datetime = queryParams.get('d')
-  const signature = queryParams.get('k')
+  const language = props.language // language was handled at root component not at the queryparams
   const session = `TOPUP-BANK-${merchant}-${reference}`
   const intl = useIntl()
   const themeColor = 'topup'
   const { handleSubmit } = useFormContext()
-
   analytics.setCurrentScreen('top_up')
 
+  function getDefaultBankByCurrency (currency) {
+    return dynamicLoadBankUtils?.getBanksByCurrencyForTopUp(currency)[0]
+  }
+
   async function handleSubmitDeposit (values, e, type) {
+    const { sleep } = await import('../../utils/utils')
+    const { sendTopUpRequest } = await import('./Requests')
     analytics.logEvent('login', {
       reference
     })
@@ -130,6 +204,7 @@ const TopUp = props => {
   }
 
   async function handleSubmitOTP (value) {
+    const { sendTopUpOtp } = await import('./Requests')
     analytics.logEvent('submitted_otp', {
       reference: reference,
       otp: value
@@ -180,6 +255,7 @@ const TopUp = props => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
+      const { calculateCurrentProgress } = await import('../../utils/utils')
       const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
@@ -203,28 +279,45 @@ const TopUp = props => {
     [intl]
   )
 
-  function handleWindowResize () {
-    setWindowDimensions({
-      width: window.outerWidth
+  function errorHandler (error, componentStack) {
+    analytics.logEvent('exception', {
+      stack: componentStack,
+      description: error,
+      fatal: true
     })
   }
 
+  function FallbackComponent ({ componentStack, error }) {
+    return (
+      <div>
+        <p>
+          <strong>Oops! An error occured!</strong>
+        </p>
+        <p>Please contact customer service</p>
+        <p>
+          <strong>Error:</strong> {error.toString()}
+        </p>
+        <p>
+          <strong>Stacktrace:</strong> {componentStack}
+        </p>
+      </div>
+    )
+  }
+
   useEffect(() => {
-    const queryParamsKeys = ['m', 'c1', 'c2', 'c3', 'a', 'r', 'd', 'k']
+    const queryParams = [
+      merchant,
+      currency,
+      requester,
+      clientIp,
+      amount,
+      reference,
+      datetime,
+      signature
+    ]
     const currencies = ['VND', 'THB']
 
-    for (const param of queryParamsKeys) {
-      if (!queryParams.has(param)) {
-        setTransferResult({
-          statusCode: '001',
-          isSuccess: false,
-          message: intl.formatMessage(messages.errors.verificationFailed)
-        })
-        setStep(2)
-      }
-    }
-
-    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+    if (queryParams.includes(null)) {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
@@ -233,14 +326,34 @@ const TopUp = props => {
       setStep(2)
     }
 
-    window.addEventListener('resize', handleWindowResize)
+    if (!currencies.includes(currency?.toUpperCase())) {
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: intl.formatMessage(messages.errors.verificationFailed)
+      })
+      setStep(2)
+    }
 
-    return () => window.removeEventListener('resize', handleWindowResize)
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { getBanksByCurrencyForTopUp } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        getBanksByCurrencyForTopUp
+      })
+    }
 
-    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
-    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-    // avoid unnecessary warning
-  }, []) // eslint-disable-line
+    dynamicLoadModules()
+  }, [
+    intl,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    amount,
+    reference,
+    datetime,
+    signature
+  ])
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
@@ -289,93 +402,40 @@ const TopUp = props => {
     }
   }, [step])
 
-  let content
-
-  if (step === 0) {
-    analytics.setCurrentScreen('input_user_credentials')
-    content = (
-      <DepositForm
-        merchant={merchant}
-        requester={requester}
-        currency={currency}
-        amount={amount}
-        reference={reference}
-        clientIp={clientIp}
-        signature={signature}
-        datetime={datetime}
-        handleSubmitDeposit={handleSubmitDeposit}
-        waitingForReady={waitingForReady}
-        windowDimensions={windowDimensions}
-        establishConnection={establishConnection}
-      />
-    )
-  } else if (step === 1) {
-    analytics.setCurrentScreen('input_otp')
-    content = (
-      <OTPForm
-        otpReference={otpReference}
-        handleSubmitOTP={handleSubmitOTP}
-        waitingForReady={waitingForReady}
-        progress={progress}
-      />
-    )
-  } else if (step === 2 && isSuccessful) {
-    analytics.setCurrentScreen('transfer_successful')
-    content = (
-      <main>
-        <TransferSuccessful transferResult={transferResult} language={props.language} />
-      </main>
-    )
-  } else if (step === 2) {
-    analytics.setCurrentScreen('transfer_failed')
-    content = (
-      <main>
-        <TransferFailed transferResult={transferResult} />
-      </main>
-    )
-  }
-
   return (
-    <WrapperBG className='wrapper' color={themeColor}>
-      <div className='container'>
-        <div className='form-content'>
-          <header className={step === 2 ? null : 'header-bottom-border'}>
-            <section className='logo'>
-              <img alt='GameWallet' width='200' height='auto' src={require('../../assets/banks/GW_LOGO.webp')} />
-            </section>
-            {
-              step === 0 &&
-                <Statistics
-                  title={intl.formatMessage(messages.deposit)}
-                  language={props.language}
-                  currency={currency}
-                  amount={amount}
-                />
-            }
-            {
-              step === 1 &&
-                <Countdown minutes={3} seconds={0} />
-            }
-            {
-              error &&
-                <ErrorAlert
-                  message={error.message}
-                />
-            }
-          </header>
-          {
-            content
-          }
-        </div>
-        <StepsBar step={step} />
-      </div>
-      {
-        (windowDimensions.width <= 576 && step === 0) &&
-          <footer className='footer-submit-container'>
-            <div className='deposit-submit-top-up-buttons'>
+    <>
+      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        <StyledContainer>
+          <StyledContent>
+            <Header
+              themeColor={themeColor}
+              step={step}
+              language={language}
+              error={error}
+            />
+            <Content
+              step={step}
+              handleSubmitDeposit={handleSubmitDeposit}
+              handleSubmitOTP={handleSubmitOTP}
+              waitingForReady={waitingForReady}
+              establishConnection={establishConnection}
+              transferResult={transferResult}
+              otpReference={otpReference}
+              progress={progress}
+              isSuccessful={isSuccessful}
+              language={language}
+              analytics={analytics}
+            />
+          </StyledContent>
+          <StepsBar step={step} />
+        </StyledContainer>
+        {
+          step === 0 &&
+            <StyledFooter>
               <GlobalButton
                 label='SMS OTP'
                 color={themeColor}
+                topup='true'
                 outlined
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
                 disabled={!establishConnection || waitingForReady}
@@ -383,24 +443,30 @@ const TopUp = props => {
               <GlobalButton
                 label='SMART OTP'
                 color={themeColor}
+                topup='true'
                 outlined
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
                 disabled={!establishConnection || waitingForReady}
               />
-            </div>
-          </footer>
-      }
-      <ProgressModal open={progress && (progress.statusCode === '009')}>
-        <div className='progress-bar-container'>
-          <img alt='submit-transaction' width='80' height='auto' src={require('../../assets/icons/in-progress.svg')} />
-          <progress
-            value={progress && (progress.currentStep / progress.totalSteps) * 100}
-            max={100}
-          />
-          <p>{progress && progress.statusMessage}</p>
-        </div>
-      </ProgressModal>
-    </WrapperBG>
+            </StyledFooter>
+        }
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
+          <StyledProgressBarContainer>
+            <img
+              alt='submit-transaction'
+              width='80'
+              height='auto'
+              src={require('../../assets/icons/in-progress.svg')}
+            />
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </StyledProgressBarContainer>
+        </ProgressModal>
+      </ErrorBoundary>
+    </>
   )
 }
 

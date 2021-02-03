@@ -14,11 +14,15 @@ function QueryParamsProvider ({ children }) {
     callbackUri: urlQueryString.get('c4'),
     amount: urlQueryString.get('a'),
     reference: urlQueryString.get('r'),
-    datetime: urlQueryString.get('d'),
+    dateTime: urlQueryString.get('d'),
     signature: urlQueryString.get('k'),
     successfulUrl: urlQueryString.get('su'),
     failedUrl: urlQueryString.get('fu'),
-    note: urlQueryString.get('n')
+    note: urlQueryString.get('n'),
+    key: urlQueryString.get('k'),
+    customer: urlQueryString.get('c2'),
+    datetime: urlQueryString.get('d'),
+    language: urlQueryString.get('l')
   })
 
   return (

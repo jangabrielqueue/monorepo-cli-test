@@ -14,7 +14,7 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 // lazy loaded components
 const Notifications = lazy(() => import('../../components/Notifications'))
-const Header = lazy(() => import('../../components/Header'))
+const Header = lazy(() => import('./Header'))
 const Content = lazy(() => import('./Content'))
 const StepsBar = lazy(() => import('../../components/StepsBar'))
 const ProgressModal = lazy(() => import('../../components/ProgressModal'))
@@ -355,7 +355,7 @@ const Deposit = (props) => {
       setStep(2)
     }
 
-    if (!currencies.includes(currency && currency.toUpperCase())) {
+    if (!currencies.includes(currency?.toUpperCase())) {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,

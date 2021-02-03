@@ -1,17 +1,20 @@
-import React, { useState } from 'react'
-import { getBanksByCurrencyForTopUp } from './../../utils/banks'
-import messages from './messages'
+import React, { useState, lazy, useContext, useEffect } from 'react'
+import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import GlobalButton from '../../components/GlobalButton'
-import CollapsiblePanel from '../../components/CollapsiblePanel'
 import styled from 'styled-components'
-import accountIcon from '../../assets/icons/account.png'
-import currencyIcon from '../../assets/icons/currency.png'
-import usernameIcon from '../../assets/icons/username.png'
-import passwordIcon from '../../assets/icons/password.png'
-import bankIcon from '../../assets/icons/bank-name.png'
+import accountIcon from '../../../assets/icons/account.png'
+import currencyIcon from '../../../assets/icons/currency.png'
+import usernameIcon from '../../../assets/icons/username.png'
+import passwordIcon from '../../../assets/icons/password.png'
+import bankIcon from '../../../assets/icons/bank-name.png'
 import { useFormContext } from 'react-hook-form'
+import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
+const CollapsiblePanel = lazy(() => import('../../../components/CollapsiblePanel'))
+
+// styling
 const StyledMoreInfo = styled.ul`
   list-style: none;
   margin: 0;
@@ -130,19 +133,28 @@ const InputFieldContainer = styled.div`
     }
   }
 `
+const StyledDoubleFormFooter = styled.section`
+  text-align: center;
+
+  @media (max-width: 36em) {
+    display: none;
+  }
+`
 
 const DepositForm = React.memo((props) => {
   const {
-    currency,
     merchant,
     requester,
-    reference,
+    currency,
+    reference
+  } = useContext(QueryParamsContext)
+  const {
     waitingForReady,
     handleSubmitDeposit,
-    windowDimensions,
     establishConnection
   } = props
-  const bankCodes = getBanksByCurrencyForTopUp(currency)
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const bankCodes = dynamicLoadBankUtils?.getBanksByCurrencyForTopUp(currency)
   const buttonColor = 'topup'
   const [showPassword, setShowPassword] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
@@ -151,11 +163,22 @@ const DepositForm = React.memo((props) => {
 
   function handleSubmitForm (values, e, type) {
     handleSubmitDeposit(values, e, type)
-  };
+  }
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { getBanksByCurrencyForTopUp } = await import('../../../utils/banks')
+      setDynamicLoadBankUtils({
+        getBanksByCurrencyForTopUp
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   return (
-    <main>
-      <form>
+    <>
+      <form autoComplete='off'>
         <FormIconContainer icon='bank'>
           <div>
             <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
@@ -166,7 +189,7 @@ const DepositForm = React.memo((props) => {
               aria-owns='1 2 3 4 5 6 7 8 9'
             >
               {
-                bankCodes.map((bc, i) => (
+                bankCodes?.map((bc, i) => (
                   <option key={bc.code} value={bc.code}>
                     {
                       bc.name
@@ -216,7 +239,7 @@ const DepositForm = React.memo((props) => {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' width='20' height='20' src={require(`../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={require(`../../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
                 </li>
               </ul>
             </InputFieldContainer>
@@ -235,28 +258,25 @@ const DepositForm = React.memo((props) => {
           </StyledMoreInfo>
         </CollapsiblePanel>
       </form>
-      {
-        (windowDimensions.width > 576) &&
-          <div className='deposit-submit-top-up-buttons'>
-            <GlobalButton
-              label='SMS OTP'
-              color={buttonColor}
-              outlined
-              topup='true'
-              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
-              disabled={!establishConnection || waitingForReady}
-            />
-            <GlobalButton
-              label='SMART OTP'
-              color={buttonColor}
-              outlined
-              topup='true'
-              onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
-              disabled={!establishConnection || waitingForReady}
-            />
-          </div>
-      }
-    </main>
+      <StyledDoubleFormFooter>
+        <GlobalButton
+          label='SMS OTP'
+          color={buttonColor}
+          outlined
+          topup='true'
+          onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
+          disabled={!establishConnection || waitingForReady}
+        />
+        <GlobalButton
+          label='SMART OTP'
+          color={buttonColor}
+          outlined
+          topup='true'
+          onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
+          disabled={!establishConnection || waitingForReady}
+        />
+      </StyledDoubleFormFooter>
+    </>
   )
 })
 

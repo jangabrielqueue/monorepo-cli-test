@@ -20,7 +20,7 @@ const StyledAccountStatistics = styled.section`
   }
 `
 const StyledCircularProgress = styled(CircularProgress)`
-  color: ${props => props.theme.colors[props.color.toLowerCase()]};
+  color: ${props => props.theme.colors[props.color.toLowerCase()]} !important;
 `
 
 const AccountStatistics = ({ accountName, language, currency, amount, color, loading, establishConnection }) => {

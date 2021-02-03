@@ -10,6 +10,7 @@ import usernameIcon from '../../../assets/icons/username.png'
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
+// styling
 const FormIconContainer = styled.div`
   display: flex;
 

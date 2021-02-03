@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, lazy } from 'react'
 import { useIntl, FormattedMessage } from 'react-intl'
-import messages from './messages'
+import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import styled from 'styled-components'
-import mobileIcon from '../../assets/icons/otp-reference.svg'
-import creditCardIcon from '../../assets/icons/credit-card.svg'
-import { checkBankIfKnown } from '../../utils/banks'
-import GlobalButton from '../../components/GlobalButton'
+import mobileIcon from '../../../assets/icons/otp-reference.svg'
+import creditCardIcon from '../../../assets/icons/credit-card.svg'
+import { checkBankIfKnown } from '../../../utils/banks'
+
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 const FormIconContainer = styled.div`
   display: flex;
@@ -71,7 +73,11 @@ const StyledNoteText = styled.ul`
       }
     }
 `
-
+const StyledFooter = styled.footer`
+  margin-top: 5px;
+  padding: 10px 0px 5px;
+  text-align: center;
+`
 const InputFieldContainer = styled.div`
   position: relative;
 
@@ -255,8 +261,8 @@ const ScratchCardForm = React.memo((props) => {
   }
 
   return (
-    <main>
-      <form>
+    <>
+      <form autoComplete='off'>
         {
           (bank && bank.toUpperCase() !== 'GWC') &&
             <FormIconContainer icon='mobile'>
@@ -329,17 +335,17 @@ const ScratchCardForm = React.memo((props) => {
             </p>
           </div>
         </FormIconContainer>
-        <div className='form-content-submit-container'>
+        <StyledFooter>
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
-            icon={<img alt='submit' width='24' height='24' src={require('../../assets/icons/submit-otp.svg')} />}
+            icon={<img alt='submit' width='24' height='24' src={require('../../../assets/icons/submit-otp.svg')} />}
             onClick={handleSubmit(handleSubmitForm)}
             disabled={!establishConnection || waitingForReady}
           />
-        </div>
+        </StyledFooter>
         {
-          (bank && bank.toUpperCase() !== 'GWC') &&
+          (bank?.toUpperCase() !== 'GWC') &&
             <StyledNoteText>
               <li><FormattedMessage {...messages.notes.notesOne} /></li>
               <li><FormattedMessage {...messages.notes.notesTwo} /></li>
@@ -360,7 +366,7 @@ const ScratchCardForm = React.memo((props) => {
             </StyledNoteText>
         }
       </form>
-    </main>
+    </>
   )
 })
 

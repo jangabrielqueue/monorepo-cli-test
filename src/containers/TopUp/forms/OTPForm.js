@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react'
-import { isNullOrWhitespace } from '../../utils/utils'
-import messages from './messages'
+import React, { useEffect, lazy, useState } from 'react'
+import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import GlobalButton from '../../components/GlobalButton'
 import styled from 'styled-components'
-import otpReferenceIcon from '../../assets/icons/otp-reference.svg'
-import usernameIcon from '../../assets/icons/username.png'
+import otpReferenceIcon from '../../../assets/icons/otp-reference.svg'
+import usernameIcon from '../../../assets/icons/username.png'
 import { useFormContext } from 'react-hook-form'
 
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
+
+// styling
 const FormIconContainer = styled.div`
   display: flex;
 
@@ -77,11 +79,16 @@ const InputFieldContainer = styled.div`
     }
   }
 `
+const StyledFormFooter = styled.section`
+  margin-top: 5px;
+  padding: 10px 0 5px;
+  text-align: center;
+`
 
 const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, progress } = props
   const buttonColor = 'topup'
-
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
@@ -89,6 +96,17 @@ const OTPForm = React.memo((props) => {
   function handleSubmitForm ({ OTP }) {
     handleSubmitOTP(OTP)
   }
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { isNullOrWhitespace } = await import('../../../utils/utils')
+      setDynamicLoadBankUtils({
+        isNullOrWhitespace
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   useEffect(() => {
     if (progress) {
@@ -100,7 +118,7 @@ const OTPForm = React.memo((props) => {
     <main>
       <form>
         {
-          !isNullOrWhitespace(otpReference) &&
+          !dynamicLoadBankUtils?.isNullOrWhitespace(otpReference) &&
             <FormIconContainer icon='otp-reference'>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>
@@ -130,15 +148,15 @@ const OTPForm = React.memo((props) => {
             <p className='input-errors'>{errors.OTP?.message}</p>
           </div>
         </FormIconContainer>
-        <div className='form-content-submit-container'>
+        <StyledFormFooter>
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
-            icon={<img alt='submit' src={require('../../assets/icons/submit-otp.svg')} />}
+            icon={<img alt='submit' src={require('../../../assets/icons/submit-otp.svg')} />}
             onClick={handleSubmit(handleSubmitForm)}
             disabled={waitingForReady}
           />
-        </div>
+        </StyledFormFooter>
       </form>
     </main>
   )

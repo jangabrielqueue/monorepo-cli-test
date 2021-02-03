@@ -1,13 +1,15 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useState, lazy } from 'react'
 import styled from 'styled-components'
-import GlobalButton from '../../components/GlobalButton'
-import { checkBankIfKnown } from '../../utils/banks'
 import { FormattedMessage } from 'react-intl'
-import messages from './messages'
+import messages from '../messages'
 import { CircularProgress } from '@rmwc/circular-progress'
 import QRCode from 'qrcode.react'
 import '@rmwc/circular-progress/circular-progress.css'
 
+// lazy loaded components
+const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
+
+// styling
 const StyledImageContainer = styled.div`
   text-align: center;
 `
@@ -34,6 +36,7 @@ const StyledCircularProgress = styled(CircularProgress)`
 `
 
 const QRCodeForm = memo(function QRCodeForm (props) {
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     currency,
     bank,
@@ -44,12 +47,23 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode,
     error
   } = props
-  const isBankKnown = checkBankIfKnown(currency, bank)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
 
   function handleSubmitForm () {
     handleSubmitQRCode()
   }
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   return (
     <main>

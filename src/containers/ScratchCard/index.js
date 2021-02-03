@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
-import styled from 'styled-components'
-import messages from './messages'
-import { useIntl } from 'react-intl'
-import axios from 'axios'
+import { sleep } from '../../utils/utils'
 import * as signalR from '@microsoft/signalr'
-import { ErrorBoundary } from 'react-error-boundary'
+import axios from 'axios'
+import { useIntl } from 'react-intl'
+import messages from './messages'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
+import { ErrorBoundary } from 'react-error-boundary'
+import styled from 'styled-components'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -87,180 +88,201 @@ const StyledProgressBarContainer = styled.div`
   }
 `
 
-const QRCode = (props) => {
+const ScratchCard = (props) => {
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
     merchant,
     currency,
-    requester,
     clientIp,
     callbackUri,
     amount,
     reference,
-    datetime,
-    signature,
     successfulUrl,
     failedUrl,
-    note
+    note,
+    key,
+    customer,
+    dateTime
   } = useContext(QueryParamsContext)
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
+  const [waitingForReady, setWaitingForReady] = useState(false)
   const [establishConnection, setEstablishConnection] = useState(false)
-  const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
-  const [responseData, setResponseData] = useState({
-    accountName: null,
-    decodedImage: null,
-    message: null,
-    toAccountId: null,
-    timer: 0,
-    timerExtend: 0
-  })
-  const [timeout, setTimeout] = useState({
-    minutes: 0,
-    seconds: 0
-  })
   const [progress, setProgress] = useState(undefined)
-  const [transferResult, setTransferResult] = useState({
-    statusCode: '',
-    reference: '',
-    statusMessage: '',
-    amount: '',
-    currency: '',
-    isSuccessful: false
-  })
+  const [transferResult, setTransferResult] = useState({})
+  const [isSuccessful, setIsSuccessful] = useState(undefined)
   const intl = useIntl()
   const language = props.language // language was handled at root component not at the queryparams
+  const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
-  const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
-  const getQRCodePayload = {
-    amount: amount,
-    bank: bank,
-    callbackUri: callbackUri,
-    clientIp: clientIp,
-    currency: currency,
-    customer: requester,
-    datetime: datetime,
-    failedUrl: failedUrl,
-    key: signature,
-    language: language,
-    merchant: merchant,
-    note: note,
-    reference: reference,
-    requester: requester,
-    signature: signature,
-    successfulUrl: successfulUrl,
-    toAccountId: 0
-  }
+  analytics.setCurrentScreen('scratch_card')
 
-  async function handleSubmitQRCode () {
-    const { sleep } = await import('../../utils/utils')
-    const submitValues = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
-      customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
-      key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
-      requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
-      toAccountId: responseData.toAccountId,
-      uniqueAmount: responseData.amount
-    }
-    setTimeout({
-      minutes: 0,
-      seconds: responseData.timerExtend
-    })
-    setError(undefined)
-    setLoadingButton(true)
-    setProgress({
-      currentStep: 1,
-      totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.startingConnection)
-    })
-    await sleep(750)
-    setProgress({
-      currentStep: 2,
-      totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
-    })
-    await sleep(750)
-    setProgress({
-      currentStep: 3,
-      totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
-    })
-    await sleep(750)
-    setProgress({
-      currentStep: 4,
-      totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
-    })
-    await sleep(750)
-    setProgress({
-      currentStep: 5,
-      totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
-    })
-
-    try {
-      await axios({
-        url: 'api/depositqrcode/post',
-        method: 'POST',
-        data: submitValues
+  const handleSubmitScratchCard = useCallback(
+    async (values) => {
+      analytics.logEvent('login', {
+        reference: reference
       })
-    } catch (error) {
-      setTransferResult({
-        statusCode: '001',
-        statusMessage: error.response.data && error.response.data.error.message,
-        isSuccessful: false
-      })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
-    }
-  }
-
-  const handleQrCodeResult = useCallback(
-    (resultQrCode) => {
-      setResponseData(resultQrCode)
-      setTimeout({
-        minutes: resultQrCode.timer / 60,
-        seconds: 0
-      })
-      if (resultQrCode.message !== null) {
-        setError({
-          code: '',
-          message: resultQrCode.message
-        })
+      const submitValues = {
+        Telecom: bank && bank.toUpperCase() === 'GWC' ? 'GW' : values.telcoName,
+        Pin: values.cardPin.toString(),
+        SerialNumber: values.cardSerialNumber.toString(),
+        ClientIp: clientIp,
+        Language: language,
+        SuccessfulUrl: successfulUrl,
+        FailedUrl: failedUrl,
+        CallbackUri: callbackUri,
+        Datetime: dateTime,
+        Key: key,
+        Note: note,
+        Merchant: merchant,
+        Currency: currency,
+        Bank: bank,
+        Customer: customer,
+        Reference: reference,
+        Amount: amount
       }
-    }, []
-  )
 
-  const handleQRCodeSubmitResult = useCallback(
-    (resultQrCodeSubmit) => {
-      setTransferResult({
-        statusCode: resultQrCodeSubmit.statusCode,
-        reference: resultQrCodeSubmit.reference,
-        statusMessage: resultQrCodeSubmit.statusMessage,
-        amount: resultQrCodeSubmit.amount,
-        currency: resultQrCodeSubmit.currency,
-        isSuccessful: resultQrCodeSubmit.statusCode === '006'
+      setWaitingForReady(true)
+      setProgress({
+        currentStep: 1,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.startingConnection)
       })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
-    }, []
+      await sleep(750)
+      setProgress({
+        currentStep: 2,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
+      })
+      await sleep(750)
+      setProgress({
+        currentStep: 3,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      })
+      await sleep(750)
+      setProgress({
+        currentStep: 4,
+        totalSteps: 5,
+        statusCode: '009',
+        statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+      })
+      await sleep(750)
+
+      try {
+        const response = await axios({
+          url: 'api/ScratchCard/Deposit',
+          method: 'POST',
+          data: submitValues
+        })
+        if (response.data.statusCode === '009') {
+          setProgress(undefined)
+          setWaitingForReady(false)
+          setIsSuccessful(false)
+          setTransferResult(response.data)
+          setStep(1)
+        } else if (response.data.statusCode === '001') {
+          setProgress(undefined)
+          setWaitingForReady(false)
+          setIsSuccessful(false)
+          setTransferResult(response.data)
+          setStep(1)
+        }
+      } catch (errors) {
+        analytics.logEvent('login_failed', {
+          reference: reference,
+          error: errors
+        })
+
+        if (errors.response.data && errors.response.data.errors) {
+          setWaitingForReady(false)
+          setProgress(undefined)
+          setTransferResult({
+            statusCode: '001',
+            isSuccess: false,
+            message: intl.formatMessage(messages.errors.verificationFailed)
+          })
+          setIsSuccessful(false)
+          setStep(1)
+        } else {
+          setWaitingForReady(false)
+          setProgress(undefined)
+          setError(errors)
+        }
+      }
+    }, [
+      intl,
+      analytics,
+      clientIp,
+      language,
+      successfulUrl,
+      failedUrl,
+      callbackUri,
+      dateTime,
+      key,
+      note,
+      merchant,
+      currency,
+      bank,
+      customer,
+      reference,
+      amount
+    ])
+
+  const handleCommandStatusUpdate = useCallback(
+    async (result) => {
+      analytics.logEvent('received_result', {
+        reference: reference,
+        result: result
+      })
+      let start, end
+
+      start = performance.now() // eslint-disable-line
+
+      if (result.statusCode === '009') {
+        setProgress({
+          currentStep: 5,
+          totalSteps: 5,
+          statusCode: result.statusCode,
+          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+        })
+        setWaitingForReady(true)
+        setStep(0)
+        await sleep(180000)
+        await new Promise(resolve => resolve(end = performance.now())) // eslint-disable-line
+        const time = (end - start)
+
+        if (time >= 180000) {
+          setProgress(undefined)
+          setWaitingForReady(false)
+          setIsSuccessful(false)
+          setTransferResult({
+            ...result,
+            message: intl.formatMessage(messages.errors.connectionTimeout)
+          })
+          setStep(1)
+        }
+      } else if (result.statusCode === '006') {
+        setProgress(undefined)
+        setWaitingForReady(false)
+        setIsSuccessful(true)
+        setTransferResult(result)
+        setStep(1)
+      } else {
+        setProgress(undefined)
+        setWaitingForReady(false)
+        setIsSuccessful(false)
+        setTransferResult(result)
+        setStep(1)
+      }
+    },
+    [intl, analytics, reference]
   )
 
   function errorHandler (error, componentStack) {
@@ -293,13 +315,13 @@ const QRCode = (props) => {
       bank,
       merchant,
       currency,
-      requester,
+      customer,
       clientIp,
       callbackUri,
       amount,
       reference,
-      datetime,
-      signature,
+      dateTime,
+      key,
       successfulUrl,
       failedUrl,
       note,
@@ -313,6 +335,7 @@ const QRCode = (props) => {
         isSuccess: false,
         message: intl.formatMessage(messages.errors.verificationFailed)
       })
+      setIsSuccessful(false)
       setStep(1)
     }
 
@@ -322,6 +345,7 @@ const QRCode = (props) => {
         isSuccess: false,
         message: intl.formatMessage(messages.errors.verificationFailed)
       })
+      setIsSuccessful(false)
       setStep(1)
     }
 
@@ -338,13 +362,13 @@ const QRCode = (props) => {
     bank,
     merchant,
     currency,
-    requester,
+    customer,
     clientIp,
     callbackUri,
     amount,
     reference,
-    datetime,
-    signature,
+    dateTime,
+    key,
     successfulUrl,
     failedUrl,
     note,
@@ -358,23 +382,24 @@ const QRCode = (props) => {
       .configureLogging(signalR.LogLevel.Information)
       .build()
 
-    connection.on('ReceiveQRCode', handleQrCodeResult)
-    connection.on('receivedResult', handleQRCodeSubmitResult)
-    connection.onreconnected(async (e) => {
-      await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+    connection.on('receivedResult', handleCommandStatusUpdate)
+    connection.onreconnected(async e => {
+      await connection.invoke('Start', session)
     })
 
     async function start () {
       try {
         await connection.start()
-        await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+        await connection.invoke('Start', session)
         setEstablishConnection(true)
-      } catch (error) {
+      } catch (ex) {
         setError({
-          code: '',
-          message: intl.formatMessage(messages.errors.bankError)
+          error: {
+            name: intl.formatMessage(messages.errors.networkErrorTitle),
+            message: intl.formatMessage(messages.errors.networkError)
+          }
         })
-        setEstablishConnection(true)
+        setEstablishConnection(false)
       }
     }
 
@@ -384,13 +409,7 @@ const QRCode = (props) => {
 
     // Start the connection
     start()
-  }, [
-    session,
-    handleQrCodeResult,
-    handleQRCodeSubmitResult,
-    getQRCodePayload,
-    intl
-  ])
+  }, [session, handleCommandStatusUpdate, intl])
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
@@ -413,26 +432,19 @@ const QRCode = (props) => {
               step={step}
               language={language}
               error={error}
-              responseData={responseData}
-              establishConnection={establishConnection}
             />
             <Content
-              loadingButton={loadingButton}
-              timeout={timeout}
-              transferResult={transferResult}
-              handleSubmitQRCode={handleSubmitQRCode}
-              language={language}
-              responseData={responseData}
-              establishConnection={establishConnection}
-              themeColor={themeColor}
-              error={error}
               step={step}
-              setStep={setStep}
+              handleSubmitScratchCard={handleSubmitScratchCard}
+              waitingForReady={waitingForReady}
+              establishConnection={establishConnection}
+              isSuccessful={isSuccessful}
+              transferResult={transferResult}
             />
           </StyledContent>
           <StepsBar step={step === 1 ? 2 : step} />
         </StyledContainer>
-        <ProgressModal open={progress}>
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
           <StyledProgressBarContainer>
             <img
               alt='submit-transaction'
@@ -441,9 +453,7 @@ const QRCode = (props) => {
               src={require('../../assets/icons/in-progress.svg')}
             />
             <progress
-              value={
-                progress && (progress.currentStep / progress.totalSteps) * 100
-              }
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
               max={100}
             />
             <p>{progress && progress.statusMessage}</p>
@@ -454,4 +464,4 @@ const QRCode = (props) => {
   )
 }
 
-export default QRCode
+export default ScratchCard
