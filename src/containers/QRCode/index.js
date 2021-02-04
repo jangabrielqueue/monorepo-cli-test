@@ -305,15 +305,6 @@ const QRCode = (props) => {
       })
       setStep(1)
     }
-
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
   }, [
     intl,
     bank,
@@ -331,6 +322,17 @@ const QRCode = (props) => {
     note,
     language
   ])
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   useEffect(() => {
     const getQRCodePayload = {

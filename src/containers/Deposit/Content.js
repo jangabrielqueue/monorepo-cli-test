@@ -1,6 +1,7 @@
 import React, { lazy, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import AutoRedirect from '../../components/AutoRedirect'
 
 // lazy loaded components
 const DepositForm = lazy(() => import('./forms/DepositForm'))
@@ -9,7 +10,6 @@ const MandiriForm = lazy(() => import('./forms/MandiriForm'))
 const TransferSuccessful = lazy(() => import('../../components/TransferSuccessful'))
 const TransferFailed = lazy(() => import('../../components/TransferFailed'))
 const TransferWaitForConfirm = lazy(() => import('../../components/TransferWaitForConfirm'))
-const AutoRedirect = lazy(() => import('../../components/AutoRedirect'))
 
 // styling
 const StyledBody = styled.section`

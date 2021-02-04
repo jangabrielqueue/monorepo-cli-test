@@ -7,6 +7,8 @@ import styled from 'styled-components'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { ErrorBoundary } from 'react-error-boundary'
+import Header from './Header'
+import Content from './Content'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -14,8 +16,6 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 // lazy loaded components
 const Notifications = lazy(() => import('../../components/Notifications'))
-const Header = lazy(() => import('./Header'))
-const Content = lazy(() => import('./Content'))
 const StepsBar = lazy(() => import('../../components/StepsBar'))
 const ProgressModal = lazy(() => import('../../components/ProgressModal'))
 const GlobalButton = lazy(() => import('../../components/GlobalButton'))
@@ -363,16 +363,6 @@ const Deposit = (props) => {
       })
       setStep(2)
     }
-
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown, checkIfDABBank } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown,
-        checkIfDABBank
-      })
-    }
-
-    dynamicLoadModules()
   }, [
     intl,
     bank,
@@ -389,6 +379,18 @@ const Deposit = (props) => {
     failedUrl,
     note
   ])
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown, checkIfDABBank } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown,
+        checkIfDABBank
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
@@ -446,7 +448,7 @@ const Deposit = (props) => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         {
-          bank && bank.toUpperCase() === 'VCB' &&
+          bank?.toUpperCase() === 'VCB' &&
             <Notifications bank={bank} language={language} />
         }
         <StyledContainer>

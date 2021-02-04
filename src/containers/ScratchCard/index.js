@@ -348,15 +348,6 @@ const ScratchCard = (props) => {
       setIsSuccessful(false)
       setStep(1)
     }
-
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
   }, [
     intl,
     bank,
@@ -374,6 +365,17 @@ const ScratchCard = (props) => {
     note,
     language
   ])
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()

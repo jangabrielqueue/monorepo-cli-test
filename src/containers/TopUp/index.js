@@ -334,15 +334,6 @@ const TopUp = props => {
       })
       setStep(2)
     }
-
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { getBanksByCurrencyForTopUp } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        getBanksByCurrencyForTopUp
-      })
-    }
-
-    dynamicLoadModules()
   }, [
     intl,
     merchant,
@@ -354,6 +345,17 @@ const TopUp = props => {
     datetime,
     signature
   ])
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { getBanksByCurrencyForTopUp } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        getBanksByCurrencyForTopUp
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
