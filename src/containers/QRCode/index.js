@@ -135,25 +135,6 @@ const QRCode = (props) => {
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
-  const getQRCodePayload = {
-    amount: amount,
-    bank: bank,
-    callbackUri: callbackUri,
-    clientIp: clientIp,
-    currency: currency,
-    customer: requester,
-    datetime: datetime,
-    failedUrl: failedUrl,
-    key: signature,
-    language: language,
-    merchant: merchant,
-    note: note,
-    reference: reference,
-    requester: requester,
-    signature: signature,
-    successfulUrl: successfulUrl,
-    toAccountId: 0
-  }
 
   async function handleSubmitQRCode () {
     const { sleep } = await import('../../utils/utils')
@@ -352,6 +333,26 @@ const QRCode = (props) => {
   ])
 
   useEffect(() => {
+    const getQRCodePayload = {
+      amount: amount,
+      bank: bank,
+      callbackUri: callbackUri,
+      clientIp: clientIp,
+      currency: currency,
+      customer: requester,
+      datetime: datetime,
+      failedUrl: failedUrl,
+      key: signature,
+      language: language,
+      merchant: merchant,
+      note: note,
+      reference: reference,
+      requester: requester,
+      signature: signature,
+      successfulUrl: successfulUrl,
+      toAccountId: 0
+    }
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
@@ -388,8 +389,21 @@ const QRCode = (props) => {
     session,
     handleQrCodeResult,
     handleQRCodeSubmitResult,
-    getQRCodePayload,
-    intl
+    intl,
+    amount,
+    bank,
+    callbackUri,
+    clientIp,
+    currency,
+    datetime,
+    failedUrl,
+    language,
+    merchant,
+    note,
+    reference,
+    requester,
+    signature,
+    successfulUrl
   ])
 
   useEffect(() => {
