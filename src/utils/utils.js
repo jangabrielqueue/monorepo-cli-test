@@ -30,7 +30,7 @@ function renderButtonColors (bank, color) {
     case 'BRI':
       return 'buttonBri'
     default:
-      return color.toLowerCase()
+      return color?.toLowerCase()
   }
 }
 

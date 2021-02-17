@@ -1,34 +1,46 @@
 import React from 'react'
-import { SimpleDialog } from '@rmwc/dialog'
-import styled from 'styled-components'
-import '@material/dialog/dist/mdc.dialog.css'
-import '@rmwc/icon/icon.css'
-import '@material/ripple/dist/mdc.ripple.css'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
-const StyledSimpleDialog = styled(SimpleDialog)`
-  && {
-    & .mdc-dialog__surface {
-      border-radius: 15px;
-    }
-
-    @media (max-width: 37em) {
-      & .mdc-dialog .mdc-dialog__surface {
-        max-width: calc(100vw - 41px);
-      }
-    }
+// styling
+const useStyles = createUseStyles({
+  progressModalContainer: {
+    padding: '20px 24px',
+    borderRadius: '15px',
+    maxWidth: '498px'
+  },
+  progressModalBody: {
+    padding: [[0], '!important']
   }
-`
+})
 
 const ProgressModal = ({ children, open }) => {
+  const classes = useStyles()
+  const cx = classNames.bind(classes)
+  const progressModalStyles = cx({
+    modal: true,
+    active: open
+  })
+  const progressModalContainerStyles = cx({
+    'modal-container': true,
+    progressModalContainer: true
+  })
+  const progressModalBodyStyles = cx({
+    'modal-body': true,
+    progressModalBody: open
+  })
+
   return (
-    <StyledSimpleDialog
-      renderToPortal
-      open={open}
-      children={children}
-      preventOutsideDismiss
-      acceptLabel={null}
-      cancelLabel={null}
-    />
+    <div className={progressModalStyles}>
+      <div className='modal-overlay' />
+      <div className={progressModalContainerStyles}>
+        <div className={progressModalBodyStyles}>
+          {
+            children
+          }
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -2,156 +2,225 @@ import React, { useState, useContext, lazy, useEffect } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import styled from 'styled-components'
 import { useFormContext } from 'react-hook-form'
-import { Tooltip } from '@rmwc/tooltip'
-import '@rmwc/tooltip/tooltip.css'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
-import usernameIcon from '../../../assets/icons/username.png'
-import passwordIcon from '../../../assets/icons/password.png'
-import bankIcon from '../../../assets/icons/bank-name.png'
-import lockIcon from '../../../assets/icons/lock.png'
-import downExpand from '../../../assets/icons/down-expand.png'
-import upExpand from '../../../assets/icons/up-expand.png'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
-const FormIconContainer = styled.div`
-  display: flex;
+const useStyles = createUseStyles({
+  formIconContainer: {
+    display: 'flex',
 
-  &:before {
-    background: url(${props => {
-      if (props.icon === 'username') {
-        return usernameIcon
-      } else if (props.icon === 'password') {
-        return passwordIcon
-      } else if (props.icon === 'bank') {
-        return bankIcon
-      } else if (props.icon === 'secure') {
-        return lockIcon
-      }
-    }}) no-repeat center;
-    content: '';
-    display: block;
-    height: 20px;
-    margin: 15px 15px 0 0;
-    width: 20px;
-    background-size: ${props => props.icon === 'secure' && 'contain'}
-  }
+    '&:before': {
+      content: '""',
+      display: 'block',
+      height: '20px',
+      margin: '15px 15px 0 0',
+      width: '20px'
+    },
 
-  > div {
-    flex: 0 1 415px;
-  }
-`
-const FormSelectField = styled.select`
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -o-appearance: none;
-  -ms-appearance: none;
-  appearance: none;
-  margin-bottom: 23px;
-  background: url(${props => props.toggleSelect ? upExpand : downExpand}) no-repeat right;
-`
-const InputFieldContainer = styled.div`
-  position: relative;
+    '& div': {
+      flex: '0 1 415px'
+    }
+  },
 
-  ul {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+  formIconContainerUsername: {
+    '&:before': {
+      background: 'url(/icons/username.png) no-repeat center'
+    }
+  },
+  formIconContainerPassword: {
+    '&:before': {
+      background: 'url(/icons/password.png) no-repeat center'
+    }
+  },
+  formIconContainerBank: {
+    '&:before': {
+      background: 'url(/icons/bank-name.png) no-repeat center'
+    }
+  },
+  formIconContainerSecure: {
+    '&:before': {
+      background: 'url(/icons/lock.png) no-repeat center',
+      backgroundSize: 'contain'
+    }
+  },
 
-    > li:nth-child(odd) {
-      height: 14px;
-      width: 14px;
-
-      span {
-        align-items: center;
-        background: #C0C0C0;
-        border-radius: 50%;
-        color: #FFF;
-        cursor: pointer;
-        display: flex;
-        font-size: 14px;
-        height: 100%;
-        justify-content: center;
-        line-height: 1.5;
-        width: 100%;
+  formSelectField: {
+    '-moz-appearance': 'none',
+    '-webkit-appearance': 'none',
+    '-o-appearance': 'none',
+    '-ms-appearance': 'none',
+    appearance: 'none',
+    marginBottom: '23px',
+    background: (props) => {
+      if (props.toggleSelect) {
+        return 'url(/icons/up-expand.png) no-repeat right'
+      } else {
+        return 'url(/icons/down-expand.png) no-repeat right'
       }
     }
+  },
 
-    > li:nth-child(even) {
-      cursor: pointer;
-      height: 16px;
-      width: 16px;
+  inputFieldContainer: {
+    position: 'relative',
 
-      > img {
-        width: 100%;
+    '& ul': {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      position: 'absolute',
+      right: '10px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 'auto',
+
+      '& li:nth-child(odd)': {
+        height: '14px',
+        width: '14px',
+        margin: 0,
+
+        '& span': {
+          alignItems: 'center',
+          background: '#C0C0C0',
+          borderRadius: '50%',
+          color: '#FFF',
+          cursor: 'pointer',
+          display: 'flex',
+          fontSize: '16px',
+          height: '100%',
+          justifyContent: 'center',
+          lineHeight: 1.5,
+          width: '100%'
+        }
+      },
+
+      '& li:nth-child(even)': {
+        cursor: 'pointer',
+        height: '16px',
+        width: '16px',
+        margin: 0,
+
+        '& img': {
+          width: '100%',
+          height: '100%'
+        }
       }
     }
-  }
-`
-const StyledSecureBankingText = styled.ul`
-  line-height: 1.7;
-  list-style: none;
-  margin: 0 0 16px;
-  padding: 0;
+  },
 
-  > li {
-    font-size: 14px;
-  }
+  inputFieldContainerPassword: {
+    '& ul': {
+      width: [['40px'], '!important']
+    }
+  },
 
-  > li:nth-child(odd) {
-    font-family: ProductSansMedium;
-  }
+  secureBankingText: {
+    lineHeight: 1.7,
+    listStyle: 'none',
+    margin: '0 0 16px',
+    padding: 0,
 
-  > li:nth-child(even) {
-    font-style: italic;
-  }
-`
-const StyledReferenceTexts = styled.ul`
-  line-height: 1.7;
-  list-style: none;
-  margin: 0 0 16px;
-  padding-left: 35px;
+    '& li': {
+      fontSize: '14px'
+    },
 
-  > li {
-    font-size: 14px;
-  }
+    '& li:nth-child(odd)': {
+      fontFamily: 'ProductSansMedium'
+    },
 
-  > li:nth-child(odd) {
-    font-family: ProductSansMedium;
-  }
+    '& li:nth-child(even)': {
+      fontStyle: 'italic'
+    }
+  },
 
-  > li:nth-child(even) {
-    cursor: pointer;
-  }
+  referenceTexts: {
+    lineHeight: 1.7,
+    listStyle: 'none',
+    margin: '0 0 16px',
+    paddingLeft: '35px',
 
-  @media (max-width: 31.250em) {
-    padding-left: 28px;
-  }
-`
-const StyledSingleFormFooter = styled.section`
-  margin-top: 5px;
-  padding: 10px 0 5px;
-  text-align: center;
-`
-const StyledDoubleFormFooter = styled.section`
-  text-align: center;
+    '& li': {
+      fontSize: '14px'
+    },
 
-  @media (max-width: 36em) {
-    display: none;
+    '& li:nth-child(odd)': {
+      fontFamily: 'ProductSansMedium'
+    },
+
+    '& li:nth-child(even)': {
+      cursor: 'pointer'
+    },
+
+    '@media (max-width: 31.250em)': {
+      paddingLeft: '28px'
+    }
+  },
+
+  singleFormFooter: {
+    marginTop: '5px',
+    padding: '10px 0 5px',
+    textAlign: 'center'
+  },
+
+  doubleFormFooter: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+
+    '@media (max-width: 36em)': {
+      display: 'none'
+    }
+  },
+
+  toolTipContainer: {
+    cursor: 'pointer',
+    display: 'inline-block',
+    margin: 0,
+    position: 'relative'
+  },
+
+  toolTipText: {
+    backgroundColor: '#555',
+    borderRadius: '6px',
+    bottom: '125%',
+    color: '#fff',
+    fontSize: '14px',
+    left: '50%',
+    marginLeft: '-80px',
+    padding: '8px 0',
+    position: 'absolute',
+    textAlign: 'center',
+    visibility: 'hidden',
+    width: '140px',
+    zIndex: 1,
+
+    '&::after': {
+      borderColor: '#555 transparent transparent transparent',
+      borderStyle: 'solid',
+      borderWidth: '5px',
+      content: '""',
+      left: '50%',
+      marginLeft: '-5px',
+      position: 'absolute',
+      top: '100%'
+    }
+  },
+
+  toolTipShow: {
+    '-webkit-animation': 'fadeIn 1s',
+    animation: 'fadeIn 1s',
+    visibility: 'visible'
   }
-`
+},
+{ name: 'Deposit' }
+)
 
 export default function DepositForm (props) {
   const {
@@ -168,7 +237,6 @@ export default function DepositForm (props) {
   const bankCodes = dynamicLoadBankUtils?.getBanksByCurrency(currency)
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
   const [isCopy, setIsCopy] = useState(false)
@@ -176,6 +244,44 @@ export default function DepositForm (props) {
   const { dirty } = formState
   const formValues = getValues()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
+  const classes = useStyles(toggleSelect)
+  const cx = classNames.bind(classes)
+  const formIconContainerUsernameStyles = cx({
+    formIconContainer: true,
+    formIconContainerUsername: true
+  })
+  const formIconContainerPasswordStyles = cx({
+    formIconContainer: true,
+    formIconContainerPassword: true
+  })
+  const formIconContainerBankStyles = cx({
+    formIconContainer: true,
+    formIconContainerBank: true
+  })
+  const formIconContainerSecureStyles = cx({
+    formIconContainer: true,
+    formIconContainerSecure: true
+  })
+  const inputFieldContainerPasswordStyles = cx({
+    inputFieldContainer: true,
+    inputFieldContainerPassword: true
+  })
+  const toolTipStyles = cx({
+    toolTipText: true,
+    toolTipShow: isCopy
+  })
+
+  function renderIcon (type) {
+    if (isBankKnown === undefined) {
+      return ''
+    } else if (isBankKnown && type === 'sms') {
+      return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
+    } else if (isBankKnown && type === 'smart') {
+      return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
+    } else if (!isBankKnown) {
+      return '/icons/unknown/smart-unknown.png'
+    }
+  }
 
   useEffect(() => {
     async function dynamicLoadModules () { // dynamically load bank utils
@@ -195,16 +301,16 @@ export default function DepositForm (props) {
       <form autoComplete='off'>
         {
           !isBankKnown &&
-            <FormIconContainer icon='bank'>
+            <div className={formIconContainerBankStyles}>
               <div>
                 <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
-                <FormSelectField
+                <select
+                  className={classes.formSelectField}
                   name='bank'
                   id='bank'
                   ref={register}
                   aria-owns='1 2 3 4 5 6 7 8 9'
                   onClick={() => setToggleSelect(prevState => !prevState)}
-                  toggleSelect={toggleSelect}
                 >
                   {
                     bankCodes?.map((bc, i) => (
@@ -215,14 +321,14 @@ export default function DepositForm (props) {
                       </option>
                     ))
                   }
-                </FormSelectField>
+                </select>
               </div>
-            </FormIconContainer>
+            </div>
         }
-        <FormIconContainer icon='username'>
+        <div className={formIconContainerUsernameStyles}>
           <div>
             <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
-            <InputFieldContainer>
+            <div className={classes.inputFieldContainer}>
               <input
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                 type='text'
@@ -236,14 +342,14 @@ export default function DepositForm (props) {
                     <li onClick={() => setValue('username', '')}><span>&times;</span></li>
                 }
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>{errors.username?.message}</p>
           </div>
-        </FormIconContainer>
-        <FormIconContainer icon='password'>
+        </div>
+        <div className={formIconContainerPasswordStyles}>
           <div>
             <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
-            <InputFieldContainer passwordIcon>
+            <div className={inputFieldContainerPasswordStyles}>
               <input
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}
                 type={showPassword ? 'text' : 'password'}
@@ -258,63 +364,66 @@ export default function DepositForm (props) {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' width='20' height='20' src={require(`../../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={`/icons/${showPassword ? 'password-show' : 'password-hide'}.png`} />
                 </li>
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>{errors.password?.message}</p>
           </div>
-        </FormIconContainer>
-        <FormIconContainer icon='secure'>
+        </div>
+        <div className={formIconContainerSecureStyles}>
           <div>
-            <StyledSecureBankingText>
+            <ul className={classes.secureBankingText}>
               <li><FormattedMessage {...messages.secureBankingTitle} /></li>
               <li><FormattedMessage {...messages.secureBankingText} /></li>
-            </StyledSecureBankingText>
+            </ul>
           </div>
-        </FormIconContainer>
-        <StyledReferenceTexts>
+        </div>
+        <ul className={classes.referenceTexts}>
           <li><FormattedMessage {...messages.reference} />:</li>
-          <Tooltip content='reference copied!' showArrow open={isCopy}>
+          <li className={classes.toolTipContainer}>
+            <span className={toolTipStyles}>reference copied!</span>
             <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
-              <li>{reference}</li>
+              <span>{reference}</span>
             </CopyToClipboard>
-          </Tooltip>
-        </StyledReferenceTexts>
+          </li>
+        </ul>
       </form>
       {
         !showOtpMethod &&
-          <StyledSingleFormFooter>
+          <section className={classes.singleFormFooter}>
             <GlobalButton
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
-              icon={<img alt='submit' width='24' height='24' src={require('../../../assets/icons/submit-otp.svg')} />}
+              icon={<img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />}
               onClick={handleSubmit(handleSubmitDeposit)}
               disabled={!establishConnection || waitingForReady}
               bank={bank && bank.toUpperCase()}
             />
-          </StyledSingleFormFooter>
+          </section>
       }
       {
         showOtpMethod &&
-          <StyledDoubleFormFooter>
+          <section className={classes.doubleFormFooter}>
             <GlobalButton
               label='SMS OTP'
               color={buttonColor}
               outlined
-              icon={<img alt='sms' width='24' height='24' src={require(`../../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)} />}
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
-            />
+            >
+              <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
+            </GlobalButton>
             <GlobalButton
               label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              icon={<img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={require(`../../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)} />}
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
-            />
-          </StyledDoubleFormFooter>
+            >
+              <img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+            </GlobalButton>
+          </section>
       }
     </>
   )

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
-import * as signalR from '@microsoft/signalr'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { useIntl } from 'react-intl'
 import messages from './messages'
 import { useFormContext } from 'react-hook-form'
-import styled from 'styled-components'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { ErrorBoundary } from 'react-error-boundary'
 import Header from './Header'
 import Content from './Content'
+import { createUseStyles } from 'react-jss'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -21,85 +21,85 @@ const ProgressModal = lazy(() => import('../../components/ProgressModal'))
 const GlobalButton = lazy(() => import('../../components/GlobalButton'))
 
 // styling
-const StyledContainer = styled.div`
-  margin: 0 20px;
-  max-width: 500px;
-  width: 100%;
-`
-const StyledContent = styled.div`
-  background: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
-`
-const StyledFooter = styled.footer`
-  display: none;
+const useStyles = createUseStyles({
+  depositContainer: {
+    margin: '0 20px',
+    maxWidth: '500px',
+    width: '100%'
+  },
+  depositContent: {
+    background: '#FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0px 5px 10px 0px rgba(112,112,112,0.3)'
+  },
+  depositFooter: {
+    display: 'none',
 
-  @media (max-width: 36em) {
-    display: block;
-    box-shadow: 0px -5px 10px -3px rgba(112,112,112,0.3);
-    margin-top: 20px;
-    padding: 10px 0;
-    text-align: center;
-    width: 100%;
-  }
-`
-const StyledProgressBarContainer = styled.div`
-  color: rgba(0, 0, 0, 0.65);
-  height: 200px;
-  text-align: center;
-
-  > img {
-      animation: zoomInAndOut 0.5s ease-in-out;
-      margin: 30px 0 2px;
+    '@media (max-width: 36em)': {
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      marginTop: '20px',
+      padding: '10px 0',
+      textAlign: 'center',
+      width: '100%'
     }
+  },
+  depositProgressBarContainer: {
+    color: 'rgba(0, 0, 0, 0.65)',
+    height: '200px',
+    textAlign: 'center',
 
-  > progress {
-      -webkit-appearance:none;
-      border-radius: 7px;
-      height: 8px;
-      margin-bottom: 2px;
-      width: 100%;
+    '& img': {
+      animation: 'zoomInAndOut 0.5s ease-in-out',
+      margin: '30px 0 2px'
+    },
 
-      &::-webkit-progress-bar {
-          background: #f5f5f5;
-          border-radius: 7px;
+    '& progress': {
+      '-webkit-appearance': 'none',
+      borderRadius: '7px',
+      height: '8px',
+      marginBottom: '2px',
+      width: '100%',
+
+      '&::-webkit-progress-bar': {
+        background: '#f5f5f5',
+        borderRadius: '7px'
+      },
+
+      '&::-webkit-progress-value': {
+        background: '#34A220',
+        borderRadius: '7px',
+        transition: 'width 0.5s linear'
+      },
+
+      '&::-moz-progress-bar': {
+        background: '#34A220'
       }
+    },
 
-      &::-webkit-progress-value {
-          background: #34A220;
-          border-radius: 7px;
-          transition: width 0.5s linear;
-      }
+    '& p': {
+      fontFamily: 'ProductSansRegular',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      margin: 0,
+      textAlign: 'center'
+    },
 
-      &::-moz-progress-bar {
-          background: #34A220;
-      }
+    '@media (min-width: 36em)': {
+      minWidth: '450px'
+    },
+    '@media only screen and (min-device-width : 25em) and (max-device-width : 26em)': {
+      minWidth: '325px'
+    },
+    '@media only screen and (min-device-width : 22em) and (max-device-width : 24em)': {
+      minWidth: '270px'
+    },
+    '@media (max-width: 22.438em)': {
+      minWidth: '232px'
     }
-
-  > p {
-      font-family: ProductSansRegular;
-      font-size: 14px;
-      font-weight: bold;
-      margin: 0;
-      text-align: center;
-    }
-
-  @media (min-width: 36em) {
-    min-width: 450px;
   }
-
-  @media only screen and (min-device-width : 25em) and (max-device-width : 26em) {
-    min-width: 325px;
-  }
-
-  @media only screen and (min-device-width : 22em) and (max-device-width : 24em) {
-    min-width: 270px;
-  }
-
-  @media (max-width: 22.438em) {
-    min-width: 232px;
-  }
-`
+})
 
 const Deposit = (props) => {
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
@@ -133,10 +133,10 @@ const Deposit = (props) => {
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
-  const renderIcon = isBankKnown ? `${bank}` : 'unknown'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   analytics.setCurrentScreen('deposit')
+  const classes = useStyles()
 
   async function handleSubmitDeposit (values, e, type) {
     const { sleep } = await import('../../utils/utils')
@@ -328,6 +328,18 @@ const Deposit = (props) => {
     )
   }
 
+  function renderIcon (type) {
+    if (isBankKnown === undefined) {
+      return ''
+    } else if (isBankKnown && type === 'sms') {
+      return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
+    } else if (isBankKnown && type === 'smart') {
+      return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
+    } else if (!isBankKnown) {
+      return '../../assets/icons/unknown/smart-unknown.png'
+    }
+  }
+
   useEffect(() => {
     const queryParams = [
       bank,
@@ -393,10 +405,10 @@ const Deposit = (props) => {
   }, [])
 
   useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
+    const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(LogLevel.Information)
       .build()
 
     connection.on('receivedResult', handleReceivedResult)
@@ -451,8 +463,8 @@ const Deposit = (props) => {
           bank?.toUpperCase() === 'VCB' &&
             <Notifications bank={bank} language={language} />
         }
-        <StyledContainer>
-          <StyledContent>
+        <div className={classes.depositContainer}>
+          <div className={classes.depositContent}>
             <Header
               themeColor={themeColor}
               step={step}
@@ -473,55 +485,53 @@ const Deposit = (props) => {
               language={language}
               analytics={analytics}
             />
-          </StyledContent>
+          </div>
           <StepsBar step={step} />
-        </StyledContainer>
+        </div>
         {
           showOtpMethod && step === 0 &&
-            <StyledFooter>
+            <footer className={classes.depositFooter}>
               <GlobalButton
                 label='SMS OTP'
                 color={themeColor}
                 outlined
-                icon={
-                  <img
-                    alt='sms'
-                    width='24'
-                    height='24'
-                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/sms-${renderIcon.toLowerCase()}.png`)}
-                  />
-                }
                 onClick={handleSubmit((values, e) =>
                   handleSubmitDeposit(values, e, 'sms')
                 )}
                 disabled={!establishConnection || waitingForReady}
-              />
+              >
+                <img
+                  alt='sms'
+                  width='24'
+                  height='24'
+                  src={renderIcon('sms')}
+                />
+              </GlobalButton>
               <GlobalButton
                 label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
                 color={themeColor}
                 outlined
-                icon={
-                  <img
-                    alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
-                    width='24'
-                    height='24'
-                    src={require(`../../assets/icons/${renderIcon.toLowerCase()}/smart-${renderIcon.toLowerCase()}.png`)}
-                  />
-                }
                 onClick={handleSubmit((values, e) =>
                   handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart')
                 )}
                 disabled={!establishConnection || waitingForReady}
-              />
-            </StyledFooter>
+              >
+                <img
+                  alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={renderIcon('smart')}
+                />
+              </GlobalButton>
+            </footer>
         }
         <ProgressModal open={progress && progress.statusCode === '009'}>
-          <StyledProgressBarContainer>
+          <div className={classes.depositProgressBarContainer}>
             <img
               alt='submit-transaction'
               width='80'
               height='80'
-              src={require('../../assets/icons/in-progress.svg')}
+              src='/icons/in-progress.svg'
             />
             <progress
               value={
@@ -530,7 +540,7 @@ const Deposit = (props) => {
               max={100}
             />
             <p>{progress && progress.statusMessage}</p>
-          </StyledProgressBarContainer>
+          </div>
         </ProgressModal>
       </ErrorBoundary>
     </>

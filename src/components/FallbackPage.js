@@ -1,32 +1,35 @@
 import React, { memo } from 'react'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 
-// styling
-const StyledFallbackContainer = styled.div`
-  margin: 0 20px;
-  max-width: 500px;
-  width: 100%;
-`
-const StyledFallbackContent = styled.div`
-  background: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
-`
-const StyledFallback = styled.div`
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  max-width: 500px;
-  min-height: 500px;
-`
+const useStyles = createUseStyles({
+  fallbackContainer: {
+    margin: '0 20px',
+    maxWidth: '500px',
+    width: '100%'
+  },
+  fallbackContent: {
+    background: '#FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0px 5px 10px 0px rgba(112,112,112,0.3)'
+  },
+  fallback: {
+    alignTtems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    maxWidth: '500px',
+    minHeight: '500px'
+  }
+})
 
 const FallbackPage = () => {
+  const classes = useStyles()
+
   return (
-    <StyledFallbackContainer>
-      <StyledFallbackContent>
-        <StyledFallback />
-      </StyledFallbackContent>
-    </StyledFallbackContainer>
+    <div className={classes}>
+      <div className={classes}>
+        <div className={classes} />
+      </div>
+    </div>
   )
 }
 

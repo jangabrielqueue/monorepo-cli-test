@@ -1,112 +1,125 @@
 import React, { useEffect, useContext, lazy, useState } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import styled from 'styled-components'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
-import otpReferenceIcon from '../../../assets/icons/otp-reference.svg'
-import usernameIcon from '../../../assets/icons/username.png'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
-const FormIconContainer = styled.div`
-  display: flex;
+const useStyles = createUseStyles({
+  formIconContainer: {
+    display: 'flex',
 
-  &:before {
-    background: url(${props => {
-      if (props.icon === 'username') {
-        return usernameIcon
-      } else if (props.icon === 'otp-reference') {
-        return otpReferenceIcon
-      }
-    }}) no-repeat center;
-    content: '';
-    display: block;
-    height: 20px;
-    margin: 15px 15px 0 0;
-    width: 20px;
-  }
+    '&:before': {
+      content: '""',
+      display: 'block',
+      height: '20px',
+      margin: '15px 15px 0 0',
+      width: '20px'
+    },
 
-  > div {
-    flex: 0 1 415px;
-  }
-`
-const InputFieldContainer = styled.div`
-  position: relative;
+    '& div': {
+      flex: '0 1 415px'
+    }
+  },
 
-  ul {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+  formIconContainerUsername: {
+    '&:before': {
+      background: 'url(/icons/username.png) no-repeat center'
+    }
+  },
+  formIconContainerOtpReference: {
+    '&:before': {
+      background: 'url(/icons/otp-reference.png) no-repeat center'
+    }
+  },
 
-    > li:nth-child(odd) {
-      height: 14px;
-      width: 14px;
+  inputFieldContainer: {
+    position: 'relative',
 
-      span {
-        align-items: center;
-        background: #C0C0C0;
-        border-radius: 50%;
-        color: #FFF;
-        cursor: pointer;
-        display: flex;
-        font-size: 14px;
-        height: 100%;
-        justify-content: center;
-        line-height: 1.5;
-        width: 100%;
+    '& ul': {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      position: 'absolute',
+      right: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 'auto',
+
+      '& li:nth-child(odd)': {
+        height: '14px',
+        width: '14px',
+
+        '& span': {
+          alignItems: 'center',
+          background: '#C0C0C0',
+          borderRadius: '50%',
+          color: '#FFF',
+          cursor: 'pointer',
+          display: 'flex',
+          fontSize: '14px',
+          height: '100%',
+          justifyContent: 'center',
+          lineHeight: 1.5,
+          width: '100%'
+        }
+      },
+
+      '& li:nth-child(even)': {
+        cursor: 'pointer',
+        height: '16px',
+        width: '16px',
+
+        '& img': {
+          width: '100%'
+        }
       }
     }
+  },
 
-    > li:nth-child(even) {
-      cursor: pointer;
-      height: 16px;
-      width: 16px;
+  formHeader: {
+    fontSize: '14px',
+    fontWeight: 'normal',
+    margin: '0 0 20px'
+  },
 
-      > img {
-        width: 100%;
+  formDabContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    marginBottom: '15px',
+
+    '& label': {
+      marginRight: '10px'
+    },
+
+    '& input': {
+      '&:nth-child(2)': {
+        marginRight: '5px'
       }
     }
-  }
-`
-const FormHeader = styled.h1`
-  font-size: 14px;
-  font-weight: normal;
-  margin: 0 0 20px;
-`
-const FormDABContainer = styled.div`
-  align-items: center;
-  display: flex;
-  margin-bottom: 15px;
+  },
 
-  label {
-    margin-right: 10px;
+  formDabInput: {
+    border: '1px solid #CCC'
+  },
+
+  formFooter: {
+    marginTop: '5px',
+    padding: '10px 0 5px',
+    textAlign: 'center'
   }
 
-  input {
-    &:nth-child(2) {
-      margin-right: 5px;
-    }
-  }
-`
-const FormDABInput = styled.input`
-  border: 1px solid #CCC !important;
-`
-const StyledFormFooter = styled.section`
-  margin-top: 5px;
-  padding: 10px 0 5px;
-  text-align: center;
-`
+},
+{ name: 'OTP' }
+)
 
 const OTPForm = React.memo((props) => {
   const {
@@ -129,6 +142,16 @@ const OTPForm = React.memo((props) => {
   const cardOTPReferenceArray = otpReference?.split('-')
   const cardOTP1 = cardOTPReferenceArray?.[0]
   const cardOTP2 = cardOTPReferenceArray?.[1]
+  const classes = useStyles()
+  const cx = classNames.bind(classes)
+  const formIconContainerOtpReferenceStyles = cx({
+    formIconContainer: true,
+    formIconContainerOtpReference: true
+  })
+  const formIconContainerUsernameStyles = cx({
+    formIconContainer: true,
+    formIconContainerUsername: true
+  })
 
   function handleSubmitForm ({ OTP, OTP1, OTP2 }) {
     const OTPValue = isCardOTP ? `${OTP1}-${OTP2}` : OTP
@@ -159,19 +182,19 @@ const OTPForm = React.memo((props) => {
     <form>
       {
         !dynamicLoadUtils?.isNullOrWhitespace(otpReference) && !isCardOTP &&
-          <FormIconContainer icon='otp-reference'>
+          <div className={formIconContainerOtpReferenceStyles}>
             <div>
               <label><FormattedMessage {...messages.otpReference} /></label>
               <p>{otpReference}</p>
             </div>
-          </FormIconContainer>
+          </div>
       }
       {
         !isCardOTP &&
-          <FormIconContainer icon='username'>
+          <div className={formIconContainerUsernameStyles}>
             <div>
               <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
-              <InputFieldContainer>
+              <div className={classes.inputFieldContainer}>
                 <input
                   ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
                   type='number'
@@ -186,18 +209,19 @@ const OTPForm = React.memo((props) => {
                       <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
                   }
                 </ul>
-              </InputFieldContainer>
+              </div>
               <p className='input-errors'>{errors.OTP?.message}</p>
             </div>
-          </FormIconContainer>
+          </div>
       }
       {
         isCardOTP &&
           <div>
-            <FormHeader><FormattedMessage {...messages.otpDABLabel} /></FormHeader>
-            <FormDABContainer>
+            <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
+            <div className={classes.formDabContainer}>
               <label htmlFor='OTP1'>{cardOTP1}</label>
-              <FormDABInput
+              <input
+                className={classes.formDabInput}
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
                 type='number'
                 id='OTP1'
@@ -206,7 +230,8 @@ const OTPForm = React.memo((props) => {
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
               />
               <label htmlFor='OTP2'>{cardOTP2}</label>
-              <FormDABInput
+              <input
+                className={classes.formDabInput}
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
                 type='number'
                 id='OTP2'
@@ -214,7 +239,7 @@ const OTPForm = React.memo((props) => {
                 autoComplete='off'
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
               />
-            </FormDABContainer>
+            </div>
             {
               (errors.OTP1?.type === 'required' || errors.OTP2?.type === 'required') &&
                 <p className='input-errors'>
@@ -229,15 +254,15 @@ const OTPForm = React.memo((props) => {
             }
           </div>
       }
-      <StyledFormFooter>
+      <section className={classes.formFooter}>
         <GlobalButton
           label={<FormattedMessage {...messages.submit} />}
           color={buttonColor}
-          icon={<img alt='submit' src={require('../../../assets/icons/submit-otp.svg')} />}
+          icon={<img alt='submit' src='/icons/submit-otp.svg' />}
           onClick={handleSubmit(handleSubmitForm)}
           disabled={waitingForReady}
         />
-      </StyledFormFooter>
+      </section>
     </form>
   )
 })

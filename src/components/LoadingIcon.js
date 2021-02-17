@@ -1,22 +1,20 @@
 import React from 'react'
-import styled from 'styled-components'
-import { CircularProgress } from '@rmwc/circular-progress'
-import '@rmwc/circular-progress/circular-progress.css'
+import { createUseStyles } from 'react-jss'
 
-const StyledLoadingContainer = styled.div`
-  text-align: center;
-`
-const StyledLoadingIcon = styled(CircularProgress)`
-  && {
-    color: ${props => props.theme.colors[props.color.toLowerCase()]};
+// styling
+const useStyles = createUseStyles({
+  loadingIconContainer: {
+    textAlign: 'center'
   }
-`
+})
 
-const LoadingIcon = (props) => {
+const LoadingIcon = () => {
+  const classes = useStyles()
+
   return (
-    <StyledLoadingContainer>
-      <StyledLoadingIcon {...props} />
-    </StyledLoadingContainer>
+    <div className={classes.loadingIconContainer}>
+      <div className='loading' />
+    </div>
   )
 }
 

@@ -1,42 +1,47 @@
 import React from 'react'
 import { FormattedMessage } from 'react-intl'
 import messages from './messages'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 
-const StyledRedirectContent = styled.div`
-  text-align: center;
+// styling
+const useStyles = createUseStyles({
+  redirectContentFailed: {
+    textAlign: 'center',
 
-  img {
-    margin: 30px 0;
+    '& img': {
+      margin: '30px 0'
+    },
+
+    '& h1': {
+      color: '#767676',
+      fontFamily: 'ProductSansMedium',
+      fontSize: '18px'
+    },
+
+    '& h2': {
+      color: '#767676',
+      fontFamily: 'ProductSansMedium',
+      fontSize: '17px',
+      margin: '25px 0'
+    },
+
+    '& p': {
+      color: '#767676',
+      fontSize: '16px',
+      margin: '25px 0'
+    }
   }
-
-  h1 {
-    color: #767676;
-    font-family: ProductSansMedium;
-    font-size: 18px;
-  }
-
-  h2 {
-    color: #767676;
-    font-family: ProductSansMedium;
-    font-size: 17px;
-    margin: 25px 0;
-  }
-
-  p {
-    color: #767676;
-    font-size: 16px;
-    margin: 25px 0;
-  }
-`
+})
 
 const TransferFailed = ({ transferResult }) => {
+  const classes = useStyles()
+
   return (
-    <StyledRedirectContent>
-      <img alt='submit-failed' src={require('../assets/icons/submit-failed.svg')} />
+    <div className={classes.redirectContentFailed}>
+      <img alt='submit-failed' src='/icons/submit-failed.svg' />
       <h1>{<FormattedMessage {...messages.errors.transactionFailed} />}</h1>
       <p>{transferResult.message || transferResult.statusMessage}</p>
-    </StyledRedirectContent>
+    </div>
   )
 }
 

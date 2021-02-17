@@ -1,26 +1,30 @@
 import React, { memo, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 
 // styling
-const StyledLogoContainer = styled.section`
-  margin: 25px auto;
-  max-width: ${props => props.bank?.toUpperCase() === 'PRECARD' &&
-  props.type === 'scratch-card' ? '400px' : '200px'
-  };
+const useStyles = createUseStyles({
+  logoContainer: {
+    margin: '25px auto',
+    maxWidth: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
+    type === 'scratch-card' ? '400px' : '200px',
 
-  > img {
-    height: auto;
-    width: 100%;
+    '& img': {
+      height: 'auto',
+      width: '100%'
+    }
   }
-`
+})
 
 const Logo = ({ bank, currency, type }) => {
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.webp$/)
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const classes = useStyles({ bank, type })
 
   const getFilePathWebP = (bank, type) => {
-    if (isBankKnown) {
+    if (isBankKnown === undefined) {
+      return ''
+    } else if (isBankKnown) {
       return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.webp`)
     } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
       return requestImageFileWebp('./PRECARD_LOGO.webp')
@@ -41,14 +45,14 @@ const Logo = ({ bank, currency, type }) => {
   }, [])
 
   return (
-    <StyledLogoContainer bank={bank} type={type}>
+    <section className={classes.logoContainer}>
       <img
         alt={bank}
         width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
         height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
         src={getFilePathWebP(bank, type)}
       />
-    </StyledLogoContainer>
+    </section>
   )
 }
 

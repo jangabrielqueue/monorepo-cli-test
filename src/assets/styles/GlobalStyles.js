@@ -1,85 +1,144 @@
-import { createGlobalStyle } from 'styled-components'
-import ProductSansRegular from '../fonts/ProductSans-Regular.ttf'
-import ProductSansBold from '../fonts/ProductSans-Bold.ttf'
-import ProductSansMedium from '../fonts/ProductSans-Medium-500.ttf'
+import { createUseStyles } from 'react-jss'
 
-export default createGlobalStyle`
-    @font-face {
-        font-family: 'ProductSansRegular';
-        src: url(${ProductSansRegular}) format('truetype');
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'ProductSansBold';
-        src: url(${ProductSansBold}) format('truetype');
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'ProductSansMedium';
-        src: url(${ProductSansMedium}) format('truetype');
-        font-display: swap;
-    }
-
-    body {
-        background-color: #ffffff;
-        color: #767676;
-        font-family: ProductSansRegular;
-        font-size: 16px;
-        margin: 0;
-    }
-
-    input[type=text],
-    input[type=number],
-    input[type=password],
-    select {
-      border-bottom: 1px solid #ccc;
-      border-left: 0;
-      border-right: 0;
-      border-top: 0;
-      color: rgba(0, 0, 0, 0.65);
-      font-size: 16px;
-      height: 40px;
-      padding: 0 10px 0 0;
-      width: 100%;
-
-      &:focus {
-        font-size: 16px;
-        outline: none;
+const GlobalStyles = createUseStyles({
+  '@global': {
+    '@font-face': [
+      {
+        fontFamily: 'ProductSansRegular',
+        src: 'url(/fonts/ProductSans-Regular.ttf) format("truetype")',
+        fontDisplay: 'swap'
+      },
+      {
+        fontFamily: 'ProductSansBold',
+        src: 'url(/fonts/ProductSans-Bold.ttf) format("truetype")',
+        fontDisplay: 'swap'
+      },
+      {
+        fontFamily: 'ProductSansMedium',
+        src: 'url(/fonts/ProductSans-Medium-500.ttf) format("truetype")',
+        fontDisplay: 'swap'
       }
-    }
+    ],
 
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+    body: {
+      backgroundColor: '#ffffff',
+      color: '#767676',
+      fontFamily: 'ProductSansRegular',
+      fontSize: '16px',
+      margin: 0
+    },
 
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
+    'input[type=text]': {
+      borderBottom: '1px solid #ccc',
+      borderLeft: 0,
+      borderRight: 0,
+      borderTop: 0,
+      color: 'rgba(0, 0, 0, 0.65) !important',
+      fontSize: '16px',
+      height: '40px',
+      width: '100%',
 
-    label {
-      font-size: 14px;
-    }
-
-    .input-errors {
-      color: #f5222d;
-      font-size: 14px;
-      height: 21px;
-      margin: 2px 0 0;
-    }
-
-    @keyframes zoomInAndOut {
-      0% {
-          transform: scale(1,1);
+      '&:focus': {
+        outline: 'none'
       }
-      50% {
-          transform: scale(1.2,1.2);
+    },
+    'input[type=number]': {
+      borderBottom: '1px solid #ccc',
+      borderLeft: 0,
+      borderRight: 0,
+      borderTop: 0,
+      color: 'rgba(0, 0, 0, 0.65) !important',
+      fontSize: '16px',
+      height: '40px',
+      width: '100%',
+      '-moz-appearance': 'textfield',
+
+      '&:focus': {
+        outline: 'none'
       }
-      100% {
-          transform: scale(1,1);
+    },
+    'input[type=password]': {
+      borderBottom: '1px solid #ccc',
+      borderLeft: 0,
+      borderRight: 0,
+      borderTop: 0,
+      color: 'rgba(0, 0, 0, 0.65) !important',
+      fontSize: '16px',
+      height: '40px',
+      width: '100%',
+
+      '&:focus': {
+        outline: 'none'
       }
+    },
+    select: {
+      borderBottom: '1px solid #ccc',
+      borderLeft: 0,
+      borderRight: 0,
+      borderTop: 0,
+      color: 'rgba(0, 0, 0, 0.65)',
+      fontSize: '16px',
+      height: '40px',
+      width: '100%',
+
+      '&:focus': {
+        fontSize: '16px',
+        outline: 'none'
+      }
+    },
+
+    button: {
+      outline: 'none'
+    },
+
+    'input::-webkit-outer-spin-button': {
+      '-webkit-appearance': 'none',
+      margin: 0
+    },
+    'input::-webkit-inner-spin-button': {
+      '-webkit-appearance': 'none',
+      margin: 0
+    },
+
+    label: {
+      fontSize: '14px'
+    },
+
+    '.input-errors': {
+      color: '#f5222d',
+      fontSize: '14px',
+      height: '21px',
+      margin: '2px 0 0'
+    },
+
+    '.loading::after': {
+      border: '.1rem solid #767676',
+      borderRightColor: 'transparent',
+      borderTopColor: 'transparent'
+    },
+
+    '@keyframes zoomInAndOut': {
+      '0%': {
+        transform: 'scale(1, 1)'
+      },
+      '50%': {
+        transform: 'scale(1.2, 1.2)'
+      },
+      '100%': {
+        transform: 'scale(1, 1)'
+      }
+    },
+
+    '@-webkit-keyframes fadeIn': {
+      from: { opacity: 0 },
+      to: { opacity: 1 }
+    },
+
+    '@keyframes fadeIn': {
+      from: { opacity: 0 },
+      to: { opacity: 1 }
     }
-`
+  }
+})
+
+export default GlobalStyles

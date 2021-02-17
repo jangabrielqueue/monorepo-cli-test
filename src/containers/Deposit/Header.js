@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect, useState, useContext } from 'react'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 import LoadingIcon from '../../components/LoadingIcon'
 import { useIntl } from 'react-intl'
 import messages from './messages'
@@ -12,10 +12,12 @@ const Countdown = lazy(() => import('../../components/Countdown'))
 const ErrorAlert = lazy(() => import('../../components/ErrorAlert'))
 
 // styling
-const StyledHeader = styled.section`
-  padding: 10px 20px;
-  border-bottom: ${props => props.step !== 2 ? '0.5px solid #E3E3E3' : '#FFF'};
-`
+const useStyles = createUseStyles({
+  headerContainer: {
+    padding: '10px 20px',
+    borderBottom: (props) => props.step !== 2 ? '0.5px solid #E3E3E3' : '#FFF'
+  }
+})
 
 export default memo(function Header (props) {
   const {
@@ -31,6 +33,7 @@ export default memo(function Header (props) {
   } = useContext(QueryParamsContext)
   const intl = useIntl()
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const classes = useStyles(step)
 
   useEffect(() => {
     async function dynamicLoadModules () { // dynamically load bank utils
@@ -44,7 +47,7 @@ export default memo(function Header (props) {
   }, [])
 
   return (
-    <StyledHeader step={step}>
+    <section className={classes.headerContainer}>
       <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
         <Logo bank={bank} currency={currency} />
       </Suspense>
@@ -66,6 +69,6 @@ export default memo(function Header (props) {
       {
         error && <ErrorAlert message={error.message} />
       }
-    </StyledHeader>
+    </section>
   )
 })

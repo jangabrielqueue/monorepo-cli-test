@@ -1,7 +1,7 @@
 import React, { lazy, useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import AutoRedirect from '../../components/AutoRedirect'
+import { createUseStyles } from 'react-jss'
 
 // lazy loaded components
 const DepositForm = lazy(() => import('./forms/DepositForm'))
@@ -12,10 +12,12 @@ const TransferFailed = lazy(() => import('../../components/TransferFailed'))
 const TransferWaitForConfirm = lazy(() => import('../../components/TransferWaitForConfirm'))
 
 // styling
-const StyledBody = styled.section`
-  padding: 20px;
-  position: relative;
-`
+const useStyles = createUseStyles({
+  contentBody: {
+    padding: '20px',
+    position: 'relative'
+  }
+})
 
 export default function Content (props) {
   const {
@@ -38,6 +40,7 @@ export default function Content (props) {
     failedUrl
   } = useContext(QueryParamsContext)
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const classes = useStyles()
 
   function renderStepContents () {
     if (step === 0) {
@@ -108,10 +111,10 @@ export default function Content (props) {
   }, [])
 
   return (
-    <StyledBody>
+    <section className={classes.contentBody}>
       {
         renderStepContents()
       }
-    </StyledBody>
+    </section>
   )
 }
