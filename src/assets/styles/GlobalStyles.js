@@ -129,11 +129,6 @@ const GlobalStyles = createUseStyles({
       }
     },
 
-    '@-webkit-keyframes fadeIn': {
-      from: { opacity: 0 },
-      to: { opacity: 1 }
-    },
-
     '@keyframes fadeIn': {
       from: { opacity: 0 },
       to: { opacity: 1 }

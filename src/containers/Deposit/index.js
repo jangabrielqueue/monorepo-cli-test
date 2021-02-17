@@ -89,10 +89,6 @@ const useStyles = createUseStyles({
         background: '#34A220',
         borderRadius: '7px',
         transition: 'width 0.5s linear'
-      },
-
-      '&::-moz-progress-bar': {
-        background: '#34A220'
       }
     },
 
