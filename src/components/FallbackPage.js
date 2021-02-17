@@ -25,9 +25,9 @@ const FallbackPage = () => {
   const classes = useStyles()
 
   return (
-    <div className={classes}>
-      <div className={classes}>
-        <div className={classes} />
+    <div className={classes.fallbackContainer}>
+      <div className={classes.fallbackContent}>
+        <div className={classes.fallback} />
       </div>
     </div>
   )

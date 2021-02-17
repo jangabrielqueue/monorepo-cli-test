@@ -272,9 +272,7 @@ export default function DepositForm (props) {
   })
 
   function renderIcon (type) {
-    if (isBankKnown === undefined) {
-      return ''
-    } else if (isBankKnown && type === 'sms') {
+    if (isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
@@ -395,11 +393,12 @@ export default function DepositForm (props) {
             <GlobalButton
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
-              icon={<img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />}
               onClick={handleSubmit(handleSubmitDeposit)}
               disabled={!establishConnection || waitingForReady}
               bank={bank && bank.toUpperCase()}
-            />
+            >
+              <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
+            </GlobalButton>
           </section>
       }
       {
@@ -412,7 +411,10 @@ export default function DepositForm (props) {
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
             >
-              <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
+              {
+                isBankKnown !== undefined &&
+                  <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
+              }
             </GlobalButton>
             <GlobalButton
               label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
@@ -421,7 +423,10 @@ export default function DepositForm (props) {
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             >
-              <img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+              {
+                isBankKnown !== undefined &&
+                  <img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+              }
             </GlobalButton>
           </section>
       }

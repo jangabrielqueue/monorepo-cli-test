@@ -347,9 +347,7 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (isBankKnown === undefined) {
-      return ''
-    } else if (isBankKnown && type === 'sms') {
+    if (isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
@@ -584,12 +582,15 @@ const Deposit = (props) => {
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                <img
-                  alt='sms'
-                  width='24'
-                  height='24'
-                  src={renderIcon('sms')}
-                />
+                {
+                  isBankKnown !== undefined &&
+                    <img
+                      alt='sms'
+                      width='24'
+                      height='24'
+                      src={renderIcon('sms')}
+                    />
+                }
               </GlobalButton>
               <GlobalButton
                 label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
@@ -600,12 +601,15 @@ const Deposit = (props) => {
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                <img
-                  alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
-                  width='24'
-                  height='24'
-                  src={renderIcon('smart')}
-                />
+                {
+                  isBankKnown !== undefined &&
+                    <img
+                      alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
+                      width='24'
+                      height='24'
+                      src={renderIcon('smart')}
+                    />
+                }
               </GlobalButton>
             </footer>
         }

@@ -24,9 +24,7 @@ const Logo = ({ bank, currency, type }) => {
   const classes = useStyles({ bank, type })
 
   const getFilePathWebP = (bank, type) => {
-    if (isBankKnown === undefined) {
-      return ''
-    } else if (isBankKnown) {
+    if (isBankKnown) {
       return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.webp`)
     } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
       return requestImageFileWebp('./PRECARD_LOGO.webp')
@@ -48,12 +46,15 @@ const Logo = ({ bank, currency, type }) => {
 
   return (
     <section className={classes.logoContainer}>
-      <img
-        alt={bank}
-        width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
-        height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
-        src={getFilePathWebP(bank, type)}
-      />
+      {
+        isBankKnown !== undefined &&
+          <img
+            alt={bank}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            src={getFilePathWebP(bank, type)}
+          />
+      }
     </section>
   )
 }

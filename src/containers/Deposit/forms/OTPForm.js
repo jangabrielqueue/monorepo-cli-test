@@ -258,10 +258,11 @@ const OTPForm = React.memo((props) => {
         <GlobalButton
           label={<FormattedMessage {...messages.submit} />}
           color={buttonColor}
-          icon={<img alt='submit' src='/icons/submit-otp.svg' />}
           onClick={handleSubmit(handleSubmitForm)}
           disabled={waitingForReady}
-        />
+        >
+          <img alt='submit' src='/icons/submit-otp.svg' />
+        </GlobalButton>
       </section>
     </form>
   )
