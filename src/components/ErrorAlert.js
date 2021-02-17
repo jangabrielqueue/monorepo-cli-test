@@ -30,7 +30,7 @@ const ErrorAlert = ({ message }) => {
   return (
     <section className={classes.errorAlertContainer}>
       <p>
-        <img alt='error' width='24' src='icons/error.png' />
+        <img alt='error' width='24' src='/icons/error.png' />
         {message}
       </p>
     </section>

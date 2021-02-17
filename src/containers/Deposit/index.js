@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { useIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import messages from './messages'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
@@ -143,7 +143,6 @@ const Deposit = (props) => {
   const [transferResult, setTransferResult] = useState({})
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
-  const intl = useIntl()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
@@ -171,23 +170,21 @@ const Deposit = (props) => {
       currentStep: 1,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.startingConnection)
+      statusMessage: <FormattedMessage {...messages.progress.startingConnection} />
     })
     await sleep(750)
     setProgress({
       currentStep: 2,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(
-        messages.progress.encryptedTransmission
-      )
+      statusMessage: <FormattedMessage {...messages.progress.encryptedTransmission} />
     })
     await sleep(750)
     setProgress({
       currentStep: 3,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
     })
     await sleep(750)
     const result = await sendDepositRequest({
@@ -219,9 +216,7 @@ const Deposit = (props) => {
         currentStep: 4,
         totalSteps: 13,
         statusCode: '009',
-        statusMessage: intl.formatMessage(
-          messages.progress.submittingTransaction
-        )
+        statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
       })
       await sleep(750)
       setProgress(undefined)
@@ -232,7 +227,7 @@ const Deposit = (props) => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(2)
     }
@@ -295,7 +290,7 @@ const Deposit = (props) => {
           currentStep: currentStep,
           totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+          statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
         })
       } else {
         // else return the final step
@@ -303,11 +298,11 @@ const Deposit = (props) => {
           currentStep: 13,
           totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+          statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
         })
       }
     },
-    [intl]
+    []
   )
 
   function handleRequestOTP (e) {
@@ -431,7 +426,7 @@ const Deposit = (props) => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(2)
     }
@@ -440,12 +435,11 @@ const Deposit = (props) => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(2)
     }
   }, [
-    intl,
     bank,
     merchant,
     currency,
@@ -495,8 +489,8 @@ const Deposit = (props) => {
         setEstablishConnection(true)
       } catch (ex) {
         setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.networkError)
+          code: <FormattedMessage {...messages.errors.networkErrorTitle} />,
+          message: <FormattedMessage {...messages.errors.networkError} />
         })
         setEstablishConnection(false)
       }
@@ -511,8 +505,7 @@ const Deposit = (props) => {
   }, [
     session,
     handleReceivedResult,
-    handleUpdateProgress,
-    intl
+    handleUpdateProgress
   ])
 
   useEffect(() => {
@@ -542,7 +535,7 @@ const Deposit = (props) => {
               {
                 step === 0 && (
                   <Statistics
-                    title={intl.formatMessage(messages.deposit)}
+                    title={<FormattedMessage {...messages.deposit} />}
                     language={language}
                     currency={currency}
                     amount={amount}

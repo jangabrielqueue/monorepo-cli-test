@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 import 'firebase/analytics'
+import 'firebase/performance'
 
 export const FirebaseContext = React.createContext({})
 
@@ -36,6 +37,7 @@ function FirebaseProvider ({ children }) {
           measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID
         }
         firebase.initializeApp(firebaseConfig)
+        firebase.performance()
 
         try {
           const analytics = firebase.analytics()

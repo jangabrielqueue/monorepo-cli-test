@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 export const QueryParamsContext = React.createContext({})
 
 function QueryParamsProvider ({ children }) {
   const queryString = window.location.search
   const urlQueryString = new URLSearchParams(queryString)
-  const [queryParams] = useState({
+  const queryParams = {
     bank: urlQueryString.get('b'),
     merchant: urlQueryString.get('m'),
     currency: urlQueryString.get('c1'),
@@ -23,7 +23,7 @@ function QueryParamsProvider ({ children }) {
     customer: urlQueryString.get('c2'),
     datetime: urlQueryString.get('d'),
     language: urlQueryString.get('l')
-  })
+  }
 
   return (
     <QueryParamsContext.Provider value={queryParams}>
