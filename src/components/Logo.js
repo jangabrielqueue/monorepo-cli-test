@@ -9,8 +9,10 @@ const useStyles = createUseStyles({
     type === 'scratch-card' ? '400px' : '200px',
 
     '& img': {
-      height: 'auto',
-      width: '100%'
+      height: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
+      type === 'scratch-card' ? '120px' : '80px',
+      width: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
+      type === 'scratch-card' ? '400px' : '200px'
     }
   }
 })
@@ -49,7 +51,7 @@ const Logo = ({ bank, currency, type }) => {
       <img
         alt={bank}
         width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
-        height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+        height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
         src={getFilePathWebP(bank, type)}
       />
     </section>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
+import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { useIntl } from 'react-intl'
 import messages from './messages'
@@ -6,22 +6,40 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { ErrorBoundary } from 'react-error-boundary'
-import Header from './Header'
-import Content from './Content'
 import { createUseStyles } from 'react-jss'
+import GlobalButton from '../../components/GlobalButton'
+import Notifications from '../../components/Notifications'
+import DepositForm from './forms/DepositForm'
+import OTPForm from './forms/OTPForm'
+import MandiriForm from './forms/MandiriForm'
+import StepsBar from '../../components/StepsBar'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
+import TransferWaitForConfirm from '../../components/TransferWaitForConfirm'
+import Statistics from '../../components/Statistics'
+import Countdown from '../../components/Countdown'
+import ErrorAlert from '../../components/ErrorAlert'
+import AutoRedirect from '../../components/AutoRedirect'
+import ProgressModal from '../../components/ProgressModal'
+import LoadingIcon from '../../components/LoadingIcon'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 // lazy loaded components
-const Notifications = lazy(() => import('../../components/Notifications'))
-const StepsBar = lazy(() => import('../../components/StepsBar'))
-const ProgressModal = lazy(() => import('../../components/ProgressModal'))
-const GlobalButton = lazy(() => import('../../components/GlobalButton'))
+const Logo = lazy(() => import('../../components/Logo'))
 
 // styling
 const useStyles = createUseStyles({
+  headerContainer: {
+    padding: '10px 20px',
+    borderBottom: (props) => props.step !== 2 ? '0.5px solid #E3E3E3' : '#FFF'
+  },
+  contentBody: {
+    padding: '20px',
+    position: 'relative'
+  },
   depositContainer: {
     margin: '0 20px',
     maxWidth: '500px',
@@ -136,7 +154,7 @@ const Deposit = (props) => {
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   analytics.setCurrentScreen('deposit')
-  const classes = useStyles()
+  const classes = useStyles(step)
 
   async function handleSubmitDeposit (values, e, type) {
     const { sleep } = await import('../../utils/utils')
@@ -340,6 +358,63 @@ const Deposit = (props) => {
     }
   }
 
+  function renderStepContents () {
+    if (step === 0) {
+      analytics.setCurrentScreen('input_user_credentials')
+      return (
+        <DepositForm
+          handleSubmitDeposit={handleSubmitDeposit}
+          waitingForReady={waitingForReady}
+          establishConnection={establishConnection}
+        />
+      )
+    } else if (dynamicLoadBankUtils?.checkIfMandiriBank(bank) && step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <MandiriForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
+        />
+      )
+    } else if (step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <OTPForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
+          progress={progress}
+          isCardOTP={isCardOTP}
+        />
+      )
+    } else if (step === 2 && isSuccessful) {
+      analytics.setCurrentScreen('transfer_successful')
+      return (
+        <AutoRedirect delay={10000} url={successfulUrl}>
+          <TransferSuccessful
+            transferResult={transferResult}
+            language={language}
+          />
+        </AutoRedirect>
+      )
+    } else if (step === 2 && transferResult.statusCode === '000') {
+      analytics.setCurrentScreen('transfer_successful')
+      return (
+        <AutoRedirect delay={10000} url={successfulUrl}>
+          <TransferWaitForConfirm transferResult={transferResult} />
+        </AutoRedirect>
+      )
+    } else if (step === 2) {
+      analytics.setCurrentScreen('transfer_failed')
+      return (
+        <AutoRedirect delay={10000} url={failedUrl}>
+          <TransferFailed transferResult={transferResult} />
+        </AutoRedirect>
+      )
+    }
+  }
+
   useEffect(() => {
     const queryParams = [
       bank,
@@ -394,8 +469,9 @@ const Deposit = (props) => {
 
   useEffect(() => {
     async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown, checkIfDABBank } = await import('../../utils/banks')
+      const { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } = await import('../../utils/banks')
       setDynamicLoadBankUtils({
+        checkIfMandiriBank,
         checkBankIfKnown,
         checkIfDABBank
       })
@@ -465,26 +541,34 @@ const Deposit = (props) => {
         }
         <div className={classes.depositContainer}>
           <div className={classes.depositContent}>
-            <Header
-              themeColor={themeColor}
-              step={step}
-              language={language}
-              error={error}
-            />
-            <Content
-              step={step}
-              handleSubmitDeposit={handleSubmitDeposit}
-              handleSubmitOTP={handleSubmitOTP}
-              waitingForReady={waitingForReady}
-              establishConnection={establishConnection}
-              transferResult={transferResult}
-              isCardOTP={isCardOTP}
-              otpReference={otpReference}
-              progress={progress}
-              isSuccessful={isSuccessful}
-              language={language}
-              analytics={analytics}
-            />
+            <section className={classes.headerContainer}>
+              <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
+                <Logo bank={bank} currency={currency} />
+              </Suspense>
+              {
+                step === 0 && (
+                  <Statistics
+                    title={intl.formatMessage(messages.deposit)}
+                    language={language}
+                    currency={currency}
+                    amount={amount}
+                  />
+                )
+              }
+              {
+                step === 1 && !dynamicLoadBankUtils?.checkIfMandiriBank(bank) && (
+                  <Countdown minutes={3} seconds={0} />
+                )
+              }
+              {
+                error && <ErrorAlert message={error.message} />
+              }
+            </section>
+            <section className={classes.contentBody}>
+              {
+                renderStepContents()
+              }
+            </section>
           </div>
           <StepsBar step={step} />
         </div>
