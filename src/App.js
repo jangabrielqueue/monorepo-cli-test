@@ -81,7 +81,7 @@ const App = () => {
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const topUpTheme = window.location.pathname.includes('topup')
-  const themeColor = topUpTheme ? 'topup' : isBankKnown ? `${bank}` : 'main'
+  const themeColor = topUpTheme ? 'topup' : renderIsBankUnknown()
   const localeMessages = {
     en: dynamicLoadBankUtils?.localeEn,
     vi: dynamicLoadBankUtils?.localeVi,
@@ -94,6 +94,16 @@ const App = () => {
     }
   })
   const classes = useStyles({ bank, themeColor })
+
+  function renderIsBankUnknown () {
+    if (isBankKnown === undefined) {
+      return ''
+    } else if (isBankKnown) {
+      return `${bank}`
+    } else {
+      return 'main'
+    }
+  }
 
   function handleSelectLanguage (param) {
     switch (param) {
