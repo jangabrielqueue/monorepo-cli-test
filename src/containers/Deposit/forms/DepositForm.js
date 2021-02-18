@@ -24,7 +24,7 @@ const useStyles = createUseStyles({
     },
 
     '& div': {
-      flex: '0 1 415px'
+      flex: '0 1 425px'
     }
   },
 
@@ -129,7 +129,8 @@ const useStyles = createUseStyles({
     padding: 0,
 
     '& li': {
-      fontSize: '14px'
+      fontSize: '14px',
+      margin: 0
     },
 
     '& li:nth-child(odd)': {
@@ -142,13 +143,14 @@ const useStyles = createUseStyles({
   },
 
   referenceTexts: {
-    lineHeight: 1.7,
+    lineHeight: 1.5,
     listStyle: 'none',
     margin: '0 0 16px',
     paddingLeft: '35px',
 
     '& li': {
-      fontSize: '14px'
+      fontSize: '14px',
+      margin: 0
     },
 
     '& li:nth-child(odd)': {
@@ -219,7 +221,7 @@ const useStyles = createUseStyles({
     visibility: 'visible'
   }
 },
-{ name: 'Deposit' }
+{ name: 'DepositForm' }
 )
 
 export default function DepositForm (props) {
@@ -395,7 +397,7 @@ export default function DepositForm (props) {
               color={buttonColor}
               onClick={handleSubmit(handleSubmitDeposit)}
               disabled={!establishConnection || waitingForReady}
-              bank={bank && bank.toUpperCase()}
+              bank={bank?.toUpperCase()}
             >
               <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
             </GlobalButton>

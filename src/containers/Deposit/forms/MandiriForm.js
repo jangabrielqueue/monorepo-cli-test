@@ -28,7 +28,7 @@ const useStyles = createUseStyles({
     margin: 0
   }
 },
-{ name: 'Mandiri' }
+{ name: 'MandiriForm' }
 )
 
 const MandiriForm = memo(function MandiriForm (props) {

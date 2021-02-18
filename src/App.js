@@ -11,10 +11,10 @@ import GlobalStyles from '../src/assets/styles/GlobalStyles'
 
 // lazy loaded components
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
-// const ScratchCard = lazy(() => import('./containers/ScratchCard'))
-// const TopUp = lazy(() => import('./containers/TopUp'))
-// const NotFound = lazy(() => import('./components/NotFound'))
-// const QRCode = lazy(() => import('./containers/QRCode'))
+const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
+const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
+const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/TopUp'))
+const NotFound = lazy(() => import('./components/NotFound'))
 
 // themes
 const appTheme = {
@@ -152,18 +152,18 @@ const App = () => {
                       <Route exact path='/deposit/bank'>
                         <Deposit language={language} />
                       </Route>
-                      {/* <Route exact path='/deposit/scratch-card'>
+                      <Route exact path='/deposit/scratch-card'>
                         <ScratchCard language={language} />
-                      </Route>
-                      <Route exact path='/topup/bank'>
-                        <TopUp language={language} />
                       </Route>
                       <Route exact path='/deposit/qrcode'>
                         <QRCode language={language} />
                       </Route>
+                      <Route exact path='/topup/bank'>
+                        <TopUp language={language} />
+                      </Route>
                       <Route path='*'>
                         <NotFound />
-                      </Route> */}
+                      </Route>
                     </Switch>
                   </Router>
                 </Suspense>

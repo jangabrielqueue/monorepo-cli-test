@@ -1,145 +1,161 @@
 import React, { useState, lazy, useContext, useEffect } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import styled from 'styled-components'
-import accountIcon from '../../../assets/icons/account.png'
-import currencyIcon from '../../../assets/icons/currency.png'
-import usernameIcon from '../../../assets/icons/username.png'
-import passwordIcon from '../../../assets/icons/password.png'
-import bankIcon from '../../../assets/icons/bank-name.png'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 const CollapsiblePanel = lazy(() => import('../../../components/CollapsiblePanel'))
 
 // styling
-const StyledMoreInfo = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0 25px;
+const useStyles = createUseStyles({
+  styledMoreInfo: {
+    listStyle: 'none',
+    margin: 0,
+    padding: '0 25px',
 
-  > li {
-    padding-bottom: 5px;
+    '& li': {
+      paddingBottom: '5px',
+      margin: 0,
 
-    &:before {
-      content: '';
-      display: inline-block;
-      height: 20px;
-      margin-right: 5px;
-      vertical-align: middle;
-      width: 20px;
-    }
+      '&:before': {
+        content: '""',
+        display: 'inline-block',
+        height: '20px',
+        marginRight: '5px',
+        verticalAlign: 'middle',
+        width: '20px'
+      },
 
-    &:nth-child(1) {
-      &:before {
-        background: url(${accountIcon}) no-repeat center;
+      '&:nth-child(1)': {
+        '&:before': {
+          background: 'url(/icons/account.png) no-repeat center'
+        }
+      },
+
+      '&:nth-child(2)': {
+        '&:before': {
+          background: 'url(/icons/username.png) no-repeat center'
+        }
+      },
+
+      '&:nth-child(3)': {
+        '&:before': {
+          background: 'url(/icons/username.png) no-repeat center'
+        }
+      },
+
+      '&:nth-child(4)': {
+        '&:before': {
+          background: 'url(/icons/currency.png) no-repeat center'
+        }
       }
     }
+  },
+  formIconContainer: {
+    display: 'flex',
 
-    &:nth-child(2) {
-      &:before {
-        background: url(${usernameIcon}) no-repeat center;
+    '&:before': {
+      content: '""',
+      display: 'block',
+      height: '20px',
+      margin: '15px 15px 0 0',
+      width: '20px'
+    },
+
+    '& div': {
+      flex: '0 1 425px'
+    }
+  },
+
+  formIconContainerUsername: {
+    '&:before': {
+      background: 'url(/icons/username.png) no-repeat center'
+    }
+  },
+  formIconContainerPassword: {
+    '&:before': {
+      background: 'url(/icons/password.png) no-repeat center'
+    }
+  },
+  formIconContainerBank: {
+    '&:before': {
+      background: 'url(/icons/bank-name.png) no-repeat center'
+    }
+  },
+  formSelectField: {
+    marginBottom: '23px'
+  },
+  inputFieldContainer: {
+    position: 'relative',
+
+    '& ul': {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      position: 'absolute',
+      right: '10px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 'auto',
+
+      '& li:nth-child(odd)': {
+        height: '14px',
+        width: '14px',
+        margin: 0,
+
+        '& span': {
+          alignItems: 'center',
+          background: '#C0C0C0',
+          borderRadius: '50%',
+          color: '#FFF',
+          cursor: 'pointer',
+          display: 'flex',
+          fontSize: '16px',
+          height: '100%',
+          justifyContent: 'center',
+          lineHeight: 1.5,
+          width: '100%'
+        }
+      },
+
+      '& li:nth-child(even)': {
+        cursor: 'pointer',
+        height: '16px',
+        width: '16px',
+        margin: 0,
+
+        '& img': {
+          width: '100%',
+          height: '100%'
+        }
       }
     }
+  },
 
-    &:nth-child(3) {
-      &:before {
-        background: url(${usernameIcon}) no-repeat center;
-      }
+  inputFieldContainerPassword: {
+    '& ul': {
+      width: [['40px'], '!important']
     }
+  },
 
-    &:nth-child(4) {
-      &:before {
-        background: url(${currencyIcon}) no-repeat center;
-      }
+  doubleFormFooter: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+
+    '@media (max-width: 36em)': {
+      display: 'none'
     }
   }
-`
-
-const FormIconContainer = styled.div`
-  display: flex;
-
-  &:before {
-    background: url(${props => {
-      if (props.icon === 'username') {
-        return usernameIcon
-      } else if (props.icon === 'password') {
-        return passwordIcon
-      } else if (props.icon === 'bank') {
-        return bankIcon
-      }
-    }}) no-repeat center;
-    content: '';
-    display: block;
-    height: 20px;
-    margin: 15px 15px 0 0;
-    width: 20px;
-  }
-
-  > div {
-    flex: 0 1 415px;
-  }
-`
-
-const FormSelectField = styled.select`
-  margin-bottom: 23px;
-`
-
-const InputFieldContainer = styled.div`
-  position: relative;
-
-  ul {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: ${props => props.passwordIcon ? '40px' : 'auto'};
-
-    > li:nth-child(odd) {
-      height: 14px;
-      width: 14px;
-
-      span {
-        align-items: center;
-        background: #C0C0C0;
-        border-radius: 50%;
-        color: #FFF;
-        cursor: pointer;
-        display: flex;
-        font-size: 14px;
-        height: 100%;
-        justify-content: center;
-        line-height: 1.5;
-        width: 100%;
-      }
-    }
-
-    > li:nth-child(even) {
-      cursor: pointer;
-      height: 16px;
-      width: 16px;
-
-      > img {
-        width: 100%;
-      }
-    }
-  }
-`
-const StyledDoubleFormFooter = styled.section`
-  text-align: center;
-
-  @media (max-width: 36em) {
-    display: none;
-  }
-`
+},
+{ name: 'TopupDepositForm' }
+)
 
 const DepositForm = React.memo((props) => {
   const {
@@ -160,6 +176,24 @@ const DepositForm = React.memo((props) => {
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
+  const classes = useStyles()
+  const cx = classNames.bind(classes)
+  const formIconContainerUsernameStyles = cx({
+    formIconContainer: true,
+    formIconContainerUsername: true
+  })
+  const formIconContainerPasswordStyles = cx({
+    formIconContainer: true,
+    formIconContainerPassword: true
+  })
+  const formIconContainerBankStyles = cx({
+    formIconContainer: true,
+    formIconContainerBank: true
+  })
+  const inputFieldContainerPasswordStyles = cx({
+    inputFieldContainer: true,
+    inputFieldContainerPassword: true
+  })
 
   function handleSubmitForm (values, e, type) {
     handleSubmitDeposit(values, e, type)
@@ -179,10 +213,11 @@ const DepositForm = React.memo((props) => {
   return (
     <>
       <form autoComplete='off'>
-        <FormIconContainer icon='bank'>
+        <div className={formIconContainerBankStyles}>
           <div>
             <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
-            <FormSelectField
+            <select
+              className={classes.formSelectField}
               name='bank'
               id='bank'
               ref={register}
@@ -197,13 +232,13 @@ const DepositForm = React.memo((props) => {
                   </option>
                 ))
               }
-            </FormSelectField>
+            </select>
           </div>
-        </FormIconContainer>
-        <FormIconContainer icon='username'>
+        </div>
+        <div className={formIconContainerUsernameStyles}>
           <div>
             <label htmlFor='username'><FormattedMessage {...messages.placeholders.loginName} /></label>
-            <InputFieldContainer>
+            <div className={classes.inputFieldContainer}>
               <input
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                 type='text'
@@ -217,14 +252,14 @@ const DepositForm = React.memo((props) => {
                     <li onClick={() => setValue('username', '')}><span>&times;</span></li>
                 }
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>{errors.username?.message}</p>
           </div>
-        </FormIconContainer>
-        <FormIconContainer icon='password'>
+        </div>
+        <div className={formIconContainerPasswordStyles}>
           <div>
             <label htmlFor='password'><FormattedMessage {...messages.placeholders.password} /></label>
-            <InputFieldContainer passwordIcon>
+            <div className={inputFieldContainerPasswordStyles}>
               <input
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputPassword} /> })}
                 type={showPassword ? 'text' : 'password'}
@@ -239,26 +274,26 @@ const DepositForm = React.memo((props) => {
                     : <li>&nbsp;</li>
                 }
                 <li onClick={() => setShowPassword(prevState => !prevState)}>
-                  <img alt='password-icon' width='20' height='20' src={require(`../../../assets/icons/${showPassword ? 'password-show' : 'password-hide'}.png`)} />
+                  <img alt='password-icon' width='20' height='20' src={`/icons/${showPassword ? 'password-show' : 'password-hide'}.png`} />
                 </li>
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>{errors.password?.message}</p>
           </div>
-        </FormIconContainer>
+        </div>
         <CollapsiblePanel
           title={<FormattedMessage {...messages.moreInformation} />}
           topup
         >
-          <StyledMoreInfo>
+          <ul className={classes.styledMoreInfo}>
             <li>{reference}</li>
             <li>{merchant}</li>
             <li>{requester}</li>
             <li>{currency}</li>
-          </StyledMoreInfo>
+          </ul>
         </CollapsiblePanel>
       </form>
-      <StyledDoubleFormFooter>
+      <section className={classes.doubleFormFooter}>
         <GlobalButton
           label='SMS OTP'
           color={buttonColor}
@@ -275,7 +310,7 @@ const DepositForm = React.memo((props) => {
           onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
           disabled={!establishConnection || waitingForReady}
         />
-      </StyledDoubleFormFooter>
+      </section>
     </>
   )
 })

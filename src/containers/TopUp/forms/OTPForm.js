@@ -1,89 +1,100 @@
 import React, { useEffect, lazy, useState } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
-import styled from 'styled-components'
-import otpReferenceIcon from '../../../assets/icons/otp-reference.svg'
-import usernameIcon from '../../../assets/icons/username.png'
 import { useFormContext } from 'react-hook-form'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
-const FormIconContainer = styled.div`
-  display: flex;
+const useStyles = createUseStyles({
+  formIconContainer: {
+    display: 'flex',
 
-  &:before {
-    background: url(${props => {
-      if (props.icon === 'username') {
-        return usernameIcon
-      } else if (props.icon === 'otp-reference') {
-        return otpReferenceIcon
-      }
-    }}) no-repeat center;
-    content: '';
-    display: block;
-    height: 20px;
-    margin: 15px 15px 0 0;
-    width: 20px;
-  }
+    '&:before': {
+      content: '""',
+      display: 'block',
+      height: '20px',
+      margin: '15px 15px 0 0',
+      width: '20px'
+    },
 
-  > div {
-    flex: 0 1 415px;
-  }
-`
+    '& div': {
+      flex: '0 1 425px'
+    }
+  },
 
-const InputFieldContainer = styled.div`
-  position: relative;
+  formIconContainerUsername: {
+    '&:before': {
+      background: 'url(/icons/username.png) no-repeat center'
+    }
+  },
+  formIconContainerOtpReference: {
+    '&:before': {
+      background: 'url(/icons/otp-reference.svg) no-repeat center'
+    }
+  },
 
-  ul {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: ${props => props.passwordIcon ? '40px' : 'auto'};
+  inputFieldContainer: {
+    position: 'relative',
 
-    > li:nth-child(odd) {
-      height: 14px;
-      width: 14px;
+    '& ul': {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      position: 'absolute',
+      right: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 'auto',
 
-      span {
-        align-items: center;
-        background: #C0C0C0;
-        border-radius: 50%;
-        color: #FFF;
-        cursor: pointer;
-        display: flex;
-        font-size: 14px;
-        height: 100%;
-        justify-content: center;
-        line-height: 1.5;
-        width: 100%;
+      '& li:nth-child(odd)': {
+        height: '14px',
+        width: '14px',
+        margin: 0,
+
+        '& span': {
+          alignItems: 'center',
+          background: '#C0C0C0',
+          borderRadius: '50%',
+          color: '#FFF',
+          cursor: 'pointer',
+          display: 'flex',
+          fontSize: '16px',
+          height: '100%',
+          justifyContent: 'center',
+          lineHeight: 1.5,
+          width: '100%'
+        }
+      },
+
+      '& li:nth-child(even)': {
+        cursor: 'pointer',
+        height: '16px',
+        width: '16px',
+        margin: 0,
+
+        '& img': {
+          height: '100%',
+          width: '100%'
+        }
       }
     }
+  },
 
-    > li:nth-child(even) {
-      cursor: pointer;
-      height: 16px;
-      width: 16px;
-
-      > img {
-        width: 100%;
-      }
-    }
+  footer: {
+    marginTop: '5px',
+    padding: '10px 0 5px',
+    textAlign: 'center'
   }
-`
-const StyledFormFooter = styled.section`
-  margin-top: 5px;
-  padding: 10px 0 5px;
-  text-align: center;
-`
+},
+{ name: 'TopupOtpForm' }
+)
 
 const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, progress } = props
@@ -92,6 +103,16 @@ const OTPForm = React.memo((props) => {
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
+  const classes = useStyles()
+  const cx = classNames.bind(classes)
+  const formIconContainerOtpReferenceStyles = cx({
+    formIconContainer: true,
+    formIconContainerOtpReference: true
+  })
+  const formIconContainerUsernameStyles = cx({
+    formIconContainer: true,
+    formIconContainerUsername: true
+  })
 
   function handleSubmitForm ({ OTP }) {
     handleSubmitOTP(OTP)
@@ -119,17 +140,17 @@ const OTPForm = React.memo((props) => {
       <form>
         {
           !dynamicLoadBankUtils?.isNullOrWhitespace(otpReference) &&
-            <FormIconContainer icon='otp-reference'>
+            <div className={formIconContainerOtpReferenceStyles}>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>
                 <p>{otpReference}</p>
               </div>
-            </FormIconContainer>
+            </div>
         }
-        <FormIconContainer icon='username'>
+        <div className={formIconContainerUsernameStyles}>
           <div>
             <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
-            <InputFieldContainer>
+            <div className={classes.inputFieldContainer}>
               <input
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
                 type='number'
@@ -144,19 +165,19 @@ const OTPForm = React.memo((props) => {
                     <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
                 }
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>{errors.OTP?.message}</p>
           </div>
-        </FormIconContainer>
-        <StyledFormFooter>
+        </div>
+        <section className={classes.footer}>
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
-            icon={<img alt='submit' src={require('../../../assets/icons/submit-otp.svg')} />}
+            icon={<img alt='submit' src='/icons/submit-otp.svg' />}
             onClick={handleSubmit(handleSubmitForm)}
             disabled={waitingForReady}
           />
-        </StyledFormFooter>
+        </section>
       </form>
     </main>
   )

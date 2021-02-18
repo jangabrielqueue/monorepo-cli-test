@@ -7,10 +7,10 @@ import { createUseStyles, useTheme } from 'react-jss'
 const useStyles = createUseStyles({
   outlinedButton: {
     alignItems: 'center',
-    backgroundColor: ({ props, theme }) => props.topup === true ? theme.colors[props.color?.toLowerCase()] : 'transparent',
+    backgroundColor: ({ props, theme }) => props.topup === 'true' ? theme.colors[props.color?.toLowerCase()] : 'transparent',
     borderRadius: '8px',
-    border: ({ props, theme }) => props.topup === true ? 0 : `2px solid ${theme.colors[props.color?.toLowerCase()]}`,
-    color: ({ props, theme }) => props.topup === true ? '#FFF' : theme.colors[props.color?.toLowerCase()],
+    border: ({ props, theme }) => props.topup === 'true' ? 0 : `2px solid ${theme.colors[props.color?.toLowerCase()]}`,
+    color: ({ props, theme }) => props.topup === 'true' ? '#FFF' : theme.colors[props.color?.toLowerCase()],
     display: 'flex',
     fontFamily: 'ProductSansBold',
     fontSize: '14px',
@@ -81,7 +81,7 @@ const GlobalButton = (props) => {
             {children}
             {label}
             </button>
-          : <button className={classes.fillButton}>
+          : <button className={classes.fillButton} onClick={onClick}>
             {children}
             {label}
             </button>

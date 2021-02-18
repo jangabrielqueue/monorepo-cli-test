@@ -113,7 +113,9 @@ const useStyles = createUseStyles({
       minWidth: '232px'
     }
   }
-})
+},
+{ name: 'Deposit' }
+)
 
 const Deposit = (props) => {
   const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
@@ -357,16 +359,9 @@ const Deposit = (props) => {
           establishConnection={establishConnection}
         />
       )
-    } else if (dynamicLoadBankUtils?.checkIfMandiriBank(bank) && step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <MandiriForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-        />
-      )
-    } else if (step === 1) {
+    } else if (!dynamicLoadBankUtils?.checkIfMandiriBank(bank) && // making sure mandiri bank is not mandiri and undefined to load otp form
+    dynamicLoadBankUtils?.checkIfMandiriBank(bank) !== undefined &&
+    step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
         <OTPForm
@@ -375,6 +370,15 @@ const Deposit = (props) => {
           waitingForReady={waitingForReady}
           progress={progress}
           isCardOTP={isCardOTP}
+        />
+      )
+    } else if (dynamicLoadBankUtils?.checkIfMandiriBank(bank) && step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <MandiriForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
         />
       )
     } else if (step === 2 && isSuccessful) {
@@ -529,7 +533,7 @@ const Deposit = (props) => {
         <div className={classes.depositContainer}>
           <div className={classes.depositContent}>
             <section className={classes.headerContainer}>
-              <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
+              <Suspense fallback={<LoadingIcon />}>
                 <Logo bank={bank} currency={currency} />
               </Suspense>
               {

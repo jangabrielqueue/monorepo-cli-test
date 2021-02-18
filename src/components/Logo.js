@@ -9,10 +9,8 @@ const useStyles = createUseStyles({
     type === 'scratch-card' ? '400px' : '200px',
 
     '& img': {
-      height: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
-      type === 'scratch-card' ? '120px' : '80px',
-      width: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
-      type === 'scratch-card' ? '400px' : '200px'
+      height: 'auto',
+      width: '100%'
     }
   }
 })
@@ -47,7 +45,16 @@ const Logo = ({ bank, currency, type }) => {
   return (
     <section className={classes.logoContainer}>
       {
-        isBankKnown !== undefined &&
+        isBankKnown !== undefined && // all repo except topup
+          <img
+            alt={bank}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            src={getFilePathWebP(bank, type)}
+          />
+      }
+      {
+        isBankKnown === undefined && type === 'topup' && // for topup logo only
           <img
             alt={bank}
             width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}

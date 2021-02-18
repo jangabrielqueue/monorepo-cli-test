@@ -1,34 +1,40 @@
 import React from 'react'
-import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 import messages from './messages'
-import { CircularProgress } from '@rmwc/circular-progress'
-import '@rmwc/circular-progress/circular-progress.css'
+import { createUseStyles } from 'react-jss'
 
-const StyledAccountStatistics = styled.section`
-  && {
-    > div {
-      font-size: 16px;
-      font-weight: 400;
-      margin: 0 0 4px;
+// styling
+const useStyles = createUseStyles({
+  accountStatisticsContainer: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
 
-      > span {
-        color: #3f3f3f;
-        font-family: ProductSansBold;
+    '& li': {
+      display: 'flex',
+      fontSize: '16px',
+      fontWeight: '400',
+      margin: '0 0 4px',
+
+      '& span': {
+        color: '#3f3f3f',
+        fontFamily: 'ProductSansBold',
+        height: '20px',
+        marginLeft: '10px',
+        minWidth: '20px'
       }
     }
   }
-`
-const StyledCircularProgress = styled(CircularProgress)`
-  color: ${props => props.theme.colors[props.color.toLowerCase()]} !important;
-`
+})
 
-const AccountStatistics = ({ accountName, language, currency, amount, color, loading, establishConnection }) => {
+const AccountStatistics = ({ accountName, language, currency, amount, establishConnection }) => {
+  const classes = useStyles()
+
   return (
-    <StyledAccountStatistics>
-      <div>{<FormattedMessage {...messages.account.amount} />}: <span>{!establishConnection ? <StyledCircularProgress size='small' color={color} /> : `${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></div>
-      <div>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <StyledCircularProgress size='small' color={color} /> : accountName}</span></div>
-    </StyledAccountStatistics>
+    <ul className={classes.accountStatisticsContainer}>
+      <li>{<FormattedMessage {...messages.account.amount} />}: <span>{!establishConnection ? <div className='loading' /> : `${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></li>
+      <li>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <div className='loading' /> : accountName}</span></li>
+    </ul>
   )
 }
 

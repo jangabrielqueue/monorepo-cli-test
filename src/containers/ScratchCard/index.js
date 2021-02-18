@@ -1,95 +1,109 @@
-import React, { useState, useEffect, useCallback, lazy, useContext } from 'react'
+import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import { sleep } from '../../utils/utils'
-import * as signalR from '@microsoft/signalr'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import axios from 'axios'
-import { useIntl } from 'react-intl'
+import { FormattedMessage, useIntl } from 'react-intl'
 import messages from './messages'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { ErrorBoundary } from 'react-error-boundary'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
+import StepsBar from '../../components/StepsBar'
+import ProgressModal from '../../components/ProgressModal'
+import Statistics from '../../components/Statistics'
+import ErrorAlert from '../../components/ErrorAlert'
+import LoadingIcon from '../../components/LoadingIcon'
+import ScratchCardForm from './forms/ScratchCardForm'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
+import TransferWaitForConfirm from '../../components/TransferWaitForConfirm'
+import AutoRedirect from '../../components/AutoRedirect'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 // lazy loaded components
-const Header = lazy(() => import('./Header'))
-const Content = lazy(() => import('./Content'))
-const StepsBar = lazy(() => import('../../components/StepsBar'))
-const ProgressModal = lazy(() => import('../../components/ProgressModal'))
+const Logo = lazy(() => import('../../components/Logo'))
 
 // styling
-const StyledContainer = styled.div`
-  margin: 0 20px;
-  max-width: 500px;
-  width: 100%;
-`
-const StyledContent = styled.div`
-  background: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0px 5px 10px 0px rgba(112,112,112,0.3);
-`
-const StyledProgressBarContainer = styled.div`
-  color: rgba(0, 0, 0, 0.65);
-  height: 200px;
-  text-align: center;
+const useStyles = createUseStyles({
+  scratchCardHeader: {
+    padding: '10px 20px',
+    borderBottom: (props) => props.step === 1 ? '#FFF' : '0.5px solid #E3E3E3'
+  },
+  scratchCardBody: {
+    padding: '20px',
+    position: 'relative'
+  },
+  scratchCardContainer: {
+    margin: '0 20px',
+    maxWidth: '500px',
+    width: '100%'
+  },
+  scratchCardContent: {
+    background: '#FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0px 5px 10px 0px rgba(112,112,112,0.3)'
+  },
+  scratchCardProgressBarContainer: {
+    color: 'rgba(0, 0, 0, 0.65)',
+    height: '200px',
+    textAlign: 'center',
 
-  > img {
-      animation: zoomInAndOut 0.5s ease-in-out;
-      margin: 30px 0 2px;
-    }
+    '& img': {
+      animation: 'zoomInAndOut 0.5s ease-in-out',
+      margin: '30px 0 2px'
+    },
 
-  > progress {
-      -webkit-appearance:none;
-      border-radius: 7px;
-      height: 8px;
-      margin-bottom: 2px;
-      width: 100%;
+    '& progress': {
+      '-webkit-appearance': 'none',
+      borderRadius: '7px',
+      height: '8px',
+      marginBottom: '2px',
+      width: '100%',
 
-      &::-webkit-progress-bar {
-          background: #f5f5f5;
-          border-radius: 7px;
+      '&::-webkit-progress-bar': {
+        background: '#f5f5f5',
+        borderRadius: '7px'
+      },
+
+      '&::-webkit-progress-value': {
+        background: '#34A220',
+        borderRadius: '7px',
+        transition: 'width 0.5s linear'
       }
+    },
 
-      &::-webkit-progress-value {
-          background: #34A220;
-          border-radius: 7px;
-          transition: width 0.5s linear;
-      }
+    '& p': {
+      fontFamily: 'ProductSansRegular',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      margin: 0,
+      textAlign: 'center'
+    },
 
-      &::-moz-progress-bar {
-          background: #34A220;
-      }
+    '@media (min-width: 36em)': {
+      minWidth: '450px'
+    },
+
+    '@media only screen and (min-device-width : 25em) and (max-device-width : 26em)': {
+      minWidth: '325px'
+    },
+
+    '@media only screen and (min-device-width : 22em) and (max-device-width : 24em)': {
+      minWidth: '270px'
+    },
+
+    '@media (max-width: 22.438em)': {
+      minWidth: '232px'
     }
-
-  > p {
-      font-family: ProductSansRegular;
-      font-size: 14px;
-      font-weight: bold;
-      margin: 0;
-      text-align: center;
-    }
-
-  @media (min-width: 36em) {
-    min-width: 450px;
   }
-
-  @media only screen and (min-device-width : 25em) and (max-device-width : 26em) {
-    min-width: 325px;
-  }
-
-  @media only screen and (min-device-width : 22em) and (max-device-width : 24em) {
-    min-width: 270px;
-  }
-
-  @media (max-width: 22.438em) {
-    min-width: 232px;
-  }
-`
+},
+{ name: 'ScratchCard' }
+)
 
 const ScratchCard = (props) => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
     merchant,
@@ -113,12 +127,12 @@ const ScratchCard = (props) => {
   const [progress, setProgress] = useState(undefined)
   const [transferResult, setTransferResult] = useState({})
   const [isSuccessful, setIsSuccessful] = useState(undefined)
-  const intl = useIntl()
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
-  const themeColor = isBankKnown ? `${bank}` : 'main'
   analytics.setCurrentScreen('scratch_card')
+  const intl = useIntl()
+  const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)]
+  const classes = useStyles(step)
 
   const handleSubmitScratchCard = useCallback(
     async (values) => {
@@ -150,28 +164,28 @@ const ScratchCard = (props) => {
         currentStep: 1,
         totalSteps: 5,
         statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.startingConnection)
+        statusMessage: <FormattedMessage {...messages.progress.startingConnection} />
       })
       await sleep(750)
       setProgress({
         currentStep: 2,
         totalSteps: 5,
         statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
+        statusMessage: <FormattedMessage {...messages.progress.encryptedTransmission} />
       })
       await sleep(750)
       setProgress({
         currentStep: 3,
         totalSteps: 5,
         statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+        statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
       })
       await sleep(750)
       setProgress({
         currentStep: 4,
         totalSteps: 5,
         statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
       })
       await sleep(750)
 
@@ -206,7 +220,7 @@ const ScratchCard = (props) => {
           setTransferResult({
             statusCode: '001',
             isSuccess: false,
-            message: intl.formatMessage(messages.errors.verificationFailed)
+            message: <FormattedMessage {...messages.errors.verificationFailed} />
           })
           setIsSuccessful(false)
           setStep(1)
@@ -217,7 +231,6 @@ const ScratchCard = (props) => {
         }
       }
     }, [
-      intl,
       analytics,
       clientIp,
       language,
@@ -250,7 +263,7 @@ const ScratchCard = (props) => {
           currentStep: 5,
           totalSteps: 5,
           statusCode: result.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+          statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
         })
         setWaitingForReady(true)
         setStep(0)
@@ -264,7 +277,7 @@ const ScratchCard = (props) => {
           setIsSuccessful(false)
           setTransferResult({
             ...result,
-            message: intl.formatMessage(messages.errors.connectionTimeout)
+            message: <FormattedMessage {...messages.errors.connectionTimeout} />
           })
           setStep(1)
         }
@@ -282,7 +295,7 @@ const ScratchCard = (props) => {
         setStep(1)
       }
     },
-    [intl, analytics, reference]
+    [analytics, reference]
   )
 
   function errorHandler (error, componentStack) {
@@ -310,6 +323,49 @@ const ScratchCard = (props) => {
     )
   }
 
+  function renderStepContents () {
+    switch (steps[step]) {
+      case intl.formatMessage(messages.steps.fillInForm):
+        analytics.setCurrentScreen('input_user_credentials')
+        return (
+          <ScratchCardForm
+            handleSubmitScratchCard={handleSubmitScratchCard}
+            waitingForReady={waitingForReady}
+            establishConnection={establishConnection}
+            bank={bank}
+            currency={currency}
+          />
+        )
+
+      case intl.formatMessage(messages.steps.result):
+        if (isSuccessful) {
+          analytics.setCurrentScreen('transfer_successful')
+          return (
+            <AutoRedirect delay={10000} url={successfulUrl}>
+              <TransferSuccessful transferResult={transferResult} />
+            </AutoRedirect>
+          )
+        } else if (transferResult.statusCode === '009') {
+          analytics.setCurrentScreen('transfer_successful')
+          return (
+            <AutoRedirect delay={10000} url={successfulUrl}>
+              <TransferWaitForConfirm transferResult={transferResult} />
+            </AutoRedirect>
+          )
+        } else {
+          analytics.setCurrentScreen('transfer_failed')
+          return (
+            <AutoRedirect delay={10000} url={failedUrl}>
+              <TransferFailed transferResult={transferResult} />
+            </AutoRedirect>
+          )
+        }
+
+      default:
+        break
+    }
+  }
+
   useEffect(() => {
     const queryParams = [
       bank,
@@ -333,7 +389,7 @@ const ScratchCard = (props) => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setIsSuccessful(false)
       setStep(1)
@@ -343,13 +399,12 @@ const ScratchCard = (props) => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setIsSuccessful(false)
       setStep(1)
     }
   }, [
-    intl,
     bank,
     merchant,
     currency,
@@ -367,21 +422,10 @@ const ScratchCard = (props) => {
   ])
 
   useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
-
-  useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
+    const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(LogLevel.Information)
       .build()
 
     connection.on('receivedResult', handleCommandStatusUpdate)
@@ -397,8 +441,8 @@ const ScratchCard = (props) => {
       } catch (ex) {
         setError({
           error: {
-            name: intl.formatMessage(messages.errors.networkErrorTitle),
-            message: intl.formatMessage(messages.errors.networkError)
+            name: <FormattedMessage {...messages.errors.networkErrorTitle} />,
+            message: <FormattedMessage {...messages.errors.networkError} />
           }
         })
         setEstablishConnection(false)
@@ -411,7 +455,7 @@ const ScratchCard = (props) => {
 
     // Start the connection
     start()
-  }, [session, handleCommandStatusUpdate, intl])
+  }, [session, handleCommandStatusUpdate])
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
@@ -427,39 +471,48 @@ const ScratchCard = (props) => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-        <StyledContainer>
-          <StyledContent>
-            <Header
-              themeColor={themeColor}
-              step={step}
-              language={language}
-              error={error}
-            />
-            <Content
-              step={step}
-              handleSubmitScratchCard={handleSubmitScratchCard}
-              waitingForReady={waitingForReady}
-              establishConnection={establishConnection}
-              isSuccessful={isSuccessful}
-              transferResult={transferResult}
-            />
-          </StyledContent>
+        <div className={classes.scratchCardContainer}>
+          <div className={classes.scratchCardContent}>
+            <section className={classes.scratchCardHeader}>
+              <Suspense fallback={<LoadingIcon />}>
+                <Logo bank={bank} currency={currency} type='scratch-card' />
+              </Suspense>
+              {
+                step === 0 && (bank?.toUpperCase() !== 'GWC') && (
+                  <Statistics
+                    title={<FormattedMessage {...messages.deposit} />}
+                    language={language}
+                    currency={currency}
+                    amount={amount}
+                  />
+                )
+              }
+              {
+                error && <ErrorAlert message={error.message} />
+              }
+            </section>
+            <section className={classes.scratchCardBody}>
+              {
+                renderStepContents()
+              }
+            </section>
+          </div>
           <StepsBar step={step === 1 ? 2 : step} />
-        </StyledContainer>
+        </div>
         <ProgressModal open={progress && (progress.statusCode === '009')}>
-          <StyledProgressBarContainer>
+          <div className={classes.scratchCardProgressBarContainer}>
             <img
               alt='submit-transaction'
               width='80'
-              height='auto'
-              src={require('../../assets/icons/in-progress.svg')}
+              height='80'
+              src='/icons/in-progress.svg'
             />
             <progress
               value={progress && (progress.currentStep / progress.totalSteps) * 100}
               max={100}
             />
             <p>{progress && progress.statusMessage}</p>
-          </StyledProgressBarContainer>
+          </div>
         </ProgressModal>
       </ErrorBoundary>
     </>

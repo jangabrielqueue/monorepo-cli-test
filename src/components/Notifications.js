@@ -21,8 +21,13 @@ const useStyles = createUseStyles({
     '& ul': {
       listStyle: 'none',
       margin: 0,
-      padding: 0
+      padding: 0,
+
+      '& li': {
+        margin: 0
+      }
     },
+
     '@media (max-width: 33.750em)': {
       fontSize: '12px'
     }

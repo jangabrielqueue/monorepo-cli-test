@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
     },
 
     '& div': {
-      flex: '0 1 415px'
+      flex: '0 1 425px'
     }
   },
 
@@ -57,6 +57,7 @@ const useStyles = createUseStyles({
       '& li:nth-child(odd)': {
         height: '14px',
         width: '14px',
+        margin: 0,
 
         '& span': {
           alignItems: 'center',
@@ -65,7 +66,7 @@ const useStyles = createUseStyles({
           color: '#FFF',
           cursor: 'pointer',
           display: 'flex',
-          fontSize: '14px',
+          fontSize: '16px',
           height: '100%',
           justifyContent: 'center',
           lineHeight: 1.5,
@@ -77,8 +78,10 @@ const useStyles = createUseStyles({
         cursor: 'pointer',
         height: '16px',
         width: '16px',
+        margin: 0,
 
         '& img': {
+          height: '100%',
           width: '100%'
         }
       }
@@ -118,7 +121,7 @@ const useStyles = createUseStyles({
   }
 
 },
-{ name: 'OTP' }
+{ name: 'OTPForm' }
 )
 
 const OTPForm = React.memo((props) => {

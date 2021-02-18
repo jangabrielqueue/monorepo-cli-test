@@ -20,6 +20,10 @@ const GlobalStyles = createUseStyles({
       }
     ],
 
+    html: {
+      lineHeight: 1.25
+    },
+
     body: {
       backgroundColor: '#ffffff',
       color: '#767676',

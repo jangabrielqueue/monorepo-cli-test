@@ -1,41 +1,48 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
-import rightExpand from '../assets/icons/right-expand.png'
-import downExpand from '../assets/icons/down-expand.png'
+import { createUseStyles } from 'react-jss'
 
-const StyledHeader = styled.div`
-    cursor: pointer;
-    font-family: ProductSansMedium;
-    font-size: 14px;
-    height: 31px;
+// styling
+const useStyles = createUseStyles({
+  collapsiblePanelHeader: {
+    cursor: 'pointer',
+    fontFamily: 'ProductSansMedium',
+    fontSize: '14px',
+    height: '31px',
 
-    &:hover {
-        opacity: 0.7;
+    '&:hover': {
+      opacity: 0.7
+    },
+
+    '&:before': {
+      background: (props) => {
+        if (props.toggleCollapse) {
+          return 'url(/icons/down-expand.png) no-repeat center'
+        } else {
+          return 'url(/icons/right-expand.png) no-repeat center'
+        }
+      },
+      content: '""',
+      display: 'block',
+      float: 'left',
+      height: '20px',
+      marginRight: '15px',
+      width: '20px'
     }
+  },
 
-    &:before {
-        background: url(${props => props.toggleCollapse ? downExpand : rightExpand}) no-repeat center;
-        content: '';
-        display: block;
-        float: left;
-        height: 20px;
-        margin-right: 15px;
-        width: 20px;
-    }
-`
-
-const StyledContent = styled.div`
-  font-size: 12px;
-  overflow-y: hidden;
-  max-height: ${props => props.toggleCollapse ? props.topup ? '100px' : '155px' : '0'};
-
-  transition-property: all;
-  transition-duration: .5s;
-  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-`
+  collapsiblePanelContent: {
+    fontSize: '12px',
+    overflowY: 'hidden',
+    maxHeight: (props) => props.toggleCollapse ? props.topup ? '100px' : '155px' : '0',
+    transitionProperty: 'all',
+    transitionDuration: '.5s',
+    transitionTimingFunction: 'cubic-bezier(0, 1, 0.5, 1)'
+  }
+})
 
 const CollapsiblePanel = ({ children, title, topup }) => {
   const [toggleCollapse, setToggleCollapse] = useState(false)
+  const classes = useStyles({ toggleCollapse, topup })
 
   function handleToggleCollapse () {
     setToggleCollapse(prevState => !prevState)
@@ -43,22 +50,16 @@ const CollapsiblePanel = ({ children, title, topup }) => {
 
   return (
     <section>
-      <StyledHeader
-        onClick={handleToggleCollapse}
-        toggleCollapse={toggleCollapse}
-      >
+      <div className={classes.collapsiblePanelHeader} onClick={handleToggleCollapse}>
         {
           title
         }
-      </StyledHeader>
-      <StyledContent
-        topup={topup}
-        toggleCollapse={toggleCollapse}
-      >
+      </div>
+      <div className={classes.collapsiblePanelContent}>
         {
           children
         }
-      </StyledContent>
+      </div>
     </section>
   )
 }

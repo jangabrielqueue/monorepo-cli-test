@@ -1,140 +1,153 @@
-import React, { useState, lazy } from 'react'
+import React, { useState, lazy, useEffect } from 'react'
 import { useIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
-import styled from 'styled-components'
-import mobileIcon from '../../../assets/icons/otp-reference.svg'
-import creditCardIcon from '../../../assets/icons/credit-card.svg'
-import { checkBankIfKnown } from '../../../utils/banks'
+import { createUseStyles } from 'react-jss'
+import classNames from 'classnames/bind'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
-const FormIconContainer = styled.div`
-  display: flex;
+// styling
+const useStyles = createUseStyles({
+  formIconContainer: {
+    display: 'flex',
 
-  &:before {
-    background: url(${props => {
-      if (props.icon === 'mobile') {
-        return mobileIcon
-      } else if (props.icon === 'credit-card') {
-        return creditCardIcon
+    '&:before': {
+      content: '""',
+      display: 'block',
+      height: '20px',
+      width: '20px'
+    },
+
+    '& div': {
+      flex: '0 1 425px'
+    }
+  },
+
+  formIconContainerMobile: {
+    '&:before': {
+      background: 'url(/icons/otp-reference.svg) no-repeat center',
+      margin: '15px 15px 15px 0',
+      opacity: 1
+    }
+  },
+  formIconContainerCreditCard: {
+    '&:before': {
+      background: 'url(/icons/credit-card.svg) no-repeat center',
+      margin: '15px 15px 15px 2px',
+      opacity: 0.6
+    }
+  },
+
+  formSelectField: {
+    marginBottom: '23px'
+  },
+
+  noteText: {
+    fontSize: '14px',
+    lineHeight: 1.5,
+    margin: '15px 0',
+    paddingLeft: '20px',
+
+    '& li': {
+      color: '#767676',
+      marginBottom: '5px'
+    },
+
+    '& ul': {
+      boxSizing: 'border-box',
+      listStyleType: 'circle',
+      paddingLeft: '25px',
+      width: '100%',
+
+      '& li': {
+        color: '#767676',
+        marginBottom: '5px'
       }
-    }}) no-repeat center;
-    content: '';
-    display: block;
-    height: 20px;
-    margin: ${props => {
-        if (props.icon === 'mobile') {
-          return '15px 15px 15px 0'
-        } else if (props.icon === 'credit-card') {
-          return '15px 15px 15px 2px'
+    }
+  },
+
+  footer: {
+    marginTop: '5px',
+    padding: '10px 0px 5px',
+    textAlign: 'center'
+  },
+
+  inputFieldContainer: {
+    position: 'relative',
+
+    '& ul': {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      position: 'absolute',
+      right: '4px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 'auto',
+
+      '& li:nth-child(odd)': {
+        height: '14px',
+        width: '14px',
+        margin: 0,
+
+        '& span': {
+          alignItems: 'center',
+          background: '#C0C0C0',
+          borderRadius: '50%',
+          color: '#FFF',
+          cursor: 'pointer',
+          display: 'flex',
+          fontSize: '16px',
+          height: '100%',
+          justifyContent: 'center',
+          lineHeight: 1.5,
+          width: '100%'
         }
-      }};
-    width: 20px;
-    opacity: ${props => {
-        if (props.icon === 'mobile') {
-          return '1'
-        } else if (props.icon === 'credit-card') {
-          return '0.6'
+      },
+
+      '& li:nth-child(even)': {
+        cursor: 'pointer',
+        height: '16px',
+        width: '16px',
+        margin: 0,
+
+        '& img': {
+          width: '100%',
+          height: '100%'
         }
-      }};
-  }
-
-  > div {
-    flex: 0 1 415px;
-  }
-`
-
-const FormSelectField = styled.select`
-  margin-bottom: 23px;
-`
-
-const StyledNoteText = styled.ul`
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 15px 0;
-    padding-left: 20px;
-
-    > li {
-        color: #767676;
-        margin-bottom: 5px;
-    }
-
-    > ul {
-      box-sizing: border-box;
-      list-style-type: circle;
-      padding-left: 25px;
-      width: 100%;
-
-      > li {
-        color: #767676;
-        margin-bottom: 5px;
-      }
-    }
-`
-const StyledFooter = styled.footer`
-  margin-top: 5px;
-  padding: 10px 0px 5px;
-  text-align: center;
-`
-const InputFieldContainer = styled.div`
-  position: relative;
-
-  ul {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: ${props => props.passwordIcon ? '40px' : 'auto'};
-
-    > li:nth-child(odd) {
-      height: 14px;
-      width: 14px;
-
-      span {
-        align-items: center;
-        background: #C0C0C0;
-        border-radius: 50%;
-        color: #FFF;
-        cursor: pointer;
-        display: flex;
-        font-size: 14px;
-        height: 100%;
-        justify-content: center;
-        line-height: 1.5;
-        width: 100%;
-      }
-    }
-
-    > li:nth-child(even) {
-      cursor: pointer;
-      height: 16px;
-      width: 16px;
-
-      > img {
-        width: 100%;
       }
     }
   }
-`
+},
+{ name: 'ScratchCardForm' }
+)
 
 const ScratchCardForm = React.memo((props) => {
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const intl = useIntl()
   const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext()
-  const isBankKnown = checkBankIfKnown(currency, bank)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const watchCardSerialNumber = watch('cardSerialNumber', '')
   const watchCardPin = watch('cardPin', '')
   const formValues = getValues()
+  const classes = useStyles()
+  const cx = classNames.bind(classes)
+  const formIconContainerMobileStyles = cx({
+    formIconContainer: true,
+    formIconContainerMobile: true
+  })
+  const formIconContainerCreditCardStyles = cx({
+    formIconContainer: true,
+    formIconContainerCreditCard: true
+  })
 
   function handleSubmitForm (values) {
     handleSubmitScratchCard(values)
@@ -260,15 +273,27 @@ const ScratchCardForm = React.memo((props) => {
     })
   }
 
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
+
   return (
     <>
       <form autoComplete='off'>
         {
           (bank && bank.toUpperCase() !== 'GWC') &&
-            <FormIconContainer icon='mobile'>
+            <div className={formIconContainerMobileStyles}>
               <div>
                 <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
-                <FormSelectField
+                <select
+                  className={classes.formSelectField}
                   name='telcoName'
                   id='telcoName'
                   ref={register}
@@ -280,14 +305,14 @@ const ScratchCardForm = React.memo((props) => {
                   <option value='ZING' id='telco-4'>Zing</option>
                   <option value='GATE' id='telco-5'>Gate</option>
                   <option value='VNM' id='telco-6'>Vietnamobile</option>
-                </FormSelectField>
+                </select>
               </div>
-            </FormIconContainer>
+            </div>
         }
-        <FormIconContainer icon='credit-card'>
+        <div className={formIconContainerCreditCardStyles}>
           <div>
             <label htmlFor='cardSerialNumber'><FormattedMessage {...messages.placeholders.cardSerialNo} /></label>
-            <InputFieldContainer>
+            <div className={classes.inputFieldContainer}>
               <input
                 ref={register(renderSerialNumberValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
@@ -302,18 +327,18 @@ const ScratchCardForm = React.memo((props) => {
                     <li onClick={() => reset({ ...formValues, cardSerialNumber: '' })}><span>&times;</span></li>
                 }
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>
               {errors.cardSerialNumber?.type === 'required' && <FormattedMessage {...messages.placeholders.inputSerialNumber} />}
               {errors.cardSerialNumber?.type === 'maxLength' && renderMaxLengthMessageSerialNumber()}
               {errors.cardSerialNumber?.type === 'pattern' && renderPatternMessageSerialNumber()}
             </p>
           </div>
-        </FormIconContainer>
-        <FormIconContainer icon='credit-card'>
+        </div>
+        <div className={formIconContainerCreditCardStyles}>
           <div>
             <label htmlFor='cardPin'><FormattedMessage {...messages.placeholders.cardPin} /></label>
-            <InputFieldContainer>
+            <div className={classes.inputFieldContainer}>
               <input
                 ref={register(renderCardPinValidations())}
                 onKeyDown={e => e.which === 69 && e.preventDefault()}
@@ -328,25 +353,26 @@ const ScratchCardForm = React.memo((props) => {
                     <li onClick={() => reset({ ...formValues, cardPin: '' })}><span>&times;</span></li>
                 }
               </ul>
-            </InputFieldContainer>
+            </div>
             <p className='input-errors'>
               {errors.cardPin?.type === 'required' && <FormattedMessage {...messages.placeholders.inputCardPin} />}
               {errors.cardPin?.type === 'maxLength' && renderMaxLengthMessageCardPin()}
             </p>
           </div>
-        </FormIconContainer>
-        <StyledFooter>
+        </div>
+        <footer className={classes.footer}>
           <GlobalButton
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
-            icon={<img alt='submit' width='24' height='24' src={require('../../../assets/icons/submit-otp.svg')} />}
             onClick={handleSubmit(handleSubmitForm)}
             disabled={!establishConnection || waitingForReady}
-          />
-        </StyledFooter>
+          >
+            <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
+          </GlobalButton>
+        </footer>
         {
           (bank?.toUpperCase() !== 'GWC') &&
-            <StyledNoteText>
+            <ul className={classes.noteText}>
               <li><FormattedMessage {...messages.notes.notesOne} /></li>
               <li><FormattedMessage {...messages.notes.notesTwo} /></li>
               <li><FormattedMessage {...messages.notes.notesThree} /></li>
@@ -363,7 +389,7 @@ const ScratchCardForm = React.memo((props) => {
                 <li>GATE: 28%</li>
                 <li>VIETNAMOBILE: 25%</li>
               </ul>
-            </StyledNoteText>
+            </ul>
         }
       </form>
     </>
