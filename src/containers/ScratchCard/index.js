@@ -214,7 +214,7 @@ const ScratchCard = (props) => {
           error: errors
         })
 
-        if (errors.response.data && errors.response.data.errors) {
+        if (errors.response.data?.errors) {
           setWaitingForReady(false)
           setProgress(undefined)
           setTransferResult({

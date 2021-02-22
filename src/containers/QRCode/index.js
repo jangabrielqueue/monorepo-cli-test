@@ -213,12 +213,6 @@ const QRCode = (props) => {
         data: submitValues
       })
     } catch (error) {
-      setTransferResult({
-        statusCode: '001',
-        statusMessage: error.response.data && error.response.data.error.message,
-        isSuccessful: false
-      })
-      setLoadingButton(false)
       setProgress(undefined)
       setStep(1)
     }
