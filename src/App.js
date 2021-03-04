@@ -57,7 +57,7 @@ const useStyles = createUseStyles({
     flexWrap: 'wrap',
     height: '100%',
     justifyContent: 'center',
-    backgroundImage: (props) => `linear-gradient(190deg, ${appTheme.colors[`${props.themeColor?.toLowerCase()}`]} 44%,
+    backgroundImage: (props) => `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : '#91C431'} 44%,
     #FFFFFF calc(44% + 2px))`,
     paddingTop: (props) => props.bank?.toUpperCase() === 'VCB' ? '105px' : '75px',
     '@media (max-width: 33.750em)': {

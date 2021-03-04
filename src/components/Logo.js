@@ -62,6 +62,15 @@ const Logo = ({ bank, currency, type }) => {
             src={getFilePathWebP(bank, type)}
           />
       }
+      {
+        isBankKnown === undefined && type === undefined && // without bank param
+          <img
+            alt='game-wallet'
+            width='200'
+            height='80'
+            src={requestImageFileWebp('./GW_LOGO.webp')}
+          />
+      }
     </section>
   )
 }
