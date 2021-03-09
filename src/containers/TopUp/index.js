@@ -258,6 +258,8 @@ const TopUp = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
+      await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
+
       setProgress(undefined)
       setStep(1)
       setOtpReference(e.extraData)

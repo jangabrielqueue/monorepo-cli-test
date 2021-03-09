@@ -307,7 +307,10 @@ const Deposit = (props) => {
     []
   )
 
-  function handleRequestOTP (e) {
+  async function handleRequestOTP (e) {
+    const { sleep } = await import('../../utils/utils')
+    await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
+
     setProgress(undefined)
     setStep(1)
     setOtpReference(e.extraData)
