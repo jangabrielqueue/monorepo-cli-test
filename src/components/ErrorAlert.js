@@ -1,35 +1,39 @@
 import React from 'react'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 
-const StyledError = styled.section`
-    background-color: #fff1f0;
-    border-radius: 4px;
-    border: 1px solid #ffa39e;
-    line-height: 1.5;
-    padding: 15px;
+const useStyles = createUseStyles({
+  errorAlertContainer: {
+    backgroundColor: '#fff1f0',
+    borderRadius: '4px',
+    border: '1px solid #ffa39e',
+    lineHeight: 1.5,
+    padding: '15px',
 
-    > p {
-        color: rgba(0, 0, 0, 0.65);
-        font-size: 14px;
-        line-height: 22px;
-        margin: 0;
-        word-break: break-all;
+    '& p': {
+      color: 'rgba(0, 0, 0, 0.65)',
+      fontSize: '14px',
+      lineHeight: '22px',
+      margin: 0,
+      wordBreak: 'break-all',
 
-        > img {
-            vertical-align: bottom;
-            margin-right: 10px;
-        }
+      '& img': {
+        verticalAlign: 'bottom',
+        marginRight: '10px'
+      }
     }
-`
+  }
+})
 
 const ErrorAlert = ({ message }) => {
+  const classes = useStyles()
+
   return (
-    <StyledError>
+    <section className={classes.errorAlertContainer}>
       <p>
-        <img alt='error' width='24' src={require('../assets/icons/error.png')} />
+        <img alt='error' width='24' src='/icons/error.png' />
         {message}
       </p>
-    </StyledError>
+    </section>
   )
 }
 

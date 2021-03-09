@@ -2,15 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="Secure Online Payment"
     />
-    <link rel="apple-touch-icon" href="logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <link rel="preload" as="style" href="%PUBLIC_URL%/styles/spectre.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="%PUBLIC_URL%/styles/spectre-exp.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="%PUBLIC_URL%/styles/spectre-icons.min.css" onload="this.onload=null;this.rel='stylesheet'">
     <title>Game Wallet</title>
   </head>
   <body>

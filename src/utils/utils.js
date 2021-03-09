@@ -1,11 +1,5 @@
 // Utility Functions
 
-import { useLocation } from 'react-router-dom'
-
-function useQuery () {
-  return new URLSearchParams(useLocation().search)
-}
-
 function isNullOrWhitespace (input) {
   if (typeof input === 'undefined' || input == null) return true
   return input.replace(/\s/g, '').length < 1
@@ -36,12 +30,11 @@ function renderButtonColors (bank, color) {
     case 'BRI':
       return 'buttonBri'
     default:
-      return color.toLowerCase()
+      return color?.toLowerCase()
   }
 }
 
 export {
-  useQuery,
   isNullOrWhitespace,
   sleep,
   calculateCurrentProgress,

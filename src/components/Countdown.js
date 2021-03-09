@@ -1,34 +1,35 @@
 import React, { useState, useEffect } from 'react'
 import { injectIntl } from 'react-intl'
 import messages from './messages'
-import styled from 'styled-components'
+import { createUseStyles } from 'react-jss'
 
-const StyledCountdown = styled.section`
-  > h1 {
-      color: #767676;
-      font-size: 16px;
-      margin-bottom: ${props => props.redirect ? '10px' : '4px'};
+// styling
+const useStyles = createUseStyles({
+  countdownHeaderText: {
+    color: '#767676',
+    fontSize: '16px',
+    marginBottom: (props) => props?.redirect ? '10px' : '4px'
+  },
+  countdownTimer: {
+    color: '#3f3f3f',
+    fontFamily: 'ProductSansBold',
+    fontSize: '24px',
+    margin: 0
+  },
+  countdownTimerQr: {
+    margin: '0 0 25px',
+
+    '& span': {
+      color: '#3f3f3f',
+      fontFamily: 'ProductSansBold'
+    }
   }
-`
-const StyledCountdownTimer = styled.p`
-  color: #3f3f3f;
-  font-family: ProductSansBold;
-  font-size: 24px;
-  margin: 0;
-`
-
-const StyledCountdownTimerQR = styled.p`
-  margin: 0 0 25px;
-
-  > span {
-    color: #3f3f3f;
-    font-family: ProductSansBold;
-  }
-`
+})
 
 const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
   const [timerMinutes, setTimerMinutes] = useState(minutes)
   const [timerSeconds, setTimerSeconds] = useState(seconds)
+  const classes = useStyles(redirect)
 
   useEffect(() => {
     const dateTime = new Date()
@@ -57,15 +58,15 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
   }, [minutes, seconds])
 
   return (
-    <StyledCountdown redirect={redirect}>
+    <section>
       {
-        !qrCode && <h1>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1 }) : intl.formatMessage(messages.countdown)}</h1>
+        !qrCode && <h1 className={classes.countdownHeaderText}>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1 }) : intl.formatMessage(messages.countdown)}</h1>
       }
       {
-        !qrCode ? <StyledCountdownTimer>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</StyledCountdownTimer>
-          : <StyledCountdownTimerQR>{intl.formatMessage(messages.countdown)}: <span>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></StyledCountdownTimerQR>
+        !qrCode ? <p className={classes.countdownTimer}>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</p>
+          : <p className={classes.countdownTimerQr}>{intl.formatMessage(messages.countdown)}: <span>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></p>
       }
-    </StyledCountdown>
+    </section>
   )
 }
 

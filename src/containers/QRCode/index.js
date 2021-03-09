@@ -1,37 +1,122 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import styled from 'styled-components'
-import Logo from '../../components/Logo'
-import { checkBankIfKnown } from '../../utils/banks'
-import ErrorAlert from '../../components/ErrorAlert'
-import { useQuery, sleep } from '../../utils/utils'
-import AccountStatistics from '../../components/AccountStatistics'
-import AutoRedirectQR from '../../components/AutoRedirectQR'
-import AutoRedirect from '../../components/AutoRedirect'
-import QRCodeForm from './QRCodeForm'
-import StepsBar from '../../components/StepsBar'
-import {
-  TransferSuccessful,
-  TransferFailed
-} from '../../components/TransferResult'
+import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import messages from './messages'
-import { useIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import axios from 'axios'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+import { ErrorBoundary } from 'react-error-boundary'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { FirebaseContext } from '../../contexts/FirebaseContext'
+import { createUseStyles } from 'react-jss'
+import StepsBar from '../../components/StepsBar'
 import ProgressModal from '../../components/ProgressModal'
-import * as signalR from '@microsoft/signalr'
+import LoadingIcon from '../../components/LoadingIcon'
+import AccountStatistics from '../../components/AccountStatistics'
+import ErrorAlert from '../../components/ErrorAlert'
+import QRCodeForm from './forms/QRCodeForm'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
+import AutoRedirect from '../../components/AutoRedirect'
+import AutoRedirectQR from '../../components/AutoRedirectQR'
 
+// endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
-const WrapperBG = styled.div`
-  background-image: linear-gradient(
-    190deg,
-    ${(props) => props.theme.colors[`${props.color.toLowerCase()}`]} 44%,
-    #ffffff calc(44% + 2px)
-  );
-  padding-top: ${props => props.bank === 'VCB' ? '105px' : '75px'}
-`
+// lazy loaded components
+const Logo = lazy(() => import('../../components/Logo'))
+
+// styling
+const useStyles = createUseStyles({
+  qrCodeHeader: {
+    padding: '10px 20px',
+    borderBottom: (props) => props.step === 1 ? '#FFF' : '0.5px solid #E3E3E3'
+  },
+  qrCodeBody: {
+    padding: '20px',
+    position: 'relative'
+  },
+  qrCodeContainer: {
+    margin: '0 20px',
+    maxWidth: '500px',
+    width: '100%'
+  },
+  qrCodeContent: {
+    background: '#FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0 5px 10px 0 rgba(112,112,112,0.3)'
+  },
+  qrCodeProgressBarContainer: {
+    color: 'rgba(0, 0, 0, 0.65)',
+    height: '200px',
+    textAlign: 'center',
+
+    '& img': {
+      animation: 'zoomInAndOut 0.5s ease-in-out',
+      margin: '30px 0 2px'
+    },
+
+    '& progress': {
+      '-webkit-appearance': 'none',
+      borderRadius: '7px',
+      height: '8px',
+      marginBottom: '2px',
+      width: '100%',
+
+      '&::-webkit-progress-bar': {
+        background: '#f5f5f5',
+        borderRadius: '7px'
+      },
+
+      '&::-webkit-progress-value': {
+        background: '#34A220',
+        borderRadius: '7px',
+        transition: 'width 0.5s linear'
+      }
+    },
+
+    '& p': {
+      fontFamily: 'ProductSansRegular',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      margin: 0,
+      textAlign: 'center'
+    },
+
+    '@media (min-width: 36em)': {
+      minWidth: '450px'
+    },
+    '@media only screen and (min-device-width : 25em) and (max-device-width : 26em)': {
+      minWidth: '325px'
+    },
+    '@media only screen and (min-device-width : 22em) and (max-device-width : 24em)': {
+      minWidth: '270px'
+    },
+    '@media (max-width: 22.438em)': {
+      minWidth: '232px'
+    }
+  }
+},
+{ name: 'QRCode' }
+)
 
 const QRCode = (props) => {
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const {
+    bank,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    callbackUri,
+    amount,
+    reference,
+    datetime,
+    signature,
+    successfulUrl,
+    failedUrl,
+    note
+  } = useContext(QueryParamsContext)
+  const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
   const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
@@ -57,46 +142,14 @@ const QRCode = (props) => {
     currency: '',
     isSuccessful: false
   })
-  const queryParams = useQuery()
-  const intl = useIntl()
-  const bank = queryParams.get('b')
-  const merchant = queryParams.get('m')
-  const currency = queryParams.get('c1')
-  const requester = queryParams.get('c2')
-  const clientIp = queryParams.get('c3')
-  const callbackUri = queryParams.get('c4')
-  const amount = queryParams.get('a')
-  const reference = queryParams.get('r')
-  const datetime = queryParams.get('d')
-  const signature = queryParams.get('k')
-  const successfulUrl = queryParams.get('su')
-  const failedUrl = queryParams.get('fu')
-  const note = queryParams.get('n')
   const language = props.language // language was handled at root component not at the queryparams
-  const isBankKnown = checkBankIfKnown(currency, bank)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
-  const getQRCodePayload = {
-    amount: amount,
-    bank: bank,
-    callbackUri: callbackUri,
-    clientIp: clientIp,
-    currency: currency,
-    customer: requester,
-    datetime: datetime,
-    failedUrl: failedUrl,
-    key: signature,
-    language: language,
-    merchant: merchant,
-    note: note,
-    reference: reference,
-    requester: requester,
-    signature: signature,
-    successfulUrl: successfulUrl,
-    toAccountId: 0
-  }
+  const classes = useStyles(step)
 
   async function handleSubmitQRCode () {
+    const { sleep } = await import('../../utils/utils')
     const submitValues = {
       amount: amount,
       bank: bank,
@@ -126,31 +179,31 @@ const QRCode = (props) => {
     setProgress({
       currentStep: 1,
       totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.startingConnection)
+      statusMessage: <FormattedMessage {...messages.progress.startingConnection} />
     })
     await sleep(750)
     setProgress({
       currentStep: 2,
       totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
+      statusMessage: <FormattedMessage {...messages.progress.encryptedTransmission} />
     })
     await sleep(750)
     setProgress({
       currentStep: 3,
       totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
     })
     await sleep(750)
     setProgress({
       currentStep: 4,
       totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+      statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
     })
     await sleep(750)
     setProgress({
       currentStep: 5,
       totalSteps: 5,
-      statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+      statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
     })
 
     try {
@@ -160,19 +213,70 @@ const QRCode = (props) => {
         data: submitValues
       })
     } catch (error) {
-      setTransferResult({
-        statusCode: '001',
-        statusMessage: error.response.data && error.response.data.error.message,
-        isSuccessful: false
-      })
-      setLoadingButton(false)
       setProgress(undefined)
       setStep(1)
     }
   }
 
-  function renderStepsContent (currentStep) {
-    switch (currentStep) {
+  const handleQrCodeResult = useCallback(
+    (resultQrCode) => {
+      setResponseData(resultQrCode)
+      setTimeout({
+        minutes: resultQrCode.timer / 60,
+        seconds: 0
+      })
+      if (resultQrCode.message !== null) {
+        setError({
+          code: '',
+          message: resultQrCode.message
+        })
+      }
+    }, []
+  )
+
+  const handleQRCodeSubmitResult = useCallback(
+    (resultQrCodeSubmit) => {
+      setTransferResult({
+        statusCode: resultQrCodeSubmit.statusCode,
+        reference: resultQrCodeSubmit.reference,
+        statusMessage: resultQrCodeSubmit.statusMessage,
+        amount: resultQrCodeSubmit.amount,
+        currency: resultQrCodeSubmit.currency,
+        isSuccessful: resultQrCodeSubmit.statusCode === '006'
+      })
+      setLoadingButton(false)
+      setProgress(undefined)
+      setStep(1)
+    }, []
+  )
+
+  function errorHandler (error, componentStack) {
+    analytics.logEvent('exception', {
+      stack: componentStack,
+      description: error,
+      fatal: true
+    })
+  }
+
+  function FallbackComponent ({ componentStack, error }) {
+    return (
+      <div>
+        <p>
+          <strong>Oops! An error occured!</strong>
+        </p>
+        <p>Please contact customer service</p>
+        <p>
+          <strong>Error:</strong> {error.toString()}
+        </p>
+        <p>
+          <strong>Stacktrace:</strong> {componentStack}
+        </p>
+      </div>
+    )
+  }
+
+  function renderStepContents () {
+    switch (step) {
       case 0:
         return (
           <AutoRedirectQR delay={180000} setStep={setStep} time={timeout}>
@@ -209,91 +313,95 @@ const QRCode = (props) => {
     }
   }
 
-  const handleQrCodeResult = useCallback(
-    (resultQrCode) => {
-      setResponseData(resultQrCode)
-      setTimeout({
-        minutes: resultQrCode.timer / 60,
-        seconds: 0
-      })
-      if (resultQrCode.message !== null) {
-        setError({
-          code: '',
-          message: resultQrCode.message
-        })
-      }
-    }, []
-  )
-
-  const handleQRCodeSubmitResult = useCallback(
-    (resultQrCodeSubmit) => {
-      setTransferResult({
-        statusCode: resultQrCodeSubmit.statusCode,
-        reference: resultQrCodeSubmit.reference,
-        statusMessage: resultQrCodeSubmit.statusMessage,
-        amount: resultQrCodeSubmit.amount,
-        currency: resultQrCodeSubmit.currency,
-        isSuccessful: resultQrCodeSubmit.statusCode === '006'
-      })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
-    }, []
-  )
-
   useEffect(() => {
-    const queryParamsKeys = [
-      'b',
-      'm',
-      'c1',
-      'c2',
-      'c3',
-      'c4',
-      'a',
-      'r',
-      'd',
-      'k',
-      'su',
-      'fu',
-      'n',
-      'l'
+    const queryParams = [
+      bank,
+      merchant,
+      currency,
+      requester,
+      clientIp,
+      callbackUri,
+      amount,
+      reference,
+      datetime,
+      signature,
+      successfulUrl,
+      failedUrl,
+      note,
+      language
     ]
     const currencies = ['VND', 'THB']
 
-    for (const param of queryParamsKeys) {
-      if (!queryParams.has(param)) {
-        setTransferResult({
-          statusCode: '001',
-          isSuccess: false,
-          message: intl.formatMessage(messages.errors.verificationFailed)
-        })
-        setStep(1)
-      }
-    }
-
-    if (
-      !currencies.includes(
-        queryParams.get('c1') && queryParams.get('c1').toUpperCase()
-      )
-    ) {
+    if (queryParams.includes(null)) {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(1)
     }
 
-    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
-    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-    // avoid unnecessary warning
-  }, []) // eslint-disable-line
+    if (!currencies.includes(currency?.toUpperCase())) {
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
+      })
+      setStep(1)
+    }
+  }, [
+    bank,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    callbackUri,
+    amount,
+    reference,
+    datetime,
+    signature,
+    successfulUrl,
+    failedUrl,
+    note,
+    language
+  ])
 
   useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
+
+  useEffect(() => {
+    const getQRCodePayload = {
+      amount: amount,
+      bank: bank,
+      callbackUri: callbackUri,
+      clientIp: clientIp,
+      currency: currency,
+      customer: requester,
+      datetime: datetime,
+      failedUrl: failedUrl,
+      key: signature,
+      language: language,
+      merchant: merchant,
+      note: note,
+      reference: reference,
+      requester: requester,
+      signature: signature,
+      successfulUrl: successfulUrl,
+      toAccountId: 0
+    }
+
+    const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(LogLevel.Information)
       .build()
 
     connection.on('ReceiveQRCode', handleQrCodeResult)
@@ -310,7 +418,7 @@ const QRCode = (props) => {
       } catch (error) {
         setError({
           code: '',
-          message: intl.formatMessage(messages.errors.bankError)
+          message: <FormattedMessage {...messages.errors.bankError} />
         })
         setEstablishConnection(true)
       }
@@ -322,14 +430,24 @@ const QRCode = (props) => {
 
     // Start the connection
     start()
-
-    // disabling the react hooks recommended rule on this case because it forces to add getQRCodePayload as dependencies array
-    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-    // avoid unnecessary warning
-  }, [// eslint-disable-line
+  }, [
     session,
     handleQrCodeResult,
-    intl
+    handleQRCodeSubmitResult,
+    amount,
+    bank,
+    callbackUri,
+    clientIp,
+    currency,
+    datetime,
+    failedUrl,
+    language,
+    merchant,
+    note,
+    reference,
+    requester,
+    signature,
+    successfulUrl
   ])
 
   useEffect(() => {
@@ -344,46 +462,57 @@ const QRCode = (props) => {
   }, [step])
 
   return (
-    <WrapperBG className='wrapper' bank={bank} color={themeColor}>
-      <div className='container'>
-        <div className='form-content'>
-          <header className={step === 1 ? null : 'header-bottom-border'}>
-            <Logo bank={bank} currency={currency} />
-            {step === 0 && !error && (
-              <AccountStatistics
-                accountName={responseData.accountName}
-                language={language}
-                currency={currency}
-                amount={responseData.amount}
-                color={themeColor}
-                establishConnection={establishConnection}
-              />
-            )}
-            {error && step === 0 && <ErrorAlert message={`Error ${error.code}: ${error.message}`} />}
-          </header>
-          {
-            renderStepsContent(step)
-          }
+    <>
+      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        <div className={classes.qrCodeContainer}>
+          <div className={classes.qrCodeContent}>
+            <section className={classes.qrCodeHeader}>
+              <Suspense fallback={<LoadingIcon />}>
+                <Logo bank={bank} currency={currency} />
+              </Suspense>
+              {
+                step === 0 && !error && (
+                  <AccountStatistics
+                    accountName={responseData.accountName}
+                    language={language}
+                    currency={currency}
+                    amount={responseData.amount}
+                    establishConnection={establishConnection}
+                  />
+                )
+              }
+              {
+                error && step === 0 &&
+                  <ErrorAlert message={`Error ${error.code}: ${error.message}`} />
+              }
+            </section>
+            <section className={classes.qrCodeBody}>
+              {
+                renderStepContents()
+              }
+            </section>
+          </div>
+          <StepsBar step={step === 1 ? 2 : step} />
         </div>
-        <StepsBar step={step === 1 ? 2 : step} />
-      </div>
-      <ProgressModal open={progress}>
-        <div className='progress-bar-container'>
-          <img
-            alt='submit-transaction'
-            width='80'
-            src={require('../../assets/icons/in-progress.svg')}
-          />
-          <progress
-            value={
-              progress && (progress.currentStep / progress.totalSteps) * 100
-            }
-            max={100}
-          />
-          <p>{progress && progress.statusMessage}</p>
-        </div>
-      </ProgressModal>
-    </WrapperBG>
+        <ProgressModal open={progress}>
+          <div className={classes.qrCodeProgressBarContainer}>
+            <img
+              alt='submit-transaction'
+              width='80'
+              height='auto'
+              src='/icons/in-progress.svg'
+            />
+            <progress
+              value={
+                progress && (progress.currentStep / progress.totalSteps) * 100
+              }
+              max={100}
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </div>
+        </ProgressModal>
+      </ErrorBoundary>
+    </>
   )
 }
 

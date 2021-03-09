@@ -1,42 +1,78 @@
-import React from 'react'
-import { checkBankIfKnown } from '../utils/banks'
+import React, { memo, useEffect, useState } from 'react'
+import { createUseStyles } from 'react-jss'
 
-const getFilePathWebP = (bank, currency, type) => {
-  const isBankKnown = checkBankIfKnown(currency, bank)
+// styling
+const useStyles = createUseStyles({
+  logoContainer: {
+    margin: '25px auto',
+    maxWidth: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
+    type === 'scratch-card' ? '400px' : '200px',
 
-  if (isBankKnown) {
-    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.webp`)
-  } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
-    return require('../assets/banks/PRECARD_LOGO.webp')
+    '& img': {
+      height: 'auto',
+      width: '100%'
+    }
   }
-
-  return require('../assets/banks/GW_LOGO.webp')
-}
-
-const getFilePathPng = (bank, currency, type) => {
-  const isBankKnown = checkBankIfKnown(currency, bank)
-
-  if (isBankKnown) {
-    return require(`../assets/banks/${bank.toUpperCase()}_LOGO.png`)
-  } else if (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
-    return require('../assets/banks/PRECARD_LOGO.png')
-  }
-
-  return require('../assets/banks/GW_LOGO.png')
-}
+})
 
 const Logo = ({ bank, currency, type }) => {
-  const scratchCardLogoStyle = (bank && bank.toUpperCase() === 'PRECARD' && type === 'scratch-card' && { className: 'scratch-card-logo' })
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.webp$/)
+  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const classes = useStyles({ bank, type })
+
+  const getFilePathWebP = (bank, type) => {
+    if (isBankKnown) {
+      return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.webp`)
+    } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
+      return requestImageFileWebp('./PRECARD_LOGO.webp')
+    } else {
+      return requestImageFileWebp('./GW_LOGO.webp')
+    }
+  }
+
+  useEffect(() => {
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { checkBankIfKnown } = await import('../utils/banks')
+      setDynamicLoadBankUtils({
+        checkBankIfKnown
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
 
   return (
-    <section className='logo'>
-      <picture>
-        <source type='image/webp' srcSet={getFilePathWebP(bank, currency, type)} />
-        <source type='image/png' srcSet={getFilePathPng(bank, currency, type)} />
-        <img {...scratchCardLogoStyle} alt={bank} src={getFilePathPng(bank, currency, type)} />
-      </picture>
+    <section className={classes.logoContainer}>
+      {
+        isBankKnown !== undefined && // all repo except topup
+          <img
+            alt={bank}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            src={getFilePathWebP(bank, type)}
+          />
+      }
+      {
+        isBankKnown === undefined && type === 'topup' && // for topup logo only
+          <img
+            alt={bank}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            src={getFilePathWebP(bank, type)}
+          />
+      }
+      {
+        isBankKnown === undefined && type === undefined && // without bank param
+          <img
+            alt='game-wallet'
+            width='200'
+            height='80'
+            src={requestImageFileWebp('./GW_LOGO.webp')}
+          />
+      }
     </section>
   )
 }
 
-export default Logo
+export default memo(Logo)

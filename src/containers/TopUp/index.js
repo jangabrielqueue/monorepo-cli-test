@@ -1,40 +1,131 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import DepositForm from './DepositForm'
-import OTPForm from './OTPForm'
-import {
-  TransferSuccessful,
-  TransferFailed
-} from '../../components/TransferResult'
-import { sendTopUpRequest, sendTopUpOtp } from './Requests'
-import * as signalR from '@microsoft/signalr'
-import { useQuery, sleep, calculateCurrentProgress } from '../../utils/utils'
-import { getBanksByCurrencyForTopUp } from '../../utils/banks'
-import { useIntl } from 'react-intl'
+import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+import { FormattedMessage } from 'react-intl'
 import messages from './messages'
+import { useFormContext } from 'react-hook-form'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { FirebaseContext } from '../../contexts/FirebaseContext'
+import { ErrorBoundary } from 'react-error-boundary'
+import { createUseStyles } from 'react-jss'
 import StepsBar from '../../components/StepsBar'
+import ProgressModal from '../../components/ProgressModal'
 import GlobalButton from '../../components/GlobalButton'
-import styled from 'styled-components'
 import Statistics from '../../components/Statistics'
 import Countdown from '../../components/Countdown'
 import ErrorAlert from '../../components/ErrorAlert'
-import ProgressModal from '../../components/ProgressModal'
-import { useFormContext } from 'react-hook-form'
-import * as firebase from 'firebase/app'
+import LoadingIcon from '../../components/LoadingIcon'
+import DepositForm from './forms/DepositForm'
+import OTPForm from './forms/OTPForm'
+import TransferSuccessful from '../../components/TransferSuccessful'
+import TransferFailed from '../../components/TransferFailed'
 
+// endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
-const WrapperBG = styled.div`
-  background-image: linear-gradient(190deg, ${props => props.theme.colors[`${props.color.toLowerCase()}`]} 44%, #FFFFFF calc(44% + 2px));
-  padding-top: 75px;
-`
+// lazy loaded components
+const Logo = lazy(() => import('../../components/Logo'))
 
-function getDefaultBankByCurrency (currency) {
-  return getBanksByCurrencyForTopUp(currency)[0]
-}
+// styling
+const useStyles = createUseStyles({
+  topUpHeader: {
+    padding: '10px 20px',
+    borderBottom: (props) => props.step === 2 ? '#FFF' : '0.5px solid #E3E3E3'
+  },
+  topUpBody: {
+    padding: '20px',
+    position: 'relative'
+  },
+  topUpContainer: {
+    margin: '0 20px',
+    maxWidth: '500px',
+    width: '100%'
+  },
+  topUpContent: {
+    background: '#FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0px 5px 10px 0px rgba(112,112,112,0.3)'
+  },
+  footer: {
+    display: 'none',
+
+    '@media (max-width: 36em)': {
+      display: 'block',
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      marginTop: '20px',
+      padding: '10px 0',
+      textAlign: 'center',
+      width: '100%'
+    }
+  },
+  topUpProgressBarContainer: {
+    color: 'rgba(0, 0, 0, 0.65)',
+    height: '200px',
+    textAlign: 'center',
+
+    '& img': {
+      animation: 'zoomInAndOut 0.5s ease-in-out',
+      margin: '30px 0 2px'
+    },
+
+    '& progress': {
+      '-webkit-appearance': 'none',
+      borderRadius: '7px',
+      height: '8px',
+      marginBottom: '2px',
+      width: '100%',
+
+      '&::-webkit-progress-bar': {
+        background: '#f5f5f5',
+        borderRadius: '7px'
+      },
+
+      '&::-webkit-progress-value': {
+        background: '#34A220',
+        borderRadius: '7px',
+        transition: 'width 0.5s linear'
+      }
+    },
+
+    '& p': {
+      fontFamily: 'ProductSansRegular',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      margin: 0,
+      textAlign: 'center'
+    },
+
+    '@media (min-width: 36em)': {
+      minWidth: '450px'
+    },
+    '@media only screen and (min-device-width : 25em) and (max-device-width : 26em)': {
+      minWidth: '325px'
+    },
+    '@media only screen and (min-device-width : 22em) and (max-device-width : 24em)': {
+      minWidth: '270px'
+    },
+    '@media (max-width: 22.438em)': {
+      minWidth: '232px'
+    }
+  }
+},
+{ name: 'Topup' }
+)
 
 const TopUp = props => {
-  const analytics = firebase.analytics()
+  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
+  const {
+    bank,
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    amount,
+    reference,
+    datetime,
+    signature
+  } = useContext(QueryParamsContext)
+  const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
   const [otpReference, setOtpReference] = useState()
   const [waitingForReady, setWaitingForReady] = useState(false)
@@ -43,26 +134,20 @@ const TopUp = props => {
   const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: window.outerWidth
-  })
-  const queryParams = useQuery()
-  const merchant = queryParams.get('m')
-  const currency = queryParams.get('c1')
-  const requester = queryParams.get('c2')
-  const clientIp = queryParams.get('c3')
-  const amount = queryParams.get('a')
-  const reference = queryParams.get('r')
-  const datetime = queryParams.get('d')
-  const signature = queryParams.get('k')
+  const language = props.language // language was handled at root component not at the queryparams
   const session = `TOPUP-BANK-${merchant}-${reference}`
-  const intl = useIntl()
   const themeColor = 'topup'
   const { handleSubmit } = useFormContext()
-
   analytics.setCurrentScreen('top_up')
+  const classes = useStyles(step)
+
+  function getDefaultBankByCurrency (currency) {
+    return dynamicLoadBankUtils?.getBanksByCurrencyForTopUp(currency)[0]
+  }
 
   async function handleSubmitDeposit (values, e, type) {
+    const { sleep } = await import('../../utils/utils')
+    const { sendTopUpRequest } = await import('./Requests')
     analytics.logEvent('login', {
       reference
     })
@@ -74,21 +159,21 @@ const TopUp = props => {
       currentStep: 1,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.startingConnection)
+      statusMessage: <FormattedMessage {...messages.progress.startingConnection} />
     })
     await sleep(750)
     setProgress({
       currentStep: 2,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.encryptedTransmission)
+      statusMessage: <FormattedMessage {...messages.progress.encryptedTransmission} />
     })
     await sleep(750)
     setProgress({
       currentStep: 3,
       totalSteps: 13,
       statusCode: '009',
-      statusMessage: intl.formatMessage(messages.progress.beginningTransaction)
+      statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
     })
     await sleep(750)
     const result = await sendTopUpRequest({
@@ -114,7 +199,7 @@ const TopUp = props => {
         currentStep: 4,
         totalSteps: 13,
         statusCode: '009',
-        statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+        statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
       })
       await sleep(750)
       setProgress(undefined)
@@ -125,13 +210,14 @@ const TopUp = props => {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(2)
     }
   }
 
   async function handleSubmitOTP (value) {
+    const { sendTopUpOtp } = await import('./Requests')
     analytics.logEvent('submitted_otp', {
       reference: reference,
       otp: value
@@ -172,6 +258,7 @@ const TopUp = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
+      const { sleep } = await import('../../utils/utils')
       await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
 
       setProgress(undefined)
@@ -184,6 +271,7 @@ const TopUp = props => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
+      const { calculateCurrentProgress } = await import('../../utils/utils')
       const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
@@ -192,7 +280,7 @@ const TopUp = props => {
           currentStep: currentStep,
           totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.submittingTransaction)
+          statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
         })
       } else {
         // else return the final step
@@ -200,57 +288,131 @@ const TopUp = props => {
           currentStep: 13,
           totalSteps: 13,
           statusCode: e.statusCode,
-          statusMessage: intl.formatMessage(messages.progress.waitingTransaction)
+          statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
         })
       }
     },
-    [intl]
+    []
   )
 
-  function handleWindowResize () {
-    setWindowDimensions({
-      width: window.outerWidth
+  function errorHandler (error, componentStack) {
+    analytics.logEvent('exception', {
+      stack: componentStack,
+      description: error,
+      fatal: true
     })
   }
 
+  function FallbackComponent ({ componentStack, error }) {
+    return (
+      <div>
+        <p>
+          <strong>Oops! An error occured!</strong>
+        </p>
+        <p>Please contact customer service</p>
+        <p>
+          <strong>Error:</strong> {error.toString()}
+        </p>
+        <p>
+          <strong>Stacktrace:</strong> {componentStack}
+        </p>
+      </div>
+    )
+  }
+
+  function renderStepContents () {
+    if (step === 0) {
+      analytics.setCurrentScreen('input_user_credentials')
+      return (
+        <DepositForm
+          handleSubmitDeposit={handleSubmitDeposit}
+          waitingForReady={waitingForReady}
+          establishConnection={establishConnection}
+        />
+      )
+    } else if (step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <OTPForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
+          progress={progress}
+        />
+      )
+    } else if (step === 2 && isSuccessful) {
+      analytics.setCurrentScreen('transfer_successful')
+      return (
+        <TransferSuccessful
+          transferResult={transferResult}
+          language={language}
+        />
+      )
+    } else if (step === 2) {
+      analytics.setCurrentScreen('transfer_failed')
+      return (
+        <TransferFailed transferResult={transferResult} />
+      )
+    }
+  }
+
   useEffect(() => {
-    const queryParamsKeys = ['m', 'c1', 'c2', 'c3', 'a', 'r', 'd', 'k']
+    const queryParams = [
+      merchant,
+      currency,
+      requester,
+      clientIp,
+      amount,
+      reference,
+      datetime,
+      signature
+    ]
     const currencies = ['VND', 'THB']
 
-    for (const param of queryParamsKeys) {
-      if (!queryParams.has(param)) {
-        setTransferResult({
-          statusCode: '001',
-          isSuccess: false,
-          message: intl.formatMessage(messages.errors.verificationFailed)
-        })
-        setStep(2)
-      }
-    }
-
-    if (!currencies.includes(queryParams.get('c1') && queryParams.get('c1').toUpperCase())) {
+    if (queryParams.includes(null)) {
       setTransferResult({
         statusCode: '001',
         isSuccess: false,
-        message: intl.formatMessage(messages.errors.verificationFailed)
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
       })
       setStep(2)
     }
 
-    window.addEventListener('resize', handleWindowResize)
-
-    return () => window.removeEventListener('resize', handleWindowResize)
-
-    // disabling the react hooks recommended rule on this case because it forces to add queryparams and props.history as dependencies array
-    // although dep array only needed on first load and would cause multiple rerendering if enforce as dep array. So for this case only will disable it to
-    // avoid unnecessary warning
-  }, []) // eslint-disable-line
+    if (!currencies.includes(currency?.toUpperCase())) {
+      setTransferResult({
+        statusCode: '001',
+        isSuccess: false,
+        message: <FormattedMessage {...messages.errors.verificationFailed} />
+      })
+      setStep(2)
+    }
+  }, [
+    merchant,
+    currency,
+    requester,
+    clientIp,
+    amount,
+    reference,
+    datetime,
+    signature
+  ])
 
   useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
+    async function dynamicLoadModules () { // dynamically load bank utils
+      const { getBanksByCurrencyForTopUp } = await import('../../utils/banks')
+      setDynamicLoadBankUtils({
+        getBanksByCurrencyForTopUp
+      })
+    }
+
+    dynamicLoadModules()
+  }, [])
+
+  useEffect(() => {
+    const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(LogLevel.Information)
       .build()
 
     connection.on('receivedResult', handleCommandStatusUpdate)
@@ -267,8 +429,8 @@ const TopUp = props => {
         setEstablishConnection(true)
       } catch (ex) {
         setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.networkError)
+          code: <FormattedMessage {...messages.errors.networkErrorTitle} />,
+          message: <FormattedMessage {...messages.errors.networkError} />
         })
         setEstablishConnection(false)
       }
@@ -280,7 +442,7 @@ const TopUp = props => {
 
     // Start the connection
     start()
-  }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress, intl])
+  }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress])
 
   useEffect(() => {
     window.onbeforeunload = (e) => {
@@ -293,93 +455,49 @@ const TopUp = props => {
     }
   }, [step])
 
-  let content
-
-  if (step === 0) {
-    analytics.setCurrentScreen('input_user_credentials')
-    content = (
-      <DepositForm
-        merchant={merchant}
-        requester={requester}
-        currency={currency}
-        amount={amount}
-        reference={reference}
-        clientIp={clientIp}
-        signature={signature}
-        datetime={datetime}
-        handleSubmitDeposit={handleSubmitDeposit}
-        waitingForReady={waitingForReady}
-        windowDimensions={windowDimensions}
-        establishConnection={establishConnection}
-      />
-    )
-  } else if (step === 1) {
-    analytics.setCurrentScreen('input_otp')
-    content = (
-      <OTPForm
-        otpReference={otpReference}
-        handleSubmitOTP={handleSubmitOTP}
-        waitingForReady={waitingForReady}
-        progress={progress}
-      />
-    )
-  } else if (step === 2 && isSuccessful) {
-    analytics.setCurrentScreen('transfer_successful')
-    content = (
-      <main>
-        <TransferSuccessful transferResult={transferResult} language={props.language} />
-      </main>
-    )
-  } else if (step === 2) {
-    analytics.setCurrentScreen('transfer_failed')
-    content = (
-      <main>
-        <TransferFailed transferResult={transferResult} />
-      </main>
-    )
-  }
-
   return (
-    <WrapperBG className='wrapper' color={themeColor}>
-      <div className='container'>
-        <div className='form-content'>
-          <header className={step === 2 ? null : 'header-bottom-border'}>
-            <section className='logo'>
-              <img alt='GameWallet' src={require('../../assets/banks/GW_LOGO.png')} />
+    <>
+      <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        <div className={classes.topUpContainer}>
+          <div className={classes.topUpContent}>
+            <section className={classes.topUpHeader}>
+              <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
+                <Logo bank={bank} currency={currency} type='topup' />
+              </Suspense>
+              {
+                step === 0 && (
+                  <Statistics
+                    title={<FormattedMessage {...messages.deposit} />}
+                    language={language}
+                    currency={currency}
+                    amount={amount}
+                  />
+                )
+              }
+              {
+                step === 1 && (
+                  <Countdown minutes={3} seconds={0} />
+                )
+              }
+              {
+                error && <ErrorAlert message={error.message} />
+              }
             </section>
-            {
-              step === 0 &&
-                <Statistics
-                  title={intl.formatMessage(messages.deposit)}
-                  language={props.language}
-                  currency={currency}
-                  amount={amount}
-                />
-            }
-            {
-              step === 1 &&
-                <Countdown minutes={3} seconds={0} />
-            }
-            {
-              error &&
-                <ErrorAlert
-                  message={error.message}
-                />
-            }
-          </header>
-          {
-            content
-          }
+            <section className={classes.topUpBody}>
+              {
+                renderStepContents()
+              }
+            </section>
+          </div>
+          <StepsBar step={step} />
         </div>
-        <StepsBar step={step} />
-      </div>
-      {
-        (windowDimensions.width <= 576 && step === 0) &&
-          <footer className='footer-submit-container'>
-            <div className='deposit-submit-top-up-buttons'>
+        {
+          step === 0 &&
+            <footer className={classes.footer}>
               <GlobalButton
                 label='SMS OTP'
                 color={themeColor}
+                topup='true'
                 outlined
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
                 disabled={!establishConnection || waitingForReady}
@@ -387,24 +505,30 @@ const TopUp = props => {
               <GlobalButton
                 label='SMART OTP'
                 color={themeColor}
+                topup='true'
                 outlined
                 onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
                 disabled={!establishConnection || waitingForReady}
               />
-            </div>
-          </footer>
-      }
-      <ProgressModal open={progress && (progress.statusCode === '009')}>
-        <div className='progress-bar-container'>
-          <img alt='submit-transaction' width='80' src={require('../../assets/icons/in-progress.svg')} />
-          <progress
-            value={progress && (progress.currentStep / progress.totalSteps) * 100}
-            max={100}
-          />
-          <p>{progress && progress.statusMessage}</p>
-        </div>
-      </ProgressModal>
-    </WrapperBG>
+            </footer>
+        }
+        <ProgressModal open={progress && (progress.statusCode === '009')}>
+          <div className={classes.topUpProgressBarContainer}>
+            <img
+              alt='submit-transaction'
+              width='80'
+              height='auto'
+              src='/icons/in-progress.svg'
+            />
+            <progress
+              value={progress && (progress.currentStep / progress.totalSteps) * 100}
+              max={100}
+            />
+            <p>{progress && progress.statusMessage}</p>
+          </div>
+        </ProgressModal>
+      </ErrorBoundary>
+    </>
   )
 }
 
