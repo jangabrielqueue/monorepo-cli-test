@@ -540,7 +540,7 @@ const Deposit = (props) => {
               }
               {
                 step === 1 && !checkBank.isMandiriBank && (
-                  <Countdown minutes={3} seconds={0} />
+                  <Countdown minutes={0} seconds={100} />
                 )
               }
               {

@@ -462,7 +462,7 @@ const TopUp = props => {
               }
               {
                 step === 1 && (
-                  <Countdown minutes={3} seconds={0} />
+                  <Countdown minutes={0} seconds={100} />
                 )
               }
               {
