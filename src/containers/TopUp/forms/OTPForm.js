@@ -1,9 +1,10 @@
-import React, { useEffect, lazy, useState } from 'react'
+import React, { useEffect, lazy } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { isNullOrWhitespace } from '../../../utils/utils'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -99,7 +100,6 @@ const useStyles = createUseStyles({
 const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, progress } = props
   const buttonColor = 'topup'
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
   const formValues = getValues()
@@ -119,17 +119,6 @@ const OTPForm = React.memo((props) => {
   }
 
   useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { isNullOrWhitespace } = await import('../../../utils/utils')
-      setDynamicLoadBankUtils({
-        isNullOrWhitespace
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
-
-  useEffect(() => {
     if (progress) {
       reset()
     }
@@ -139,7 +128,7 @@ const OTPForm = React.memo((props) => {
     <main>
       <form>
         {
-          !dynamicLoadBankUtils?.isNullOrWhitespace(otpReference) &&
+          !isNullOrWhitespace(otpReference) &&
             <div className={formIconContainerOtpReferenceStyles}>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>

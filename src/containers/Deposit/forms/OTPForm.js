@@ -1,10 +1,12 @@
-import React, { useEffect, useContext, lazy, useState } from 'react'
+import React, { useEffect, useContext, lazy } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { checkBankIfKnown } from '../../../utils/banks'
+import { isNullOrWhitespace } from '../../../utils/utils'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -136,8 +138,7 @@ const OTPForm = React.memo((props) => {
     progress,
     isCardOTP
   } = props
-  const [dynamicLoadUtils, setDynamicLoadUtils] = useState(null)
-  const isBankKnown = dynamicLoadUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty } = formState
@@ -163,19 +164,6 @@ const OTPForm = React.memo((props) => {
   }
 
   useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../../utils/banks')
-      const { isNullOrWhitespace } = await import('../../../utils/utils')
-      setDynamicLoadUtils({
-        checkBankIfKnown,
-        isNullOrWhitespace
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
-
-  useEffect(() => {
     if (progress) {
       reset()
     }
@@ -184,7 +172,7 @@ const OTPForm = React.memo((props) => {
   return (
     <form>
       {
-        !dynamicLoadUtils?.isNullOrWhitespace(otpReference) && !isCardOTP &&
+        !isNullOrWhitespace(otpReference) && !isCardOTP &&
           <div className={formIconContainerOtpReferenceStyles}>
             <div>
               <label><FormattedMessage {...messages.otpReference} /></label>

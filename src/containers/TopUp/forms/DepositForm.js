@@ -1,10 +1,11 @@
-import React, { useState, lazy, useContext, useEffect } from 'react'
+import React, { useState, lazy, useContext } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { getBanksByCurrencyForTopUp } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -169,8 +170,7 @@ const DepositForm = React.memo((props) => {
     handleSubmitDeposit,
     establishConnection
   } = props
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
-  const bankCodes = dynamicLoadBankUtils?.getBanksByCurrencyForTopUp(currency)
+  const bankCodes = getBanksByCurrencyForTopUp(currency)
   const buttonColor = 'topup'
   const [showPassword, setShowPassword] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
@@ -198,17 +198,6 @@ const DepositForm = React.memo((props) => {
   function handleSubmitForm (values, e, type) {
     handleSubmitDeposit(values, e, type)
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { getBanksByCurrencyForTopUp } = await import('../../../utils/banks')
-      setDynamicLoadBankUtils({
-        getBanksByCurrencyForTopUp
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <>

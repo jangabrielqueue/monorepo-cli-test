@@ -1,4 +1,4 @@
-import React, { useState, useContext, lazy, useEffect } from 'react'
+import React, { useState, useContext, lazy } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -6,6 +6,7 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -235,9 +236,8 @@ export default function DepositForm (props) {
     waitingForReady,
     establishConnection
   } = props
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
-  const bankCodes = dynamicLoadBankUtils?.getBanksByCurrency(currency)
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const bankCodes = getBanksByCurrency(currency)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
@@ -282,19 +282,6 @@ export default function DepositForm (props) {
       return '/icons/unknown/smart-unknown.png'
     }
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } = await import('../../../utils/banks')
-      setDynamicLoadBankUtils({
-        getBanksByCurrency,
-        checkBankIfKnown,
-        checkIfDABBank
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <>
@@ -419,15 +406,15 @@ export default function DepositForm (props) {
               }
             </GlobalButton>
             <GlobalButton
-              label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+              label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'))}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             >
               {
                 isBankKnown !== undefined &&
-                  <img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+                  <img alt={checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
               }
             </GlobalButton>
           </section>

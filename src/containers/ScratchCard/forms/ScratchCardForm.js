@@ -1,9 +1,10 @@
-import React, { useState, lazy, useEffect } from 'react'
+import React, { useState, lazy } from 'react'
 import { useIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { checkBankIfKnown } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -128,12 +129,11 @@ const useStyles = createUseStyles({
 )
 
 const ScratchCardForm = React.memo((props) => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const intl = useIntl()
   const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext()
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const watchCardSerialNumber = watch('cardSerialNumber', '')
   const watchCardPin = watch('cardPin', '')
@@ -272,17 +272,6 @@ const ScratchCardForm = React.memo((props) => {
       telcoName: e.target.value
     })
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <>

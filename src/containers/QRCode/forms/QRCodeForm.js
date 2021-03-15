@@ -1,8 +1,9 @@
-import React, { memo, useEffect, useState, lazy } from 'react'
+import React, { memo, lazy } from 'react'
 import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import QRCode from 'qrcode.react'
 import { createUseStyles } from 'react-jss'
+import { checkBankIfKnown } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -31,7 +32,6 @@ const useStyles = createUseStyles({
 })
 
 const QRCodeForm = memo(function QRCodeForm (props) {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     currency,
     bank,
@@ -41,24 +41,13 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode,
     error
   } = props
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const classes = useStyles()
 
   function handleSubmitForm () {
     handleSubmitQRCode()
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <main>
