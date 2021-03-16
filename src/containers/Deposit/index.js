@@ -347,8 +347,10 @@ const Deposit = (props) => {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!checkBank.isBankKnown) {
-      return '../../assets/icons/unknown/smart-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'sms') {
+      return '/icons/unknown/sms-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'smart') {
+      return '/icons/unknown/smart-unknown.png'
     }
   }
 
@@ -565,15 +567,12 @@ const Deposit = (props) => {
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                {
-                  checkBank.isBankKnown &&
-                    <img
-                      alt='sms'
-                      width='24'
-                      height='24'
-                      src={renderIcon('sms')}
-                    />
-                }
+                <img
+                  alt='sms'
+                  width='24'
+                  height='24'
+                  src={renderIcon('sms')}
+                />
               </GlobalButton>
               <GlobalButton
                 label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
@@ -584,15 +583,12 @@ const Deposit = (props) => {
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                {
-                  checkBank.isBankKnown &&
-                    <img
-                      alt={checkBank.isDabBank ? 'card' : 'smart'}
-                      width='24'
-                      height='24'
-                      src={renderIcon('smart')}
-                    />
-                }
+                <img
+                  alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={renderIcon('smart')}
+                />
               </GlobalButton>
             </footer>
         }

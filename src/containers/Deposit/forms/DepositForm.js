@@ -281,7 +281,9 @@ export default function DepositForm (props) {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!checkBank.isBankKnown) {
+    } else if (!checkBank.isBankKnown && type === 'sms') {
+      return '/icons/unknown/sms-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'smart') {
       return '/icons/unknown/smart-unknown.png'
     }
   }
@@ -403,10 +405,7 @@ export default function DepositForm (props) {
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
               disabled={!establishConnection || waitingForReady}
             >
-              {
-                checkBank.isBankKnown !== undefined &&
-                  <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
-              }
+              <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
             </GlobalButton>
             <GlobalButton
               label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
@@ -415,10 +414,7 @@ export default function DepositForm (props) {
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             >
-              {
-                checkBank.isBankKnown !== undefined &&
-                  <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
-              }
+              <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
             </GlobalButton>
           </section>
       }
