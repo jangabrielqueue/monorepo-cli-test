@@ -148,8 +148,12 @@ const Deposit = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  const isBankKnown = checkBankIfKnown(currency, bank)
-  const themeColor = isBankKnown ? `${bank}` : 'main'
+  const checkBank = {
+    isBankKnown: checkBankIfKnown(currency, bank),
+    isMandiriBank: checkIfMandiriBank(bank),
+    isDabBank: checkIfDABBank(bank)
+  }
+  const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   analytics.setCurrentScreen('deposit')
@@ -339,11 +343,11 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (isBankKnown && type === 'sms') {
+    if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (isBankKnown && type === 'smart') {
+    } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!isBankKnown) {
+    } else if (!checkBank.isBankKnown) {
       return '../../assets/icons/unknown/smart-unknown.png'
     }
   }
@@ -358,8 +362,8 @@ const Deposit = (props) => {
           establishConnection={establishConnection}
         />
       )
-    } else if (!checkIfMandiriBank(bank) && // making sure mandiri bank is not mandiri and undefined to load otp form
-    checkIfMandiriBank(bank) !== undefined &&
+    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
+    checkBank.isMandiriBank !== undefined &&
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
@@ -371,7 +375,7 @@ const Deposit = (props) => {
           isCardOTP={isCardOTP}
         />
       )
-    } else if (checkIfMandiriBank(bank) && step === 1) {
+    } else if (checkBank.isMandiriBank && step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
         <MandiriForm
@@ -533,7 +537,7 @@ const Deposit = (props) => {
                 )
               }
               {
-                step === 1 && !checkIfMandiriBank(bank) && (
+                step === 1 && !checkBank.isMandiriBank && (
                   <Countdown minutes={3} seconds={0} />
                 )
               }
@@ -562,7 +566,7 @@ const Deposit = (props) => {
                 disabled={!establishConnection || waitingForReady}
               >
                 {
-                  isBankKnown !== undefined &&
+                  checkBank.isBankKnown !== undefined &&
                     <img
                       alt='sms'
                       width='24'
@@ -572,18 +576,18 @@ const Deposit = (props) => {
                 }
               </GlobalButton>
               <GlobalButton
-                label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+                label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
                 color={themeColor}
                 outlined
                 onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart')
+                  handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart')
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
                 {
-                  isBankKnown !== undefined &&
+                  checkBank.isBankKnown !== undefined &&
                     <img
-                      alt={checkIfDABBank(bank) ? 'card' : 'smart'}
+                      alt={checkBank.isDabBank ? 'card' : 'smart'}
                       width='24'
                       height='24'
                       src={renderIcon('smart')}

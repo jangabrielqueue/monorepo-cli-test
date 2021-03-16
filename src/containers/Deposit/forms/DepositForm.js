@@ -237,8 +237,11 @@ export default function DepositForm (props) {
     establishConnection
   } = props
   const bankCodes = getBanksByCurrency(currency)
-  const isBankKnown = checkBankIfKnown(currency, bank)
-  const buttonColor = isBankKnown ? `${bank}` : 'main'
+  const checkBank = {
+    isBankKnown: checkBankIfKnown(currency, bank),
+    isDabBank: checkIfDABBank(bank)
+  }
+  const buttonColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
   const [isCopy, setIsCopy] = useState(false)
@@ -274,11 +277,11 @@ export default function DepositForm (props) {
   })
 
   function renderIcon (type) {
-    if (isBankKnown && type === 'sms') {
+    if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (isBankKnown && type === 'smart') {
+    } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!isBankKnown) {
+    } else if (!checkBank.isBankKnown) {
       return '/icons/unknown/smart-unknown.png'
     }
   }
@@ -287,7 +290,7 @@ export default function DepositForm (props) {
     <>
       <form autoComplete='off'>
         {
-          !isBankKnown &&
+          !checkBank.isBankKnown &&
             <div className={formIconContainerBankStyles}>
               <div>
                 <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
@@ -401,20 +404,20 @@ export default function DepositForm (props) {
               disabled={!establishConnection || waitingForReady}
             >
               {
-                isBankKnown !== undefined &&
+                checkBank.isBankKnown !== undefined &&
                   <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
               }
             </GlobalButton>
             <GlobalButton
-              label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+              label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart'))}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart'))}
               disabled={!establishConnection || waitingForReady}
             >
               {
-                isBankKnown !== undefined &&
-                  <img alt={checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+                checkBank.isBankKnown !== undefined &&
+                  <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
               }
             </GlobalButton>
           </section>
