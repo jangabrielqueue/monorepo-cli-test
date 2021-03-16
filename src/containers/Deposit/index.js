@@ -566,7 +566,7 @@ const Deposit = (props) => {
                 disabled={!establishConnection || waitingForReady}
               >
                 {
-                  checkBank.isBankKnown !== undefined &&
+                  checkBank.isBankKnown &&
                     <img
                       alt='sms'
                       width='24'
@@ -585,7 +585,7 @@ const Deposit = (props) => {
                 disabled={!establishConnection || waitingForReady}
               >
                 {
-                  checkBank.isBankKnown !== undefined &&
+                  checkBank.isBankKnown &&
                     <img
                       alt={checkBank.isDabBank ? 'card' : 'smart'}
                       width='24'
