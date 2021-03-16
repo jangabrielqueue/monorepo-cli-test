@@ -246,7 +246,7 @@ export default function DepositForm (props) {
   const [toggleSelect, setToggleSelect] = useState(false)
   const [isCopy, setIsCopy] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
-  const { dirty } = formState
+  const { dirty, isSubmitting } = formState
   const formValues = getValues()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
   const classes = useStyles(toggleSelect)
@@ -388,7 +388,7 @@ export default function DepositForm (props) {
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
               onClick={handleSubmit(handleSubmitDeposit)}
-              disabled={!establishConnection || waitingForReady}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
               bank={bank?.toUpperCase()}
             >
               <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
@@ -403,7 +403,7 @@ export default function DepositForm (props) {
               color={buttonColor}
               outlined
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
-              disabled={!establishConnection || waitingForReady}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
             >
               <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
             </GlobalButton>
@@ -412,7 +412,7 @@ export default function DepositForm (props) {
               color={buttonColor}
               outlined
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart'))}
-              disabled={!establishConnection || waitingForReady}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
             >
               <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
             </GlobalButton>

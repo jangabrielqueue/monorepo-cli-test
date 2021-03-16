@@ -174,7 +174,7 @@ const DepositForm = React.memo((props) => {
   const buttonColor = 'topup'
   const [showPassword, setShowPassword] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
-  const { dirty } = formState
+  const { dirty, isSubmitting } = formState
   const formValues = getValues()
   const classes = useStyles()
   const cx = classNames.bind(classes)
@@ -289,7 +289,7 @@ const DepositForm = React.memo((props) => {
           outlined
           topup='true'
           onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'sms'))}
-          disabled={!establishConnection || waitingForReady}
+          disabled={!establishConnection || waitingForReady || isSubmitting}
         />
         <GlobalButton
           label='SMART OTP'
@@ -297,7 +297,7 @@ const DepositForm = React.memo((props) => {
           outlined
           topup='true'
           onClick={handleSubmit((values, e) => handleSubmitForm(values, e, 'smart'))}
-          disabled={!establishConnection || waitingForReady}
+          disabled={!establishConnection || waitingForReady || isSubmitting}
         />
       </section>
     </>

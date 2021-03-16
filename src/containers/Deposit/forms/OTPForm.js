@@ -141,7 +141,7 @@ const OTPForm = React.memo((props) => {
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
-  const { dirty } = formState
+  const { dirty, isSubmitting } = formState
   const formValues = getValues()
   const cardOTPReferenceArray = otpReference?.split('-')
   const cardOTP1 = cardOTPReferenceArray?.[0]
@@ -250,7 +250,7 @@ const OTPForm = React.memo((props) => {
           label={<FormattedMessage {...messages.submit} />}
           color={buttonColor}
           onClick={handleSubmit(handleSubmitForm)}
-          disabled={waitingForReady}
+          disabled={waitingForReady || isSubmitting}
         >
           <img alt='submit' src='/icons/submit-otp.svg' />
         </GlobalButton>

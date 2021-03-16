@@ -101,7 +101,7 @@ const OTPForm = React.memo((props) => {
   const { handleSubmitOTP, otpReference, waitingForReady, progress } = props
   const buttonColor = 'topup'
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
-  const { dirty } = formState
+  const { dirty, isSubmitting } = formState
   const formValues = getValues()
   const classes = useStyles()
   const cx = classNames.bind(classes)
@@ -164,7 +164,7 @@ const OTPForm = React.memo((props) => {
             color={buttonColor}
             icon={<img alt='submit' src='/icons/submit-otp.svg' />}
             onClick={handleSubmit(handleSubmitForm)}
-            disabled={waitingForReady}
+            disabled={waitingForReady || isSubmitting}
           />
         </section>
       </form>

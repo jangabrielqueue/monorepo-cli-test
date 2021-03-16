@@ -132,7 +132,8 @@ const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const intl = useIntl()
-  const { register, errors, handleSubmit, reset, watch, getValues } = useFormContext()
+  const { register, errors, handleSubmit, reset, watch, getValues, formState } = useFormContext()
+  const { isSubmitting } = formState
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const watchCardSerialNumber = watch('cardSerialNumber', '')
@@ -354,7 +355,7 @@ const ScratchCardForm = React.memo((props) => {
             label={<FormattedMessage {...messages.submit} />}
             color={buttonColor}
             onClick={handleSubmit(handleSubmitForm)}
-            disabled={!establishConnection || waitingForReady}
+            disabled={!establishConnection || waitingForReady || isSubmitting}
           >
             <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
           </GlobalButton>
