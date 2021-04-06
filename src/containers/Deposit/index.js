@@ -11,6 +11,7 @@ import GlobalButton from '../../components/GlobalButton'
 import Notifications from '../../components/Notifications'
 import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
+import OTPBidvForm from './forms/OTPBidvForm'
 import MandiriForm from './forms/MandiriForm'
 import StepsBar from '../../components/StepsBar'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -156,6 +157,7 @@ const Deposit = (props) => {
   const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
+  const [isSmartBidv, setIsSmartBidv] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles(step)
   const notificationBanks = ['VCB', 'BIDV']
@@ -163,6 +165,8 @@ const Deposit = (props) => {
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
+    } else if (type === 'smart' && bank?.toUpperCase() === 'BIDV') {
+      setIsSmartBidv(prevState => !prevState)
     }
 
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -366,7 +370,7 @@ const Deposit = (props) => {
         />
       )
     } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-    checkBank.isMandiriBank !== undefined &&
+      checkBank.isMandiriBank !== undefined && !isSmartBidv && // make sure its not bidv and smart otp
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
@@ -377,6 +381,13 @@ const Deposit = (props) => {
           progress={progress}
           isCardOTP={isCardOTP}
         />
+      )
+    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
+      checkBank.isMandiriBank !== undefined && isSmartBidv && // make sure bidv bank and smart otp
+    step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <OTPBidvForm />
       )
     } else if (checkBank.isMandiriBank && step === 1) {
       analytics.setCurrentScreen('input_otp')

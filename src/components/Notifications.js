@@ -66,6 +66,8 @@ const Notifications = ({ language, intl, bank }) => {
             <li>{intl.formatMessage(messages.notifications.noBIDV, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập của BIDV Online' : 'Username is the username of BIDV Online'}</b> })}</li>
           </ul>
         )
+      default:
+        break
     }
   }
   return (

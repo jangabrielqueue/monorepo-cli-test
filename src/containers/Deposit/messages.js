@@ -144,5 +144,23 @@ export default defineMessages({
       id: 'progress.waitingTransaction',
       defaultMessage: 'Waiting transaction confirm'
     }
+  },
+  important: {
+    note: {
+      id: 'important.note',
+      defaultMessage: 'IMPORTANT NOTE'
+    },
+    keyIn: {
+      id: 'important.keyIn',
+      defaultMessage: 'Please key-in the exact amount generated in the screen for faster and smooth transaction.'
+    },
+    noRefresh: {
+      id: 'important.noRefresh',
+      defaultMessage: 'Please do not refresh your browser.'
+    },
+    noSave: {
+      id: 'important.noSave',
+      defaultMessage: 'Please do not save old QRcode.'
+    }
   }
 })
