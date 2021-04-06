@@ -50,7 +50,15 @@ export default defineMessages({
     },
     noVCB: {
       id: 'notifications.noVCB',
-      defaultMessage: '- For customers not having VCB Digibank account: {fontWeightText}, used to transform to VCB Digibank.'
+      defaultMessage: '- For customers not having VCB Digibank account: {fontWeightText}, used to transform to VCB Digibank'
+    },
+    hasBIDV: {
+      id: 'notifications.hasBIDV',
+      defaultMessage: 'For customers who have an account SmartBanking: {fontWeightText}'
+    },
+    noBIDV: {
+      id: 'notifications.noBIDV',
+      defaultMessage: 'For customers who do not have an account SmartBanking: {fontWeightText}, to covert to the new SmartBanking'
     }
   }
 })

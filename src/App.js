@@ -34,7 +34,7 @@ const appTheme = {
     agri: '#AB1C40',
     exim: '#0071A7',
     dab: '#F49200',
-    bidv: '#2B56AB',
+    bidv: '#0066ad',
     vcb: '#00613F',
     acb: '#0038A6',
     sacom: '#0A74BE',
@@ -47,9 +47,14 @@ const appTheme = {
     bca: '#005caa',
     buttonBca: '#00b7f1',
     bri: '#014a94',
-    buttonBri: '#f59823'
+    buttonBri: '#f59823',
+    notificationVCB: '#ffffcc',
+    notificationBIDV: '#f1faff',
+    notificationFontBIDV: '#0066ad'
   }
 }
+
+const notificationBanks = ['VCB', 'BIDV']
 
 const useStyles = createUseStyles({
   wrapper: {
@@ -57,11 +62,14 @@ const useStyles = createUseStyles({
     flexWrap: 'wrap',
     height: '100%',
     justifyContent: 'center',
-    backgroundImage: (props) => `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : '#91C431'} 44%,
+    backgroundImage: (props) => props.bank?.toUpperCase() === 'BIDV' ? 'linear-gradient(190deg, #00bfae, #0066ad 44%, #FFFFFF calc(44% + 2px))' : `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : '#91C431'} 44%,
     #FFFFFF calc(44% + 2px))`,
-    paddingTop: (props) => props.bank?.toUpperCase() === 'VCB' ? '105px' : '75px',
+    paddingTop: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '105px' : '75px',
+    '@media (max-width: 62em)': {
+      paddingTop: (props) => props.bank?.toUpperCase() === 'BIDV' && '130px'
+    },
     '@media (max-width: 33.750em)': {
-      paddingTop: (props) => props.bank?.toUpperCase() !== 'VCB' && '35px'
+      paddingTop: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '140px' : '35px'
     }
   }
 })

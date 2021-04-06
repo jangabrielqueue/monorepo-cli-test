@@ -158,6 +158,7 @@ const Deposit = (props) => {
   const [isCardOTP, setIsCardOTP] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles(step)
+  const notificationBanks = ['VCB', 'BIDV']
 
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
@@ -519,8 +520,8 @@ const Deposit = (props) => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         {
-          bank?.toUpperCase() === 'VCB' &&
-            <Notifications bank={bank} language={language} />
+          notificationBanks.includes(bank?.toUpperCase()) &&
+            <Notifications bank={bank?.toUpperCase()} language={language} />
         }
         <div className={classes.depositContainer}>
           <div className={classes.depositContent}>
