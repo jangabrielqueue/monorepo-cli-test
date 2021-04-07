@@ -31,18 +31,20 @@ const useStyles = createUseStyles({
   }
 })
 
-export default memo(function OTPBidvForm () {
+export default memo(function OTPBidvForm (props) {
   const {
     bank,
     currency
   } = useContext(QueryParamsContext)
+  const { otpReference, waitingForReady, handleSubmitOTP } = props
   const [dynamicLoadUtils, setDynamicLoadUtils] = useState(null)
   const isBankKnown = dynamicLoadUtils?.checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const classes = useStyles()
 
   function handleSubmitForm () {
-
+    // submit 'DONE' as OTP value
+    handleSubmitOTP('DONE')
   }
 
   useEffect(() => {
@@ -59,14 +61,14 @@ export default memo(function OTPBidvForm () {
   return (
     <>
       <div className={classes.imageContainer}>
-        <QRCode value='00020101021502020103069704180404BIDV07205AD93386770E47299' size={200} renderAs='svg' />
+        <QRCode value={otpReference} size={200} renderAs='svg' />
       </div>
       <div className={classes.submitContainer}>
         <GlobalButton
           label='Done'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled
+          disabled={waitingForReady}
         />
       </div>
       <p className={classes.importantNote}>{<FormattedMessage {...messages.important.note} />}</p>

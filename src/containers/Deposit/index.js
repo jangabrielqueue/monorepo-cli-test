@@ -387,7 +387,11 @@ const Deposit = (props) => {
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
-        <OTPBidvForm />
+        <OTPBidvForm
+          otpReference={otpReference}
+          waitingForReady={waitingForReady}
+          handleSubmitOTP={handleSubmitOTP}
+        />
       )
     } else if (checkBank.isMandiriBank && step === 1) {
       analytics.setCurrentScreen('input_otp')
