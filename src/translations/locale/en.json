@@ -68,6 +68,13 @@
     "important.keyIn": "Please key-in the exact amount generated in the screen for faster and smooth transaction.",
     "important.noRefresh": "Please do not refresh your browser.",
     "important.noSave": "Please do not save old QRcode.",
+    "important.verificationInstruction": "Verification Instruction:",
+    "important.openAppNoLogin": "Please open the application and do not login",
+    "important.smartOtp": "Select function Smart OTP",
+    "important.scanQR": "Scan the QR code above and verify transaction",
+    "bidvNotifications.transactionWaiting": "The transaction is waiting for being verified via Smart OTP on SmartBanking application on mobile channel",
+    "bidvNotifications.remainingTime": "Remaining time for verification {timerSeconds} seconds",
+    "bidvNotifications.dontCloseBrowser": "Please do not close your browser until you receive transaction result on Internet Banking. Thank you!",
     "pleaseUseMandiri": "Please use your Mandiri Online Application to approve the transaction.",
     "clickDone": "Click on DONE if you have done the approval.",
     "done": "Done"

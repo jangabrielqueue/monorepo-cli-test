@@ -68,6 +68,13 @@
     "important.keyIn": "Vui lòng nhập chính xác số tiền được tạo trên màn hình để giao dịch nhanh chóng và thuận tiện hơn.",
     "important.noRefresh": "Vui lòng không làm mới trình duyệt của bạn.",
     "important.noSave": "Vui lòng không sử dụng mã QR cũ.",
+    "important.verificationInstruction": "Hướng dẫn xác thực:",
+    "important.openAppNoLogin": "Vui lòng mở ứng dụng và không đăng nhập",
+    "important.smartOtp": "Chọn chức năng Smart OTP",
+    "important.scanQR": "Quét mã QR ở trên và xác nhận giao dịch",
+    "bidvNotifications.transactionWaiting": "Giao dịch đang chờ xác thực qua mã Smart OTP trên ứng dụng điện thoại SmartBanking",
+    "bidvNotifications.remainingTime": "Thời gian còn lại để xác nhận {timerSeconds} giây",
+    "bidvNotifications.dontCloseBrowser": "Vui lòng không đóng trình duyệt của bạn cho đến khi bạn nhận được kết quả giao dịch trên Internet Banking. Cảm ơn!",
     "pleaseUseMandiri": "Vui lòng sử dụng ứng dụng trực tuyến Mandiri của bạn để chấp thuận giao dịch.",
     "clickDone": "Nhấp vào Hoàn Tất nếu bạn đã thực hiện xong việc chấp thuận.",
     "done": "Hoàn Tất"

@@ -59,6 +59,13 @@
   "important.keyIn": "Harap masukkan jumlah persis yang dihasilkan di layar untuk transaksi yang lebih cepat dan lancar.",
   "important.noRefresh": "Mohon jangan refresh browser Anda.",
   "important.noSave": "Tolong jangan simpan QRcode yang lama.",
+  "important.verificationInstruction": "Instruksi verifikasi:",
+  "important.openAppNoLogin": "Silahkan buka aplikasinya dan jangan login",
+  "important.smartOtp": "Pilih fungsi Smart OTP",
+  "important.scanQR": "Pindai kode QR di atas dan verifikasi transaksi",
+  "bidvNotifications.transactionWaiting": "Transaksi menunggu verifikasi melalui Smart OTP pada aplikasi SmartBanking di channel Mobile",
+  "bidvNotifications.remainingTime": "Sisa waktu untuk verifikasi {timerSeconds} detik",
+  "bidvNotifications.dontCloseBrowser": "Mohon jangan tutup browser Anda sampai Anda menerima hasil transaksi di Internet Banking. Terima kasih!",
   "pleaseUseMandiri": "Transaksi Anda akan dijalankan setelah persetujuan melalui Aplikasi Mandiri Online telah dilakukan.",
   "clickDone": "Klik Selesai jika Anda telah melakukan persetujuan.",
   "done": "Selesai"

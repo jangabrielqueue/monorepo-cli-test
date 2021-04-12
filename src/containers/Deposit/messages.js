@@ -161,6 +161,36 @@ export default defineMessages({
     noSave: {
       id: 'important.noSave',
       defaultMessage: 'Please do not save old QRcode.'
+    },
+    verificationInstruction: {
+      id: 'important.verificationInstruction',
+      defaultMessage: 'Verification Instruction:'
+    },
+    openAppNoLogin: {
+      id: 'important.openAppNoLogin',
+      defaultMessage: 'Please open the application and do not login'
+    },
+    smartOtp: {
+      id: 'important.smartOtp',
+      defaultMessage: 'Select function Smart OTP'
+    },
+    scanQR: {
+      id: 'important.scanQR',
+      defaultMessage: 'Scan the QR code above and verify transaction'
+    }
+  },
+  bidvNotifications: {
+    transactionWaiting: {
+      id: 'bidvNotifications.transactionWaiting',
+      defaultMessage: 'The transaction is waiting for being verified via Smart OTP on SmartBanking application on mobile channel'
+    },
+    remainingTime: {
+      id: 'bidvNotifications.remainingTime',
+      defaultMessage: 'Remaining time for verification {timerSeconds} seconds'
+    },
+    dontCloseBrowser: {
+      id: 'bidvNotifications.dontCloseBrowser',
+      defaultMessage: 'Please do not close your browser until you receive transaction result on Internet Banking. Thank you!'
     }
   }
 })

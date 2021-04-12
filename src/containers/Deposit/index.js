@@ -67,6 +67,18 @@ const useStyles = createUseStyles({
       width: '100%'
     }
   },
+  depositBidvFooter: {
+    display: 'none',
+
+    '@media (max-width: 36em)': {
+      display: 'flex',
+      justifyContent: 'center',
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      marginTop: '20px',
+      padding: '10px 0',
+      width: '100%'
+    }
+  },
   depositProgressBarContainer: {
     color: 'rgba(0, 0, 0, 0.65)',
     height: '200px',
@@ -555,7 +567,7 @@ const Deposit = (props) => {
                 )
               }
               {
-                step === 1 && !checkBank.isMandiriBank && (
+                step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
                   <Countdown minutes={0} seconds={100} />
                 )
               }
@@ -572,7 +584,7 @@ const Deposit = (props) => {
           <StepsBar step={step} />
         </div>
         {
-          showOtpMethod && step === 0 &&
+          showOtpMethod && step === 0 && bank?.toUpperCase() !== 'BIDV' &&
             <footer className={classes.depositFooter}>
               <GlobalButton
                 label='SMS OTP'
@@ -601,6 +613,28 @@ const Deposit = (props) => {
               >
                 <img
                   alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={renderIcon('smart')}
+                />
+              </GlobalButton>
+            </footer>
+        }
+        {
+          showOtpMethod && step === 0 && bank?.toUpperCase() === 'BIDV' &&
+            <footer className={classes.depositBidvFooter}>
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor}
+                bank='BIDV'
+                outlined
+                onClick={handleSubmit((values, e) =>
+                  handleSubmitDeposit(values, e, 'smart')
+                )}
+                disabled={!establishConnection || waitingForReady}
+              >
+                <img
+                  alt='smart'
                   width='24'
                   height='24'
                   src={renderIcon('smart')}

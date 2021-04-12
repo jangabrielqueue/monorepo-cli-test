@@ -15,11 +15,11 @@ const useStyles = createUseStyles({
     fontFamily: 'ProductSansBold',
     fontSize: '14px',
     height: '43px',
-    justifyContent: 'space-evenly',
+    justifyContent: ({ props }) => props.bank?.toUpperCase() === 'BIDV' ? 'center' : 'space-evenly',
     letterSpacing: '1.5px',
     lineHeight: 0.5,
-    margin: '10px',
-    maxWidth: '155px',
+    margin: ({ props }) => props.bank?.toUpperCase() === 'BIDV' ? 0 : '10px',
+    maxWidth: ({ props }) => props.bank?.toUpperCase() !== 'BIDV' && '155px',
     width: '100%',
 
     '&:disabled': {
@@ -32,7 +32,8 @@ const useStyles = createUseStyles({
     },
 
     '@media (max-width: 23.438em)': {
-      maxWidth: '130px',
+      maxWidth: ({ props }) => props.bank?.toUpperCase() !== 'BIDV' && '130px',
+      margin: ({ props }) => props.bank?.toUpperCase() === 'BIDV' && '10px 20px',
       padding: 0
     }
   },
