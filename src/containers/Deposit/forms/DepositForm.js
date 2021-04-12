@@ -1,4 +1,4 @@
-import React, { useState, useContext, lazy, useEffect } from 'react'
+import React, { useState, useContext, lazy } from 'react'
 import messages from '../messages'
 import { FormattedMessage } from 'react-intl'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -6,6 +6,7 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -235,15 +236,17 @@ export default function DepositForm (props) {
     waitingForReady,
     establishConnection
   } = props
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
-  const bankCodes = dynamicLoadBankUtils?.getBanksByCurrency(currency)
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
-  const buttonColor = isBankKnown ? `${bank}` : 'main'
+  const bankCodes = getBanksByCurrency(currency)
+  const checkBank = {
+    isBankKnown: checkBankIfKnown(currency, bank),
+    isDabBank: checkIfDABBank(bank)
+  }
+  const buttonColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const [showPassword, setShowPassword] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false)
   const [isCopy, setIsCopy] = useState(false)
   const { register, errors, handleSubmit, setValue, getValues, formState } = useFormContext()
-  const { dirty } = formState
+  const { dirty, isSubmitting } = formState
   const formValues = getValues()
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
   const classes = useStyles(toggleSelect)
@@ -274,33 +277,22 @@ export default function DepositForm (props) {
   })
 
   function renderIcon (type) {
-    if (isBankKnown && type === 'sms') {
+    if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (isBankKnown && type === 'smart') {
+    } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!isBankKnown) {
+    } else if (!checkBank.isBankKnown && type === 'sms') {
+      return '/icons/unknown/sms-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'smart') {
       return '/icons/unknown/smart-unknown.png'
     }
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } = await import('../../../utils/banks')
-      setDynamicLoadBankUtils({
-        getBanksByCurrency,
-        checkBankIfKnown,
-        checkIfDABBank
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <>
       <form autoComplete='off'>
         {
-          !isBankKnown &&
+          !checkBank.isBankKnown &&
             <div className={formIconContainerBankStyles}>
               <div>
                 <label htmlFor='bank'><FormattedMessage {...messages.placeholders.bankName} /></label>
@@ -396,7 +388,7 @@ export default function DepositForm (props) {
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
               onClick={handleSubmit(handleSubmitDeposit)}
-              disabled={!establishConnection || waitingForReady}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
               bank={bank?.toUpperCase()}
             >
               <img alt='submit' width='24' height='24' src='/icons/submit-otp.svg' />
@@ -411,24 +403,18 @@ export default function DepositForm (props) {
               color={buttonColor}
               outlined
               onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'sms'))}
-              disabled={!establishConnection || waitingForReady}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
             >
-              {
-                isBankKnown !== undefined &&
-                  <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
-              }
+              <img alt='sms' width='24' height='24' src={renderIcon('sms')} />
             </GlobalButton>
             <GlobalButton
-              label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+              label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
               color={buttonColor}
               outlined
-              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'))}
-              disabled={!establishConnection || waitingForReady}
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart'))}
+              disabled={!establishConnection || waitingForReady || isSubmitting}
             >
-              {
-                isBankKnown !== undefined &&
-                  <img alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
-              }
+              <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
             </GlobalButton>
           </section>
       }

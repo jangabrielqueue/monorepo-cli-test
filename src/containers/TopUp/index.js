@@ -18,6 +18,9 @@ import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
+import { sendTopUpRequest, sendTopUpOtp } from './Requests'
+import { sleep, calculateCurrentProgress } from '../../utils/utils'
+import { getBanksByCurrencyForTopUp } from '../../utils/banks'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -113,7 +116,6 @@ const useStyles = createUseStyles({
 )
 
 const TopUp = props => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
     merchant,
@@ -142,12 +144,10 @@ const TopUp = props => {
   const classes = useStyles(step)
 
   function getDefaultBankByCurrency (currency) {
-    return dynamicLoadBankUtils?.getBanksByCurrencyForTopUp(currency)[0]
+    return getBanksByCurrencyForTopUp(currency)[0]
   }
 
   async function handleSubmitDeposit (values, e, type) {
-    const { sleep } = await import('../../utils/utils')
-    const { sendTopUpRequest } = await import('./Requests')
     analytics.logEvent('login', {
       reference
     })
@@ -217,7 +217,6 @@ const TopUp = props => {
   }
 
   async function handleSubmitOTP (value) {
-    const { sendTopUpOtp } = await import('./Requests')
     analytics.logEvent('submitted_otp', {
       reference: reference,
       otp: value
@@ -258,7 +257,6 @@ const TopUp = props => {
 
   const handleRequestOTP = useCallback(
     async (e) => {
-      const { sleep } = await import('../../utils/utils')
       await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
 
       setProgress(undefined)
@@ -271,7 +269,6 @@ const TopUp = props => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
-      const { calculateCurrentProgress } = await import('../../utils/utils')
       const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
@@ -396,17 +393,6 @@ const TopUp = props => {
     datetime,
     signature
   ])
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { getBanksByCurrencyForTopUp } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        getBanksByCurrencyForTopUp
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()

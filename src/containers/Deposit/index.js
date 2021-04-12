@@ -22,6 +22,9 @@ import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
 import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
+import { sendDepositRequest, sendDepositOtp } from './Requests'
+import { sleep, calculateCurrentProgress } from '../../utils/utils'
+import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -118,7 +121,6 @@ const useStyles = createUseStyles({
 )
 
 const Deposit = (props) => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
     merchant,
@@ -146,17 +148,18 @@ const Deposit = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
-  const themeColor = isBankKnown ? `${bank}` : 'main'
+  const checkBank = {
+    isBankKnown: checkBankIfKnown(currency, bank),
+    isMandiriBank: checkIfMandiriBank(bank),
+    isDabBank: checkIfDABBank(bank)
+  }
+  const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles(step)
 
   async function handleSubmitDeposit (values, e, type) {
-    const { sleep } = await import('../../utils/utils')
-    const { sendDepositRequest } = await import('./Requests')
-
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
     }
@@ -237,7 +240,6 @@ const Deposit = (props) => {
 
   const handleSubmitOTP = useCallback(
     async (value) => {
-      const { sendDepositOtp } = await import('./Requests')
       analytics.logEvent('submitted_otp', {
         reference: reference,
         otp: value
@@ -283,7 +285,6 @@ const Deposit = (props) => {
 
   const handleUpdateProgress = useCallback(
     async (e) => {
-      const { calculateCurrentProgress } = await import('../../utils/utils')
       const currentStep = calculateCurrentProgress(e)
 
       if (e.currentStep !== e.totalSteps) {
@@ -308,7 +309,6 @@ const Deposit = (props) => {
   )
 
   async function handleRequestOTP (e) {
-    const { sleep } = await import('../../utils/utils')
     await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
 
     setProgress(undefined)
@@ -343,12 +343,14 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (isBankKnown && type === 'sms') {
+    if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (isBankKnown && type === 'smart') {
+    } else if (checkBank.isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!isBankKnown) {
-      return '../../assets/icons/unknown/smart-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'sms') {
+      return '/icons/unknown/sms-unknown.png'
+    } else if (!checkBank.isBankKnown && type === 'smart') {
+      return '/icons/unknown/smart-unknown.png'
     }
   }
 
@@ -362,8 +364,8 @@ const Deposit = (props) => {
           establishConnection={establishConnection}
         />
       )
-    } else if (!dynamicLoadBankUtils?.checkIfMandiriBank(bank) && // making sure mandiri bank is not mandiri and undefined to load otp form
-    dynamicLoadBankUtils?.checkIfMandiriBank(bank) !== undefined &&
+    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
+    checkBank.isMandiriBank !== undefined &&
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
@@ -375,7 +377,7 @@ const Deposit = (props) => {
           isCardOTP={isCardOTP}
         />
       )
-    } else if (dynamicLoadBankUtils?.checkIfMandiriBank(bank) && step === 1) {
+    } else if (checkBank.isMandiriBank && step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
         <MandiriForm
@@ -463,19 +465,6 @@ const Deposit = (props) => {
   ])
 
   useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkIfMandiriBank,
-        checkBankIfKnown,
-        checkIfDABBank
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
-
-  useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
@@ -550,7 +539,7 @@ const Deposit = (props) => {
                 )
               }
               {
-                step === 1 && !dynamicLoadBankUtils?.checkIfMandiriBank(bank) && (
+                step === 1 && !checkBank.isMandiriBank && (
                   <Countdown minutes={3} seconds={0} />
                 )
               }
@@ -578,34 +567,28 @@ const Deposit = (props) => {
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                {
-                  isBankKnown !== undefined &&
-                    <img
-                      alt='sms'
-                      width='24'
-                      height='24'
-                      src={renderIcon('sms')}
-                    />
-                }
+                <img
+                  alt='sms'
+                  width='24'
+                  height='24'
+                  src={renderIcon('sms')}
+                />
               </GlobalButton>
               <GlobalButton
-                label={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
+                label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
                 color={themeColor}
                 outlined
                 onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart')
+                  handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart')
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
-                {
-                  isBankKnown !== undefined &&
-                    <img
-                      alt={dynamicLoadBankUtils?.checkIfDABBank(bank) ? 'card' : 'smart'}
-                      width='24'
-                      height='24'
-                      src={renderIcon('smart')}
-                    />
-                }
+                <img
+                  alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={renderIcon('smart')}
+                />
               </GlobalButton>
             </footer>
         }

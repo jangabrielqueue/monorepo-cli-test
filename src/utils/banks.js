@@ -91,6 +91,8 @@ function checkBankIfKnown (currency, bank) {
     return getThbBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
   } else if (currency?.toUpperCase() === 'IDR' && bank) {
     return getIdrBanksByEnvForDeposit().map(c => c.code).includes(bank.toUpperCase())
+  } else {
+    return false
   }
 }
 

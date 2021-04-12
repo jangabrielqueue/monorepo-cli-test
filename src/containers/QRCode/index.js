@@ -17,6 +17,8 @@ import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
 import AutoRedirectQR from '../../components/AutoRedirectQR'
+import { checkBankIfKnown } from '../../utils/banks'
+import { sleep } from '../../utils/utils'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -100,7 +102,6 @@ const useStyles = createUseStyles({
 )
 
 const QRCode = (props) => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const {
     bank,
     merchant,
@@ -143,13 +144,12 @@ const QRCode = (props) => {
     isSuccessful: false
   })
   const language = props.language // language was handled at root component not at the queryparams
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
   const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
   const classes = useStyles(step)
 
   async function handleSubmitQRCode () {
-    const { sleep } = await import('../../utils/utils')
     const submitValues = {
       amount: amount,
       bank: bank,
@@ -365,17 +365,6 @@ const QRCode = (props) => {
     note,
     language
   ])
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   useEffect(() => {
     const getQRCodePayload = {

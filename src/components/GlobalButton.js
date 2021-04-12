@@ -69,7 +69,7 @@ const useStyles = createUseStyles({
 })
 
 const GlobalButton = (props) => {
-  const { label, children, onClick } = props
+  const { label, children, onClick, disabled } = props
   const theme = useTheme()
   const classes = useStyles({ props, theme })
 
@@ -77,11 +77,11 @@ const GlobalButton = (props) => {
     <>
       {
         props.outlined
-          ? <button className={classes.outlinedButton} onClick={onClick}>
+          ? <button className={classes.outlinedButton} onClick={onClick} disabled={disabled}>
             {children}
             {label}
             </button>
-          : <button className={classes.fillButton} onClick={onClick}>
+          : <button className={classes.fillButton} onClick={onClick} disabled={disabled}>
             {children}
             {label}
             </button>
