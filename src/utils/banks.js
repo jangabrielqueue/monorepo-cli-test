@@ -25,6 +25,7 @@ const PERMATA = { code: 'PERMATA', name: 'Permata Bank' }
 const CIMB = { code: 'CIMB', name: 'CIMB Niaga' }
 const MANDIRI = { code: 'MANDIRI', name: 'MANDIRI Bank' }
 const BRI = { code: 'BRI', name: 'Bank BRI' }
+const BCA = { code: 'BCA', name: 'Bank Central Asia' }
 
 const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI]
 const VND_ALL_BANKS_DEV = [
@@ -49,8 +50,8 @@ const VND_TOPUP_BANKS_DEV = [VCB, ACB, TCB, BIDV, SACOM, FAKER]
 const THB_TOPUP_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB]
 const THB_TOPUP_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, FAKERTHB]
 
-const IDR_ALL_BANKS = [PERMATA, CIMB, MANDIRI, BRI]
-const IDR_ALL_BANKS_DEV = [PERMATA, CIMB, MANDIRI, BRI]
+const IDR_ALL_BANKS = [PERMATA, CIMB, MANDIRI, BRI, BCA]
+const IDR_ALL_BANKS_DEV = [PERMATA, CIMB, MANDIRI, BRI, BCA]
 
 function getVndBanksByEnvForDeposit () {
   if (isUatOrDev) {
