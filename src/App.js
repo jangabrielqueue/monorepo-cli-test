@@ -44,7 +44,7 @@ const appTheme = {
     cimb: '#82162E',
     mandiri: '#0A4A8A',
     buttonMandiri: '#479DDA',
-    bca: '#031120',
+    bca: '#093966',
     buttonBca: '#0066ae',
     bri: '#014a94',
     buttonBri: '#f59823',
