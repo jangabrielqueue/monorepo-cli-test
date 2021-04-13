@@ -106,7 +106,7 @@ const App = () => {
   }
 
   function handleSelectLanguage (param) {
-    switch (param) {
+    switch (param?.toLowerCase()) {
       case 'vi-vn':
         setLocale('vi')
         setLanguage('vi-vn')

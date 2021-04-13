@@ -334,6 +334,7 @@ const ScratchCard = (props) => {
             establishConnection={establishConnection}
             bank={bank}
             currency={currency}
+            language={language}
           />
         )
 
