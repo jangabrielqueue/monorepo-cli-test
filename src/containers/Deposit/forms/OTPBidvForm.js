@@ -95,7 +95,10 @@ export default injectIntl(memo(function OTPBidvForm (props) {
       <h2 className={classes.headerTwo}>{intl.formatMessage(messages.bidvNotifications.remainingTime, { timerSeconds: <span>{timerSeconds}</span> })}</h2>
       <h3 className={classes.headerThree}><FormattedMessage {...messages.bidvNotifications.dontCloseBrowser} /></h3>
       <div className={classes.imageContainer}>
-        <QRCode value={otpReference} size={200} renderAs='svg' />
+        {
+          otpReference !== undefined &&
+            <QRCode value={otpReference} size={200} renderAs='svg' />
+        }
       </div>
       <div className={classes.submitContainer}>
         <GlobalButton
