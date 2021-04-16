@@ -1,6 +1,6 @@
 import React from 'react'
 import messages from './messages'
-import { injectIntl, FormattedMessage } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import { createUseStyles, useTheme } from 'react-jss'
 
 // styling
@@ -123,4 +123,4 @@ const Notifications = ({ language, intl, bank }) => {
   )
 }
 
-export default injectIntl(Notifications)
+export default Notifications
