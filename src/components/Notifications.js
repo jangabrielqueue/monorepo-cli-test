@@ -1,6 +1,6 @@
 import React from 'react'
 import messages from './messages'
-import { injectIntl } from 'react-intl'
+import { injectIntl, FormattedMessage } from 'react-intl'
 import { createUseStyles, useTheme } from 'react-jss'
 
 // styling
@@ -55,15 +55,59 @@ const Notifications = ({ language, intl, bank }) => {
       case 'VCB':
         return (
           <ul>
-            <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ' : 'Username is phone number registered for this service'}</b> })}</li>
-            <li>{intl.formatMessage(messages.notifications.noVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập VCB-iB@nking' : 'Username is VCB-iB@nking username'}</b> })}</li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.hasVCB}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.noVCB}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
           </ul>
         )
       case 'BIDV':
         return (
           <ul>
-            <li>{intl.formatMessage(messages.notifications.hasBIDV, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ' : 'Username is the phone number that is registered for service'}</b> })}</li>
-            <li>{intl.formatMessage(messages.notifications.noBIDV, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập của BIDV Online' : 'Username is the username of BIDV Online'}</b> })}</li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.hasBIDV}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.noBIDV}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
           </ul>
         )
       default:

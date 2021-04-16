@@ -34,9 +34,19 @@ function renderButtonColors (bank, color) {
   }
 }
 
+function isTopUp (props) {
+  return props.topup === 'true'
+}
+
+function isBidvBank (props) {
+  return props.bank?.toUpperCase() === 'BIDV'
+}
+
 export {
   isNullOrWhitespace,
   sleep,
   calculateCurrentProgress,
-  renderButtonColors
+  renderButtonColors,
+  isTopUp,
+  isBidvBank
 }

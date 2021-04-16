@@ -1,25 +1,25 @@
 /* eslint-disable */
 import React from 'react'
-import { renderButtonColors } from '../utils/utils'
+import { renderButtonColors, isTopUp, isBidvBank } from '../utils/utils'
 import { createUseStyles, useTheme } from 'react-jss'
 
 // styling
 const useStyles = createUseStyles({
   outlinedButton: {
     alignItems: 'center',
-    backgroundColor: ({ props, theme }) => props.topup === 'true' ? theme.colors[props.color?.toLowerCase()] : 'transparent',
+    backgroundColor: ({ props, theme }) => isTopUp(props) ? theme.colors[props.color?.toLowerCase()] : 'transparent',
     borderRadius: '8px',
-    border: ({ props, theme }) => props.topup === 'true' ? 0 : `2px solid ${theme.colors[props.color?.toLowerCase()]}`,
-    color: ({ props, theme }) => props.topup === 'true' ? '#FFF' : theme.colors[props.color?.toLowerCase()],
+    border: ({ props, theme }) => isTopUp(props) ? 0 : `2px solid ${theme.colors[props.color?.toLowerCase()]}`,
+    color: ({ props, theme }) => isTopUp(props) ? '#FFF' : theme.colors[props.color?.toLowerCase()],
     display: 'flex',
     fontFamily: 'ProductSansBold',
     fontSize: '14px',
     height: '43px',
-    justifyContent: ({ props }) => props.bank?.toUpperCase() === 'BIDV' ? 'center' : 'space-evenly',
+    justifyContent: ({ props }) => isBidvBank(props) ? 'center' : 'space-evenly',
     letterSpacing: '1.5px',
     lineHeight: 0.5,
-    margin: ({ props }) => props.bank?.toUpperCase() === 'BIDV' ? 0 : '10px',
-    maxWidth: ({ props }) => props.bank?.toUpperCase() !== 'BIDV' && '155px',
+    margin: ({ props }) => isBidvBank(props) ? 0 : '10px',
+    maxWidth: ({ props }) => !isBidvBank(props) && '155px',
     width: '100%',
 
     '&:disabled': {
@@ -32,8 +32,8 @@ const useStyles = createUseStyles({
     },
 
     '@media (max-width: 23.438em)': {
-      maxWidth: ({ props }) => props.bank?.toUpperCase() !== 'BIDV' && '130px',
-      margin: ({ props }) => props.bank?.toUpperCase() === 'BIDV' && '10px 20px',
+      maxWidth: ({ props }) => !isBidvBank(props) && '130px',
+      margin: ({ props }) => isBidvBank(props) && '10px 20px',
       padding: 0
     }
   },
