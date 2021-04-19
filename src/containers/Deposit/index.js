@@ -11,6 +11,7 @@ import GlobalButton from '../../components/GlobalButton'
 import Notifications from '../../components/Notifications'
 import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
+import OTPBidvForm from './forms/OTPBidvForm'
 import MandiriForm from './forms/MandiriForm'
 import StepsBar from '../../components/StepsBar'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -63,6 +64,18 @@ const useStyles = createUseStyles({
       marginTop: '20px',
       padding: '10px 0',
       textAlign: 'center',
+      width: '100%'
+    }
+  },
+  depositBidvFooter: {
+    display: 'none',
+
+    '@media (max-width: 36em)': {
+      display: 'flex',
+      justifyContent: 'center',
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      marginTop: '20px',
+      padding: '10px 0',
       width: '100%'
     }
   },
@@ -156,12 +169,16 @@ const Deposit = (props) => {
   const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
+  const [isSmartBidv, setIsSmartBidv] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles(step)
+  const notificationBanks = ['VCB', 'BIDV']
 
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
+    } else if (type === 'smart' && bank?.toUpperCase() === 'BIDV') {
+      setIsSmartBidv(prevState => !prevState)
     }
 
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -365,7 +382,7 @@ const Deposit = (props) => {
         />
       )
     } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-    checkBank.isMandiriBank !== undefined &&
+      checkBank.isMandiriBank !== undefined && !isSmartBidv && // make sure its not bidv and smart otp
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
@@ -375,6 +392,17 @@ const Deposit = (props) => {
           waitingForReady={waitingForReady}
           progress={progress}
           isCardOTP={isCardOTP}
+        />
+      )
+    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
+      checkBank.isMandiriBank !== undefined && isSmartBidv && // make sure bidv bank and smart otp
+    step === 1) {
+      analytics.setCurrentScreen('input_otp')
+      return (
+        <OTPBidvForm
+          otpReference={otpReference}
+          waitingForReady={waitingForReady}
+          handleSubmitOTP={handleSubmitOTP}
         />
       )
     } else if (checkBank.isMandiriBank && step === 1) {
@@ -519,8 +547,8 @@ const Deposit = (props) => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         {
-          bank?.toUpperCase() === 'VCB' &&
-            <Notifications bank={bank} language={language} />
+          notificationBanks.includes(bank?.toUpperCase()) &&
+            <Notifications bank={bank?.toUpperCase()} language={language} />
         }
         <div className={classes.depositContainer}>
           <div className={classes.depositContent}>
@@ -539,7 +567,7 @@ const Deposit = (props) => {
                 )
               }
               {
-                step === 1 && !checkBank.isMandiriBank && (
+                step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
                   <Countdown minutes={0} seconds={100} />
                 )
               }
@@ -556,7 +584,7 @@ const Deposit = (props) => {
           <StepsBar step={step} />
         </div>
         {
-          showOtpMethod && step === 0 &&
+          showOtpMethod && step === 0 && bank?.toUpperCase() !== 'BIDV' &&
             <footer className={classes.depositFooter}>
               <GlobalButton
                 label='SMS OTP'
@@ -585,6 +613,28 @@ const Deposit = (props) => {
               >
                 <img
                   alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  width='24'
+                  height='24'
+                  src={renderIcon('smart')}
+                />
+              </GlobalButton>
+            </footer>
+        }
+        {
+          showOtpMethod && step === 0 && bank?.toUpperCase() === 'BIDV' &&
+            <footer className={classes.depositBidvFooter}>
+              <GlobalButton
+                label='SMART OTP'
+                color={themeColor}
+                bank='BIDV'
+                outlined
+                onClick={handleSubmit((values, e) =>
+                  handleSubmitDeposit(values, e, 'smart')
+                )}
+                disabled={!establishConnection || waitingForReady}
+              >
+                <img
+                  alt='smart'
                   width='24'
                   height='24'
                   src={renderIcon('smart')}

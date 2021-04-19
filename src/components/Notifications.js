@@ -1,7 +1,7 @@
 import React from 'react'
 import messages from './messages'
-import { injectIntl } from 'react-intl'
-import { createUseStyles } from 'react-jss'
+import { FormattedMessage } from 'react-intl'
+import { createUseStyles, useTheme } from 'react-jss'
 
 // styling
 const useStyles = createUseStyles({
@@ -9,22 +9,34 @@ const useStyles = createUseStyles({
     position: 'absolute',
     top: 0,
     padding: '10px',
-    background: '#ffffcc',
+    background: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationBIDV : theme.colors.notificationVCB,
     color: '#3e3e3e',
     fontSize: '14px',
+    margin: ({ bank }) => bank === 'BIDV' && 20,
+    borderRadius: ({ bank }) => bank === 'BIDV' && 12,
 
     '& b': {
       fontWeight: 700,
-      color: 'black'
+      color: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationFontBIDV : 'black'
     },
 
     '& ul': {
       listStyle: 'none',
       margin: 0,
       padding: 0,
+      color: ({ bank, theme }) => bank === 'BIDV' && theme.colors.notificationFontBIDV,
+      letterSpacing: 0.4,
 
       '& li': {
-        margin: 0
+        margin: 0,
+        '&:before': {
+          content: "'\\2022'",
+          color: ({ bank }) => bank === 'BIDV' ? '#00bfae' : 'black',
+          fontWeight: 'bold',
+          display: 'inline-block',
+          width: '1em',
+          fontSize: '1em'
+        }
       }
     },
 
@@ -34,17 +46,81 @@ const useStyles = createUseStyles({
   }
 })
 
-const Notifications = ({ language, intl }) => {
-  const classes = useStyles()
+const Notifications = ({ language, intl, bank }) => {
+  const theme = useTheme()
+  const classes = useStyles({ bank, theme })
 
+  function renderBankNotificationMessages () {
+    switch (bank) {
+      case 'VCB':
+        return (
+          <ul>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.hasVCB}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.noVCB}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+          </ul>
+        )
+      case 'BIDV':
+        return (
+          <ul>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.hasBIDV}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.noBIDV}
+                values={{
+                  b: msg => (
+                    <b>
+                      {msg}
+                    </b>
+                  )
+                }}
+              />
+            </li>
+          </ul>
+        )
+      default:
+        break
+    }
+  }
   return (
     <div className={classes.countDownContainer}>
-      <ul>
-        <li>{intl.formatMessage(messages.notifications.hasVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Số điện thoại đăng ký dịch vụ.' : 'Username is Phone number registered for this service.'}</b> })}</li>
-        <li>{intl.formatMessage(messages.notifications.noVCB, { fontWeightText: <b>{language === 'vi-vn' ? 'Tên đăng nhập là Tên đăng nhập VCB-iB@nking' : 'Username is VCB-iB@nking username'}</b> })}</li>
-      </ul>
+      {
+        renderBankNotificationMessages()
+      }
     </div>
   )
 }
 
-export default injectIntl(Notifications)
+export default Notifications

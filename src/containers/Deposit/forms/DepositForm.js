@@ -173,6 +173,16 @@ const useStyles = createUseStyles({
     textAlign: 'center'
   },
 
+  singleFormBidvFooter: {
+    marginTop: '5px',
+    padding: '10px 0 5px',
+    textAlign: 'center',
+
+    '@media (max-width: 36em)': {
+      display: 'none'
+    }
+  },
+
   doubleFormFooter: {
     display: 'flex',
     justifyContent: 'space-evenly',
@@ -396,7 +406,7 @@ export default function DepositForm (props) {
           </section>
       }
       {
-        showOtpMethod &&
+        showOtpMethod && bank?.toUpperCase() !== 'BIDV' &&
           <section className={classes.doubleFormFooter}>
             <GlobalButton
               label='SMS OTP'
@@ -415,6 +425,21 @@ export default function DepositForm (props) {
               disabled={!establishConnection || waitingForReady || isSubmitting}
             >
               <img alt={checkBank.isDabBank ? 'card' : 'smart'} width='24' height='24' src={renderIcon('smart')} />
+            </GlobalButton>
+          </section>
+      }
+      {
+        showOtpMethod && bank?.toUpperCase() === 'BIDV' &&
+          <section className={classes.singleFormBidvFooter}>
+            <GlobalButton
+              label='SMART OTP'
+              color={buttonColor}
+              outlined
+              onClick={handleSubmit((values, e) => handleSubmitDeposit(values, e, 'smart'))}
+              disabled={!establishConnection || waitingForReady}
+              bank='BIDV'
+            >
+              <img alt='smart' width='24' height='24' src={renderIcon('smart')} />
             </GlobalButton>
           </section>
       }
