@@ -26,7 +26,7 @@ const useStyles = createUseStyles({
   }
 })
 
-const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
+const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
   const [timerMinutes, setTimerMinutes] = useState(minutes)
   const [timerSeconds, setTimerSeconds] = useState(seconds)
   const classes = useStyles(redirect)
@@ -55,7 +55,7 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode }) => {
     return () => {
       clearInterval(timer) // clear the timer on unmount
     }
-  }, [minutes, seconds])
+  }, [minutes, seconds, reRender])
 
   return (
     <section>

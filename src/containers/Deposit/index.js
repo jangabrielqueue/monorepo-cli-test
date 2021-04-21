@@ -172,6 +172,8 @@ const Deposit = (props) => {
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   const [isSmartBidv, setIsSmartBidv] = useState(false)
+  const [otpStatusCode, setOtpStatusCode] = useState('')
+  const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles(step)
   const notificationBanks = ['VCB', 'BIDV']
@@ -279,6 +281,7 @@ const Deposit = (props) => {
           otp: value
         })
         setStep(1)
+        setOtpStatusCode('')
       }
     },
     [
@@ -333,6 +336,7 @@ const Deposit = (props) => {
     setProgress(undefined)
     setStep(1)
     setOtpReference(e.extraData)
+    setOtpStatusCode(e.statusCode)
     setWaitingForReady(false)
   }
 
@@ -529,6 +533,14 @@ const Deposit = (props) => {
     }
   }, [step])
 
+  useEffect(() => {
+    if (otpStatusCode === '002') {
+      // this will help in determing when getting otp and will use this to rerender the countdown time
+      // everytime there is a new otp to fill up
+      setReRenderCountdown(prevState => !prevState)
+    }
+  }, [otpStatusCode])
+
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
@@ -554,7 +566,7 @@ const Deposit = (props) => {
               }
               {
                 step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
-                  <Countdown minutes={0} seconds={100} />
+                  <Countdown minutes={1} seconds={40} reRender={reRenderCountdown} />
                 )
               }
               {
