@@ -77,5 +77,7 @@
     "bidvNotifications.dontCloseBrowser": "Please do not close your browser until you receive transaction result on Internet Banking. Thank you!",
     "pleaseUseMandiri": "Please use your Mandiri Online Application to approve the transaction.",
     "clickDone": "Click on DONE if you have done the approval.",
-    "done": "Done"
+    "done": "Done",
+    "bcaOtpReference.pleaseKeyInDigit": "PLEASE KEY IN THE {digit} DIGIT NUMBER INTO YOUR KEYBCA",
+    "bcaOtpReference.pleaseInputOtp": "KEYBCA RESPONSE APPLI {number}"
 }

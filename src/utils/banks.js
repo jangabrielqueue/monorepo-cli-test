@@ -132,11 +132,16 @@ function checkIfGWCBank (bank) {
   return bank?.toUpperCase() === 'GWC'
 }
 
+function checkIfBcaBank (bank) {
+  return bank?.toUpperCase() === 'BCA'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
   checkBankIfKnown,
   checkIfDABBank,
   checkIfMandiriBank,
-  checkIfGWCBank
+  checkIfGWCBank,
+  checkIfBcaBank
 }
