@@ -13,6 +13,9 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
+  otpReferenceText: {
+    fontWeight: 'bold'
+  },
   formIconContainer: {
     display: 'flex',
 
@@ -156,7 +159,7 @@ const OTPForm = React.memo((props) => {
     formIconContainer: true,
     formIconContainerUsername: true
   })
-  const inputOtpValdiations = checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? renderBcaOtpError() : {
+  const inputOtpValidations = checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? renderBcaOtpError() : {
     required: <FormattedMessage {...messages.placeholders.inputOtp} />
   }
 
@@ -175,8 +178,8 @@ const OTPForm = React.memo((props) => {
             number: 2
           }}
         />, // eslint-disable-line
-        min: 6,
-        max: 6
+        minLength: 6,
+        maxLength: 6
       }
     } else if (checkIfAppOneOtp(otpReference)) {
       return {
@@ -186,8 +189,8 @@ const OTPForm = React.memo((props) => {
             number: 1
           }}
         />, // eslint-disable-line
-        min: 8,
-        max: 8
+        minLength: 8,
+        maxLength: 8
       }
     }
   }
@@ -214,7 +217,7 @@ const OTPForm = React.memo((props) => {
                   /> : <FormattedMessage {...messages.otpReference} /> // eslint-disable-line
                 }
               </label>
-              <p>{otpReference}</p>
+              <p className={classes.otpReferenceText}>{otpReference}</p>
             </div>
           </div>
       }
@@ -235,7 +238,7 @@ const OTPForm = React.memo((props) => {
               <div className={classes.inputFieldContainer}>
                 <input
                   ref={register({
-                    ...inputOtpValdiations
+                    ...inputOtpValidations
                   })}
                   type='number'
                   id='OTP'
@@ -250,7 +253,31 @@ const OTPForm = React.memo((props) => {
                   }
                 </ul>
               </div>
-              <p className='input-errors'>{errors.OTP?.message}</p>
+              {
+                errors.OTP?.type === 'required' && <p className='input-errors'>{errors.OTP?.message}</p>
+              }
+              {
+                errors.OTP?.type === 'minLength' &&
+                  <p className='input-errors'>
+                    <FormattedMessage
+                      {...messages.bcaOtpReference.pleaseInputOtp}
+                      values={{
+                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                      }}
+                    />
+                  </p>
+              }
+              {
+                errors.OTP?.type === 'maxLength' &&
+                  <p className='input-errors'>
+                    <FormattedMessage
+                      {...messages.bcaOtpReference.pleaseInputOtp}
+                      values={{
+                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                      }}
+                    />
+                  </p>
+              }
             </div>
           </div>
       }
