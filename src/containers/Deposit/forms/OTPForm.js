@@ -173,9 +173,9 @@ const OTPForm = React.memo((props) => {
     if (checkIfAppTwoOtp(otpReference)) {
       return {
         required: <FormattedMessage
-          {...messages.bcaOtpReference.pleaseInputOtp}
+          {...messages.bcaOtpReference.inputFixedLength}
           values={{
-            number: 2
+            fixedLength: 6
           }}
         />, // eslint-disable-line
         minLength: 6,
@@ -184,9 +184,9 @@ const OTPForm = React.memo((props) => {
     } else if (checkIfAppOneOtp(otpReference)) {
       return {
         required: <FormattedMessage
-          {...messages.bcaOtpReference.pleaseInputOtp}
+          {...messages.bcaOtpReference.inputFixedLength}
           values={{
-            number: 1
+            fixedLength: 8
           }}
         />, // eslint-disable-line
         minLength: 8,
@@ -207,17 +207,20 @@ const OTPForm = React.memo((props) => {
         !isNullOrWhitespace(otpReference) && !isCardOTP &&
           <div className={formIconContainerOtpReferenceStyles}>
             <div>
-              <label>
-                {
-                  checkIfBcaBank(bank) ? <FormattedMessage
-                    {...messages.bcaOtpReference.pleaseKeyInDigit}
-                    values={{
-                      digit: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                    }}
-                  /> : <FormattedMessage {...messages.otpReference} /> // eslint-disable-line
-                }
-              </label>
-              <p className={classes.otpReferenceText}>{otpReference}</p>
+              {
+                checkIfAppTwoOtp(otpReference) &&
+                  <>
+                    <FormattedMessage {...messages.bcaOtpReference.pleaseKeyInDigit} />
+                    <p className={classes.otpReferenceText}>{otpReference}</p>
+                  </>
+              }
+              {
+                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) &&
+                  <>
+                    <FormattedMessage {...messages.otpReference} />
+                    <p className={classes.otpReferenceText}>{otpReference}</p>
+                  </>
+              }
             </div>
           </div>
       }
@@ -260,9 +263,9 @@ const OTPForm = React.memo((props) => {
                 errors.OTP?.type === 'minLength' &&
                   <p className='input-errors'>
                     <FormattedMessage
-                      {...messages.bcaOtpReference.pleaseInputOtp}
+                      {...messages.bcaOtpReference.inputFixedLength}
                       values={{
-                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
                       }}
                     />
                   </p>
@@ -271,9 +274,9 @@ const OTPForm = React.memo((props) => {
                 errors.OTP?.type === 'maxLength' &&
                   <p className='input-errors'>
                     <FormattedMessage
-                      {...messages.bcaOtpReference.pleaseInputOtp}
+                      {...messages.bcaOtpReference.inputFixedLength}
                       values={{
-                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
                       }}
                     />
                   </p>

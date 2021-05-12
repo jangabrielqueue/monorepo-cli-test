@@ -69,6 +69,7 @@
   "pleaseUseMandiri": "Transaksi Anda akan dijalankan setelah persetujuan melalui Aplikasi Mandiri Online telah dilakukan.",
   "clickDone": "Klik Selesai jika Anda telah melakukan persetujuan.",
   "done": "Selesai",
-  "bcaOtpReference.pleaseKeyInDigit": "MASUKKAN {digit} ANGKA INI PADA KEYBCA APPLI",
-  "bcaOtpReference.pleaseInputOtp": "RESPON KEYBCA APPLI {number}"
+  "bcaOtpReference.pleaseKeyInDigit": "MASUKKAN 8 ANGKA INI PADA KEYBCA APPLI",
+  "bcaOtpReference.pleaseInputOtp": "RESPON KEYBCA APPLI {number}",
+  "bcaOtpReference.inputFixedLength": "Harap masukkan jumlah karakter yang tetap {fixedLength}"
 }

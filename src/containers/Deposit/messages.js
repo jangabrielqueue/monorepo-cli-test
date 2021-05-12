@@ -196,11 +196,15 @@ export default defineMessages({
   bcaOtpReference: {
     pleaseKeyInDigit: {
       id: 'bcaOtpReference.pleaseKeyInDigit',
-      defaultMessage: 'PLEASE KEY IN THE {digit} DIGIT NUMBER INTO YOUR KEYBCA'
+      defaultMessage: 'PLEASE KEY IN THE 8 DIGIT NUMBER INTO YOUR KEYBCA'
     },
     pleaseInputOtp: {
       id: 'bcaOtpReference.pleaseInputOtp',
       defaultMessage: 'KEYBCA RESPONSE APPLI {number}'
+    },
+    inputFixedLength: {
+      id: 'bcaOtpReference.inputFixedLength',
+      defaultMessage: 'Please input a fixed length of {fixedLength} characters.'
     }
   }
 })

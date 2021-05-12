@@ -78,6 +78,7 @@
     "pleaseUseMandiri": "Please use your Mandiri Online Application to approve the transaction.",
     "clickDone": "Click on DONE if you have done the approval.",
     "done": "Done",
-    "bcaOtpReference.pleaseKeyInDigit": "PLEASE KEY IN THE {digit} DIGIT NUMBER INTO YOUR KEYBCA",
-    "bcaOtpReference.pleaseInputOtp": "KEYBCA RESPONSE APPLI {number}"
+    "bcaOtpReference.pleaseKeyInDigit": "PLEASE KEY IN THE 8 DIGIT NUMBER INTO YOUR KEYBCA",
+    "bcaOtpReference.pleaseInputOtp": "KEYBCA RESPONSE APPLI {number}",
+    "bcaOtpReference.inputFixedLength": "Please input a fixed length of {fixedLength} characters."
 }
