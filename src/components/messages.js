@@ -72,6 +72,10 @@ export default defineMessages({
       id: 'notifications.turnOnLoginOnWebSteps2',
       defaultMessage: '<red>Turn Off</red> <b>Setting VCB Digibank login on web</b>'
     },
+    getVeitcombankOnGooglePlay: {
+      id: 'notifications.getVeitcombankOnGooglePlay',
+      defaultMessage: 'Get Vietcombank App on Google play'
+    },
     hasBIDV: {
       id: 'notifications.hasBIDV',
       defaultMessage: 'For customers who have an account SmartBanking: <b>Username is the phone number that is registered for service</b>'
