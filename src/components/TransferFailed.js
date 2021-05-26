@@ -43,10 +43,21 @@ const useStyles = createUseStyles({
           content: "'\\2022'",
           fontWeight: 'bold',
           display: 'inline-block',
-          width: '1em',
+          width: '0.8em',
           fontSize: '1em'
         }
       }
+    }
+  },
+
+  vcbGetMobileApp: {
+    borderTop: '0.5px solid rgb(227, 227, 227)',
+    textAlign: 'center',
+
+    '& p': {
+      color: '#767676',
+      fontSize: '16px',
+      margin: '20px 0'
     }
   }
 })
@@ -62,7 +73,7 @@ const textFormatter = {
   )
 }
 
-const VcbLoginFailed = () => {
+const VcbLoginInstructions = () => {
   return (
     <ul>
       <li>
@@ -92,17 +103,31 @@ const VcbLoginFailed = () => {
     </ul>)
 }
 
+const VcbDownloadApp = () => {
+  return (
+    <a href='https://play.google.com/store/apps/details?id=com.VCB&hl=en&gl=US'>
+      <img width='300' alt='submit-failed' src='/images/google-play-badge.png' />
+    </a>
+  )
+}
+
 const TransferFailed = ({ bank, transferResult }) => {
   const classes = useStyles()
 
   if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again.') {
     return (
-      <div className={classes.vcbLoginFailed}>
+      <div>
         <div className={classes.redirectContentFailed}>
           <img alt='submit-failed' src='/icons/submit-failed.svg' />
-          <p>{transferResult.message || transferResult.statusMessage}</p>
+          <h1>{<FormattedMessage {...messages.errors.vcbLoginFailed} />}</h1>
         </div>
-        <VcbLoginFailed />
+        <div className={classes.vcbLoginFailed}>
+          <VcbLoginInstructions />
+        </div>
+        <div className={classes.vcbGetMobileApp}>
+          <p>Get Vietcombank App on Google play</p>
+          <VcbDownloadApp />
+        </div>
       </div>
     )
   }

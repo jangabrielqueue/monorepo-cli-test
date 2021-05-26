@@ -32,6 +32,10 @@ export default defineMessages({
       id: 'errors.transactionFailed',
       defaultMessage: 'Submitted Transaction Failed!'
     },
+    vcbLoginFailed: {
+      id: 'errors.vcbLoginFailed',
+      defaultMessage: 'Login Failed!'
+    },
     pageDoesNoExist: {
       id: 'errors.pageDoesNoExist',
       defaultMessage: 'Sorry, the page you have visited does not exist.'
@@ -66,7 +70,7 @@ export default defineMessages({
     },
     turnOnLoginOnWebSteps2: {
       id: 'notifications.turnOnLoginOnWebSteps2',
-      defaultMessage: '<red>Turn OFF</red> <b>Setting VCB Digibank login on web</b>'
+      defaultMessage: '<red>Turn Off</red> <b>Setting VCB Digibank login on web</b>'
     },
     hasBIDV: {
       id: 'notifications.hasBIDV',
