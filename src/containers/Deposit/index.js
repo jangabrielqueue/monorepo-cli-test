@@ -433,8 +433,9 @@ const Deposit = (props) => {
       )
     } else if (step === 2) {
       analytics.setCurrentScreen('transfer_failed')
+      const delay = bank === 'VCB' ? 30000 : 10000
       return (
-        <AutoRedirect delay={10000} url={failedUrl}>
+        <AutoRedirect delay={delay} url={failedUrl}>
           <TransferFailed bank={bank} transferResult={transferResult} />
         </AutoRedirect>
       )
