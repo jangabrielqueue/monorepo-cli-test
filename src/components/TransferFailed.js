@@ -125,7 +125,7 @@ const TransferFailed = ({ bank, transferResult }) => {
           <VcbLoginInstructions />
         </div>
         <div className={classes.vcbGetMobileApp}>
-          <p>Get Vietcombank App on Google play</p>
+          <p>{<FormattedMessage {...messages.notifications.getVeitcombankOnGooglePlay} />}</p>
           <VcbDownloadApp />
         </div>
       </div>
