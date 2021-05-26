@@ -95,7 +95,7 @@ const VcbLoginFailed = () => {
 const TransferFailed = ({ bank, transferResult }) => {
   const classes = useStyles()
 
-  if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again') {
+  if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again.') {
     return <div className={classes.vcbLoginFailed}><VcbLoginFailed /></div>
   }
 
