@@ -3,6 +3,17 @@ import messages from './messages'
 import { FormattedMessage } from 'react-intl'
 import { createUseStyles, useTheme } from 'react-jss'
 
+const textFormatter = {
+  b: msg => (
+    <b>
+      {msg}
+    </b>
+  ),
+  red: msg => (
+    <red>{msg}</red>
+  )
+}
+
 // styling
 const useStyles = createUseStyles({
   countDownContainer: {
@@ -12,12 +23,17 @@ const useStyles = createUseStyles({
     background: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationBIDV : theme.colors.notificationVCB,
     color: '#3e3e3e',
     fontSize: '14px',
-    margin: ({ bank }) => bank === 'BIDV' && 20,
-    borderRadius: ({ bank }) => bank === 'BIDV' && 12,
+    margin: ({ bank }) => 20,
+    borderRadius: ({ bank }) => 12,
 
     '& b': {
       fontWeight: 700,
       color: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationFontBIDV : 'black'
+    },
+
+    '& red': {
+      fontWeight: 700,
+      color: () => 'red'
     },
 
     '& ul': {
@@ -57,26 +73,26 @@ const Notifications = ({ language, intl, bank }) => {
           <ul>
             <li>
               <FormattedMessage
-                {...messages.notifications.hasVCB}
-                values={{
-                  b: msg => (
-                    <b>
-                      {msg}
-                    </b>
-                  )
-                }}
+                {...messages.notifications.turnOnLoginOnWeb}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
-                {...messages.notifications.noVCB}
-                values={{
-                  b: msg => (
-                    <b>
-                      {msg}
-                    </b>
-                  )
-                }}
+                {...messages.notifications.turnOnLoginOnWebSteps}
+                values={textFormatter}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.turnOnLoginOnWebSteps1}
+                values={textFormatter}
+              />
+            </li>
+            <li>
+              <FormattedMessage
+                {...messages.notifications.turnOnLoginOnWebSteps2}
+                values={textFormatter}
               />
             </li>
           </ul>
@@ -87,25 +103,13 @@ const Notifications = ({ language, intl, bank }) => {
             <li>
               <FormattedMessage
                 {...messages.notifications.hasBIDV}
-                values={{
-                  b: msg => (
-                    <b>
-                      {msg}
-                    </b>
-                  )
-                }}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
                 {...messages.notifications.noBIDV}
-                values={{
-                  b: msg => (
-                    <b>
-                      {msg}
-                    </b>
-                  )
-                }}
+                values={textFormatter}
               />
             </li>
           </ul>

@@ -11,6 +11,7 @@ const useStyles = createUseStyles({
   }
 })
 
+// delay: ms
 const AutoRedirect = ({ children, delay, url }) => {
   const classes = useStyles()
 
@@ -30,7 +31,7 @@ const AutoRedirect = ({ children, delay, url }) => {
         <Countdown
           redirect
           minutes={0}
-          seconds={10}
+          seconds={delay / 1000}
         />
       </div>
       {

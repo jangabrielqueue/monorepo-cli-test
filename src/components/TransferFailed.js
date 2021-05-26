@@ -30,11 +30,81 @@ const useStyles = createUseStyles({
       fontSize: '16px',
       margin: '25px 0'
     }
+  },
+
+  vcbLoginFailed: {
+    '& ul': {
+      listStyle: 'none',
+      padding: 0,
+      letterSpacing: 0.4,
+
+      '& li': {
+        '&:before': {
+          content: "'\\2022'",
+          fontWeight: 'bold',
+          display: 'inline-block',
+          width: '1em',
+          fontSize: '1em'
+        }
+      }
+    }
   }
 })
 
-const TransferFailed = ({ transferResult }) => {
+const textFormatter = {
+  b: msg => (
+    <b>
+      {msg}
+    </b>
+  ),
+  red: msg => (
+    <red>{msg}</red>
+  )
+}
+
+const VcbLoginFailed = () => {
+  return (
+    <ul>
+      <li>
+        <FormattedMessage
+          {...messages.notifications.turnOnLoginOnWeb}
+          values={textFormatter}
+        />
+      </li>
+      <li>
+        <FormattedMessage
+          {...messages.notifications.turnOnLoginOnWebSteps}
+          values={textFormatter}
+        />
+      </li>
+      <li>
+        <FormattedMessage
+          {...messages.notifications.turnOnLoginOnWebSteps1}
+          values={textFormatter}
+        />
+      </li>
+      <li>
+        <FormattedMessage
+          {...messages.notifications.turnOnLoginOnWebSteps2}
+          values={textFormatter}
+        />
+      </li>
+    </ul>)
+}
+
+const TransferFailed = ({ bank, transferResult }) => {
   const classes = useStyles()
+
+  if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again.') {
+    return (
+      <div className={classes.vcbLoginFailed}>
+        <div className={classes.redirectContentFailed}>
+          <img alt='submit-failed' src='/icons/submit-failed.svg' />
+        </div>
+        <VcbLoginFailed />
+      </div>
+    )
+  }
 
   return (
     <div className={classes.redirectContentFailed}>
