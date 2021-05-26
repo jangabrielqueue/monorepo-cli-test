@@ -100,6 +100,7 @@ const TransferFailed = ({ bank, transferResult }) => {
       <div className={classes.vcbLoginFailed}>
         <div className={classes.redirectContentFailed}>
           <img alt='submit-failed' src='/icons/submit-failed.svg' />
+          <p>{transferResult.message || transferResult.statusMessage}</p>
         </div>
         <VcbLoginFailed />
       </div>
