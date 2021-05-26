@@ -52,6 +52,22 @@ export default defineMessages({
       id: 'notifications.noVCB',
       defaultMessage: '- For customers not having VCB Digibank account: <b>Username is VCB-iB@nking username</b>, used to transform to VCB Digibank'
     },
+    turnOnLoginOnWeb: {
+      id: 'notifications.turnOnLoginOnWeb',
+      defaultMessage: 'In order to use VCB, please follow the the instruction as below'
+    },
+    turnOnLoginOnWebSteps: {
+      id: 'notifications.turnOnLoginOnWebSteps',
+      defaultMessage: 'Sign in to <b>Vietcombank App</b>'
+    },
+    turnOnLoginOnWebSteps1: {
+      id: 'notifications.turnOnLoginOnWebSteps1',
+      defaultMessage: 'Go to <b>Settings</b> >> <b>General settings</b> >> <b>Login settings</b>'
+    },
+    turnOnLoginOnWebSteps2: {
+      id: 'notifications.turnOnLoginOnWebSteps2',
+      defaultMessage: '<red>Turn OFF</red> <b>Setting VCB Digibank login on web</b>'
+    },
     hasBIDV: {
       id: 'notifications.hasBIDV',
       defaultMessage: 'For customers who have an account SmartBanking: <b>Username is the phone number that is registered for service</b>'
