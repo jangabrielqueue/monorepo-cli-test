@@ -435,7 +435,7 @@ const Deposit = (props) => {
       analytics.setCurrentScreen('transfer_failed')
       return (
         <AutoRedirect delay={10000} url={failedUrl}>
-          <TransferFailed transferResult={transferResult} />
+          <TransferFailed bank={bank} transferResult={transferResult} />
         </AutoRedirect>
       )
     }
