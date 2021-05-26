@@ -3,7 +3,7 @@ import messages from './messages'
 import { FormattedMessage } from 'react-intl'
 import { createUseStyles, useTheme } from 'react-jss'
 
-const formatter = {
+const textFormatter = {
   b: msg => (
     <b>
       {msg}
@@ -74,25 +74,25 @@ const Notifications = ({ language, intl, bank }) => {
             <li>
               <FormattedMessage
                 {...messages.notifications.turnOnLoginOnWeb}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
                 {...messages.notifications.turnOnLoginOnWebSteps}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
                 {...messages.notifications.turnOnLoginOnWebSteps1}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
                 {...messages.notifications.turnOnLoginOnWebSteps2}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
           </ul>
@@ -103,13 +103,13 @@ const Notifications = ({ language, intl, bank }) => {
             <li>
               <FormattedMessage
                 {...messages.notifications.hasBIDV}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
                 {...messages.notifications.noBIDV}
-                values={formatter}
+                values={textFormatter}
               />
             </li>
           </ul>
