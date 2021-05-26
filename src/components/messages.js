@@ -54,7 +54,7 @@ export default defineMessages({
     },
     turnOnLoginOnWeb: {
       id: 'notifications.turnOnLoginOnWeb',
-      defaultMessage: 'In order to use VCB, please follow the the instruction as below'
+      defaultMessage: 'In order to use VCB, please follow the instructions below step by step'
     },
     turnOnLoginOnWebSteps: {
       id: 'notifications.turnOnLoginOnWebSteps',
