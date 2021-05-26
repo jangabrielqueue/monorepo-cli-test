@@ -64,7 +64,7 @@ const useStyles = createUseStyles({
     justifyContent: 'center',
     backgroundImage: (props) => props.bank?.toUpperCase() === 'BIDV' ? 'linear-gradient(190deg, #00bfae, #0066ad 44%, #FFFFFF calc(44% + 2px))' : `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : '#91C431'} 44%,
     #FFFFFF calc(44% + 2px))`,
-    paddingTop: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '105px' : '75px',
+    paddingTop: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '130px' : '75px',
     '@media (max-width: 62em)': {
       paddingTop: (props) => props.bank?.toUpperCase() === 'BIDV' && '130px'
     },
