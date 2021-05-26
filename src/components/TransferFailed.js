@@ -96,7 +96,14 @@ const TransferFailed = ({ bank, transferResult }) => {
   const classes = useStyles()
 
   if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again.') {
-    return <div className={classes.vcbLoginFailed}><VcbLoginFailed /></div>
+    return (
+      <div className={classes.vcbLoginFailed}>
+        <div className={classes.redirectContentFailed}>
+          <img alt='submit-failed' src='/icons/submit-failed.svg' />
+        </div>
+        <VcbLoginFailed />
+      </div>
+    )
   }
 
   return (
