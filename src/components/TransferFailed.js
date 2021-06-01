@@ -59,6 +59,11 @@ const useStyles = createUseStyles({
       fontSize: '16px',
       margin: '20px 0'
     }
+  },
+
+  separator: {
+    borderTop: '0.5px solid rgb(227, 227, 227)',
+    padding: '20px 0'
   }
 })
 
@@ -74,9 +79,10 @@ const textFormatter = {
 }
 
 const VcbLoginInstructions = () => {
+  const classes = useStyles()
   return (
     <ul>
-      <li>
+      <li className={classes.separator}>
         <FormattedMessage
           {...messages.notifications.turnOnLoginOnWeb}
           values={textFormatter}
@@ -97,6 +103,18 @@ const VcbLoginInstructions = () => {
       <li>
         <FormattedMessage
           {...messages.notifications.turnOnLoginOnWebSteps2}
+          values={textFormatter}
+        />
+      </li>
+      <li className={classes.separator}>
+        <FormattedMessage
+          {...messages.notifications.hasVCB}
+          values={textFormatter}
+        />
+      </li>
+      <li>
+        <FormattedMessage
+          {...messages.notifications.noVCB}
           values={textFormatter}
         />
       </li>
