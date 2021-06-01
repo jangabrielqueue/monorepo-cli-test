@@ -73,25 +73,13 @@ const Notifications = ({ language, intl, bank }) => {
           <ul>
             <li>
               <FormattedMessage
-                {...messages.notifications.turnOnLoginOnWeb}
+                {...messages.notifications.hasVCB}
                 values={textFormatter}
               />
             </li>
             <li>
               <FormattedMessage
-                {...messages.notifications.turnOnLoginOnWebSteps}
-                values={textFormatter}
-              />
-            </li>
-            <li>
-              <FormattedMessage
-                {...messages.notifications.turnOnLoginOnWebSteps1}
-                values={textFormatter}
-              />
-            </li>
-            <li>
-              <FormattedMessage
-                {...messages.notifications.turnOnLoginOnWebSteps2}
+                {...messages.notifications.noVCB}
                 values={textFormatter}
               />
             </li>
