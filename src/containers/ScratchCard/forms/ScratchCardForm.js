@@ -4,7 +4,7 @@ import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
-import { checkBankIfKnown } from '../../../utils/banks'
+import { checkBankIfKnown, checkIfGWCBank } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -305,7 +305,7 @@ const ScratchCardForm = React.memo((props) => {
     <>
       <form autoComplete='off'>
         {
-          (bank && bank.toUpperCase() !== 'GWC') &&
+          !checkIfGWCBank(bank) &&
             <div className={formIconContainerMobileStyles}>
               <div>
                 <label htmlFor='telcoName'><FormattedMessage {...messages.placeholders.telcoName} /></label>
@@ -388,7 +388,7 @@ const ScratchCardForm = React.memo((props) => {
           </GlobalButton>
         </footer>
         {
-          (bank?.toUpperCase() !== 'GWC') &&
+          !checkIfGWCBank(bank) &&
             <ul className={classes.noteText}>
               <li><FormattedMessage {...messages.notes.notesOne} /></li>
               <li><FormattedMessage {...messages.notes.notesTwo} /></li>
@@ -401,6 +401,12 @@ const ScratchCardForm = React.memo((props) => {
               {
                 renderTransactionRates()
               }
+            </ul>
+        }
+        {
+          checkIfGWCBank(bank) &&
+            <ul className={classes.noteText}>
+              <li><FormattedMessage {...messages.notes.notesSix} /> 15%</li>
             </ul>
         }
       </form>
