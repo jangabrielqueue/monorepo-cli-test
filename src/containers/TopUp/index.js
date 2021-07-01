@@ -18,6 +18,8 @@ import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
+import { QueryParamsValidator } from '../../components/QueryParamsValidator'
+import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
 import { sleep, calculateCurrentProgress } from '../../utils/utils'
 import { getBanksByCurrencyForTopUp } from '../../utils/banks'
@@ -300,23 +302,6 @@ const TopUp = props => {
     })
   }
 
-  function FallbackComponent ({ componentStack, error }) {
-    return (
-      <div>
-        <p>
-          <strong>Oops! An error occured!</strong>
-        </p>
-        <p>Please contact customer service</p>
-        <p>
-          <strong>Error:</strong> {error.toString()}
-        </p>
-        <p>
-          <strong>Stacktrace:</strong> {componentStack}
-        </p>
-      </div>
-    )
-  }
-
   function renderStepContents () {
     if (step === 0) {
       analytics.setCurrentScreen('input_user_credentials')
@@ -444,6 +429,7 @@ const TopUp = props => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        <QueryParamsValidator />
         <div className={classes.topUpContainer}>
           <div className={classes.topUpContent}>
             <section className={classes.topUpHeader}>

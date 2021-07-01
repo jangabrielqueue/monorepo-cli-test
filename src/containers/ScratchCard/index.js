@@ -18,6 +18,8 @@ import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
 import TransferWaitForConfirm from '../../components/TransferWaitForConfirm'
 import AutoRedirect from '../../components/AutoRedirect'
+import { QueryParamsValidator } from '../../components/QueryParamsValidator'
+import { FallbackComponent } from '../../components/FallbackComponent'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -306,23 +308,6 @@ const ScratchCard = (props) => {
     })
   }
 
-  function FallbackComponent ({ componentStack, error }) {
-    return (
-      <div>
-        <p>
-          <strong>Oops! An error occured!</strong>
-        </p>
-        <p>Please contact customer service</p>
-        <p>
-          <strong>Error:</strong> {error.toString()}
-        </p>
-        <p>
-          <strong>Stacktrace:</strong> {componentStack}
-        </p>
-      </div>
-    )
-  }
-
   function renderStepContents () {
     switch (steps[step]) {
       case intl.formatMessage(messages.steps.fillInForm):
@@ -472,6 +457,7 @@ const ScratchCard = (props) => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
+        <QueryParamsValidator />
         <div className={classes.scratchCardContainer}>
           <div className={classes.scratchCardContent}>
             <section className={classes.scratchCardHeader}>

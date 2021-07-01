@@ -23,6 +23,8 @@ import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
 import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
+import { QueryParamsValidator } from '../../components/QueryParamsValidator'
+import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
 import { sleep, calculateCurrentProgress } from '../../utils/utils'
 import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
@@ -342,23 +344,6 @@ const Deposit = (props) => {
     })
   }
 
-  function FallbackComponent ({ componentStack, error }) {
-    return (
-      <div>
-        <p>
-          <strong>Oops! An error occured!</strong>
-        </p>
-        <p>Please contact customer service</p>
-        <p>
-          <strong>Error:</strong> {error.toString()}
-        </p>
-        <p>
-          <strong>Stacktrace:</strong> {componentStack}
-        </p>
-      </div>
-    )
-  }
-
   function renderIcon (type) {
     if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
@@ -548,9 +533,9 @@ const Deposit = (props) => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         {
-          notificationBanks.includes(bank?.toUpperCase()) &&
-            <Notifications bank={bank?.toUpperCase()} language={language} />
+          notificationBanks.includes(bank?.toUpperCase()) && <Notifications bank={bank?.toUpperCase()} language={language} />
         }
+        <QueryParamsValidator />
         <div className={classes.depositContainer}>
           <div className={classes.depositContent}>
             <section className={classes.headerContainer}>

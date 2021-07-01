@@ -61,6 +61,9 @@
     "standard": "^14.3.4"
   },
   "standard": {
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "env": [
+      "jest"
+    ]
   }
 }
