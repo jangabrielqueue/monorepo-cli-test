@@ -18,7 +18,6 @@ import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
-import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
 import { sleep, calculateCurrentProgress } from '../../utils/utils'
@@ -41,10 +40,21 @@ const useStyles = createUseStyles({
     padding: '20px',
     position: 'relative'
   },
+  formWrapper: {
+    maxHeight: '100%',
+    minWidth: '500px',
+
+    '@media (max-width: 36em)': {
+      minWidth: 0
+    },
+
+    '@media (max-width: 23em) and (orientation: portrait)': {
+      overflowY: 'scroll',
+      maxHeight: '520px'
+    }
+  },
   topUpContainer: {
-    margin: '0 20px',
-    maxWidth: '500px',
-    width: '100%'
+    margin: '0 20px'
   },
   topUpContent: {
     background: '#FFFFFF',
@@ -55,12 +65,19 @@ const useStyles = createUseStyles({
     display: 'none',
 
     '@media (max-width: 36em)': {
-      display: 'block',
+      backgroundColor: '#FFF',
+      bottom: 0,
       boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
-      marginTop: '20px',
-      padding: '10px 0',
-      textAlign: 'center',
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      left: 0,
+      padding: '8px 0',
+      position: 'fixed',
+      right: 0,
       width: '100%'
+    },
+    '@media (max-width: 24em) and (orientation: portrait)': {
+      padding: 0
     }
   },
   topUpProgressBarContainer: {
@@ -429,39 +446,40 @@ const TopUp = props => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-        <QueryParamsValidator />
-        <div className={classes.topUpContainer}>
-          <div className={classes.topUpContent}>
-            <section className={classes.topUpHeader}>
-              <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
-                <Logo bank={bank} currency={currency} type='topup' />
-              </Suspense>
-              {
-                step === 0 && (
-                  <Statistics
-                    title={<FormattedMessage {...messages.deposit} />}
-                    language={language}
-                    currency={currency}
-                    amount={amount}
-                  />
-                )
-              }
-              {
-                step === 1 && (
-                  <Countdown minutes={0} seconds={100} />
-                )
-              }
-              {
-                error && <ErrorAlert message={error.message} />
-              }
-            </section>
-            <section className={classes.topUpBody}>
-              {
-                renderStepContents()
-              }
-            </section>
+        <div className={classes.formWrapper}>
+          <div className={classes.topUpContainer}>
+            <div className={classes.topUpContent}>
+              <section className={classes.topUpHeader}>
+                <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
+                  <Logo bank={bank} currency={currency} type='topup' />
+                </Suspense>
+                {
+                  step === 0 && (
+                    <Statistics
+                      title={<FormattedMessage {...messages.deposit} />}
+                      language={language}
+                      currency={currency}
+                      amount={amount}
+                    />
+                  )
+                }
+                {
+                  step === 1 && (
+                    <Countdown minutes={0} seconds={100} />
+                  )
+                }
+                {
+                  error && <ErrorAlert message={error.message} />
+                }
+              </section>
+              <section className={classes.topUpBody}>
+                {
+                  renderStepContents()
+                }
+              </section>
+            </div>
+            <StepsBar step={step} />
           </div>
-          <StepsBar step={step} />
         </div>
         {
           step === 0 &&
