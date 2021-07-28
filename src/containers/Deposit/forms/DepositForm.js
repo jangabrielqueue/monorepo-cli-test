@@ -146,7 +146,7 @@ const useStyles = createUseStyles({
   referenceTexts: {
     lineHeight: 1.5,
     listStyle: 'none',
-    margin: '0 0 16px',
+    margin: '0',
     paddingLeft: '35px',
 
     '& li': {

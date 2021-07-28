@@ -31,7 +31,7 @@ const useStyles = createUseStyles({
       backgroundColor: '#F5F5F5'
     },
 
-    '@media (max-width: 23.438em)': {
+    '@media (max-width: 36em)': {
       maxWidth: ({ props }) => !isBidvBank(props) && '130px',
       margin: ({ props }) => isBidvBank(props) && '10px 20px',
       padding: 0

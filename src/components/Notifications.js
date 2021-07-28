@@ -17,14 +17,12 @@ const textFormatter = {
 // styling
 const useStyles = createUseStyles({
   countDownContainer: {
-    position: 'absolute',
-    top: 0,
     padding: '10px',
     background: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationBIDV : theme.colors.notificationVCB,
     color: '#3e3e3e',
     fontSize: '14px',
-    margin: ({ bank }) => 20,
-    borderRadius: ({ bank }) => 12,
+    margin: '20px 0',
+    borderRadius: '12px',
 
     '& b': {
       fontWeight: 700,

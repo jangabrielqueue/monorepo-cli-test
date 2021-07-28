@@ -36,6 +36,8 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 // lazy loaded components
 const Logo = lazy(() => import('../../components/Logo'))
 
+const notificationBanks = ['VCB', 'BIDV']
+
 // styling
 const useStyles = createUseStyles({
   headerContainer: {
@@ -49,18 +51,28 @@ const useStyles = createUseStyles({
   formWrapper: {
     maxHeight: '100%',
     minWidth: '500px',
+    padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
+
+    '@media (max-width: 62em)': {
+      padding: (props) => props.bank?.toUpperCase() === 'BIDV' && '0 20px'
+    },
 
     '@media (max-width: 36em)': {
       minWidth: 0
     },
 
+    '@media (max-width: 33.750em)': {
+      padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '35px 20px 0'
+    },
+
     '@media (max-width: 23em) and (orientation: portrait)': {
       overflowY: 'scroll',
-      maxHeight: '520px'
+      maxHeight: '560px'
     }
   },
   depositContainer: {
-    margin: '0 20px'
+    margin: '0 auto',
+    maxWidth: '466px'
   },
   depositContent: {
     background: '#FFFFFF',
@@ -77,7 +89,6 @@ const useStyles = createUseStyles({
       display: 'flex',
       justifyContent: 'space-evenly',
       left: 0,
-      padding: '8px 0px',
       position: 'fixed',
       right: 0,
       width: '100%'
@@ -87,11 +98,15 @@ const useStyles = createUseStyles({
     display: 'none',
 
     '@media (max-width: 36em)': {
+      backgroundColor: '#FFF',
+      bottom: 0,
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
       display: 'flex',
       justifyContent: 'center',
-      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      left: 0,
       marginTop: '20px',
-      padding: '10px 0',
+      position: 'fixed',
+      right: 0,
       width: '100%'
     }
   },
@@ -189,7 +204,7 @@ const Deposit = (props) => {
   const [otpStatusCode, setOtpStatusCode] = useState('')
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
-  const classes = useStyles(step)
+  const classes = useStyles({ step, bank })
   const notificationBanks = ['VCB', 'BIDV']
 
   async function handleSubmitDeposit (values, e, type) {
