@@ -281,10 +281,10 @@ const ScratchCardForm = React.memo((props) => {
         <ul>
           <li>VIETTEL: 22%</li>
           <li>MOBI: 27% (Giá trị thẻ 10-20-30-50-100) và 32% (Giá trị thẻ 200-300-500)</li>
-          <li>VINA: 20%</li>
+          <li>VINA: 25%</li>
           <li>ZING: 25%</li>
           <li>GATE: 28%</li>
-          <li>VIETNAMOBILE: 25%</li>
+          <li>VIETNAMOBILE: 20%</li>
         </ul>
       )
     } else {
@@ -292,10 +292,10 @@ const ScratchCardForm = React.memo((props) => {
         <ul>
           <li>VIETTEL: 22%</li>
           <li>MOBI: 27% (card value 10-20-30-50-100) and 32% (card value 200-300-500)</li>
-          <li>VINA: 20%</li>
+          <li>VINA: 25%</li>
           <li>ZING: 25%</li>
           <li>GATE: 28%</li>
-          <li>VIETNAMOBILE: 25%</li>
+          <li>VIETNAMOBILE: 20%</li>
         </ul>
       )
     }
