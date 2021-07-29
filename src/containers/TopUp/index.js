@@ -30,6 +30,8 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 // lazy loaded components
 const Logo = lazy(() => import('../../components/Logo'))
 
+const notificationBanks = ['VCB', 'BIDV']
+
 // styling
 const useStyles = createUseStyles({
   topUpHeader: {
@@ -43,18 +45,24 @@ const useStyles = createUseStyles({
   formWrapper: {
     maxHeight: '100%',
     minWidth: '500px',
+    padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
+
+    '@media (max-width: 62em)': {
+      padding: (props) => props.bank?.toUpperCase() === 'BIDV' && '0 20px'
+    },
 
     '@media (max-width: 36em)': {
       minWidth: 0
     },
 
+    '@media (max-width: 33.750em)': {
+      padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '35px 20px 0'
+    },
+
     '@media (max-width: 23em) and (orientation: portrait)': {
       overflowY: 'scroll',
-      maxHeight: '520px'
+      maxHeight: '560px'
     }
-  },
-  topUpContainer: {
-    margin: '0 20px'
   },
   topUpContent: {
     background: '#FFFFFF',
@@ -160,7 +168,7 @@ const TopUp = props => {
   const themeColor = 'topup'
   const { handleSubmit } = useFormContext()
   analytics.setCurrentScreen('top_up')
-  const classes = useStyles(step)
+  const classes = useStyles({ step, bank })
 
   function getDefaultBankByCurrency (currency) {
     return getBanksByCurrencyForTopUp(currency)[0]
@@ -447,39 +455,37 @@ const TopUp = props => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         <div className={classes.formWrapper}>
-          <div className={classes.topUpContainer}>
-            <div className={classes.topUpContent}>
-              <section className={classes.topUpHeader}>
-                <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
-                  <Logo bank={bank} currency={currency} type='topup' />
-                </Suspense>
-                {
-                  step === 0 && (
-                    <Statistics
-                      title={<FormattedMessage {...messages.deposit} />}
-                      language={language}
-                      currency={currency}
-                      amount={amount}
-                    />
-                  )
-                }
-                {
-                  step === 1 && (
-                    <Countdown minutes={0} seconds={100} />
-                  )
-                }
-                {
-                  error && <ErrorAlert message={error.message} />
-                }
-              </section>
-              <section className={classes.topUpBody}>
-                {
-                  renderStepContents()
-                }
-              </section>
-            </div>
-            <StepsBar step={step} />
+          <div className={classes.topUpContent}>
+            <section className={classes.topUpHeader}>
+              <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>
+                <Logo bank={bank} currency={currency} type='topup' />
+              </Suspense>
+              {
+                step === 0 && (
+                  <Statistics
+                    title={<FormattedMessage {...messages.deposit} />}
+                    language={language}
+                    currency={currency}
+                    amount={amount}
+                  />
+                )
+              }
+              {
+                step === 1 && (
+                  <Countdown minutes={0} seconds={100} />
+                )
+              }
+              {
+                error && <ErrorAlert message={error.message} />
+              }
+            </section>
+            <section className={classes.topUpBody}>
+              {
+                renderStepContents()
+              }
+            </section>
           </div>
+          <StepsBar step={step} />
         </div>
         {
           step === 0 &&
