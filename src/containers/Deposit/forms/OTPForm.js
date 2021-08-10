@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
-import { checkBankIfKnown, checkIfBcaBank } from '../../../utils/banks'
+import { checkBankIfKnown, checkIfBcaBank, checkIfBniBank } from '../../../utils/banks'
 import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp } from '../../../utils/utils'
 
 // lazy loaded components
@@ -159,7 +159,7 @@ const OTPForm = React.memo((props) => {
     formIconContainer: true,
     formIconContainerUsername: true
   })
-  const inputOtpValidations = checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? renderBcaOtpError() : {
+  const inputOtpValidations = (checkIfBcaBank(bank) || checkIfBniBank(bank)) && !isNullOrWhitespace(otpReference) ? renderBcaAndBniOtpError() : {
     required: <FormattedMessage {...messages.placeholders.inputOtp} />
   }
 
@@ -169,26 +169,40 @@ const OTPForm = React.memo((props) => {
     handleSubmitOTP(OTPValue)
   }
 
-  function renderBcaOtpError () {
+  function renderBcaAndBniOtpError () {
     if (checkIfAppTwoOtp(otpReference)) {
       return {
-        required: <FormattedMessage
+        required:
+        (checkIfBcaBank(bank) && <FormattedMessage
           {...messages.bcaOtpReference.inputFixedLength}
           values={{
             fixedLength: 6
           }}
-        />, // eslint-disable-line
+        />) || //eslint-disable-line
+        (checkIfBniBank(bank) && <FormattedMessage
+          {...messages.bniOtpReference.inputFixedLength}
+          values={{
+            fixedLength: 6
+          }}
+      />), // eslint-disable-line
         minLength: 6,
         maxLength: 6
       }
     } else if (checkIfAppOneOtp(otpReference)) {
       return {
-        required: <FormattedMessage
+        required:
+        (checkIfBcaBank(bank) && <FormattedMessage
           {...messages.bcaOtpReference.inputFixedLength}
           values={{
             fixedLength: 8
           }}
-        />, // eslint-disable-line
+        />) || //eslint-disable-line
+        (checkIfBniBank(bank) && <FormattedMessage
+          {...messages.bniOtpReference.inputFixedLength}
+          values={{
+            fixedLength: 8
+          }}
+      />), // eslint-disable-line
         minLength: 8,
         maxLength: 8
       }
@@ -210,7 +224,12 @@ const OTPForm = React.memo((props) => {
               {
                 checkIfAppTwoOtp(otpReference) &&
                   <>
-                    <FormattedMessage {...messages.bcaOtpReference.pleaseKeyInDigit} />
+                    {
+                      checkIfBcaBank(bank) && <FormattedMessage {...messages.bcaOtpReference.pleaseKeyInDigit} />
+                    }
+                    {
+                      checkIfBniBank(bank) && <FormattedMessage {...messages.bniOtpReference.pleaseKeyInDigit} />
+                    }
                     <p className={classes.otpReferenceText}>{otpReference}</p>
                   </>
               }
@@ -230,12 +249,26 @@ const OTPForm = React.memo((props) => {
             <div>
               <label htmlFor='OTP'>
                 {
-                  checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? <FormattedMessage
-                    {...messages.bcaOtpReference.pleaseInputOtp}
-                    values={{
-                      number: checkIfAppTwoOtp(otpReference) ? 2 : 1
-                    }}
-                  /> : <FormattedMessage {...messages.placeholders.inputOtp} /> // eslint-disable-line
+                  checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) &&
+                    <FormattedMessage
+                      {...messages.bcaOtpReference.pleaseInputOtp}
+                      values={{
+                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                      }}
+                    />
+                }
+                {
+                  checkIfBniBank(bank) && !isNullOrWhitespace(otpReference) &&
+                    <FormattedMessage
+                      {...messages.bniOtpReference.pleaseInputOtp}
+                      values={{
+                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                      }}
+                    />
+                }
+                {
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
+                    <FormattedMessage {...messages.placeholders.inputOtp} />
                 }
               </label>
               <div className={classes.inputFieldContainer}>
@@ -262,23 +295,47 @@ const OTPForm = React.memo((props) => {
               {
                 errors.OTP?.type === 'minLength' &&
                   <p className='input-errors'>
-                    <FormattedMessage
-                      {...messages.bcaOtpReference.inputFixedLength}
-                      values={{
-                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                      }}
-                    />
+                    {
+                      checkIfBcaBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bcaOtpReference.inputFixedLength}
+                          values={{
+                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                          }}
+                        />
+                    }
+                    {
+                      checkIfBniBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bniOtpReference.inputFixedLength}
+                          values={{
+                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                          }}
+                        />
+                    }
                   </p>
               }
               {
                 errors.OTP?.type === 'maxLength' &&
                   <p className='input-errors'>
-                    <FormattedMessage
-                      {...messages.bcaOtpReference.inputFixedLength}
-                      values={{
-                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                      }}
-                    />
+                    {
+                      checkIfBcaBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bcaOtpReference.inputFixedLength}
+                          values={{
+                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                          }}
+                        />
+                    }
+                    {
+                      checkIfBniBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bniOtpReference.inputFixedLength}
+                          values={{
+                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                          }}
+                        />
+                    }
                   </p>
               }
             </div>
