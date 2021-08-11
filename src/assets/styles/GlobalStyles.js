@@ -32,6 +32,20 @@ const GlobalStyles = createUseStyles({
       margin: 0
     },
 
+    'input:-webkit-autofill': {
+      '-webkit-box-shadow': '0 0 0 30px white inset !important',
+
+      '&:hover': {
+        '-webkit-box-shadow': '0 0 0 30px white inset !important'
+      },
+      '&:focus': {
+        '-webkit-box-shadow': '0 0 0 30px white inset !important'
+      },
+      '&:active': {
+        '-webkit-box-shadow': '0 0 0 30px white inset !important'
+      }
+    },
+
     'input[type=text]': {
       borderBottom: '1px solid #ccc',
       borderLeft: 0,

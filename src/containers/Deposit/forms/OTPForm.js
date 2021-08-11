@@ -182,11 +182,11 @@ const OTPForm = React.memo((props) => {
         (checkIfBniBank(bank) && <FormattedMessage
           {...messages.bniOtpReference.inputFixedLength}
           values={{
-            fixedLength: 6
+            fixedLength: 8
           }}
       />), // eslint-disable-line
-        minLength: 6,
-        maxLength: 6
+        minLength: 8,
+        maxLength: 8
       }
     } else if (checkIfAppOneOtp(otpReference)) {
       return {
@@ -262,7 +262,7 @@ const OTPForm = React.memo((props) => {
                     <FormattedMessage
                       {...messages.bniOtpReference.pleaseInputOtp}
                       values={{
-                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                        number: 8
                       }}
                     />
                 }
@@ -309,7 +309,7 @@ const OTPForm = React.memo((props) => {
                         <FormattedMessage
                           {...messages.bniOtpReference.inputFixedLength}
                           values={{
-                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                            fixedLength: 8
                           }}
                         />
                     }
@@ -332,7 +332,7 @@ const OTPForm = React.memo((props) => {
                         <FormattedMessage
                           {...messages.bniOtpReference.inputFixedLength}
                           values={{
-                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                            fixedLength: 8
                           }}
                         />
                     }
