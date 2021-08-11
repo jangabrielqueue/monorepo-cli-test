@@ -71,5 +71,8 @@
   "done": "Selesai",
   "bcaOtpReference.pleaseKeyInDigit": "MASUKKAN 8 ANGKA INI PADA KEYBCA APPLI",
   "bcaOtpReference.pleaseInputOtp": "RESPON KEYBCA APPLI {number}",
-  "bcaOtpReference.inputFixedLength": "Harap masukkan jumlah karakter yang tetap {fixedLength}"
+  "bcaOtpReference.inputFixedLength": "Harap masukkan jumlah karakter yang tetap {fixedLength}",
+  "bniOtpReference.pleaseKeyInDigit": "Masukkan 8 angka yang tertulis ini pada BNI e-Secure And (APPLI-2)",
+  "bniOtpReference.pleaseInputOtp": "Masukkan {number} angka yang dihasilkan BNI e-Secure Anda",
+  "bniOtpReference.inputFixedLength": "Harap masukkan jumlah karakter yang tetap {fixedLength}"
 }

@@ -29,6 +29,8 @@ function renderButtonColors (bank, color) {
       return 'buttonBca'
     case 'BRI':
       return 'buttonBri'
+    case 'BNI':
+      return 'buttonBni'
     default:
       return color?.toLowerCase()
   }

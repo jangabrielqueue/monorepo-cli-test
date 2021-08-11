@@ -50,7 +50,9 @@ const appTheme = {
     buttonBri: '#f59823',
     notificationVCB: '#ffffcc',
     notificationBIDV: '#f1faff',
-    notificationFontBIDV: '#0066ad'
+    notificationFontBIDV: '#0066ad',
+    bni: '#f15922',
+    buttonBni: '#005f6b'
   }
 }
 
