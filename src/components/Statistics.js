@@ -6,13 +6,21 @@ const useStyles = createUseStyles({
   statisticsContainerHeader: {
     fontSize: '16px',
     fontWeight: '400',
-    margin: '0 0 4px'
+    margin: '0 0 4px',
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      fontSize: '14px'
+    }
   },
   statisticsContainerText: {
     color: '#3f3f3f',
     fontFamily: 'ProductSansBold',
     fontSize: '24px',
-    margin: 0
+    margin: 0,
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      fontSize: '18px'
+    }
   }
 })
 

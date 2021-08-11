@@ -11,6 +11,12 @@ const useStyles = createUseStyles({
     '& img': {
       height: 'auto',
       width: '100%'
+    },
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      margin: '10px auto',
+      maxWidth: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
+      type === 'scratch-card' ? '400px' : '150px'
     }
   }
 })

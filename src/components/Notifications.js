@@ -54,6 +54,10 @@ const useStyles = createUseStyles({
       }
     },
 
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      margin: '10px 0'
+    },
+
     '@media (max-width: 33.750em)': {
       fontSize: '12px'
     }

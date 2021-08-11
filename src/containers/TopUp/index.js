@@ -43,7 +43,7 @@ const useStyles = createUseStyles({
     position: 'relative'
   },
   formWrapper: {
-    maxHeight: '100%',
+    height: '100%',
     minWidth: '500px',
     padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
 
@@ -52,16 +52,13 @@ const useStyles = createUseStyles({
     },
 
     '@media (max-width: 36em)': {
-      minWidth: 0
+      minWidth: 0,
+      overflowY: 'scroll',
+      maxHeight: 'calc(100vh - 83px)'
     },
 
     '@media (max-width: 33.750em)': {
       padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '35px 20px 0'
-    },
-
-    '@media (max-width: 23em) and (orientation: portrait)': {
-      overflowY: 'scroll',
-      maxHeight: '560px'
     }
   },
   topUpContent: {
