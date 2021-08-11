@@ -192,5 +192,19 @@ export default defineMessages({
       id: 'bidvNotifications.dontCloseBrowser',
       defaultMessage: 'Please do not close your browser until you receive transaction result on Internet Banking. Thank you!'
     }
+  },
+  bcaOtpReference: {
+    pleaseKeyInDigit: {
+      id: 'bcaOtpReference.pleaseKeyInDigit',
+      defaultMessage: 'PLEASE KEY IN THE 8 DIGIT NUMBER INTO YOUR KEYBCA'
+    },
+    pleaseInputOtp: {
+      id: 'bcaOtpReference.pleaseInputOtp',
+      defaultMessage: 'KEYBCA RESPONSE APPLI {number}'
+    },
+    inputFixedLength: {
+      id: 'bcaOtpReference.inputFixedLength',
+      defaultMessage: 'Please input a fixed length of {fixedLength} characters.'
+    }
   }
 })

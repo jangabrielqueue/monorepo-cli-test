@@ -5,14 +5,17 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
-import { checkBankIfKnown } from '../../../utils/banks'
-import { isNullOrWhitespace } from '../../../utils/utils'
+import { checkBankIfKnown, checkIfBcaBank } from '../../../utils/banks'
+import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp } from '../../../utils/utils'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
+  otpReferenceText: {
+    fontWeight: 'bold'
+  },
   formIconContainer: {
     display: 'flex',
 
@@ -156,11 +159,40 @@ const OTPForm = React.memo((props) => {
     formIconContainer: true,
     formIconContainerUsername: true
   })
+  const inputOtpValidations = checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? renderBcaOtpError() : {
+    required: <FormattedMessage {...messages.placeholders.inputOtp} />
+  }
 
   function handleSubmitForm ({ OTP, OTP1, OTP2 }) {
     const OTPValue = isCardOTP ? `${OTP1}-${OTP2}` : OTP
 
     handleSubmitOTP(OTPValue)
+  }
+
+  function renderBcaOtpError () {
+    if (checkIfAppTwoOtp(otpReference)) {
+      return {
+        required: <FormattedMessage
+          {...messages.bcaOtpReference.inputFixedLength}
+          values={{
+            fixedLength: 6
+          }}
+        />, // eslint-disable-line
+        minLength: 6,
+        maxLength: 6
+      }
+    } else if (checkIfAppOneOtp(otpReference)) {
+      return {
+        required: <FormattedMessage
+          {...messages.bcaOtpReference.inputFixedLength}
+          values={{
+            fixedLength: 8
+          }}
+        />, // eslint-disable-line
+        minLength: 8,
+        maxLength: 8
+      }
+    }
   }
 
   useEffect(() => {
@@ -175,8 +207,20 @@ const OTPForm = React.memo((props) => {
         !isNullOrWhitespace(otpReference) && !isCardOTP &&
           <div className={formIconContainerOtpReferenceStyles}>
             <div>
-              <label><FormattedMessage {...messages.otpReference} /></label>
-              <p>{otpReference}</p>
+              {
+                checkIfAppTwoOtp(otpReference) &&
+                  <>
+                    <FormattedMessage {...messages.bcaOtpReference.pleaseKeyInDigit} />
+                    <p className={classes.otpReferenceText}>{otpReference}</p>
+                  </>
+              }
+              {
+                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) &&
+                  <>
+                    <FormattedMessage {...messages.otpReference} />
+                    <p className={classes.otpReferenceText}>{otpReference}</p>
+                  </>
+              }
             </div>
           </div>
       }
@@ -184,10 +228,21 @@ const OTPForm = React.memo((props) => {
         !isCardOTP &&
           <div className={formIconContainerUsernameStyles}>
             <div>
-              <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
+              <label htmlFor='OTP'>
+                {
+                  checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) ? <FormattedMessage
+                    {...messages.bcaOtpReference.pleaseInputOtp}
+                    values={{
+                      number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+                    }}
+                  /> : <FormattedMessage {...messages.placeholders.inputOtp} /> // eslint-disable-line
+                }
+              </label>
               <div className={classes.inputFieldContainer}>
                 <input
-                  ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
+                  ref={register({
+                    ...inputOtpValidations
+                  })}
                   type='number'
                   id='OTP'
                   name='OTP'
@@ -201,7 +256,31 @@ const OTPForm = React.memo((props) => {
                   }
                 </ul>
               </div>
-              <p className='input-errors'>{errors.OTP?.message}</p>
+              {
+                errors.OTP?.type === 'required' && <p className='input-errors'>{errors.OTP?.message}</p>
+              }
+              {
+                errors.OTP?.type === 'minLength' &&
+                  <p className='input-errors'>
+                    <FormattedMessage
+                      {...messages.bcaOtpReference.inputFixedLength}
+                      values={{
+                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                      }}
+                    />
+                  </p>
+              }
+              {
+                errors.OTP?.type === 'maxLength' &&
+                  <p className='input-errors'>
+                    <FormattedMessage
+                      {...messages.bcaOtpReference.inputFixedLength}
+                      values={{
+                        fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                      }}
+                    />
+                  </p>
+              }
             </div>
           </div>
       }

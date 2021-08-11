@@ -68,5 +68,8 @@
   "bidvNotifications.dontCloseBrowser": "Mohon jangan tutup browser Anda sampai Anda menerima hasil transaksi di Internet Banking. Terima kasih!",
   "pleaseUseMandiri": "Transaksi Anda akan dijalankan setelah persetujuan melalui Aplikasi Mandiri Online telah dilakukan.",
   "clickDone": "Klik Selesai jika Anda telah melakukan persetujuan.",
-  "done": "Selesai"
+  "done": "Selesai",
+  "bcaOtpReference.pleaseKeyInDigit": "MASUKKAN 8 ANGKA INI PADA KEYBCA APPLI",
+  "bcaOtpReference.pleaseInputOtp": "RESPON KEYBCA APPLI {number}",
+  "bcaOtpReference.inputFixedLength": "Harap masukkan jumlah karakter yang tetap {fixedLength}"
 }

@@ -42,11 +42,21 @@ function isBidvBank (props) {
   return props.bank?.toUpperCase() === 'BIDV'
 }
 
+function checkIfAppOneOtp (otpReference) {
+  return otpReference.includes('APP1')
+}
+
+function checkIfAppTwoOtp (otpReference) {
+  return otpReference.includes('APP2')
+}
+
 export {
   isNullOrWhitespace,
   sleep,
   calculateCurrentProgress,
   renderButtonColors,
   isTopUp,
-  isBidvBank
+  isBidvBank,
+  checkIfAppOneOtp,
+  checkIfAppTwoOtp
 }
