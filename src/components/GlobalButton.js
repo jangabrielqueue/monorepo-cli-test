@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
     justifyContent: ({ props }) => isBidvBank(props) ? 'center' : 'space-evenly',
     letterSpacing: '1.5px',
     lineHeight: 0.5,
-    margin: ({ props }) => isBidvBank(props) ? 0 : '10px',
+    margin: ({ props }) => isBidvBank(props) ? 0 : '20px 10px',
     maxWidth: ({ props }) => !isBidvBank(props) && '155px',
     width: '100%',
 
@@ -31,9 +31,9 @@ const useStyles = createUseStyles({
       backgroundColor: '#F5F5F5'
     },
 
-    '@media (max-width: 23.438em)': {
+    '@media (max-width: 36em)': {
       maxWidth: ({ props }) => !isBidvBank(props) && '130px',
-      margin: ({ props }) => isBidvBank(props) && '10px 20px',
+      margin: ({ props }) => isBidvBank(props) && '20px',
       padding: 0
     }
   },

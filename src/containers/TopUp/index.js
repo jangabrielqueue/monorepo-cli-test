@@ -18,7 +18,6 @@ import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
-import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
 import { sleep, calculateCurrentProgress } from '../../utils/utils'
@@ -31,6 +30,8 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 // lazy loaded components
 const Logo = lazy(() => import('../../components/Logo'))
 
+const notificationBanks = ['VCB', 'BIDV']
+
 // styling
 const useStyles = createUseStyles({
   topUpHeader: {
@@ -41,10 +42,24 @@ const useStyles = createUseStyles({
     padding: '20px',
     position: 'relative'
   },
-  topUpContainer: {
-    margin: '0 20px',
-    maxWidth: '500px',
-    width: '100%'
+  formWrapper: {
+    height: '100%',
+    minWidth: '500px',
+    padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
+
+    '@media (max-width: 62em)': {
+      padding: (props) => props.bank?.toUpperCase() === 'BIDV' && '0 20px'
+    },
+
+    '@media (max-width: 36em)': {
+      minWidth: 0,
+      overflowY: 'scroll',
+      maxHeight: 'calc(100vh - 83px)'
+    },
+
+    '@media (max-width: 33.750em)': {
+      padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '35px 20px 0'
+    }
   },
   topUpContent: {
     background: '#FFFFFF',
@@ -55,12 +70,19 @@ const useStyles = createUseStyles({
     display: 'none',
 
     '@media (max-width: 36em)': {
-      display: 'block',
+      backgroundColor: '#FFF',
+      bottom: 0,
       boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
-      marginTop: '20px',
-      padding: '10px 0',
-      textAlign: 'center',
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      left: 0,
+      padding: '8px 0',
+      position: 'fixed',
+      right: 0,
       width: '100%'
+    },
+    '@media (max-width: 24em) and (orientation: portrait)': {
+      padding: 0
     }
   },
   topUpProgressBarContainer: {
@@ -143,7 +165,7 @@ const TopUp = props => {
   const themeColor = 'topup'
   const { handleSubmit } = useFormContext()
   analytics.setCurrentScreen('top_up')
-  const classes = useStyles(step)
+  const classes = useStyles({ step, bank })
 
   function getDefaultBankByCurrency (currency) {
     return getBanksByCurrencyForTopUp(currency)[0]
@@ -429,8 +451,7 @@ const TopUp = props => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-        <QueryParamsValidator />
-        <div className={classes.topUpContainer}>
+        <div className={classes.formWrapper}>
           <div className={classes.topUpContent}>
             <section className={classes.topUpHeader}>
               <Suspense fallback={<LoadingIcon size='large' color={themeColor} />}>

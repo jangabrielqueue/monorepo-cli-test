@@ -16,15 +16,13 @@ const textFormatter = {
 
 // styling
 const useStyles = createUseStyles({
-  countDownContainer: {
-    position: 'absolute',
-    top: 0,
+  notificationContainer: {
     padding: '10px',
     background: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationBIDV : theme.colors.notificationVCB,
     color: '#3e3e3e',
     fontSize: '14px',
-    margin: ({ bank }) => 20,
-    borderRadius: ({ bank }) => 12,
+    margin: '20px 0',
+    borderRadius: '12px',
 
     '& b': {
       fontWeight: 700,
@@ -54,6 +52,10 @@ const useStyles = createUseStyles({
           fontSize: '1em'
         }
       }
+    },
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      margin: '10px 0'
     },
 
     '@media (max-width: 33.750em)': {
@@ -107,7 +109,7 @@ const Notifications = ({ language, intl, bank }) => {
     }
   }
   return (
-    <div className={classes.countDownContainer}>
+    <div className={classes.notificationContainer}>
       {
         renderBankNotificationMessages()
       }

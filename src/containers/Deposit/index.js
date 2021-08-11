@@ -36,6 +36,8 @@ const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 // lazy loaded components
 const Logo = lazy(() => import('../../components/Logo'))
 
+const notificationBanks = ['VCB', 'BIDV']
+
 // styling
 const useStyles = createUseStyles({
   headerContainer: {
@@ -46,10 +48,28 @@ const useStyles = createUseStyles({
     padding: '20px',
     position: 'relative'
   },
+  formWrapper: {
+    height: '100%',
+    minWidth: '500px',
+    padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
+
+    '@media (max-width: 62em)': {
+      padding: (props) => props.bank?.toUpperCase() === 'BIDV' && '0 20px'
+    },
+
+    '@media (max-width: 36em)': {
+      minWidth: 0,
+      overflowY: 'scroll',
+      maxHeight: 'calc(100vh - 83px)'
+    },
+
+    '@media (max-width: 33.750em)': {
+      padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '35px 20px 0'
+    }
+  },
   depositContainer: {
-    margin: '0 20px',
-    maxWidth: '500px',
-    width: '100%'
+    margin: '0 auto',
+    maxWidth: '466px'
   },
   depositContent: {
     background: '#FFFFFF',
@@ -60,12 +80,14 @@ const useStyles = createUseStyles({
     display: 'none',
 
     '@media (max-width: 36em)': {
+      backgroundColor: '#FFF',
+      bottom: 0,
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
       display: 'flex',
       justifyContent: 'space-evenly',
-      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
-      marginTop: '20px',
-      padding: '10px 0',
-      textAlign: 'center',
+      left: 0,
+      position: 'fixed',
+      right: 0,
       width: '100%'
     }
   },
@@ -73,11 +95,15 @@ const useStyles = createUseStyles({
     display: 'none',
 
     '@media (max-width: 36em)': {
+      backgroundColor: '#FFF',
+      bottom: 0,
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
       display: 'flex',
       justifyContent: 'center',
-      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      left: 0,
       marginTop: '20px',
-      padding: '10px 0',
+      position: 'fixed',
+      right: 0,
       width: '100%'
     }
   },
@@ -175,7 +201,7 @@ const Deposit = (props) => {
   const [otpStatusCode, setOtpStatusCode] = useState('')
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
-  const classes = useStyles(step)
+  const classes = useStyles({ step, bank })
   const notificationBanks = ['VCB', 'BIDV']
 
   async function handleSubmitDeposit (values, e, type) {
@@ -544,42 +570,44 @@ const Deposit = (props) => {
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-        {
-          notificationBanks.includes(bank?.toUpperCase()) && <Notifications bank={bank?.toUpperCase()} language={language} />
-        }
         <QueryParamsValidator />
-        <div className={classes.depositContainer}>
-          <div className={classes.depositContent}>
-            <section className={classes.headerContainer}>
-              <Suspense fallback={<LoadingIcon />}>
-                <Logo bank={bank} currency={currency} />
-              </Suspense>
-              {
-                step === 0 && (
-                  <Statistics
-                    title={<FormattedMessage {...messages.deposit} />}
-                    language={language}
-                    currency={currency}
-                    amount={amount}
-                  />
-                )
-              }
-              {
-                step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
-                  <Countdown minutes={1} seconds={40} reRender={reRenderCountdown} />
-                )
-              }
-              {
-                error && <ErrorAlert message={error.message} />
-              }
-            </section>
-            <section className={classes.contentBody}>
-              {
-                renderStepContents()
-              }
-            </section>
+        <div className={classes.formWrapper}>
+          {
+            notificationBanks.includes(bank?.toUpperCase()) && <Notifications bank={bank?.toUpperCase()} language={language} />
+          }
+          <div className={classes.depositContainer}>
+            <div className={classes.depositContent}>
+              <section className={classes.headerContainer}>
+                <Suspense fallback={<LoadingIcon />}>
+                  <Logo bank={bank} currency={currency} />
+                </Suspense>
+                {
+                  step === 0 && (
+                    <Statistics
+                      title={<FormattedMessage {...messages.deposit} />}
+                      language={language}
+                      currency={currency}
+                      amount={amount}
+                    />
+                  )
+                }
+                {
+                  step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
+                    <Countdown minutes={0} seconds={100} reRender={reRenderCountdown} />
+                  )
+                }
+                {
+                  error && <ErrorAlert message={error.message} />
+                }
+              </section>
+              <section className={classes.contentBody}>
+                {
+                  renderStepContents()
+                }
+              </section>
+            </div>
+            <StepsBar step={step} />
           </div>
-          <StepsBar step={step} />
         </div>
         {
           showOtpMethod && step === 0 && bank?.toUpperCase() !== 'BIDV' &&

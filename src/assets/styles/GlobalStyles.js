@@ -21,7 +21,8 @@ const GlobalStyles = createUseStyles({
     ],
 
     html: {
-      lineHeight: 1.25
+      lineHeight: 1.25,
+      height: '100%'
     },
 
     body: {
@@ -29,6 +30,7 @@ const GlobalStyles = createUseStyles({
       color: '#767676',
       fontFamily: 'ProductSansRegular',
       fontSize: '16px',
+      height: '100%',
       margin: 0
     },
 
@@ -44,6 +46,10 @@ const GlobalStyles = createUseStyles({
       '&:active': {
         '-webkit-box-shadow': '0 0 0 30px white inset !important'
       }
+    },
+
+    '#root': {
+      height: '100%'
     },
 
     'input[type=text]': {

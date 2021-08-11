@@ -16,7 +16,7 @@ const useStyles = createUseStyles({
   styledMoreInfo: {
     listStyle: 'none',
     margin: 0,
-    padding: '0 25px',
+    padding: '0 10px',
 
     '& li': {
       paddingBottom: '5px',
