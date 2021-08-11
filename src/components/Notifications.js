@@ -16,7 +16,7 @@ const textFormatter = {
 
 // styling
 const useStyles = createUseStyles({
-  countDownContainer: {
+  notificationContainer: {
     padding: '10px',
     background: ({ bank, theme }) => bank === 'BIDV' ? theme.colors.notificationBIDV : theme.colors.notificationVCB,
     color: '#3e3e3e',
@@ -105,7 +105,7 @@ const Notifications = ({ language, intl, bank }) => {
     }
   }
   return (
-    <div className={classes.countDownContainer}>
+    <div className={classes.notificationContainer}>
       {
         renderBankNotificationMessages()
       }
