@@ -210,10 +210,10 @@ const OTPForm = React.memo((props) => {
   }
 
   useEffect(() => {
-    if (progress) {
+    if (progress || otpReference) {
       reset()
     }
-  }, [progress, reset])
+  }, [progress, otpReference, reset])
 
   return (
     <form>
@@ -225,10 +225,46 @@ const OTPForm = React.memo((props) => {
                 checkIfAppTwoOtp(otpReference) &&
                   <>
                     {
-                      checkIfBcaBank(bank) && <FormattedMessage {...messages.bcaOtpReference.pleaseKeyInDigit} />
+                      checkIfBcaBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bcaOtpReference.pleaseKeyInDigit}
+                          values={{
+                            number: checkIfAppTwoOtp(otpReference) ? 6 : 8
+                          }}
+                        />
                     }
                     {
-                      checkIfBniBank(bank) && <FormattedMessage {...messages.bniOtpReference.pleaseKeyInDigit} />
+                      checkIfBniBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bniOtpReference.pleaseKeyInDigit}
+                          values={{
+                            number: 8
+                          }}
+                        />
+                    }
+                    <p className={classes.otpReferenceText}>{otpReference}</p>
+                  </>
+              }
+              {
+                checkIfAppOneOtp(otpReference) &&
+                  <>
+                    {
+                      checkIfBcaBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bcaOtpReference.pleaseKeyInDigit}
+                          values={{
+                            number: 8
+                          }}
+                        />
+                    }
+                    {
+                      checkIfBniBank(bank) &&
+                        <FormattedMessage
+                          {...messages.bniOtpReference.pleaseKeyInDigit}
+                          values={{
+                            number: 8
+                          }}
+                        />
                     }
                     <p className={classes.otpReferenceText}>{otpReference}</p>
                   </>
