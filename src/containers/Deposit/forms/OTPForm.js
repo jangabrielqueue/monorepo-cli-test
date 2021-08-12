@@ -185,8 +185,8 @@ const OTPForm = React.memo((props) => {
             fixedLength: 8
           }}
       />), // eslint-disable-line
-        minLength: 8,
-        maxLength: 8
+        minLength: checkIfBcaBank(bank) ? 6 : 8,
+        maxLength: checkIfBcaBank(bank) ? 6 : 8
       }
     } else if (checkIfAppOneOtp(otpReference)) {
       return {
