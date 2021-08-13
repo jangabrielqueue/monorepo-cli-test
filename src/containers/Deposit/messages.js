@@ -196,7 +196,7 @@ export default defineMessages({
   bcaOtpReference: {
     pleaseKeyInDigit: {
       id: 'bcaOtpReference.pleaseKeyInDigit',
-      defaultMessage: 'PLEASE KEY IN THE 8 DIGIT NUMBER INTO YOUR KEYBCA'
+      defaultMessage: 'PLEASE KEY IN THE {number} DIGIT NUMBER INTO YOUR KEYBCA'
     },
     pleaseInputOtp: {
       id: 'bcaOtpReference.pleaseInputOtp',
@@ -210,7 +210,7 @@ export default defineMessages({
   bniOtpReference: {
     pleaseKeyInDigit: {
       id: 'bniOtpReference.pleaseKeyInDigit',
-      defaultMessage: 'Enter following 8 digit to your BNI e-Secure (APPLI-2)'
+      defaultMessage: 'Enter following {number} digit to your BNI e-Secure (APPLI-2)'
     },
     pleaseInputOtp: {
       id: 'bniOtpReference.pleaseInputOtp',

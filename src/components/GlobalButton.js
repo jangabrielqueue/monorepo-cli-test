@@ -23,6 +23,7 @@ const useStyles = createUseStyles({
     width: '100%',
 
     '&:disabled': {
+      cursor: 'not-allowed !important',
       opacity: '0.5'
     },
 
@@ -54,6 +55,7 @@ const useStyles = createUseStyles({
     width: '100%',
 
     '&:disabled': {
+      cursor: 'not-allowed !important',
       opacity: '0.5'
     },
 
