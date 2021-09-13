@@ -225,7 +225,7 @@ const ScratchCardForm = React.memo((props) => {
       return {
         required: true,
         maxLength: 12,
-        pattern: /^([a-z]{2})(\d{10})/i
+        pattern: /^([0-9a-z]{2})(\d{10})/i
       }
     } else if (telcoName === 'GATE') {
       return {
