@@ -14,7 +14,8 @@ const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
 const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/TopUp'))
-const NotFound = lazy(() => import('./components/NotFound'))
+const NotFound = lazy(() => import(/* webpackChunkName: 'notfound' */'./components/NotFound'))
+const CustomErrorPages = lazy(() => import(/* webpackChunkName: 'badrequest' */'./components/CustomErrorPages'))
 
 // themes
 const appTheme = {
@@ -171,6 +172,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />
+                      </Route>
+                      <Route path='/error'>
+                        <CustomErrorPages />
                       </Route>
                       <Route path='*'>
                         <NotFound />

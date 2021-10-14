@@ -5,7 +5,7 @@ import { createUseStyles } from 'react-jss'
 
 // styling
 const useStyles = createUseStyles({
-  notFoundContainer: {
+  container: {
     textAlign: 'center',
 
     '& h1': {
@@ -25,7 +25,7 @@ const NotFound = () => {
   const classes = useStyles()
 
   return (
-    <div className={classes.notFoundContainer}>
+    <div className={classes.container}>
       <h1>404</h1>
       <p><FormattedMessage {...messages.errors.pageDoesNoExist} /></p>
     </div>

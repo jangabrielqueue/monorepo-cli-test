@@ -39,6 +39,26 @@ export default defineMessages({
     pageDoesNoExist: {
       id: 'errors.pageDoesNoExist',
       defaultMessage: 'Sorry, the page you have visited does not exist.'
+    },
+    badRequest: {
+      id: 'errors.badRequest',
+      defaultMessage: 'Bad request, please check your parameters.'
+    },
+    systemBusy: {
+      id: 'errors.systemBusy',
+      defaultMessage: 'System is busy, please try again later.'
+    },
+    sameAccount: {
+      id: 'errors.sameAccount',
+      defaultMessage: 'Please don\'t submit same account within one hour.'
+    },
+    paymentNotSupported: {
+      id: 'errors.paymentNotSupported',
+      defaultMessage: 'Payment method is not supported.'
+    },
+    defaultError: {
+      id: 'errors.defaultError',
+      defaultMessage: 'Oops, something went wrong.'
     }
   },
   progress: {
