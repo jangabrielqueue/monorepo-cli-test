@@ -50,7 +50,7 @@ export default defineMessages({
     },
     sameAccount: {
       id: 'errors.sameAccount',
-      defaultMessage: 'Please don\'t submit same account within one hour.'
+      defaultMessage: 'Please don\'t submit same amount within one hour.'
     },
     paymentNotSupported: {
       id: 'errors.paymentNotSupported',

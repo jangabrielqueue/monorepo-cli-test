@@ -121,6 +121,10 @@ const App = () => {
         setLocale('id')
         setLanguage('id-id')
         break
+      case 'zh-cn':
+        setLocale('cn')
+        setLanguage('zh-cn')
+        break
       default:
         setLocale('en')
         setLanguage('en-us')

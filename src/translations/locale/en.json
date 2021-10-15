@@ -39,7 +39,7 @@
     "errors.pageDoesNoExist": "Sorry, the page you have visited does not exist.",
     "errors.badRequest": "Bad request, please check your parameters.",
     "errors.systemBusy": "System is busy, please try again later.",
-    "errors.sameAccount": "Please don't submit same account within one hour.",
+    "errors.sameAccount": "Please don't submit same amount within one hour.",
     "errors.paymentNotSupported": "Payment method is not supported.",
     "errors.defaultError": "Oops, something went wrong.",
     "errors.transactionFailed": "Submitted Transaction Failed!",
