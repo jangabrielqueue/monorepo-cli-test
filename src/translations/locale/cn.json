@@ -1,7 +1,7 @@
 {
   "errors.badRequest": "请求无效，请检查您提交的参数.",
   "errors.systemBusy": "系统繁忙，请稍后重试.",
-  "errors.sameAccount": "请于一小时内不要提交重复的入款金额.",
+  "errors.sameAccount": "请勿于一小时内提交相同的入款金额.",
   "errors.paymentNotSupported": "暂不支持该支付方式.",
   "errors.defaultError": "出现未知异常，请稍后重试."
 }
