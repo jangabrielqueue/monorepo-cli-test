@@ -10,16 +10,19 @@ import DefaultError from './custom-error-pages/DefaultError'
 const useStyles = createUseStyles({
   container: {
     textAlign: 'center',
+    color: '#141414',
+    position: 'relative',
+    top: '33%',
 
     '& h1': {
       fontSize: '100px',
-      padding: '150px 0 0',
       margin: '0',
       lineHeight: 1
     },
 
     '& p': {
-      margin: '20px 0'
+      margin: '20px 0',
+      fontSize: '18px'
     }
   }
 })

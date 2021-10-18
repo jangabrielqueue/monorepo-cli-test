@@ -88,7 +88,8 @@ const App = () => {
     en: dynamicLoadBankUtils?.localeEn,
     vi: dynamicLoadBankUtils?.localeVi,
     th: dynamicLoadBankUtils?.localeTh,
-    id: dynamicLoadBankUtils?.localeId
+    id: dynamicLoadBankUtils?.localeId,
+    cn: dynamicLoadBankUtils?.localeCn
   }
   const methods = useForm({
     defaultValues: {
@@ -135,19 +136,21 @@ const App = () => {
     const url = new URL(window.location.href)
     const urlParams = new URLSearchParams(url.search)
     const language = urlParams.get('l')
-
+    console.log('language', language)
     async function dynamicLoadModules () { // dynamically load bank utils
       const { checkBankIfKnown } = await import('./utils/banks')
       const localeEn = await import('./translations/locale/en.json')
       const localeVi = await import('./translations/locale/vi.json')
       const localeTh = await import('./translations/locale/th.json')
       const localeId = await import('./translations/locale/id.json')
+      const localeCn = await import('./translations/locale/cn.json')
       setDynamicLoadBankUtils({
         checkBankIfKnown,
         localeEn,
         localeVi,
         localeTh,
-        localeId
+        localeId,
+        localeCn
       })
     }
 
