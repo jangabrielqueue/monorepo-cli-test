@@ -14,7 +14,8 @@ const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
 const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/TopUp'))
-const NotFound = lazy(() => import('./components/NotFound'))
+const NotFound = lazy(() => import(/* webpackChunkName: 'notfound' */'./components/NotFound'))
+const CustomErrorPages = lazy(() => import(/* webpackChunkName: 'badrequest' */'./components/CustomErrorPages'))
 
 // themes
 const appTheme = {
@@ -87,7 +88,8 @@ const App = () => {
     en: dynamicLoadBankUtils?.localeEn,
     vi: dynamicLoadBankUtils?.localeVi,
     th: dynamicLoadBankUtils?.localeTh,
-    id: dynamicLoadBankUtils?.localeId
+    id: dynamicLoadBankUtils?.localeId,
+    cn: dynamicLoadBankUtils?.localeCn
   }
   const methods = useForm({
     defaultValues: {
@@ -120,6 +122,10 @@ const App = () => {
         setLocale('id')
         setLanguage('id-id')
         break
+      case 'zh-cn':
+        setLocale('cn')
+        setLanguage('zh-cn')
+        break
       default:
         setLocale('en')
         setLanguage('en-us')
@@ -130,19 +136,21 @@ const App = () => {
     const url = new URL(window.location.href)
     const urlParams = new URLSearchParams(url.search)
     const language = urlParams.get('l')
-
+    console.log('language', language)
     async function dynamicLoadModules () { // dynamically load bank utils
       const { checkBankIfKnown } = await import('./utils/banks')
       const localeEn = await import('./translations/locale/en.json')
       const localeVi = await import('./translations/locale/vi.json')
       const localeTh = await import('./translations/locale/th.json')
       const localeId = await import('./translations/locale/id.json')
+      const localeCn = await import('./translations/locale/cn.json')
       setDynamicLoadBankUtils({
         checkBankIfKnown,
         localeEn,
         localeVi,
         localeTh,
-        localeId
+        localeId,
+        localeCn
       })
     }
 
@@ -171,6 +179,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />
+                      </Route>
+                      <Route path='/error'>
+                        <CustomErrorPages />
                       </Route>
                       <Route path='*'>
                         <NotFound />
