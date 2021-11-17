@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, injectIntl } from 'react-intl'
 import messages from './messages'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
@@ -166,6 +166,7 @@ const TopUp = props => {
   const { handleSubmit } = useFormContext()
   analytics.setCurrentScreen('top_up')
   const classes = useStyles({ step, bank })
+  const intl = props.intl
 
   function getDefaultBankByCurrency (currency) {
     return getBanksByCurrencyForTopUp(currency)[0]
@@ -422,8 +423,8 @@ const TopUp = props => {
         setEstablishConnection(true)
       } catch (ex) {
         setError({
-          code: <FormattedMessage {...messages.errors.networkErrorTitle} />,
-          message: <FormattedMessage {...messages.errors.networkError} />
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.networkError)
         })
         setEstablishConnection(false)
       }
@@ -435,7 +436,7 @@ const TopUp = props => {
 
     // Start the connection
     start()
-  }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress])
+  }, [session, handleCommandStatusUpdate, handleRequestOTP, handleUpdateProgress, intl])
 
   useEffect(() => {
     window.onbeforeunload = (e) => {
@@ -525,4 +526,4 @@ const TopUp = props => {
   )
 }
 
-export default TopUp
+export default injectIntl(TopUp)

@@ -13,6 +13,7 @@ import GlobalStyles from '../src/assets/styles/GlobalStyles'
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
+const LocalBankTransfer = lazy(() => import(/* webpackChunkName: 'localbanktransfer' */'./containers/LocalBankTransfer'))
 const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/TopUp'))
 const NotFound = lazy(() => import(/* webpackChunkName: 'notfound' */'./components/NotFound'))
 const CustomErrorPages = lazy(() => import(/* webpackChunkName: 'badrequest' */'./components/CustomErrorPages'))
@@ -136,7 +137,7 @@ const App = () => {
     const url = new URL(window.location.href)
     const urlParams = new URLSearchParams(url.search)
     const language = urlParams.get('l')
-    console.log('language', language)
+
     async function dynamicLoadModules () { // dynamically load bank utils
       const { checkBankIfKnown } = await import('./utils/banks')
       const localeEn = await import('./translations/locale/en.json')
@@ -176,6 +177,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/deposit/qrcode'>
                         <QRCode language={language} />
+                      </Route>
+                      <Route exact path='/deposit/local-bank-transfer'>
+                        <LocalBankTransfer language={language} />
                       </Route>
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />

@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
-import messages from './messages'
-import { FormattedMessage, injectIntl } from 'react-intl'
-import axios from 'axios'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { ErrorBoundary } from 'react-error-boundary'
-import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { FallbackComponent } from '../../components/FallbackComponent'
+import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { createUseStyles } from 'react-jss'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import axios from 'axios'
+import messages from './messages'
+import { FormattedMessage, injectIntl } from 'react-intl'
 import StepsBar from '../../components/StepsBar'
 import ProgressModal from '../../components/ProgressModal'
-import LoadingIcon from '../../components/LoadingIcon'
-import AccountStatistics from '../../components/AccountStatistics'
 import ErrorAlert from '../../components/ErrorAlert'
-import QRCodeForm from './forms/QRCodeForm'
+import LoadingIcon from '../../components/LoadingIcon'
+import { checkBankIfKnown } from '../../utils/banks'
+import { sleep } from '../../utils/utils'
 import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
-import AutoRedirectQR from '../../components/AutoRedirectQR'
-import { QueryParamsValidator } from '../../components/QueryParamsValidator'
-import { FallbackComponent } from '../../components/FallbackComponent'
-import { checkBankIfKnown } from '../../utils/banks'
-import { sleep } from '../../utils/utils'
+import LocalBankTransferForm from './forms/LocalBankTransferForm'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -31,11 +29,11 @@ const Logo = lazy(() => import('../../components/Logo'))
 
 // styling
 const useStyles = createUseStyles({
-  qrCodeHeader: {
+  localBankTransferHeader: {
     padding: '10px 20px',
     borderBottom: (props) => props.step === 1 ? '#FFF' : '0.5px solid #E3E3E3'
   },
-  qrCodeBody: {
+  localBankTransferBody: {
     padding: '20px',
     position: 'relative'
   },
@@ -54,16 +52,16 @@ const useStyles = createUseStyles({
       padding: '35px 20px 0'
     }
   },
-  qrCodeContainer: {
+  localBankTransferContainer: {
     margin: '0 auto',
     maxWidth: '466px'
   },
-  qrCodeContent: {
+  localBankTransferContent: {
     background: '#FFFFFF',
     borderRadius: '15px',
     boxShadow: '0 5px 10px 0 rgba(112,112,112,0.3)'
   },
-  qrCodeProgressBarContainer: {
+  localBankTransferProgressBarContainer: {
     color: 'rgba(0, 0, 0, 0.65)',
     height: '200px',
     textAlign: 'center',
@@ -113,11 +111,11 @@ const useStyles = createUseStyles({
       minWidth: '232px'
     }
   }
-},
-{ name: 'QRCode' }
-)
+}, {
+  name: 'LocalBankTransfer'
+})
 
-const QRCode = (props) => {
+const LocalBankTransfer = (props) => {
   const {
     bank,
     merchant,
@@ -133,22 +131,19 @@ const QRCode = (props) => {
     failedUrl,
     note
   } = useContext(QueryParamsContext)
+
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
   const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
+    id: null,
+    accountId: null,
+    bankName: null,
     accountName: null,
-    decodedImage: null,
-    message: null,
-    toAccountId: null,
-    timer: 0,
-    timerExtend: 0
-  })
-  const [timeout, setTimeout] = useState({
-    minutes: 0,
-    seconds: 0
+    accountNumber: null,
+    amount: null
   })
   const [progress, setProgress] = useState(undefined)
   const [transferResult, setTransferResult] = useState({
@@ -162,35 +157,29 @@ const QRCode = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const isBankKnown = checkBankIfKnown(currency, bank)
   const themeColor = isBankKnown ? `${bank}` : 'main'
-  const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
+  const session = `DEPOSIT-LOCAL-BANK-TRANSFER-${merchant}-${reference}`
   const classes = useStyles(step)
   const intl = props.intl
 
-  async function handleSubmitQRCode () {
+  async function handleSubmitLocalBankTransfer () {
     const submitValues = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
+      amount,
+      bank,
+      callbackUri,
+      clientIp,
+      currency,
       customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
+      datetime,
+      failedUrl,
       key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
+      language,
+      merchant,
+      note,
+      reference,
       requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
-      toAccountId: responseData.toAccountId,
-      uniqueAmount: responseData.amount
+      signature,
+      successfulUrl
     }
-    setTimeout({
-      minutes: 0,
-      seconds: responseData.timerExtend
-    })
     setError(undefined)
     setLoadingButton(true)
     setProgress({
@@ -225,7 +214,7 @@ const QRCode = (props) => {
 
     try {
       await axios({
-        url: 'api/depositqrcode/post',
+        url: 'api/localbanktransfer/post',
         method: 'POST',
         data: submitValues
       })
@@ -235,35 +224,34 @@ const QRCode = (props) => {
     }
   }
 
-  const handleQrCodeResult = useCallback(
-    (resultQrCode) => {
-      setResponseData(resultQrCode)
-      setTimeout({
-        minutes: resultQrCode.timer / 60,
-        seconds: 0
-      })
-      if (resultQrCode.message !== null) {
+  const handleLocalBankTransferResult = useCallback(
+    (resultLocalBankTransfer) => {
+      console.log('resultLocalBankTransfer', resultLocalBankTransfer)
+      setResponseData(resultLocalBankTransfer)
+
+      if (resultLocalBankTransfer.status !== 200) {
         setError({
           code: '',
-          message: resultQrCode.message
+          message: resultLocalBankTransfer.message
         })
       }
     }, []
   )
 
-  const handleQRCodeSubmitResult = useCallback(
-    (resultQrCodeSubmit) => {
-      setTransferResult({
-        statusCode: resultQrCodeSubmit.statusCode,
-        reference: resultQrCodeSubmit.reference,
-        statusMessage: resultQrCodeSubmit.statusMessage,
-        amount: resultQrCodeSubmit.amount,
-        currency: resultQrCodeSubmit.currency,
-        isSuccessful: resultQrCodeSubmit.statusCode === '006'
-      })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
+  const handleLocalBankTransferSubmitResult = useCallback(
+    (resultLocalBankTransferSubmit) => {
+      console.log('resultLocalBankTransferSubmit', resultLocalBankTransferSubmit)
+      // setTransferResult({
+      //   statusCode: resultQrCodeSubmit.statusCode,
+      //   reference: resultQrCodeSubmit.reference,
+      //   statusMessage: resultQrCodeSubmit.statusMessage,
+      //   amount: resultQrCodeSubmit.amount,
+      //   currency: resultQrCodeSubmit.currency,
+      //   isSuccessful: resultQrCodeSubmit.statusCode === '006'
+      // })
+      // setLoadingButton(false)
+      // setProgress(undefined)
+      // setStep(1)
     }, []
   )
 
@@ -279,18 +267,16 @@ const QRCode = (props) => {
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={180000} setStep={setStep} time={timeout}>
-            <QRCodeForm
-              currency={currency}
-              bank={bank}
-              establishConnection={establishConnection}
-              loadingButton={loadingButton}
-              responseData={responseData}
-              color={themeColor}
-              handleSubmitQRCode={handleSubmitQRCode}
-              error={error}
-            />
-          </AutoRedirectQR>
+          <LocalBankTransferForm
+            currency={currency}
+            bank={bank}
+            establishConnection={establishConnection}
+            loadingButton={loadingButton}
+            responseData={responseData}
+            color={themeColor}
+            handleSubmitLocalBankTransfer={handleSubmitLocalBankTransfer}
+            error={error}
+          />
         )
 
       case 1:
@@ -330,7 +316,7 @@ const QRCode = (props) => {
       note,
       language
     ]
-    const currencies = ['VND', 'THB']
+    const currencies = ['THB']
 
     if (queryParams.includes(null)) {
       setTransferResult({
@@ -367,24 +353,23 @@ const QRCode = (props) => {
   ])
 
   useEffect(() => {
-    const getQRCodePayload = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
+    const getLocalBankTransferPayload = {
+      amount,
+      bank,
+      callbackUri,
+      clientIp,
+      currency,
       customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
+      datetime,
+      failedUrl,
       key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
-      requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
-      toAccountId: 0
+      language,
+      merchant,
+      note,
+      reference,
+      requester,
+      signature,
+      successfulUrl
     }
 
     const connection = new HubConnectionBuilder()
@@ -393,16 +378,16 @@ const QRCode = (props) => {
       .configureLogging(LogLevel.Information)
       .build()
 
-    connection.on('ReceiveQRCode', handleQrCodeResult)
-    connection.on('receivedResult', handleQRCodeSubmitResult)
+    connection.on('ReceiveLocalBankTransfer', handleLocalBankTransferResult)
+    connection.on('CompletedLocalBankTransfer', handleLocalBankTransferSubmitResult)
     connection.onreconnected(async (e) => {
-      await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+      await connection.invoke('LocalBankTransferStart', session, getLocalBankTransferPayload)
     })
 
     async function start () {
       try {
         await connection.start()
-        await connection.invoke('QrCodeDPStart', session, getQRCodePayload)
+        await connection.invoke('LocalBankTransferStart', session, getLocalBankTransferPayload)
         setEstablishConnection(true)
       } catch (error) {
         setError({
@@ -421,8 +406,8 @@ const QRCode = (props) => {
     start()
   }, [
     session,
-    handleQrCodeResult,
-    handleQRCodeSubmitResult,
+    handleLocalBankTransferResult,
+    handleLocalBankTransferSubmitResult,
     amount,
     bank,
     callbackUri,
@@ -456,29 +441,18 @@ const QRCode = (props) => {
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         <QueryParamsValidator />
         <div className={classes.formWrapper}>
-          <div className={classes.qrCodeContainer}>
-            <div className={classes.qrCodeContent}>
-              <section className={classes.qrCodeHeader}>
+          <div className={classes.localBankTransferContainer}>
+            <div className={classes.localBankTransferContent}>
+              <section className={classes.localBankTransferHeader}>
                 <Suspense fallback={<LoadingIcon />}>
                   <Logo bank={bank} currency={currency} />
                 </Suspense>
-                {
-                  step === 0 && !error && (
-                    <AccountStatistics
-                      accountName={responseData.accountName}
-                      language={language}
-                      currency={currency}
-                      amount={responseData.amount}
-                      establishConnection={establishConnection}
-                    />
-                  )
-                }
                 {
                   error && step === 0 &&
                     <ErrorAlert message={`Error ${error.code}: ${error.message}`} />
                 }
               </section>
-              <section className={classes.qrCodeBody}>
+              <section className={classes.localBankTransferBody}>
                 {
                   renderStepContents()
                 }
@@ -488,7 +462,7 @@ const QRCode = (props) => {
           </div>
         </div>
         <ProgressModal open={progress}>
-          <div className={classes.qrCodeProgressBarContainer}>
+          <div className={classes.localBankTransferProgressBarContainer}>
             <img
               alt='submit-transaction'
               width='80'
@@ -509,4 +483,4 @@ const QRCode = (props) => {
   )
 }
 
-export default injectIntl(QRCode)
+export default injectIntl(LocalBankTransfer)

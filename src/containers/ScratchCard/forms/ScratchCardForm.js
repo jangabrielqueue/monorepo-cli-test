@@ -1,5 +1,5 @@
 import React, { useState, lazy } from 'react'
-import { useIntl, FormattedMessage } from 'react-intl'
+import { injectIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
@@ -131,7 +131,7 @@ const useStyles = createUseStyles({
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
-  const intl = useIntl()
+  const intl = props.intl
   const { register, errors, handleSubmit, reset, watch, getValues, formState } = useFormContext()
   const { isSubmitting } = formState
   const isBankKnown = checkBankIfKnown(currency, bank)
@@ -415,4 +415,4 @@ const ScratchCardForm = React.memo((props) => {
   )
 })
 
-export default ScratchCardForm
+export default injectIntl(ScratchCardForm)
