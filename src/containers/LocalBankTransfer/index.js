@@ -226,7 +226,6 @@ const LocalBankTransfer = (props) => {
 
   const handleLocalBankTransferResult = useCallback(
     (resultLocalBankTransfer) => {
-      console.log('resultLocalBankTransfer', resultLocalBankTransfer)
       setResponseData(resultLocalBankTransfer)
 
       if (resultLocalBankTransfer.status !== 200) {
@@ -240,18 +239,17 @@ const LocalBankTransfer = (props) => {
 
   const handleLocalBankTransferSubmitResult = useCallback(
     (resultLocalBankTransferSubmit) => {
-      console.log('resultLocalBankTransferSubmit', resultLocalBankTransferSubmit)
-      // setTransferResult({
-      //   statusCode: resultQrCodeSubmit.statusCode,
-      //   reference: resultQrCodeSubmit.reference,
-      //   statusMessage: resultQrCodeSubmit.statusMessage,
-      //   amount: resultQrCodeSubmit.amount,
-      //   currency: resultQrCodeSubmit.currency,
-      //   isSuccessful: resultQrCodeSubmit.statusCode === '006'
-      // })
-      // setLoadingButton(false)
-      // setProgress(undefined)
-      // setStep(1)
+      setTransferResult({
+        statusCode: resultLocalBankTransferSubmit.statusCode,
+        reference: resultLocalBankTransferSubmit.reference,
+        statusMessage: resultLocalBankTransferSubmit.statusMessage,
+        amount: resultLocalBankTransferSubmit.amount,
+        currency: resultLocalBankTransferSubmit.currency,
+        isSuccessful: resultLocalBankTransferSubmit.statusCode === '006'
+      })
+      setLoadingButton(false)
+      setProgress(undefined)
+      setStep(1)
     }, []
   )
 
