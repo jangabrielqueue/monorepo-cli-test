@@ -245,7 +245,7 @@ const LocalBankTransfer = (props) => {
         statusMessage: resultLocalBankTransferSubmit.statusMessage,
         amount: resultLocalBankTransferSubmit.amount,
         currency: resultLocalBankTransferSubmit.currency,
-        isSuccessful: resultLocalBankTransferSubmit.statusCode === '006'
+        isSuccessful: resultLocalBankTransferSubmit.statusCode === '009'
       })
       setLoadingButton(false)
       setProgress(undefined)
