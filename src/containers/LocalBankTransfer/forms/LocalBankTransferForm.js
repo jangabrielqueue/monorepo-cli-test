@@ -31,6 +31,11 @@ const useStyles = createUseStyles({
         minWidth: '20px'
       }
     }
+  },
+  submitContainer: {
+    margin: '0 auto',
+    padding: '25px 0',
+    maxWidth: '230px'
   }
 })
 
@@ -62,7 +67,7 @@ const LocalBankTransferForm = memo((props) => {
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
-          label='Submit'
+          label='OK'
           color={buttonColor}
           onClick={handleSubmitForm}
           disabled={!establishConnection || loadingButton || error || responseData.decodedImage === null}

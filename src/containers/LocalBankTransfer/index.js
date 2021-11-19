@@ -19,6 +19,7 @@ import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
 import LocalBankTransferForm from './forms/LocalBankTransferForm'
+import VerifyTransaction from '../../components/VerifyTransaction'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -280,9 +281,7 @@ const LocalBankTransfer = (props) => {
       case 1:
         if (transferResult.isSuccessful) {
           return (
-            <AutoRedirect delay={10000} url={successfulUrl}>
-              <TransferSuccessful transferResult={transferResult} language={language} />
-            </AutoRedirect>
+            <VerifyTransaction language={language} />
           )
         } else {
           return (
