@@ -137,14 +137,7 @@ const LocalBankTransfer = (props) => {
   const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
-  const [responseData, setResponseData] = useState({
-    id: null,
-    accountId: null,
-    bankName: null,
-    accountName: null,
-    accountNumber: null,
-    amount: null
-  })
+  const [responseData, setResponseData] = useState(null)
   const [progress, setProgress] = useState(undefined)
   const [transferResult, setTransferResult] = useState({
     statusCode: '',
@@ -213,11 +206,28 @@ const LocalBankTransfer = (props) => {
     })
 
     try {
-      await axios({
+      const response = await axios({
         url: 'api/localbanktransfer/post',
         method: 'POST',
         data: submitValues
       })
+
+      if (response.data.status === '009') {
+        setTransferResult({
+          statusCode: response.data.status,
+          reference: reference,
+          statusMessage: response.data.description,
+          amount: amount,
+          currency: currency,
+          isSuccessful: response.data.status === '009'
+        })
+        setLoadingButton(false)
+        setProgress(undefined)
+        setStep(1)
+      } else {
+        setProgress(undefined)
+        setStep(1)
+      }
     } catch (error) {
       setProgress(undefined)
       setStep(1)
@@ -234,22 +244,6 @@ const LocalBankTransfer = (props) => {
           message: resultLocalBankTransfer.message
         })
       }
-    }, []
-  )
-
-  const handleLocalBankTransferSubmitResult = useCallback(
-    (resultLocalBankTransferSubmit) => {
-      setTransferResult({
-        statusCode: resultLocalBankTransferSubmit.statusCode,
-        reference: resultLocalBankTransferSubmit.reference,
-        statusMessage: resultLocalBankTransferSubmit.statusMessage,
-        amount: resultLocalBankTransferSubmit.amount,
-        currency: resultLocalBankTransferSubmit.currency,
-        isSuccessful: resultLocalBankTransferSubmit.statusCode === '009'
-      })
-      setLoadingButton(false)
-      setProgress(undefined)
-      setStep(1)
     }, []
   )
 
@@ -375,7 +369,6 @@ const LocalBankTransfer = (props) => {
       .build()
 
     connection.on('ReceiveLocalBankTransfer', handleLocalBankTransferResult)
-    connection.on('CompletedLocalBankTransfer', handleLocalBankTransferSubmitResult)
     connection.onreconnected(async (e) => {
       await connection.invoke('LocalBankTransferStart', session, getLocalBankTransferPayload)
     })
@@ -403,7 +396,6 @@ const LocalBankTransfer = (props) => {
   }, [
     session,
     handleLocalBankTransferResult,
-    handleLocalBankTransferSubmitResult,
     amount,
     bank,
     callbackUri,

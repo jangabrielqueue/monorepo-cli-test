@@ -60,17 +60,17 @@ const LocalBankTransferForm = memo((props) => {
   return (
     <main className={classes.localBankTransferFormWrapper}>
       <ul className={classes.localBankTransferFormContainer}>
-        <li>Bank Name: <span>{!establishConnection ? <div className='loading' /> : responseData.bankName}</span></li>
-        <li>Bank Account Name: <span>{!establishConnection ? <div className='loading' /> : responseData.accountName}</span></li>
-        <li>Bank Account Number: <span>{!establishConnection ? <div className='loading' /> : responseData.accountNumber}</span></li>
-        <li>Amount: <span>{!establishConnection ? <div className='loading' /> : responseData.amount}</span></li>
+        <li>Bank Name: <span>{!establishConnection ? <div className='loading' /> : responseData?.bankName}</span></li>
+        <li>Bank Account Name: <span>{!establishConnection ? <div className='loading' /> : responseData?.accountName}</span></li>
+        <li>Bank Account Number: <span>{!establishConnection ? <div className='loading' /> : responseData?.accountNumber}</span></li>
+        <li>Amount: <span>{!establishConnection ? <div className='loading' /> : responseData?.amount}</span></li>
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
           label='OK'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled={!establishConnection || loadingButton || error || responseData.decodedImage === null}
+          disabled={!establishConnection || loadingButton || error || responseData === null}
         />
       </div>
     </main>
