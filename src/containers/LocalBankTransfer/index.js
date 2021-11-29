@@ -229,6 +229,10 @@ const LocalBankTransfer = (props) => {
         setStep(1)
       }
     } catch (error) {
+      setError({
+        code: error.name,
+        message: error.message
+      })
       setProgress(undefined)
       setStep(1)
     }
@@ -380,8 +384,8 @@ const LocalBankTransfer = (props) => {
         setEstablishConnection(true)
       } catch (error) {
         setError({
-          code: intl.formatMessage(messages.errors.networkErrorTitle),
-          message: intl.formatMessage(messages.errors.networkError)
+          code: error.name,
+          message: error.message
         })
         setEstablishConnection(true)
       }
