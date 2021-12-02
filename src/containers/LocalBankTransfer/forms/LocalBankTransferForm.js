@@ -9,8 +9,10 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
-  localBankTransferFormWrapper: {
-    marginBottom: 20
+  localBankTransferHeadingText: {
+    fontSize: '14px',
+    margin: '0 0 20px 0',
+    fontWeight: '600'
   },
   localBankTransferFormContainer: {
     listStyle: 'none',
@@ -27,8 +29,9 @@ const useStyles = createUseStyles({
         color: '#3f3f3f',
         fontFamily: 'ProductSansBold',
         height: '20px',
-        marginLeft: '10px',
-        minWidth: '20px'
+        marginLeft: 'auto',
+        minWidth: '60%',
+        textTransform: 'capitalize'
       }
     }
   },
@@ -58,16 +61,17 @@ const LocalBankTransferForm = memo((props) => {
   }
 
   return (
-    <main className={classes.localBankTransferFormWrapper}>
+    <main>
+      <h1 className={classes.localBankTransferHeadingText}>Kindly assure to deposit the exact amount stated below for a smooth procedure.</h1>
       <ul className={classes.localBankTransferFormContainer}>
-        <li>Bank Name: <span>{!establishConnection ? <div className='loading' /> : responseData?.bankName}</span></li>
-        <li>Bank Account Name: <span>{!establishConnection ? <div className='loading' /> : responseData?.accountName}</span></li>
-        <li>Bank Account Number: <span>{!establishConnection ? <div className='loading' /> : responseData?.accountNumber}</span></li>
-        <li>Amount: <span>{!establishConnection ? <div className='loading' /> : responseData?.amount}</span></li>
+        <li>Bank Name <span>:{!establishConnection ? <div className='loading' /> : responseData?.bankName}</span></li>
+        <li>Bank Account Name <span>:{!establishConnection ? <div className='loading' /> : responseData?.accountName}</span></li>
+        <li>Bank Account Number <span>:{!establishConnection ? <div className='loading' /> : responseData?.accountNumber}</span></li>
+        <li>Amount <span>:{!establishConnection ? <div className='loading' /> : responseData?.amount}</span></li>
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
-          label='OK'
+          label='OK, transfer done'
           color={buttonColor}
           onClick={handleSubmitForm}
           disabled={!establishConnection || loadingButton || error || responseData === null}
