@@ -74,17 +74,17 @@ const LocalBankTransferForm = memo((props) => {
     <main>
       <h1 className={classes.localBankTransferHeadingText}>Kindly assure to deposit the exact amount stated below for a smooth procedure.</h1>
       <ul className={classes.localBankTransferFormContainer}>
-        <li>Bank Name <span>{!establishConnection ? <div className='loading' /> : responseData?.bankName || 'N/A'}</span></li>
-        <li>Account Name <span>{!establishConnection ? <div className='loading' /> : responseData?.accountName || 'N/A'}</span></li>
-        <li>Account No. <span>{!establishConnection ? <div className='loading' /> : responseData?.accountNumber || 'N/A'}</span></li>
-        <li>Amount <span>{!establishConnection ? <div className='loading' /> : responseData?.amount || 'N/A'}</span></li>
+        <li>Bank Name <span>{!establishConnection ? <div className='loading' /> : responseData.data?.bank || 'N/A'}</span></li>
+        <li>Account Name <span>{!establishConnection ? <div className='loading' /> : responseData.data?.customer || 'N/A'}</span></li>
+        <li>Account No. <span>{!establishConnection ? <div className='loading' /> : responseData.data?.accountNumber || 'N/A'}</span></li>
+        <li>Amount <span>{!establishConnection ? <div className='loading' /> : responseData.data?.amount || 'N/A'}</span></li>
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
           label='OK, transfer done'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled={!establishConnection || loadingButton || error || responseData === null}
+          disabled={!establishConnection || loadingButton || error || responseData.data === null}
         />
       </div>
     </main>

@@ -6,7 +6,6 @@ import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
 import { createUseStyles } from 'react-jss'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
-import axios from 'axios'
 import messages from './messages'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import StepsBar from '../../components/StepsBar'
@@ -137,7 +136,11 @@ const LocalBankTransfer = (props) => {
   const [establishConnection, setEstablishConnection] = useState(false)
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
-  const [responseData, setResponseData] = useState(null)
+  const [responseData, setResponseData] = useState({
+    status: '',
+    description: '',
+    data: null
+  })
   const [progress, setProgress] = useState(undefined)
   const [transferResult, setTransferResult] = useState({
     statusCode: '',
@@ -155,24 +158,6 @@ const LocalBankTransfer = (props) => {
   const intl = props.intl
 
   async function handleSubmitLocalBankTransfer () {
-    const submitValues = {
-      amount,
-      bank,
-      callbackUri,
-      clientIp,
-      currency,
-      customer: requester,
-      datetime,
-      failedUrl,
-      key: signature,
-      language,
-      merchant,
-      note,
-      reference,
-      requester: requester,
-      signature,
-      successfulUrl
-    }
     setError(undefined)
     setLoadingButton(true)
     setProgress({
@@ -204,48 +189,32 @@ const LocalBankTransfer = (props) => {
       totalSteps: 5,
       statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
     })
-
-    try {
-      const response = await axios({
-        url: 'api/localbanktransfer/post',
-        method: 'POST',
-        data: submitValues
-      })
-
-      if (response.data.status === '009') {
-        setTransferResult({
-          statusCode: response.data.status,
-          reference: reference,
-          statusMessage: response.data.description,
-          amount: amount,
-          currency: currency,
-          isSuccessful: response.data.status === '009'
-        })
-        setLoadingButton(false)
-        setProgress(undefined)
-        setStep(1)
-      } else {
-        setProgress(undefined)
-        setStep(1)
-      }
-    } catch (error) {
-      setError({
-        code: error.name,
-        message: error.message
-      })
-      setProgress(undefined)
-      setStep(1)
-    }
+    await sleep(750)
+    setTransferResult({
+      statusCode: responseData.status,
+      reference: reference,
+      statusMessage: responseData.description,
+      amount: responseData.data?.amount,
+      currency: currency,
+      isSuccessful: responseData.status === '009'
+    })
+    setLoadingButton(false)
+    setProgress(undefined)
+    setStep(1)
   }
 
   const handleLocalBankTransferResult = useCallback(
     (resultLocalBankTransfer) => {
-      setResponseData(resultLocalBankTransfer)
+      setResponseData({
+        status: resultLocalBankTransfer.status,
+        description: resultLocalBankTransfer.description,
+        data: resultLocalBankTransfer.data
+      })
 
-      if (resultLocalBankTransfer.status !== 200) {
+      if (resultLocalBankTransfer.status !== '009') {
         setError({
           code: '',
-          message: resultLocalBankTransfer.message
+          message: resultLocalBankTransfer.description
         })
       }
     }, []
