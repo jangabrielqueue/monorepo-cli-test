@@ -31,7 +31,12 @@ const useStyles = createUseStyles({
         height: '20px',
         marginLeft: 'auto',
         minWidth: '60%',
-        textTransform: 'capitalize'
+        textTransform: 'capitalize',
+
+        '&:before': {
+          content: '":"',
+          marginRight: '10px'
+        }
       }
     }
   },
@@ -64,10 +69,10 @@ const LocalBankTransferForm = memo((props) => {
     <main>
       <h1 className={classes.localBankTransferHeadingText}>Kindly assure to deposit the exact amount stated below for a smooth procedure.</h1>
       <ul className={classes.localBankTransferFormContainer}>
-        <li>Bank Name <span>:{!establishConnection ? <div className='loading' /> : responseData?.bankName}</span></li>
-        <li>Bank Account Name <span>:{!establishConnection ? <div className='loading' /> : responseData?.accountName}</span></li>
-        <li>Bank Account Number <span>:{!establishConnection ? <div className='loading' /> : responseData?.accountNumber}</span></li>
-        <li>Amount <span>:{!establishConnection ? <div className='loading' /> : responseData?.amount}</span></li>
+        <li>Bank Name <span>{!establishConnection ? <div className='loading' /> : responseData?.bankName || 'N/A'}</span></li>
+        <li>Account Name <span>{!establishConnection ? <div className='loading' /> : responseData?.accountName || 'N/A'}</span></li>
+        <li>Account No. <span>{!establishConnection ? <div className='loading' /> : responseData?.accountNumber || 'N/A'}</span></li>
+        <li>Amount <span>{!establishConnection ? <div className='loading' /> : responseData?.amount || 'N/A'}</span></li>
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
