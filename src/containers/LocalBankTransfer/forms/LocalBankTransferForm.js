@@ -32,6 +32,11 @@ const useStyles = createUseStyles({
         marginLeft: 'auto',
         minWidth: '60%',
         textTransform: 'capitalize',
+        position: 'relative',
+
+        '& .loading': {
+          position: 'static'
+        },
 
         '&:before': {
           content: '":"',
