@@ -1,6 +1,6 @@
 import React, { lazy, memo } from 'react'
-// import { FormattedMessage } from 'react-intl'
-// import messages from '../messages'
+import { FormattedMessage } from 'react-intl'
+import messages from '../messages'
 import { createUseStyles } from 'react-jss'
 import { checkBankIfKnown } from '../../../utils/banks'
 
@@ -72,12 +72,12 @@ const LocalBankTransferForm = memo((props) => {
 
   return (
     <main>
-      <h1 className={classes.localBankTransferHeadingText}>Kindly assure to deposit the exact amount stated below for a smooth procedure.</h1>
+      <h1 className={classes.localBankTransferHeadingText}><FormattedMessage {...messages.localBanktransfer.kindleAssureToDepositExactAmount} /></h1>
       <ul className={classes.localBankTransferFormContainer}>
-        <li>Bank Name <span>{!establishConnection ? <div className='loading' /> : responseData.data?.bank || 'N/A'}</span></li>
-        <li>Account Name <span>{!establishConnection ? <div className='loading' /> : responseData.data?.customer || 'N/A'}</span></li>
-        <li>Account No. <span>{!establishConnection ? <div className='loading' /> : responseData.data?.accountNumber || 'N/A'}</span></li>
-        <li>Amount <span>{!establishConnection ? <div className='loading' /> : responseData.data?.amount || 'N/A'}</span></li>
+        <li><FormattedMessage {...messages.localBanktransfer.bankName} /> <span>{!establishConnection ? <div className='loading' /> : responseData.data?.bank || 'N/A'}</span></li>
+        <li><FormattedMessage {...messages.localBanktransfer.accountName} /> <span>{!establishConnection ? <div className='loading' /> : responseData.data?.customer || 'N/A'}</span></li>
+        <li><FormattedMessage {...messages.localBanktransfer.accountNumber} /> <span>{!establishConnection ? <div className='loading' /> : responseData.data?.accountNumber || 'N/A'}</span></li>
+        <li><FormattedMessage {...messages.localBanktransfer.amount} /> <span>{!establishConnection ? <div className='loading' /> : responseData.data?.amount || 'N/A'}</span></li>
       </ul>
       <div className={classes.submitContainer}>
         <GlobalButton

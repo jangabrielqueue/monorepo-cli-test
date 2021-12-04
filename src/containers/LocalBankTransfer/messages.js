@@ -1,6 +1,28 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
+  localBanktransfer: {
+    kindleAssureToDepositExactAmount: {
+      id: 'localBanktransfer.kindleAssureToDepositExactAmount',
+      defaultMessage: 'Kindly assure to deposit the exact amount stated below for a smooth procedure.'
+    },
+    bankName: {
+      id: 'localBanktransfer.bankName',
+      defaultMessage: 'Bank Name'
+    },
+    accountName: {
+      id: 'localBanktransfer.accountName',
+      defaultMessage: 'Account Name'
+    },
+    accountNumber: {
+      id: 'localBanktransfer.accountNumber',
+      defaultMessage: 'Account No.'
+    },
+    amount: {
+      id: 'localBanktransfer.amount',
+      defaultMessage: 'Amount'
+    }
+  },
   progress: {
     startingConnection: {
       id: 'progress.startingConnection',
