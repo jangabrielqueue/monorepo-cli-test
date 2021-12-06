@@ -14,18 +14,18 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 const useStyles = createUseStyles({
   localBankTransferHeadingText: {
     fontSize: '14px',
-    margin: '0 0 20px 0'
+    margin: 0
   },
   tableContainer: {
     width: '100%',
-    borderSpacing: '15px',
+    borderSpacing: '5px',
 
     '& > tbody > tr > td': {
       '&:nth-child(odd)': {
-        paddingRight: '20px',
+        paddingRight: '10px',
         textAlign: 'right',
         verticalAlign: 'top',
-        width: '50%'
+        width: '120px'
       },
       '&:nth-child(even)': {
         fontWeight: '600',
@@ -41,8 +41,20 @@ const useStyles = createUseStyles({
     '@media (max-width: 36em)': {
       '& > tbody > tr > td': {
         '&:nth-child(odd)': {
-          paddingRight: '0px !important'
+          width: '115px !important'
         }
+      }
+    }
+  },
+  amountContainer: {
+    padding: '15px 0',
+    textAlign: 'center',
+
+    '& h2': {
+      margin: 0,
+
+      '& span': {
+        display: 'inline-block'
       }
     }
   },
@@ -131,12 +143,11 @@ const LocalBankTransferForm = memo((props) => {
   return (
     <main>
       <h1 className={classes.localBankTransferHeadingText}><FormattedMessage {...messages.localBanktransfer.kindleAssureToDepositExactAmount} /></h1>
+      <div className={classes.amountContainer}>
+        <h2>{currency} <span>{!establishConnection ? <div className='loading' /> : responseData.data?.amount}</span></h2>
+      </div>
       <table className={classes.tableContainer}>
         <tbody>
-          <tr>
-            <td>{currency}</td>
-            <td>{!establishConnection ? <div className='loading' /> : responseData.data?.amount}</td>
-          </tr>
           <tr>
             <td><FormattedMessage {...messages.localBanktransfer.bankName} /></td>
             <td>{!establishConnection ? <div className='loading' /> : responseData.data?.bank}</td>
