@@ -18,27 +18,32 @@ const useStyles = createUseStyles({
   },
   tableContainer: {
     width: '100%',
-    borderSpacing: '5px',
-
-    '& > tbody > tr:nth-child(1) > td': {
-      paddingBottom: '5px',
-      fontSize: '24px'
-    },
+    borderSpacing: '15px',
 
     '& > tbody > tr > td': {
       '&:nth-child(odd)': {
+        paddingRight: '20px',
         textAlign: 'right',
         verticalAlign: 'top',
         width: '50%'
       },
       '&:nth-child(even)': {
         fontWeight: '600',
+        textAlign: 'justify',
         wordBreak: 'break-all'
       }
     },
 
     '& > tbody > tr:last-child > td:last-child': {
       position: 'relative'
+    },
+
+    '@media (max-width: 36em)': {
+      '& > tbody > tr > td': {
+        '&:nth-child(odd)': {
+          paddingRight: '0px !important'
+        }
+      }
     }
   },
 
