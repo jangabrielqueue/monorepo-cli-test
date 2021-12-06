@@ -1,5 +1,6 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo } from 'react'
 import { createUseStyles } from 'react-jss'
+import { checkBankIfKnown } from '../utils/banks'
 
 // styling
 const useStyles = createUseStyles({
@@ -22,9 +23,8 @@ const useStyles = createUseStyles({
 })
 
 const Logo = ({ bank, currency, type }) => {
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
   const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.webp$/)
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const classes = useStyles({ bank, type })
 
   const getFilePathWebP = (bank, type) => {
@@ -36,17 +36,6 @@ const Logo = ({ bank, currency, type }) => {
       return requestImageFileWebp('./GW_LOGO.webp')
     }
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../utils/banks')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   return (
     <section className={classes.logoContainer}>
