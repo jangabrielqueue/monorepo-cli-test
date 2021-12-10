@@ -51,7 +51,6 @@ const useStyles = createUseStyles({
     justifyContent: 'center',
     padding: '0 20px',
     position: 'relative',
-    textTransform: 'capitalize',
     width: '100%',
 
     '&:disabled': {

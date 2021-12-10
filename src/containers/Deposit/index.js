@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, injectIntl } from 'react-intl'
 import messages from './messages'
 import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
@@ -203,6 +203,7 @@ const Deposit = (props) => {
   analytics.setCurrentScreen('deposit')
   const classes = useStyles({ step, bank })
   const notificationBanks = ['VCB', 'BIDV']
+  const intl = props.intl
 
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
@@ -529,8 +530,8 @@ const Deposit = (props) => {
         setEstablishConnection(true)
       } catch (ex) {
         setError({
-          code: <FormattedMessage {...messages.errors.networkErrorTitle} />,
-          message: <FormattedMessage {...messages.errors.networkError} />
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.networkError)
         })
         setEstablishConnection(false)
       }
@@ -545,7 +546,8 @@ const Deposit = (props) => {
   }, [
     session,
     handleReceivedResult,
-    handleUpdateProgress
+    handleUpdateProgress,
+    intl
   ])
 
   useEffect(() => {
@@ -690,4 +692,4 @@ const Deposit = (props) => {
   )
 }
 
-export default Deposit
+export default injectIntl(Deposit)

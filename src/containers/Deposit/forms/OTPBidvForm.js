@@ -4,6 +4,7 @@ import QRCode from 'qrcode.react'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import messages from '../messages'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
+import { checkBankIfKnown } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -58,8 +59,7 @@ export default injectIntl(memo(function OTPBidvForm (props) {
     currency
   } = useContext(QueryParamsContext)
   const { otpReference, waitingForReady, handleSubmitOTP, intl } = props
-  const [dynamicLoadUtils, setDynamicLoadUtils] = useState(null)
-  const isBankKnown = dynamicLoadUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const [timerSeconds, setTimerSeconds] = useState(100)
   const classes = useStyles()
@@ -68,17 +68,6 @@ export default injectIntl(memo(function OTPBidvForm (props) {
     // submit 'DONE' as OTP value
     handleSubmitOTP('DONE')
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../../utils/banks')
-      setDynamicLoadUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   useEffect(() => {
     const timer = timerSeconds > 0 && setInterval(() => setTimerSeconds(timerSeconds - 1)

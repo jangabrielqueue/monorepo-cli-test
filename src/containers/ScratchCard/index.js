@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, lazy, useContext, Suspense } f
 import { sleep } from '../../utils/utils'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import axios from 'axios'
-import { FormattedMessage, useIntl } from 'react-intl'
+import { FormattedMessage, injectIntl } from 'react-intl'
 import messages from './messages'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
@@ -132,7 +132,7 @@ const ScratchCard = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-SCRATCHCARD-${merchant}-${reference}`
   analytics.setCurrentScreen('scratch_card')
-  const intl = useIntl()
+  const intl = props.intl
   const steps = [intl.formatMessage(messages.steps.fillInForm), intl.formatMessage(messages.steps.result)]
   const classes = useStyles(step)
 
@@ -422,14 +422,12 @@ const ScratchCard = (props) => {
     async function start () {
       try {
         await connection.start()
-        await connection.invoke('Start', session)
+        await connection.invoke('Startsdasd', session)
         setEstablishConnection(true)
       } catch (ex) {
         setError({
-          error: {
-            name: <FormattedMessage {...messages.errors.networkErrorTitle} />,
-            message: <FormattedMessage {...messages.errors.networkError} />
-          }
+          code: intl.formatMessage(messages.errors.networkErrorTitle),
+          message: intl.formatMessage(messages.errors.networkError)
         })
         setEstablishConnection(false)
       }
@@ -441,7 +439,7 @@ const ScratchCard = (props) => {
 
     // Start the connection
     start()
-  }, [session, handleCommandStatusUpdate])
+  }, [session, handleCommandStatusUpdate, intl])
 
   useEffect(() => {
     window.onbeforeunload = window.onunload = (e) => {
@@ -453,7 +451,7 @@ const ScratchCard = (props) => {
       }
     }
   }, [step])
-
+  console.log('error', error)
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
@@ -475,7 +473,7 @@ const ScratchCard = (props) => {
                 )
               }
               {
-                error && <ErrorAlert message={error.message} />
+                error && <ErrorAlert message={`Error ${error.code}: ${error.message}`} />
               }
             </section>
             <section className={classes.scratchCardBody}>
@@ -506,4 +504,4 @@ const ScratchCard = (props) => {
   )
 }
 
-export default ScratchCard
+export default injectIntl(ScratchCard)

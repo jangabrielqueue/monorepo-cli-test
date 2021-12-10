@@ -88,5 +88,10 @@
     "bidvNotifications.dontCloseBrowser": "Vui lòng không đóng trình duyệt của bạn cho đến khi bạn nhận được kết quả giao dịch trên Internet Banking. Cảm ơn!",
     "pleaseUseMandiri": "Vui lòng sử dụng ứng dụng trực tuyến Mandiri của bạn để chấp thuận giao dịch.",
     "clickDone": "Nhấp vào Hoàn Tất nếu bạn đã thực hiện xong việc chấp thuận.",
-    "done": "Hoàn Tất"
+    "done": "Hoàn Tất",
+    "localBanktransfer.kindleAssureToDepositExactAmount": "Xin qúy khách vui lòng nạp đúng số tiền được hiển thị dưới đây để thủ tục được suôn sẻ.",
+    "localBanktransfer.bankName": "Tên ngân hàng",
+    "localBanktransfer.accountName": "Tên tài khoản",
+    "localBanktransfer.accountNumber": "Số tài khoản",
+    "localBanktransfer.amount": "Số tiền"
 }

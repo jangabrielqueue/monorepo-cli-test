@@ -8,11 +8,18 @@ import FallbackPage from './components/FallbackPage'
 import QueryParamsContext from './contexts/QueryParamsContext'
 import FirebaseContext from './contexts/FirebaseContext'
 import GlobalStyles from '../src/assets/styles/GlobalStyles'
+import { checkBankIfKnown } from './utils/banks'
+import localeEn from './translations/locale/en.json'
+import localeVi from './translations/locale/vi.json'
+import localeTh from './translations/locale/th.json'
+import localeId from './translations/locale/id.json'
+import localeCn from './translations/locale/cn.json'
 
 // lazy loaded components
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
+const LocalBankTransfer = lazy(() => import(/* webpackChunkName: 'localbanktransfer' */'./containers/LocalBankTransfer'))
 const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/TopUp'))
 const NotFound = lazy(() => import(/* webpackChunkName: 'notfound' */'./components/NotFound'))
 const CustomErrorPages = lazy(() => import(/* webpackChunkName: 'badrequest' */'./components/CustomErrorPages'))
@@ -80,16 +87,15 @@ const App = () => {
   axios.defaults.headers.post['Content-Type'] = 'application/json'
   const [locale, setLocale] = useState('en')
   const [language, setLanguage] = useState('en-us')
-  const [dynamicLoadBankUtils, setDynamicLoadBankUtils] = useState(null)
-  const isBankKnown = dynamicLoadBankUtils?.checkBankIfKnown(currency, bank)
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const topUpTheme = window.location.pathname.includes('topup')
   const themeColor = topUpTheme ? 'topup' : renderIsBankUnknown()
   const localeMessages = {
-    en: dynamicLoadBankUtils?.localeEn,
-    vi: dynamicLoadBankUtils?.localeVi,
-    th: dynamicLoadBankUtils?.localeTh,
-    id: dynamicLoadBankUtils?.localeId,
-    cn: dynamicLoadBankUtils?.localeCn
+    en: localeEn,
+    vi: localeVi,
+    th: localeTh,
+    id: localeId,
+    cn: localeCn
   }
   const methods = useForm({
     defaultValues: {
@@ -136,25 +142,7 @@ const App = () => {
     const url = new URL(window.location.href)
     const urlParams = new URLSearchParams(url.search)
     const language = urlParams.get('l')
-    console.log('language', language)
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('./utils/banks')
-      const localeEn = await import('./translations/locale/en.json')
-      const localeVi = await import('./translations/locale/vi.json')
-      const localeTh = await import('./translations/locale/th.json')
-      const localeId = await import('./translations/locale/id.json')
-      const localeCn = await import('./translations/locale/cn.json')
-      setDynamicLoadBankUtils({
-        checkBankIfKnown,
-        localeEn,
-        localeVi,
-        localeTh,
-        localeId,
-        localeCn
-      })
-    }
 
-    dynamicLoadModules()
     handleSelectLanguage(language)
   }, [])
 
@@ -176,6 +164,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/deposit/qrcode'>
                         <QRCode language={language} />
+                      </Route>
+                      <Route exact path='/deposit/local-bank-transfer'>
+                        <LocalBankTransfer language={language} />
                       </Route>
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />
