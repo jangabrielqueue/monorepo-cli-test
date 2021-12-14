@@ -422,7 +422,7 @@ const ScratchCard = (props) => {
     async function start () {
       try {
         await connection.start()
-        await connection.invoke('Startsdasd', session)
+        await connection.invoke('Start', session)
         setEstablishConnection(true)
       } catch (ex) {
         setError({
@@ -451,7 +451,7 @@ const ScratchCard = (props) => {
       }
     }
   }, [step])
-  console.log('error', error)
+
   return (
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
