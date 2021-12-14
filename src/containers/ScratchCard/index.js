@@ -38,10 +38,23 @@ const useStyles = createUseStyles({
     padding: '20px',
     position: 'relative'
   },
+  formWrapper: {
+    height: '100%',
+    padding: '35px 0 0',
+
+    '@media (max-width: 36em)': {
+      minWidth: 0,
+      overflowY: 'scroll',
+      maxHeight: 'calc(100vh - 0px)'
+    }
+  },
   scratchCardContainer: {
-    margin: '0 20px',
+    margin: '0 auto',
     maxWidth: '500px',
-    width: '100%'
+
+    '@media (max-width: 36em)': {
+      maxWidth: '350px'
+    }
   },
   scratchCardContent: {
     background: '#FFFFFF',
@@ -456,33 +469,35 @@ const ScratchCard = (props) => {
     <>
       <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
         <QueryParamsValidator />
-        <div className={classes.scratchCardContainer}>
-          <div className={classes.scratchCardContent}>
-            <section className={classes.scratchCardHeader}>
-              <Suspense fallback={<LoadingIcon />}>
-                <Logo bank={bank} currency={currency} type='scratch-card' />
-              </Suspense>
-              {
-                step === 0 && (bank?.toUpperCase() !== 'GWC') && (
-                  <Statistics
-                    title={<FormattedMessage {...messages.deposit} />}
-                    language={language}
-                    currency={currency}
-                    amount={amount}
-                  />
-                )
-              }
-              {
-                error && <ErrorAlert message={`Error ${error.code}: ${error.message}`} />
-              }
-            </section>
-            <section className={classes.scratchCardBody}>
-              {
-                renderStepContents()
-              }
-            </section>
+        <div className={classes.formWrapper}>
+          <div className={classes.scratchCardContainer}>
+            <div className={classes.scratchCardContent}>
+              <section className={classes.scratchCardHeader}>
+                <Suspense fallback={<LoadingIcon />}>
+                  <Logo bank={bank} currency={currency} type='scratch-card' />
+                </Suspense>
+                {
+                  step === 0 && (bank?.toUpperCase() !== 'GWC') && (
+                    <Statistics
+                      title={<FormattedMessage {...messages.deposit} />}
+                      language={language}
+                      currency={currency}
+                      amount={amount}
+                    />
+                  )
+                }
+                {
+                  error && <ErrorAlert message={`Error ${error.code}: ${error.message}`} />
+                }
+              </section>
+              <section className={classes.scratchCardBody}>
+                {
+                  renderStepContents()
+                }
+              </section>
+            </div>
+            <StepsBar step={step === 1 ? 2 : step} />
           </div>
-          <StepsBar step={step === 1 ? 2 : step} />
         </div>
         <ProgressModal open={progress && (progress.statusCode === '009')}>
           <div className={classes.scratchCardProgressBarContainer}>

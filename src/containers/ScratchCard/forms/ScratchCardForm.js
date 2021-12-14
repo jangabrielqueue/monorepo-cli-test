@@ -42,6 +42,11 @@ const useStyles = createUseStyles({
   },
 
   formSelectField: {
+    '-moz-appearance': 'none',
+    '-webkit-appearance': 'none',
+    '-o-appearance': 'none',
+    '-ms-appearance': 'none',
+    appearance: 'none',
     marginBottom: '23px'
   },
 
