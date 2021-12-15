@@ -139,12 +139,10 @@ const QRCode = (props) => {
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
-    accountName: null,
-    decodedImage: null,
-    message: null,
-    toAccountId: null,
-    timer: 0,
-    timerExtend: 0
+    customer: null,
+    qrCodeContent: null,
+    clientTimer: 0,
+    amount: 0
   })
   const [timeout, setTimeout] = useState({
     minutes: 0,
@@ -184,12 +182,11 @@ const QRCode = (props) => {
       requester: requester,
       signature: signature,
       successfulUrl: successfulUrl,
-      toAccountId: responseData.toAccountId,
       uniqueAmount: responseData.amount
     }
     setTimeout({
       minutes: 0,
-      seconds: responseData.timerExtend
+      seconds: 0
     })
     setError(undefined)
     setLoadingButton(true)
@@ -237,15 +234,17 @@ const QRCode = (props) => {
 
   const handleQrCodeResult = useCallback(
     (resultQrCode) => {
-      setResponseData(resultQrCode)
-      setTimeout({
-        minutes: resultQrCode.timer / 60,
-        seconds: 0
-      })
-      if (resultQrCode.message !== null) {
+      if (resultQrCode.status === '000') {
+        const resultQrCodeData = resultQrCode.parseData
+        setResponseData(resultQrCodeData)
+        setTimeout({
+          minutes: resultQrCodeData.clientTimer / 60,
+          seconds: 0
+        })
+      } else {
         setError({
           code: '',
-          message: resultQrCode.message
+          message: resultQrCode.description
         })
       }
     }, []
@@ -279,7 +278,7 @@ const QRCode = (props) => {
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={180000} setStep={setStep} time={timeout}>
+          <AutoRedirectQR delay={timeout.minutes * 60000} setStep={setStep} time={timeout}>
             <QRCodeForm
               currency={currency}
               bank={bank}
@@ -465,7 +464,7 @@ const QRCode = (props) => {
                 {
                   step === 0 && !error && (
                     <AccountStatistics
-                      accountName={responseData.accountName}
+                      accountName={responseData.customer}
                       language={language}
                       currency={currency}
                       amount={responseData.amount}
