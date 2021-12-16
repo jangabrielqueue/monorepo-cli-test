@@ -27,13 +27,18 @@ const useStyles = createUseStyles({
   }
 })
 
-const AccountStatistics = ({ accountName, language, currency, amount, establishConnection }) => {
+const AccountStatistics = ({ accountName, language, currency, amount, establishConnection, qrCode, reference }) => {
   const classes = useStyles()
 
   return (
     <ul className={classes.accountStatisticsContainer}>
       <li>{<FormattedMessage {...messages.account.amount} />}: <span>{!establishConnection ? <div className='loading' /> : `${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></li>
-      <li>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <div className='loading' /> : accountName}</span></li>
+      {
+        !qrCode && <li>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <div className='loading' /> : accountName}</span></li>
+      }
+      {
+        qrCode && <li>{<FormattedMessage {...messages.reference} />}: <span>{!establishConnection ? <div className='loading' /> : reference}</span></li>
+      }
     </ul>
   )
 }

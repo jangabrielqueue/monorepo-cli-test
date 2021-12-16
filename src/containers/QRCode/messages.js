@@ -39,6 +39,10 @@ export default defineMessages({
     waitingTransaction: {
       id: 'progress.waitingTransaction',
       defaultMessage: 'Waiting transaction confirm'
+    },
+    verifyingTransaction: {
+      id: 'progress.verifyingTransaction',
+      defaultMessage: 'Verifying Transaction'
     }
   },
   errors: {

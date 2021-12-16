@@ -217,7 +217,7 @@ const QRCode = (props) => {
     setProgress({
       currentStep: 5,
       totalSteps: 5,
-      statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
+      statusMessage: <FormattedMessage {...messages.progress.verifyingTransaction} />
     })
 
     try {
@@ -234,6 +234,7 @@ const QRCode = (props) => {
 
   const handleQrCodeResult = useCallback(
     (resultQrCode) => {
+      console.log('resultQrCode', resultQrCode)
       if (resultQrCode.status === '000') {
         const resultQrCodeData = resultQrCode.parseData
         setResponseData(resultQrCodeData)
@@ -302,7 +303,7 @@ const QRCode = (props) => {
         } else {
           return (
             <AutoRedirect delay={10000} url={failedUrl}>
-              <TransferFailed transferResult={transferResult} language={language} />
+              <TransferFailed transferResult={transferResult} language={language} qrCode />
             </AutoRedirect>
           )
         }
@@ -469,6 +470,8 @@ const QRCode = (props) => {
                       currency={currency}
                       amount={responseData.amount}
                       establishConnection={establishConnection}
+                      reference={reference}
+                      qrCode
                     />
                   )
                 }

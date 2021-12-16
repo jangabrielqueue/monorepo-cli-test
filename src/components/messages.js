@@ -27,10 +27,18 @@ export default defineMessages({
       defaultMessage: 'Successfully Deposited!'
     }
   },
+  reference: {
+    id: 'reference',
+    defaultMessage: 'Reference'
+  },
   errors: {
     transactionFailed: {
       id: 'errors.transactionFailed',
       defaultMessage: 'Submitted Transaction Failed!'
+    },
+    validatedTransactionFailed: {
+      id: 'errors.validatedTransactionFailed',
+      defaultMessage: 'Validated Transaction Failed, Please contact customer service.'
     },
     vcbLoginFailed: {
       id: 'errors.vcbLoginFailed',
