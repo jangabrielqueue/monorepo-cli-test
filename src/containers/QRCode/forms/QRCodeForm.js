@@ -10,8 +10,52 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
-  imageContainer: {
-    textAlign: 'center'
+  qrCodeContainer: {
+    textAlign: 'center',
+
+    '& h1': {
+      color: '#3f3f3f',
+      fontSize: '42px',
+      fontWeight: '600',
+      margin: '0',
+
+      '& span': {
+        position: 'relative',
+
+        '&:before': {
+          content: (props) => `"${props.currency}"`,
+          fontSize: '14px',
+          left: '-32px',
+          position: 'absolute',
+          top: '20px'
+        }
+      }
+    },
+
+    '& svg': {
+      margin: '10px 0'
+    }
+  },
+  accountStatisticsContainer: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    textAlign: 'center',
+
+    '& li': {
+      fontSize: '16px',
+      margin: '5px 0',
+
+      '&:nth-child(2)': {
+        color: '#3f3f3f',
+        fontWeight: '600'
+      },
+
+      '&:last-child': {
+        fontSize: '14px',
+        fontStyle: 'italic'
+      }
+    }
   },
   submitContainer: {
     margin: '0 auto',
@@ -39,11 +83,13 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     loadingButton,
     responseData,
     handleSubmitQRCode,
-    error
+    error,
+    language,
+    reference
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const classes = useStyles()
+  const classes = useStyles({ currency })
 
   function handleSubmitForm () {
     handleSubmitQRCode()
@@ -51,12 +97,18 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   return (
     <main>
-      <div className={classes.imageContainer}>
+      <div className={classes.qrCodeContainer}>
+        <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
         {
           !establishConnection ? <div className='loading' />
             : error || responseData.qrCodeContent === null ? null : <QRCode value={responseData.qrCodeContent} size={200} renderAs='svg' />
         }
       </div>
+      <ul className={classes.accountStatisticsContainer}>
+        <li><FormattedMessage {...messages.remark} /></li>
+        <li>{!establishConnection ? <div className='loading' /> : reference}</li>
+        <li>*<FormattedMessage {...messages.important.remarks} /></li>
+      </ul>
       <div className={classes.submitContainer}>
         <GlobalButton
           label='Done'

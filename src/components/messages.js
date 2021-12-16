@@ -27,10 +27,6 @@ export default defineMessages({
       defaultMessage: 'Successfully Deposited!'
     }
   },
-  reference: {
-    id: 'reference',
-    defaultMessage: 'Reference'
-  },
   errors: {
     transactionFailed: {
       id: 'errors.transactionFailed',

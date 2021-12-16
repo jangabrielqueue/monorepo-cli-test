@@ -10,7 +10,6 @@ import { createUseStyles } from 'react-jss'
 import StepsBar from '../../components/StepsBar'
 import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
-import AccountStatistics from '../../components/AccountStatistics'
 import ErrorAlert from '../../components/ErrorAlert'
 import QRCodeForm from './forms/QRCodeForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -234,7 +233,6 @@ const QRCode = (props) => {
 
   const handleQrCodeResult = useCallback(
     (resultQrCode) => {
-      console.log('resultQrCode', resultQrCode)
       if (resultQrCode.status === '000') {
         const resultQrCodeData = resultQrCode.parseData
         setResponseData(resultQrCodeData)
@@ -289,6 +287,8 @@ const QRCode = (props) => {
               color={themeColor}
               handleSubmitQRCode={handleSubmitQRCode}
               error={error}
+              language={language}
+              reference={reference}
             />
           </AutoRedirectQR>
         )
@@ -462,19 +462,6 @@ const QRCode = (props) => {
                 <Suspense fallback={<LoadingIcon />}>
                   <Logo bank={bank} currency={currency} />
                 </Suspense>
-                {
-                  step === 0 && !error && (
-                    <AccountStatistics
-                      accountName={responseData.customer}
-                      language={language}
-                      currency={currency}
-                      amount={responseData.amount}
-                      establishConnection={establishConnection}
-                      reference={reference}
-                      qrCode
-                    />
-                  )
-                }
                 {
                   error && step === 0 &&
                     <ErrorAlert message={`Error ${error.code}: ${error.message}`} />

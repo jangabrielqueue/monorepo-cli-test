@@ -17,7 +17,15 @@ export default defineMessages({
     noSave: {
       id: 'important.noSave',
       defaultMessage: 'Please do not save old QRcode.'
+    },
+    remarks: {
+      id: 'important.remarks',
+      defaultMessage: 'For fast crediting, please input remarks when transferring.'
     }
+  },
+  remark: {
+    id: 'remark',
+    defaultMessage: 'Remark'
   },
   progress: {
     startingConnection: {
