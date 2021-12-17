@@ -59,7 +59,7 @@ const useStyles = createUseStyles({
   },
   submitContainer: {
     margin: '0 auto',
-    padding: '25px 0',
+    padding: '20px 0',
     maxWidth: '230px'
   },
   importantNote: {

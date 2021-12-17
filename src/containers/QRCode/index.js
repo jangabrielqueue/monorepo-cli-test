@@ -46,7 +46,7 @@ const useStyles = createUseStyles({
     '@media (max-width: 36em)': {
       minWidth: 0,
       overflowY: 'scroll',
-      maxHeight: 'calc(100vh - 83px)'
+      maxHeight: 'calc(100vh - 0px)'
     },
 
     '@media (max-width: 33.750em)': {
