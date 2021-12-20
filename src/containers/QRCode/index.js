@@ -10,7 +10,6 @@ import { createUseStyles } from 'react-jss'
 import StepsBar from '../../components/StepsBar'
 import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
-import AccountStatistics from '../../components/AccountStatistics'
 import ErrorAlert from '../../components/ErrorAlert'
 import QRCodeForm from './forms/QRCodeForm'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -47,7 +46,7 @@ const useStyles = createUseStyles({
     '@media (max-width: 36em)': {
       minWidth: 0,
       overflowY: 'scroll',
-      maxHeight: 'calc(100vh - 83px)'
+      maxHeight: 'calc(100vh - 0px)'
     },
 
     '@media (max-width: 33.750em)': {
@@ -139,12 +138,10 @@ const QRCode = (props) => {
   const [loadingButton, setLoadingButton] = useState(false)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({
-    accountName: null,
-    decodedImage: null,
-    message: null,
-    toAccountId: null,
-    timer: 0,
-    timerExtend: 0
+    customer: null,
+    qrCodeContent: null,
+    clientTimer: 0,
+    amount: 0
   })
   const [timeout, setTimeout] = useState({
     minutes: 0,
@@ -184,12 +181,11 @@ const QRCode = (props) => {
       requester: requester,
       signature: signature,
       successfulUrl: successfulUrl,
-      toAccountId: responseData.toAccountId,
       uniqueAmount: responseData.amount
     }
     setTimeout({
       minutes: 0,
-      seconds: responseData.timerExtend
+      seconds: 0
     })
     setError(undefined)
     setLoadingButton(true)
@@ -220,7 +216,7 @@ const QRCode = (props) => {
     setProgress({
       currentStep: 5,
       totalSteps: 5,
-      statusMessage: <FormattedMessage {...messages.progress.waitingTransaction} />
+      statusMessage: <FormattedMessage {...messages.progress.verifyingTransaction} />
     })
 
     try {
@@ -237,15 +233,17 @@ const QRCode = (props) => {
 
   const handleQrCodeResult = useCallback(
     (resultQrCode) => {
-      setResponseData(resultQrCode)
-      setTimeout({
-        minutes: resultQrCode.timer / 60,
-        seconds: 0
-      })
-      if (resultQrCode.message !== null) {
+      if (resultQrCode.status === '000') {
+        const resultQrCodeData = resultQrCode.parseData
+        setResponseData(resultQrCodeData)
+        setTimeout({
+          minutes: resultQrCodeData.clientTimer / 60,
+          seconds: 0
+        })
+      } else {
         setError({
           code: '',
-          message: resultQrCode.message
+          message: resultQrCode.description
         })
       }
     }, []
@@ -259,7 +257,7 @@ const QRCode = (props) => {
         statusMessage: resultQrCodeSubmit.statusMessage,
         amount: resultQrCodeSubmit.amount,
         currency: resultQrCodeSubmit.currency,
-        isSuccessful: resultQrCodeSubmit.statusCode === '006'
+        isSuccessful: resultQrCodeSubmit.statusCode === '000'
       })
       setLoadingButton(false)
       setProgress(undefined)
@@ -279,7 +277,7 @@ const QRCode = (props) => {
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={180000} setStep={setStep} time={timeout}>
+          <AutoRedirectQR delay={timeout.minutes * 60000} setStep={setStep} time={timeout}>
             <QRCodeForm
               currency={currency}
               bank={bank}
@@ -289,6 +287,8 @@ const QRCode = (props) => {
               color={themeColor}
               handleSubmitQRCode={handleSubmitQRCode}
               error={error}
+              language={language}
+              reference={reference}
             />
           </AutoRedirectQR>
         )
@@ -303,7 +303,7 @@ const QRCode = (props) => {
         } else {
           return (
             <AutoRedirect delay={10000} url={failedUrl}>
-              <TransferFailed transferResult={transferResult} language={language} />
+              <TransferFailed transferResult={transferResult} language={language} qrCode />
             </AutoRedirect>
           )
         }
@@ -462,17 +462,6 @@ const QRCode = (props) => {
                 <Suspense fallback={<LoadingIcon />}>
                   <Logo bank={bank} currency={currency} />
                 </Suspense>
-                {
-                  step === 0 && !error && (
-                    <AccountStatistics
-                      accountName={responseData.accountName}
-                      language={language}
-                      currency={currency}
-                      amount={responseData.amount}
-                      establishConnection={establishConnection}
-                    />
-                  )
-                }
                 {
                   error && step === 0 &&
                     <ErrorAlert message={`Error ${error.code}: ${error.message}`} />

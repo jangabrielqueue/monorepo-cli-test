@@ -129,7 +129,7 @@ const VcbDownloadApp = () => {
   )
 }
 
-const TransferFailed = ({ bank, transferResult }) => {
+const TransferFailed = ({ bank, transferResult, qrCode }) => {
   const classes = useStyles()
 
   if (bank === 'VCB' && transferResult.message === 'Login failed. Please check again.') {
@@ -153,7 +153,11 @@ const TransferFailed = ({ bank, transferResult }) => {
   return (
     <div className={classes.redirectContentFailed}>
       <img alt='submit-failed' src='/icons/submit-failed.svg' />
-      <h1>{<FormattedMessage {...messages.errors.transactionFailed} />}</h1>
+      <h1>
+        {
+          qrCode ? <FormattedMessage {...messages.errors.validatedTransactionFailed} /> : <FormattedMessage {...messages.errors.transactionFailed} />
+        }
+      </h1>
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
   )

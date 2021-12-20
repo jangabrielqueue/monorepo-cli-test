@@ -14,26 +14,29 @@ const useStyles = createUseStyles({
       display: 'flex',
       fontSize: '16px',
       fontWeight: '400',
-      margin: '0 0 4px',
+      margin: '0 0 5px',
+
+      '&:last-child': {
+        fontSize: '14px',
+        fontStyle: 'italic'
+      },
 
       '& span': {
         color: '#3f3f3f',
         fontFamily: 'ProductSansBold',
-        height: '20px',
-        marginLeft: '10px',
-        minWidth: '20px'
+        marginLeft: '10px'
       }
     }
   }
 })
 
-const AccountStatistics = ({ accountName, language, currency, amount, establishConnection }) => {
+const AccountStatistics = ({ language, currency, amount, establishConnection, reference }) => {
   const classes = useStyles()
 
   return (
     <ul className={classes.accountStatisticsContainer}>
-      <li>{<FormattedMessage {...messages.account.amount} />}: <span>{!establishConnection ? <div className='loading' /> : `${currency} ${new Intl.NumberFormat(language).format(amount)}`}</span></li>
-      <li>{<FormattedMessage {...messages.account.accountName} />}: <span>{!establishConnection ? <div className='loading' /> : accountName}</span></li>
+      <li><FormattedMessage {...messages.remark} />: <span>{!establishConnection ? <div className='loading' /> : reference}</span></li>
+      <li>*<FormattedMessage {...messages.important.remarks} /></li>
     </ul>
   )
 }

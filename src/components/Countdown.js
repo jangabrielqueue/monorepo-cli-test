@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
     margin: 0
   },
   countdownTimerQr: {
-    margin: '0 0 25px',
+    margin: '0 0 15px',
 
     '& span': {
       color: '#3f3f3f',
