@@ -141,6 +141,10 @@ function checkIfBniBank (bank) {
   return bank?.toUpperCase() === 'BNI'
 }
 
+function checkIfVndCurrency (currency) {
+  return currency?.toUpperCase() === 'VND'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
@@ -149,5 +153,6 @@ module.exports = {
   checkIfMandiriBank,
   checkIfGWCBank,
   checkIfBcaBank,
-  checkIfBniBank
+  checkIfBniBank,
+  checkIfVndCurrency
 }

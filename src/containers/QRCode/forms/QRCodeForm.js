@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import QRCode from 'qrcode.react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown } from '../../../utils/banks'
+import { checkBankIfKnown, checkIfVndCurrency } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -33,7 +33,28 @@ const useStyles = createUseStyles({
     },
 
     '& svg': {
-      margin: '10px 0'
+      border: '1px solid #1e427e',
+      padding: '7px'
+    }
+  },
+  qrcodeBottomLogos: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: '10px 0',
+
+    '& img': {
+      height: 'auto',
+      maxWidth: '120px',
+      width: '100%',
+
+      '&:first-child': {
+        borderRight: '2px solid #1b427f'
+      },
+
+      '&:last-child': {
+        paddingLeft: '15px'
+      }
     }
   },
   accountStatisticsContainer: {
@@ -97,18 +118,42 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   return (
     <main>
-      <div className={classes.qrCodeContainer}>
-        <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
-        {
-          !establishConnection ? <div className='loading' />
-            : error || responseData.qrCodeContent === null ? null : <QRCode value={responseData.qrCodeContent} size={200} renderAs='svg' />
-        }
-      </div>
-      <ul className={classes.accountStatisticsContainer}>
-        <li><FormattedMessage {...messages.remark} /></li>
-        <li>{!establishConnection ? <div className='loading' /> : reference}</li>
-        <li>*<FormattedMessage {...messages.important.remarks} /></li>
-      </ul>
+      {
+        <div className={classes.qrCodeContainer}>
+          <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
+          {
+            !establishConnection ? <div className='loading' />
+              : error || responseData.qrCodeContent === null ? null : <QRCode
+                value={responseData.qrCodeContent}
+                size={200}
+                renderAs='svg'
+                imageSettings={{
+                  src: '/logo/GW_LOGO_ICON.webp',
+                  x: null,
+                  y: null,
+                  height: 40,
+                  width: 40,
+                  excavate: true
+                }}
+                /> // eslint-disable-line
+          }
+        </div>
+      }
+      {
+        checkIfVndCurrency(currency) &&
+          <div className={classes.qrcodeBottomLogos}>
+            <img alt='napas247' src='/logo/NAPAS_247.webp' />
+            <img alt={bank} src={require(`../../../assets/banks/${bank}_LOGO.webp`)} />
+          </div>
+      }
+      {
+        (error || responseData.qrCodeContent === null) ? null
+          : <ul className={classes.accountStatisticsContainer}>
+            <li><FormattedMessage {...messages.remark} /></li>
+            <li>{!establishConnection ? <div className='loading' /> : reference}</li>
+            <li>*<FormattedMessage {...messages.important.remarks} /></li>
+            </ul> // eslint-disable-line
+      }
       <div className={classes.submitContainer}>
         <GlobalButton
           label='Done'
