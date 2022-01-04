@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
       color: '#3f3f3f',
       fontSize: '42px',
       fontWeight: '600',
-      margin: '0',
+      margin: '0 0 8px 0',
 
       '& span': {
         position: 'relative',
