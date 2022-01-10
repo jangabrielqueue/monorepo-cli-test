@@ -9,7 +9,8 @@ const useStyles = createUseStyles({
     textAlign: 'center',
 
     '& img': {
-      margin: '30px 0'
+      margin: '30px 0',
+      maxWidth: '50px'
     },
 
     '& h1': {
@@ -30,7 +31,7 @@ const VerifyTransaction = ({ language }) => {
 
   return (
     <div className={classes.verifyTransactionContainer}>
-      <img alt='submit-success' src='/icons/submit-success.svg' />
+      <img alt='submit-verification' src='/icons/submit-verification.png' />
       <h1>We are verifying the transaction. <span>Thanks!</span></h1>
     </div>
   )
