@@ -28,7 +28,11 @@ const useStyles = createUseStyles({
     '& p': {
       color: '#767676',
       fontSize: '16px',
-      margin: '25px 0'
+      margin: '25px 0',
+
+      '& span': {
+        fontWeight: '600'
+      }
     }
   },
 
@@ -53,7 +57,7 @@ const TransferSuccessful = ({ transferResult, language }) => {
     <div className={classes.redirectContentSuccess}>
       <img alt='submit-success' src='/icons/submit-success.svg' />
       <h1>{<FormattedMessage {...messages.success.successfullyDeposit} />}</h1>
-      <p>References: {`${transferResult.reference}`}</p>
+      <p><span>Reference</span>: {`${transferResult.reference}`}</p>
       <div className={classes.transactionAmount}>
         <span>
           {

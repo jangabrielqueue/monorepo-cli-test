@@ -67,6 +67,10 @@ const useStyles = createUseStyles({
       fontSize: '16px',
       margin: '5px 0',
 
+      '&:first-child': {
+        fontWeight: '600'
+      },
+
       '&:nth-child(2)': {
         color: '#3f3f3f',
         fontWeight: '600'
@@ -149,7 +153,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       {
         (error || responseData.qrCodeContent === null) ? null
           : <ul className={classes.accountStatisticsContainer}>
-            <li><FormattedMessage {...messages.remark} /></li>
+            <li><FormattedMessage {...messages.reference} /></li>
             <li>{!establishConnection ? <div className='loading' /> : reference}</li>
             <li>*<FormattedMessage {...messages.important.remarks} /></li>
             </ul> // eslint-disable-line
