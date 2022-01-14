@@ -34,7 +34,11 @@ export default defineMessages({
     },
     validatedTransactionFailed: {
       id: 'errors.validatedTransactionFailed',
-      defaultMessage: 'Validated Transaction Failed, Please contact customer service.'
+      defaultMessage: 'Transaction Failed.'
+    },
+    contactCustomerService: {
+      id: 'errors.contactCustomerService',
+      defaultMessage: 'Please contact customer service.'
     },
     vcbLoginFailed: {
       id: 'errors.vcbLoginFailed',

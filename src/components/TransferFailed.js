@@ -15,7 +15,8 @@ const useStyles = createUseStyles({
     '& h1': {
       color: '#767676',
       fontFamily: 'ProductSansMedium',
-      fontSize: '18px'
+      fontSize: '18px',
+      lineHeight: 1.5
     },
 
     '& h2': {
@@ -153,11 +154,12 @@ const TransferFailed = ({ bank, transferResult, qrCode }) => {
   return (
     <div className={classes.redirectContentFailed}>
       <img alt='submit-failed' src='/icons/submit-failed.svg' />
-      <h1>
-        {
-          qrCode ? <FormattedMessage {...messages.errors.validatedTransactionFailed} /> : <FormattedMessage {...messages.errors.transactionFailed} />
-        }
-      </h1>
+      {
+        qrCode && <h1><FormattedMessage {...messages.errors.validatedTransactionFailed} /> <br /> <FormattedMessage {...messages.errors.contactCustomerService} /></h1>
+      }
+      {
+        !qrCode && <FormattedMessage {...messages.errors.transactionFailed} />
+      }
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
   )
