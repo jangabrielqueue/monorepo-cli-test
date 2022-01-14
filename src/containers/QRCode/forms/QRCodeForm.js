@@ -41,7 +41,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: '10px 0',
+    margin: (props) => props.bank.toUpperCase() === 'VTB' ? '0 0 10px' : '10px 0',
 
     '& img': {
       height: 'auto',
@@ -49,7 +49,8 @@ const useStyles = createUseStyles({
       width: '100%',
 
       '&:first-child': {
-        borderRight: '2px solid #1b427f'
+        borderRight: '2px solid #1b427f',
+        marginTop: (props) => props.bank.toUpperCase() === 'VTB' ? '15px' : 0
       },
 
       '&:last-child': {
@@ -114,7 +115,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const classes = useStyles({ currency })
+  const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {
     handleSubmitQRCode()
@@ -147,7 +148,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
         checkIfVndCurrency(currency) &&
           <div className={classes.qrcodeBottomLogos}>
             <img alt='napas247' src='/logo/NAPAS_247.webp' />
-            <img alt={bank} src={require(`../../../assets/banks/${bank}_LOGO.webp`)} />
+            <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
           </div>
       }
       {
