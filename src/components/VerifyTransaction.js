@@ -9,13 +9,15 @@ const useStyles = createUseStyles({
     textAlign: 'center',
 
     '& img': {
-      margin: '30px 0'
+      margin: '30px 0',
+      maxWidth: '45px'
     },
 
     '& h1': {
       color: '#767676',
       fontFamily: 'ProductSansMedium',
-      fontSize: '18px',
+      fontSize: '16px',
+      lineHeight: 1.5,
 
       '& span': {
         display: 'block',
@@ -30,8 +32,8 @@ const VerifyTransaction = ({ language }) => {
 
   return (
     <div className={classes.verifyTransactionContainer}>
-      <img alt='submit-success' src='/icons/submit-success.svg' />
-      <h1>We are verifying the transaction. <span>Thanks!</span></h1>
+      <img alt='submit-verification' src='/icons/submit-verification.png' />
+      <h1>We are verifying the transaction. <br /> Please wait for the status of your transaction. <span>Thank you!</span></h1>
     </div>
   )
 }

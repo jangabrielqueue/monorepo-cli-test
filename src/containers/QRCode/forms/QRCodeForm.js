@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import QRCode from 'qrcode.react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown } from '../../../utils/banks'
+import { checkBankIfKnown, checkIfVndCurrency } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
       color: '#3f3f3f',
       fontSize: '42px',
       fontWeight: '600',
-      margin: '0',
+      margin: '0 0 8px 0',
 
       '& span': {
         position: 'relative',
@@ -33,7 +33,29 @@ const useStyles = createUseStyles({
     },
 
     '& svg': {
-      margin: '10px 0'
+      border: '1px solid #1e427e',
+      padding: '7px'
+    }
+  },
+  qrcodeBottomLogos: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: (props) => props.bank.toUpperCase() === 'VTB' ? '0 0 10px' : '10px 0',
+
+    '& img': {
+      height: 'auto',
+      maxWidth: '120px',
+      width: '100%',
+
+      '&:first-child': {
+        borderRight: '2px solid #1b427f',
+        marginTop: (props) => props.bank.toUpperCase() === 'VTB' ? '15px' : 0
+      },
+
+      '&:last-child': {
+        paddingLeft: '15px'
+      }
     }
   },
   accountStatisticsContainer: {
@@ -45,6 +67,10 @@ const useStyles = createUseStyles({
     '& li': {
       fontSize: '16px',
       margin: '5px 0',
+
+      '&:first-child': {
+        fontWeight: '600'
+      },
 
       '&:nth-child(2)': {
         color: '#3f3f3f',
@@ -89,7 +115,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const classes = useStyles({ currency })
+  const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {
     handleSubmitQRCode()
@@ -97,18 +123,42 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   return (
     <main>
-      <div className={classes.qrCodeContainer}>
-        <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
-        {
-          !establishConnection ? <div className='loading' />
-            : error || responseData.qrCodeContent === null ? null : <QRCode value={responseData.qrCodeContent} size={200} renderAs='svg' />
-        }
-      </div>
-      <ul className={classes.accountStatisticsContainer}>
-        <li><FormattedMessage {...messages.remark} /></li>
-        <li>{!establishConnection ? <div className='loading' /> : reference}</li>
-        <li>*<FormattedMessage {...messages.important.remarks} /></li>
-      </ul>
+      {
+        <div className={classes.qrCodeContainer}>
+          <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
+          {
+            !establishConnection ? <div className='loading' />
+              : error || responseData.qrCodeContent === null ? null : <QRCode
+                value={responseData.qrCodeContent}
+                size={200}
+                renderAs='svg'
+                imageSettings={{
+                  src: '/logo/GW_LOGO_ICON.webp',
+                  x: null,
+                  y: null,
+                  height: 40,
+                  width: 40,
+                  excavate: true
+                }}
+                /> // eslint-disable-line
+          }
+        </div>
+      }
+      {
+        checkIfVndCurrency(currency) &&
+          <div className={classes.qrcodeBottomLogos}>
+            <img alt='napas247' src='/logo/NAPAS_247.webp' />
+            <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
+          </div>
+      }
+      {
+        (error || responseData.qrCodeContent === null) ? null
+          : <ul className={classes.accountStatisticsContainer}>
+            <li><FormattedMessage {...messages.reference} /></li>
+            <li>{!establishConnection ? <div className='loading' /> : reference}</li>
+            <li>*<FormattedMessage {...messages.important.remarks} /></li>
+            </ul> // eslint-disable-line
+      }
       <div className={classes.submitContainer}>
         <GlobalButton
           label='Done'

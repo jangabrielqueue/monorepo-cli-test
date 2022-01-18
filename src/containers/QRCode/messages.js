@@ -23,9 +23,9 @@ export default defineMessages({
       defaultMessage: 'For fast crediting, please input remarks when transferring.'
     }
   },
-  remark: {
-    id: 'remark',
-    defaultMessage: 'Remark'
+  reference: {
+    id: 'reference',
+    defaultMessage: 'Reference'
   },
   progress: {
     startingConnection: {

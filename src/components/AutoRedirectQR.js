@@ -7,7 +7,7 @@ const AutoRedirectQR = ({ children, delay, setStep, time }) => {
 
     if (delay !== 0) { // this will stop redirecting when submitting even when the response took time
       timeout = setTimeout(() => {
-        setStep(1)
+        setStep(2)
       }, delay)
     }
 

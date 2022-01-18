@@ -18,8 +18,9 @@ import AutoRedirect from '../../components/AutoRedirect'
 import AutoRedirectQR from '../../components/AutoRedirectQR'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { checkBankIfKnown } from '../../utils/banks'
+import { checkBankIfKnown, checkIfVndCurrency } from '../../utils/banks'
 import { sleep } from '../../utils/utils'
+import VerifyTransaction from '../../components/VerifyTransaction'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -51,6 +52,15 @@ const useStyles = createUseStyles({
 
     '@media (max-width: 33.750em)': {
       padding: '35px 20px 0'
+    }
+  },
+  qrCodeTopLogo: {
+    margin: '0px auto',
+    maxWidth: '280px',
+
+    '& img': {
+      height: 'auto',
+      width: '100%'
     }
   },
   qrCodeContainer: {
@@ -307,6 +317,10 @@ const QRCode = (props) => {
             </AutoRedirect>
           )
         }
+      case 2:
+        return (
+          <VerifyTransaction language={language} />
+        )
 
       default:
         break
@@ -460,7 +474,13 @@ const QRCode = (props) => {
             <div className={classes.qrCodeContent}>
               <section className={classes.qrCodeHeader}>
                 <Suspense fallback={<LoadingIcon />}>
-                  <Logo bank={bank} currency={currency} />
+                  {
+                    checkIfVndCurrency(currency)
+                      ? <div className={classes.qrCodeTopLogo}>
+                        <img alt='vietqr' src='/logo/VIETQR.webp' width={280} />
+                      </div> // eslint-disable-line
+                      : <Logo bank={bank} currency={currency} />
+                  }
                 </Suspense>
                 {
                   error && step === 0 &&
