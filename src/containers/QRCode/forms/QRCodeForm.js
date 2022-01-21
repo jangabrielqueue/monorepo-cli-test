@@ -40,22 +40,30 @@ const useStyles = createUseStyles({
   qrcodeBottomLogos: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    margin: (props) => props.bank.toUpperCase() === 'VTB' ? '0 0 10px' : '10px 0',
+    margin: '10px 0',
 
-    '& img': {
-      height: 'auto',
-      maxWidth: '120px',
-      width: '100%',
-
+    '& div': {
       '&:first-child': {
-        borderRight: '2px solid #1b427f',
-        marginTop: (props) => props.bank.toUpperCase() === 'VTB' ? '15px' : 0
+        borderRight: '2px solid #1b427f'
       },
 
       '&:last-child': {
-        paddingLeft: '15px'
+        '& > img': {
+          marginBottom: (props) => (props.bank.toUpperCase() === 'BIDV') || (props.bank.toUpperCase() === 'ACB') ? '7px' : '15px'
+        }
       }
+    }
+  },
+  qrcodeBottomLogoWrapper: {
+    padding: '0 10px',
+    height: '35px',
+    display: 'flex',
+    alignItems: 'center',
+
+    '& img': {
+      height: '27px',
+      maxWidth: '120px',
+      width: '100%'
     }
   },
   accountStatisticsContainer: {
@@ -147,8 +155,12 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       {
         checkIfVndCurrency(currency) &&
           <div className={classes.qrcodeBottomLogos}>
-            <img alt='napas247' src='/logo/NAPAS_247.webp' />
-            <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
+            <div className={classes.qrcodeBottomLogoWrapper}>
+              <img alt='napas247' src='/logo/NAPAS_247.webp' />
+            </div>
+            <div className={classes.qrcodeBottomLogoWrapper}>
+              <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
+            </div>
           </div>
       }
       {
