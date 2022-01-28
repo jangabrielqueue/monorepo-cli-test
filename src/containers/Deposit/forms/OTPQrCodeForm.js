@@ -53,7 +53,7 @@ const useStyles = createUseStyles({
   }
 })
 
-export default injectIntl(memo(function OTPBidvForm (props) {
+export default injectIntl(memo(function OTPQrCodeForm (props) {
   const {
     bank,
     currency

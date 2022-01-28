@@ -11,7 +11,7 @@ import GlobalButton from '../../components/GlobalButton'
 import Notifications from '../../components/Notifications'
 import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
-import OTPBidvForm from './forms/OTPBidvForm'
+import OTPQrCodeForm from './forms/OTPQrCodeForm'
 import MandiriForm from './forms/MandiriForm'
 import StepsBar from '../../components/StepsBar'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -307,6 +307,12 @@ const Deposit = (props) => {
           reference: reference,
           otp: value
         })
+        setProgress({
+          currentStep: 3,
+          totalSteps: 5,
+          statusCode: '009',
+          statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
+        })
         setStep(1)
         setOtpStatusCode('')
       }
@@ -415,7 +421,7 @@ const Deposit = (props) => {
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
-        <OTPBidvForm
+        <OTPQrCodeForm
           otpReference={otpReference}
           waitingForReady={waitingForReady}
           handleSubmitOTP={handleSubmitOTP}
