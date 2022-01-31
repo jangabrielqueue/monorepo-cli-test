@@ -197,7 +197,6 @@ const Deposit = (props) => {
   const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
-  const [isSmartBidv, setIsSmartBidv] = useState(false)
   const [otpStatusCode, setOtpStatusCode] = useState('')
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
@@ -208,8 +207,6 @@ const Deposit = (props) => {
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
-    } else if (type === 'smart' && bank?.toUpperCase() === 'BIDV') {
-      setIsSmartBidv(prevState => !prevState)
     }
 
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -394,6 +391,8 @@ const Deposit = (props) => {
   }
 
   function renderStepContents () {
+    const qrCodeOtp = otpReference?.includes('QRCODE_')
+
     if (step === 0) {
       analytics.setCurrentScreen('input_user_credentials')
       return (
@@ -403,8 +402,8 @@ const Deposit = (props) => {
           establishConnection={establishConnection}
         />
       )
-    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && !isSmartBidv && // make sure its not bidv and smart otp
+    } else if (!checkBank.isMandiriBank && // making sure bank is not mandiri and undefined to load otp form
+      checkBank.isMandiriBank !== undefined && !qrCodeOtp && // make sure to otp form to display
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
@@ -416,8 +415,8 @@ const Deposit = (props) => {
           isCardOTP={isCardOTP}
         />
       )
-    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && isSmartBidv && // make sure bidv bank and smart otp
+    } else if (!checkBank.isMandiriBank && // making sure bank is not mandiri and undefined to load otp form
+      checkBank.isMandiriBank !== undefined && qrCodeOtp && // make sure qrcode otp form to display
     step === 1) {
       analytics.setCurrentScreen('input_otp')
       return (
