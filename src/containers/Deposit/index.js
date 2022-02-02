@@ -189,12 +189,7 @@ const Deposit = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  const checkBank = {
-    isBankKnown: checkBankIfKnown(currency, bank),
-    isMandiriBank: checkIfMandiriBank(bank),
-    isDabBank: checkIfDABBank(bank)
-  }
-  const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
+  const themeColor = checkBankIfKnown(currency, bank) ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   const [otpStatusCode, setOtpStatusCode] = useState('')
@@ -379,33 +374,29 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (checkBank.isBankKnown && type === 'sms') {
+    if (checkBankIfKnown(currency, bank) && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (checkBank.isBankKnown && type === 'smart') {
+    } else if (checkBankIfKnown(currency, bank) && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!checkBank.isBankKnown && type === 'sms') {
+    } else if (!checkBankIfKnown(currency, bank) && type === 'sms') {
       return '/icons/unknown/sms-unknown.png'
-    } else if (!checkBank.isBankKnown && type === 'smart') {
+    } else if (!checkBankIfKnown(currency, bank) && type === 'smart') {
       return '/icons/unknown/smart-unknown.png'
     }
   }
 
-  function renderStepContents () {
+  function renderOtpForms () {
     const qrCodeOtp = otpReference?.includes('QRCODE_')
 
-    if (step === 0) {
-      analytics.setCurrentScreen('input_user_credentials')
+    if (checkIfMandiriBank(bank)) {
       return (
-        <DepositForm
-          handleSubmitDeposit={handleSubmitDeposit}
+        <MandiriForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
           waitingForReady={waitingForReady}
-          establishConnection={establishConnection}
         />
       )
-    } else if (!checkBank.isMandiriBank && // making sure bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && !qrCodeOtp && // make sure to otp form to display
-    step === 1) {
-      analytics.setCurrentScreen('input_otp')
+    } else if (!qrCodeOtp) {
       return (
         <OTPForm
           otpReference={otpReference}
@@ -415,10 +406,7 @@ const Deposit = (props) => {
           isCardOTP={isCardOTP}
         />
       )
-    } else if (!checkBank.isMandiriBank && // making sure bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && qrCodeOtp && // make sure qrcode otp form to display
-    step === 1) {
-      analytics.setCurrentScreen('input_otp')
+    } else if (qrCodeOtp) {
       return (
         <OTPQrCodeForm
           otpReference={otpReference}
@@ -426,16 +414,11 @@ const Deposit = (props) => {
           handleSubmitOTP={handleSubmitOTP}
         />
       )
-    } else if (checkBank.isMandiriBank && step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <MandiriForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-        />
-      )
-    } else if (step === 2 && isSuccessful) {
+    }
+  }
+
+  function renderResultPage () {
+    if (isSuccessful) {
       analytics.setCurrentScreen('transfer_successful')
       return (
         <AutoRedirect delay={10000} url={successfulUrl}>
@@ -445,14 +428,14 @@ const Deposit = (props) => {
           />
         </AutoRedirect>
       )
-    } else if (step === 2 && transferResult.statusCode === '000') {
+    } else if (transferResult.statusCode === '000') {
       analytics.setCurrentScreen('transfer_successful')
       return (
         <AutoRedirect delay={10000} url={successfulUrl}>
           <TransferWaitForConfirm transferResult={transferResult} />
         </AutoRedirect>
       )
-    } else if (step === 2) {
+    } else {
       analytics.setCurrentScreen('transfer_failed')
       const delay = bank === 'VCB' ? 30000 : 10000
       return (
@@ -460,6 +443,23 @@ const Deposit = (props) => {
           <TransferFailed bank={bank} transferResult={transferResult} />
         </AutoRedirect>
       )
+    }
+  }
+
+  function renderStepContents () {
+    if (step === 0) {
+      analytics.setCurrentScreen('input_user_credentials')
+      return (
+        <DepositForm
+          handleSubmitDeposit={handleSubmitDeposit}
+          waitingForReady={waitingForReady}
+          establishConnection={establishConnection}
+        />
+      )
+    } else if (step === 1) {
+      return renderOtpForms()
+    } else if (step === 2) {
+      return renderResultPage()
     }
   }
 
@@ -599,7 +599,7 @@ const Deposit = (props) => {
                   )
                 }
                 {
-                  step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
+                  step === 1 && !checkIfMandiriBank(bank) && bank?.toUpperCase() !== 'BIDV' && (
                     <Countdown minutes={0} seconds={100} reRender={reRenderCountdown} />
                   )
                 }
@@ -636,16 +636,16 @@ const Deposit = (props) => {
                 />
               </GlobalButton>
               <GlobalButton
-                label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
+                label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
                 color={themeColor}
                 outlined
                 onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart')
+                  handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart')
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
                 <img
-                  alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  alt={checkIfDABBank(bank) ? 'card' : 'smart'}
                   width='24'
                   height='24'
                   src={renderIcon('smart')}
