@@ -14,7 +14,8 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 // styling
 const useStyles = createUseStyles({
   otpReferenceText: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    wordBreak: 'break-all'
   },
   formIconContainer: {
     display: 'flex',

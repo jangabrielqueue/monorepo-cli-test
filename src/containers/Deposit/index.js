@@ -11,7 +11,7 @@ import GlobalButton from '../../components/GlobalButton'
 import Notifications from '../../components/Notifications'
 import DepositForm from './forms/DepositForm'
 import OTPForm from './forms/OTPForm'
-import OTPBidvForm from './forms/OTPBidvForm'
+import OTPQrCodeForm from './forms/OTPQrCodeForm'
 import MandiriForm from './forms/MandiriForm'
 import StepsBar from '../../components/StepsBar'
 import TransferSuccessful from '../../components/TransferSuccessful'
@@ -189,15 +189,9 @@ const Deposit = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  const checkBank = {
-    isBankKnown: checkBankIfKnown(currency, bank),
-    isMandiriBank: checkIfMandiriBank(bank),
-    isDabBank: checkIfDABBank(bank)
-  }
-  const themeColor = checkBank.isBankKnown ? `${bank}` : 'main'
+  const themeColor = checkBankIfKnown(currency, bank) ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
-  const [isSmartBidv, setIsSmartBidv] = useState(false)
   const [otpStatusCode, setOtpStatusCode] = useState('')
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
@@ -208,8 +202,6 @@ const Deposit = (props) => {
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
-    } else if (type === 'smart' && bank?.toUpperCase() === 'BIDV') {
-      setIsSmartBidv(prevState => !prevState)
     }
 
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
@@ -307,6 +299,12 @@ const Deposit = (props) => {
           reference: reference,
           otp: value
         })
+        setProgress({
+          currentStep: 3,
+          totalSteps: 5,
+          statusCode: '009',
+          statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
+        })
         setStep(1)
         setOtpStatusCode('')
       }
@@ -376,14 +374,75 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (checkBank.isBankKnown && type === 'sms') {
+    if (checkBankIfKnown(currency, bank) && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (checkBank.isBankKnown && type === 'smart') {
+    } else if (checkBankIfKnown(currency, bank) && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!checkBank.isBankKnown && type === 'sms') {
+    } else if (!checkBankIfKnown(currency, bank) && type === 'sms') {
       return '/icons/unknown/sms-unknown.png'
-    } else if (!checkBank.isBankKnown && type === 'smart') {
+    } else if (!checkBankIfKnown(currency, bank) && type === 'smart') {
       return '/icons/unknown/smart-unknown.png'
+    }
+  }
+
+  function renderOtpForms () {
+    const qrCodeOtp = otpReference?.includes('QRCODE_')
+
+    if (checkIfMandiriBank(bank)) {
+      return (
+        <MandiriForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
+        />
+      )
+    } else if (!qrCodeOtp) {
+      return (
+        <OTPForm
+          otpReference={otpReference}
+          handleSubmitOTP={handleSubmitOTP}
+          waitingForReady={waitingForReady}
+          progress={progress}
+          isCardOTP={isCardOTP}
+        />
+      )
+    } else if (qrCodeOtp) {
+      return (
+        <OTPQrCodeForm
+          otpReference={otpReference}
+          waitingForReady={waitingForReady}
+          handleSubmitOTP={handleSubmitOTP}
+        />
+      )
+    }
+  }
+
+  function renderResultPage () {
+    if (isSuccessful) {
+      analytics.setCurrentScreen('transfer_successful')
+      return (
+        <AutoRedirect delay={10000} url={successfulUrl}>
+          <TransferSuccessful
+            transferResult={transferResult}
+            language={language}
+          />
+        </AutoRedirect>
+      )
+    } else if (transferResult.statusCode === '000') {
+      analytics.setCurrentScreen('transfer_successful')
+      return (
+        <AutoRedirect delay={10000} url={successfulUrl}>
+          <TransferWaitForConfirm transferResult={transferResult} />
+        </AutoRedirect>
+      )
+    } else {
+      analytics.setCurrentScreen('transfer_failed')
+      const delay = bank === 'VCB' ? 30000 : 10000
+      return (
+        <AutoRedirect delay={delay} url={failedUrl}>
+          <TransferFailed bank={bank} transferResult={transferResult} />
+        </AutoRedirect>
+      )
     }
   }
 
@@ -397,64 +456,10 @@ const Deposit = (props) => {
           establishConnection={establishConnection}
         />
       )
-    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && !isSmartBidv && // make sure its not bidv and smart otp
-    step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <OTPForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-          progress={progress}
-          isCardOTP={isCardOTP}
-        />
-      )
-    } else if (!checkBank.isMandiriBank && // making sure mandiri bank is not mandiri and undefined to load otp form
-      checkBank.isMandiriBank !== undefined && isSmartBidv && // make sure bidv bank and smart otp
-    step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <OTPBidvForm
-          otpReference={otpReference}
-          waitingForReady={waitingForReady}
-          handleSubmitOTP={handleSubmitOTP}
-        />
-      )
-    } else if (checkBank.isMandiriBank && step === 1) {
-      analytics.setCurrentScreen('input_otp')
-      return (
-        <MandiriForm
-          otpReference={otpReference}
-          handleSubmitOTP={handleSubmitOTP}
-          waitingForReady={waitingForReady}
-        />
-      )
-    } else if (step === 2 && isSuccessful) {
-      analytics.setCurrentScreen('transfer_successful')
-      return (
-        <AutoRedirect delay={10000} url={successfulUrl}>
-          <TransferSuccessful
-            transferResult={transferResult}
-            language={language}
-          />
-        </AutoRedirect>
-      )
-    } else if (step === 2 && transferResult.statusCode === '000') {
-      analytics.setCurrentScreen('transfer_successful')
-      return (
-        <AutoRedirect delay={10000} url={successfulUrl}>
-          <TransferWaitForConfirm transferResult={transferResult} />
-        </AutoRedirect>
-      )
+    } else if (step === 1) {
+      return renderOtpForms()
     } else if (step === 2) {
-      analytics.setCurrentScreen('transfer_failed')
-      const delay = bank === 'VCB' ? 30000 : 10000
-      return (
-        <AutoRedirect delay={delay} url={failedUrl}>
-          <TransferFailed bank={bank} transferResult={transferResult} />
-        </AutoRedirect>
-      )
+      return renderResultPage()
     }
   }
 
@@ -594,7 +599,7 @@ const Deposit = (props) => {
                   )
                 }
                 {
-                  step === 1 && !checkBank.isMandiriBank && bank?.toUpperCase() !== 'BIDV' && (
+                  step === 1 && !checkIfMandiriBank(bank) && bank?.toUpperCase() !== 'BIDV' && (
                     <Countdown minutes={0} seconds={100} reRender={reRenderCountdown} />
                   )
                 }
@@ -631,16 +636,16 @@ const Deposit = (props) => {
                 />
               </GlobalButton>
               <GlobalButton
-                label={checkBank.isDabBank ? 'CARD OTP' : 'SMART OTP'}
+                label={checkIfDABBank(bank) ? 'CARD OTP' : 'SMART OTP'}
                 color={themeColor}
                 outlined
                 onClick={handleSubmit((values, e) =>
-                  handleSubmitDeposit(values, e, checkBank.isDabBank ? 'card' : 'smart')
+                  handleSubmitDeposit(values, e, checkIfDABBank(bank) ? 'card' : 'smart')
                 )}
                 disabled={!establishConnection || waitingForReady}
               >
                 <img
-                  alt={checkBank.isDabBank ? 'card' : 'smart'}
+                  alt={checkIfDABBank(bank) ? 'card' : 'smart'}
                   width='24'
                   height='24'
                   src={renderIcon('smart')}

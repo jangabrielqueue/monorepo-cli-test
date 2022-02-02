@@ -19,13 +19,6 @@ const useStyles = createUseStyles({
       lineHeight: 1.5
     },
 
-    '& h2': {
-      color: '#767676',
-      fontFamily: 'ProductSansMedium',
-      fontSize: '17px',
-      margin: '25px 0'
-    },
-
     '& p': {
       color: '#767676',
       fontSize: '16px',
@@ -158,7 +151,7 @@ const TransferFailed = ({ bank, transferResult, qrCode }) => {
         qrCode && <h1><FormattedMessage {...messages.errors.validatedTransactionFailed} /> <br /> <FormattedMessage {...messages.errors.contactCustomerService} /></h1>
       }
       {
-        !qrCode && <FormattedMessage {...messages.errors.transactionFailed} />
+        !qrCode && <h1><FormattedMessage {...messages.errors.transactionFailed} /></h1>
       }
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
