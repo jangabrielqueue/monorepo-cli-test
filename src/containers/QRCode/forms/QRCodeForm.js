@@ -10,7 +10,8 @@ import {
   checkIfAcbBank,
   checkIfFakerBank,
   checkIfFakerThbBank,
-  checkIfNullBank
+  checkIfNullBank,
+  checkIfAutoBank
 } from '../../../utils/banks'
 
 // lazy loaded components
@@ -62,7 +63,8 @@ const useStyles = createUseStyles({
             checkIfAcbBank(props.bank) ||
             checkIfFakerBank(props.bank) ||
             checkIfFakerThbBank(props.bank) ||
-            checkIfNullBank(props.bank)
+            checkIfNullBank(props.bank) ||
+            checkIfAutoBank(props.bank)
           ) ? '7px' : '15px'
         }
       }
@@ -143,6 +145,13 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode()
   }
 
+  function handleRenderBottomLogo () {
+    if (isBankKnown) {
+      return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.webp`)
+    }
+    return require('../../../assets/banks/NULL_LOGO.webp')
+  }
+
   return (
     <main>
       {
@@ -174,7 +183,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             </div>
             <div className={classes.qrcodeBottomLogoWrapper}>
               {
-                bank ? <img alt={bank} src={require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.webp`)} />
+                bank ? <img alt={bank} src={handleRenderBottomLogo()} />
                   : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.webp')} />
               }
             </div>

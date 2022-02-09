@@ -167,6 +167,10 @@ function checkIfNullBank (bank) {
   return bank?.toUpperCase() === 'NULL'
 }
 
+function checkIfAutoBank (bank) {
+  return bank?.toUpperCase() === 'AUTO'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
@@ -181,5 +185,6 @@ module.exports = {
   checkIfVndCurrency,
   checkIfFakerBank,
   checkIfFakerThbBank,
-  checkIfNullBank
+  checkIfNullBank,
+  checkIfAutoBank
 }
