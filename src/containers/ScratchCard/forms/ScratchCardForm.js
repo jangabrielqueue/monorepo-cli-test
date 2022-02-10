@@ -279,7 +279,7 @@ const ScratchCardForm = React.memo((props) => {
     if (language === 'vi-vn') {
       return (
         <ul>
-          <li>VIETTEL: 22%</li>
+          <li>VIETTEL: 27%</li>
           <li>MOBI: 27% (Giá trị thẻ 10-20-30-50-100) và 32% (Giá trị thẻ 200-300-500)</li>
           <li>VINA: 25%</li>
           <li>ZING: 25%</li>
@@ -290,7 +290,7 @@ const ScratchCardForm = React.memo((props) => {
     } else {
       return (
         <ul>
-          <li>VIETTEL: 22%</li>
+          <li>VIETTEL: 27%</li>
           <li>MOBI: 27% (card value 10-20-30-50-100) and 32% (card value 200-300-500)</li>
           <li>VINA: 25%</li>
           <li>ZING: 25%</li>
@@ -398,7 +398,7 @@ const ScratchCardForm = React.memo((props) => {
                 <li><FormattedMessage {...messages.notes.notesFive} /></li>
               </ul>
               <li><FormattedMessage {...messages.notes.notesSix} /></li>
-              <li>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: 29th July 2021)</li>
+              <li>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: Feb 10 2022, GMT+7)</li>
               {
                 renderTransactionRates()
               }
