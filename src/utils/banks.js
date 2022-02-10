@@ -123,6 +123,10 @@ function getBanksByCurrencyForTopUp (currency) {
   return []
 }
 
+function checkIfVndCurrency (currency) {
+  return currency?.toUpperCase() === 'VND'
+}
+
 function checkIfDABBank (bank) {
   return bank?.toUpperCase() === 'DAB'
 }
@@ -143,8 +147,28 @@ function checkIfBniBank (bank) {
   return bank?.toUpperCase() === 'BNI'
 }
 
-function checkIfVndCurrency (currency) {
-  return currency?.toUpperCase() === 'VND'
+function checkIfBidvBank (bank) {
+  return bank?.toUpperCase() === 'BIDV'
+}
+
+function checkIfAcbBank (bank) {
+  return bank?.toUpperCase() === 'ACB'
+}
+
+function checkIfFakerBank (bank) {
+  return bank?.toUpperCase() === 'FAKER'
+}
+
+function checkIfFakerThbBank (bank) {
+  return bank?.toUpperCase() === 'FAKERTHB'
+}
+
+function checkIfNullBank (bank) {
+  return bank?.toUpperCase() === 'NULL'
+}
+
+function checkIfAutoBank (bank) {
+  return bank?.toUpperCase() === 'AUTO'
 }
 
 module.exports = {
@@ -156,5 +180,11 @@ module.exports = {
   checkIfGWCBank,
   checkIfBcaBank,
   checkIfBniBank,
-  checkIfVndCurrency
+  checkIfBidvBank,
+  checkIfAcbBank,
+  checkIfVndCurrency,
+  checkIfFakerBank,
+  checkIfFakerThbBank,
+  checkIfNullBank,
+  checkIfAutoBank
 }

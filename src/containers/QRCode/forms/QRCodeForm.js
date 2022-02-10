@@ -3,7 +3,16 @@ import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import QRCode from 'qrcode.react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown, checkIfVndCurrency } from '../../../utils/banks'
+import {
+  checkBankIfKnown,
+  checkIfVndCurrency,
+  checkIfBidvBank,
+  checkIfAcbBank,
+  checkIfFakerBank,
+  checkIfFakerThbBank,
+  checkIfNullBank,
+  checkIfAutoBank
+} from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -49,7 +58,14 @@ const useStyles = createUseStyles({
 
       '&:last-child': {
         '& > img': {
-          marginBottom: (props) => (props.bank.toUpperCase() === 'BIDV') || (props.bank.toUpperCase() === 'ACB') ? '7px' : '15px'
+          marginBottom: (props) => (
+            checkIfBidvBank(props.bank) ||
+            checkIfAcbBank(props.bank) ||
+            checkIfFakerBank(props.bank) ||
+            checkIfFakerThbBank(props.bank) ||
+            checkIfNullBank(props.bank) ||
+            checkIfAutoBank(props.bank)
+          ) ? '7px' : '15px'
         }
       }
     }
@@ -129,6 +145,13 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode()
   }
 
+  function handleRenderBottomLogo () {
+    if (isBankKnown) {
+      return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.webp`)
+    }
+    return require('../../../assets/banks/NULL_LOGO.webp')
+  }
+
   return (
     <main>
       {
@@ -159,7 +182,10 @@ const QRCodeForm = memo(function QRCodeForm (props) {
               <img alt='napas247' src='/logo/NAPAS_247.webp' />
             </div>
             <div className={classes.qrcodeBottomLogoWrapper}>
-              <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
+              {
+                bank ? <img alt={bank} src={handleRenderBottomLogo()} />
+                  : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.webp')} />
+              }
             </div>
           </div>
       }

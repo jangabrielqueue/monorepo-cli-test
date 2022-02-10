@@ -1,7 +1,8 @@
 /* eslint-disable */
 import React from 'react'
-import { renderButtonColors, isTopUp, isBidvBank } from '../utils/utils'
+import { renderButtonColors, isTopUp } from '../utils/utils'
 import { createUseStyles, useTheme } from 'react-jss'
+import { checkIfBidvBank } from '../utils/banks'
 
 // styling
 const useStyles = createUseStyles({
@@ -15,11 +16,11 @@ const useStyles = createUseStyles({
     fontFamily: 'ProductSansBold',
     fontSize: '14px',
     height: '43px',
-    justifyContent: ({ props }) => isBidvBank(props) ? 'center' : 'space-evenly',
+    justifyContent: ({ props }) => checkIfBidvBank(props.bank) ? 'center' : 'space-evenly',
     letterSpacing: '1.5px',
     lineHeight: 0.5,
-    margin: ({ props }) => isBidvBank(props) ? 0 : '20px 10px',
-    maxWidth: ({ props }) => !isBidvBank(props) && '155px',
+    margin: ({ props }) => checkIfBidvBank(props.bank) ? 0 : '20px 10px',
+    maxWidth: ({ props }) => !checkIfBidvBank(props.bank) && '155px',
     width: '100%',
 
     '&:disabled': {
@@ -33,8 +34,8 @@ const useStyles = createUseStyles({
     },
 
     '@media (max-width: 36em)': {
-      maxWidth: ({ props }) => !isBidvBank(props) && '130px',
-      margin: ({ props }) => isBidvBank(props) && '20px',
+      maxWidth: ({ props }) => !checkIfBidvBank(props.bank) && '130px',
+      margin: ({ props }) => checkIfBidvBank(props.bank) && '20px',
       padding: 0
     }
   },

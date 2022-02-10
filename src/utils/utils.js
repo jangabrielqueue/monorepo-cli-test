@@ -40,10 +40,6 @@ function isTopUp (props) {
   return props.topup === 'true'
 }
 
-function isBidvBank (props) {
-  return props.bank?.toUpperCase() === 'BIDV'
-}
-
 function checkIfAppOneOtp (otpReference) {
   return otpReference.includes('APP1')
 }
@@ -58,7 +54,6 @@ export {
   calculateCurrentProgress,
   renderButtonColors,
   isTopUp,
-  isBidvBank,
   checkIfAppOneOtp,
   checkIfAppTwoOtp
 }
