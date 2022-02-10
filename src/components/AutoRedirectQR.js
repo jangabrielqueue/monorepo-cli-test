@@ -3,9 +3,13 @@ import Countdown from './Countdown'
 
 const AutoRedirectQR = ({ children, delay, setStep, time }) => {
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setStep(1)
-    }, delay)
+    let timeout
+
+    if (delay !== 0) { // this will stop redirecting when submitting even when the response took time
+      timeout = setTimeout(() => {
+        setStep(2)
+      }, delay)
+    }
 
     return () => {
       clearTimeout(timeout)

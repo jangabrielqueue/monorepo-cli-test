@@ -1,9 +1,10 @@
 import React, { memo, lazy, useContext, useState, useEffect } from 'react'
 import { createUseStyles } from 'react-jss'
 import QRCode from 'qrcode.react'
-import { FormattedMessage, injectIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
+import { checkBankIfKnown } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -14,19 +15,10 @@ const useStyles = createUseStyles({
     fontSize: 18,
     textAlign: 'center',
     margin: '0 0 15px',
-    color: '#3f3f3f'
+    color: '#3f3f3f',
+    lineHeight: 1.5
   },
   headerTwo: {
-    fontSize: 16,
-    textAlign: 'center',
-    margin: '0 0 15px',
-
-    '& span': {
-      color: '#3f3f3f',
-      fontFamily: 'ProductSansBold'
-    }
-  },
-  headerThree: {
     fontSize: 14,
     textAlign: 'center',
     margin: '0 0 25px'
@@ -52,14 +44,13 @@ const useStyles = createUseStyles({
   }
 })
 
-export default injectIntl(memo(function OTPBidvForm (props) {
+export default memo(function OTPQrCodeForm (props) {
   const {
     bank,
     currency
   } = useContext(QueryParamsContext)
-  const { otpReference, waitingForReady, handleSubmitOTP, intl } = props
-  const [dynamicLoadUtils, setDynamicLoadUtils] = useState(null)
-  const isBankKnown = dynamicLoadUtils?.checkBankIfKnown(currency, bank)
+  const { otpReference, waitingForReady, handleSubmitOTP } = props
+  const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
   const [timerSeconds, setTimerSeconds] = useState(100)
   const classes = useStyles()
@@ -68,17 +59,6 @@ export default injectIntl(memo(function OTPBidvForm (props) {
     // submit 'DONE' as OTP value
     handleSubmitOTP('DONE')
   }
-
-  useEffect(() => {
-    async function dynamicLoadModules () { // dynamically load bank utils
-      const { checkBankIfKnown } = await import('../../../utils/banks')
-      setDynamicLoadUtils({
-        checkBankIfKnown
-      })
-    }
-
-    dynamicLoadModules()
-  }, [])
 
   useEffect(() => {
     const timer = timerSeconds > 0 && setInterval(() => setTimerSeconds(timerSeconds - 1)
@@ -92,8 +72,7 @@ export default injectIntl(memo(function OTPBidvForm (props) {
   return (
     <>
       <h1 className={classes.headerOne}><FormattedMessage {...messages.bidvNotifications.transactionWaiting} /></h1>
-      <h2 className={classes.headerTwo}>{intl.formatMessage(messages.bidvNotifications.remainingTime, { timerSeconds: <span>{timerSeconds}</span> })}</h2>
-      <h3 className={classes.headerThree}><FormattedMessage {...messages.bidvNotifications.dontCloseBrowser} /></h3>
+      <h2 className={classes.headerTwo}><FormattedMessage {...messages.bidvNotifications.dontCloseBrowser} /></h2>
       <div className={classes.imageContainer}>
         {
           otpReference !== undefined &&
@@ -116,4 +95,4 @@ export default injectIntl(memo(function OTPBidvForm (props) {
       </ol>
     </>
   )
-}))
+})

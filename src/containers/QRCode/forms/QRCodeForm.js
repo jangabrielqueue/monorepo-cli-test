@@ -3,19 +3,97 @@ import { FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import QRCode from 'qrcode.react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown } from '../../../utils/banks'
+import { checkBankIfKnown, checkIfVndCurrency } from '../../../utils/banks'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
-  imageContainer: {
-    textAlign: 'center'
+  qrCodeContainer: {
+    textAlign: 'center',
+
+    '& h1': {
+      color: '#3f3f3f',
+      fontSize: '42px',
+      fontWeight: '600',
+      margin: '0 0 8px 0',
+
+      '& span': {
+        position: 'relative',
+
+        '&:before': {
+          content: (props) => `"${props.currency}"`,
+          fontSize: '14px',
+          left: '-32px',
+          position: 'absolute',
+          top: '20px'
+        }
+      }
+    },
+
+    '& svg': {
+      border: '1px solid #1e427e',
+      padding: '7px'
+    }
+  },
+  qrcodeBottomLogos: {
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '10px 0',
+
+    '& div': {
+      '&:first-child': {
+        borderRight: '2px solid #1b427f'
+      },
+
+      '&:last-child': {
+        '& > img': {
+          marginBottom: (props) => (props.bank.toUpperCase() === 'BIDV') || (props.bank.toUpperCase() === 'ACB') ? '7px' : '15px'
+        }
+      }
+    }
+  },
+  qrcodeBottomLogoWrapper: {
+    padding: '0 10px',
+    height: '35px',
+    display: 'flex',
+    alignItems: 'center',
+
+    '& img': {
+      height: '27px',
+      maxWidth: '120px',
+      width: '100%'
+    }
+  },
+  accountStatisticsContainer: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    textAlign: 'center',
+
+    '& li': {
+      fontSize: '16px',
+      margin: '5px 0',
+
+      '&:first-child': {
+        fontWeight: '600'
+      },
+
+      '&:nth-child(2)': {
+        color: '#3f3f3f',
+        fontWeight: '600'
+      },
+
+      '&:last-child': {
+        fontSize: '14px',
+        fontStyle: 'italic'
+      }
+    }
   },
   submitContainer: {
     margin: '0 auto',
-    padding: '25px 0',
+    padding: '20px 0',
     maxWidth: '230px'
   },
   importantNote: {
@@ -39,11 +117,13 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     loadingButton,
     responseData,
     handleSubmitQRCode,
-    error
+    error,
+    language,
+    reference
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const classes = useStyles()
+  const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {
     handleSubmitQRCode()
@@ -51,18 +131,52 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   return (
     <main>
-      <div className={classes.imageContainer}>
-        {
-          !establishConnection ? <div className='loading' />
-            : error || responseData.decodedImage === null ? null : <QRCode value={responseData.decodedImage} size={200} renderAs='svg' />
-        }
-      </div>
+      {
+        <div className={classes.qrCodeContainer}>
+          <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
+          {
+            !establishConnection ? <div className='loading' />
+              : error || responseData.qrCodeContent === null ? null : <QRCode
+                value={responseData.qrCodeContent}
+                size={200}
+                renderAs='svg'
+                imageSettings={{
+                  src: '/logo/GW_LOGO_ICON.webp',
+                  x: null,
+                  y: null,
+                  height: 40,
+                  width: 40,
+                  excavate: true
+                }}
+                /> // eslint-disable-line
+          }
+        </div>
+      }
+      {
+        checkIfVndCurrency(currency) &&
+          <div className={classes.qrcodeBottomLogos}>
+            <div className={classes.qrcodeBottomLogoWrapper}>
+              <img alt='napas247' src='/logo/NAPAS_247.webp' />
+            </div>
+            <div className={classes.qrcodeBottomLogoWrapper}>
+              <img alt={bank} src={require(`../../../assets/banks/${bank.toUpperCase()}_LOGO.webp`)} />
+            </div>
+          </div>
+      }
+      {
+        (error || responseData.qrCodeContent === null) ? null
+          : <ul className={classes.accountStatisticsContainer}>
+            <li><FormattedMessage {...messages.reference} /></li>
+            <li>{!establishConnection ? <div className='loading' /> : reference}</li>
+            <li>*<FormattedMessage {...messages.important.remarks} /></li>
+            </ul> // eslint-disable-line
+      }
       <div className={classes.submitContainer}>
         <GlobalButton
           label='Done'
           color={buttonColor}
           onClick={handleSubmitForm}
-          disabled={!establishConnection || loadingButton || error || responseData.decodedImage === null}
+          disabled={!establishConnection || loadingButton || error || responseData.qrCodeContent === null}
         />
       </div>
       <p className={classes.importantNote}>{<FormattedMessage {...messages.important.note} />}</p>

@@ -1,5 +1,5 @@
 import React, { useState, lazy } from 'react'
-import { useIntl, FormattedMessage } from 'react-intl'
+import { injectIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
@@ -42,6 +42,11 @@ const useStyles = createUseStyles({
   },
 
   formSelectField: {
+    '-moz-appearance': 'none',
+    '-webkit-appearance': 'none',
+    '-o-appearance': 'none',
+    '-ms-appearance': 'none',
+    appearance: 'none',
     marginBottom: '23px'
   },
 
@@ -131,7 +136,7 @@ const useStyles = createUseStyles({
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
-  const intl = useIntl()
+  const intl = props.intl
   const { register, errors, handleSubmit, reset, watch, getValues, formState } = useFormContext()
   const { isSubmitting } = formState
   const isBankKnown = checkBankIfKnown(currency, bank)
@@ -279,7 +284,9 @@ const ScratchCardForm = React.memo((props) => {
     if (language === 'vi-vn') {
       return (
         <ul>
+
           <li>VIETTEL: 27%</li>
+
           <li>MOBI: 27% (Giá trị thẻ 10-20-30-50-100) và 32% (Giá trị thẻ 200-300-500)</li>
           <li>VINA: 25%</li>
           <li>ZING: 25%</li>
@@ -290,7 +297,9 @@ const ScratchCardForm = React.memo((props) => {
     } else {
       return (
         <ul>
+
           <li>VIETTEL: 27%</li>
+
           <li>MOBI: 27% (card value 10-20-30-50-100) and 32% (card value 200-300-500)</li>
           <li>VINA: 25%</li>
           <li>ZING: 25%</li>
@@ -398,7 +407,9 @@ const ScratchCardForm = React.memo((props) => {
                 <li><FormattedMessage {...messages.notes.notesFive} /></li>
               </ul>
               <li><FormattedMessage {...messages.notes.notesSix} /></li>
+
               <li>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: Feb 10 2022, GMT+7)</li>
+
               {
                 renderTransactionRates()
               }
@@ -415,4 +426,4 @@ const ScratchCardForm = React.memo((props) => {
   )
 })
 
-export default ScratchCardForm
+export default injectIntl(ScratchCardForm)

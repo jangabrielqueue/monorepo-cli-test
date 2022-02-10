@@ -1,31 +1,27 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
-  important: {
-    note: {
-      id: 'important.note',
-      defaultMessage: 'IMPORTANT NOTE'
+  localBanktransfer: {
+    kindleAssureToDepositExactAmount: {
+      id: 'localBanktransfer.kindleAssureToDepositExactAmount',
+      defaultMessage: 'Kindly assure to deposit the exact amount stated below for a smooth procedure.'
     },
-    keyIn: {
-      id: 'important.keyIn',
-      defaultMessage: 'Please key-in the exact amount generated in the screen for faster and smooth transaction.'
+    bankName: {
+      id: 'localBanktransfer.bankName',
+      defaultMessage: 'Bank Name'
     },
-    noRefresh: {
-      id: 'important.noRefresh',
-      defaultMessage: 'Please do not refresh your browser.'
+    accountName: {
+      id: 'localBanktransfer.accountName',
+      defaultMessage: 'Account Name'
     },
-    noSave: {
-      id: 'important.noSave',
-      defaultMessage: 'Please do not save old QRcode.'
+    accountNumber: {
+      id: 'localBanktransfer.accountNumber',
+      defaultMessage: 'Account No.'
     },
-    remarks: {
-      id: 'important.remarks',
-      defaultMessage: 'For fast crediting, please input remarks when transferring.'
+    amount: {
+      id: 'localBanktransfer.amount',
+      defaultMessage: 'Amount'
     }
-  },
-  reference: {
-    id: 'reference',
-    defaultMessage: 'Reference'
   },
   progress: {
     startingConnection: {
@@ -47,13 +43,17 @@ export default defineMessages({
     waitingTransaction: {
       id: 'progress.waitingTransaction',
       defaultMessage: 'Waiting transaction confirm'
-    },
-    verifyingTransaction: {
-      id: 'progress.verifyingTransaction',
-      defaultMessage: 'Verifying Transaction'
     }
   },
   errors: {
+    networkError: {
+      id: 'errors.networkError',
+      defaultMessage: 'Can\'t connect to server, please refresh your browser.'
+    },
+    networkErrorTitle: {
+      id: 'errors.networkErrorTitle',
+      defaultMessage: 'Network Error'
+    },
     bankError: {
       id: 'errors.bankError',
       defaultMessage: 'Currency/Bank is not supported, please contact customer support.'
