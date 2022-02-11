@@ -39,11 +39,6 @@ const useStyles = createUseStyles({
           top: '20px'
         }
       }
-    },
-
-    '& svg': {
-      border: '1px solid #1e427e',
-      padding: '7px'
     }
   },
   qrcodeBottomLogos: {
