@@ -39,11 +39,6 @@ const useStyles = createUseStyles({
           top: '20px'
         }
       }
-    },
-
-    '& svg': {
-      border: '1px solid #1e427e',
-      padding: '7px'
     }
   },
   qrcodeBottomLogos: {
@@ -163,14 +158,6 @@ const QRCodeForm = memo(function QRCodeForm (props) {
                 value={responseData.qrCodeContent}
                 size={200}
                 renderAs='svg'
-                imageSettings={{
-                  src: '/logo/GW_LOGO_ICON.webp',
-                  x: null,
-                  y: null,
-                  height: 40,
-                  width: 40,
-                  excavate: true
-                }}
                 /> // eslint-disable-line
           }
         </div>
