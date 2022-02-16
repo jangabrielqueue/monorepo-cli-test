@@ -13,6 +13,7 @@ const SACOM = { code: 'SACOM', name: 'SacomBank' }
 const AGRI = { code: 'AGRI', name: 'AgriBank' }
 const FAKER = { code: 'FAKER', name: 'Faker VND' }
 const MSB = { code: 'MSB', name: 'Maritime Commercial Joint Stock Bank' }
+const VIB = { code: 'VIB', name: 'Vietnam International Commercial Joint Stock Bank' }
 
 const KBANK = { code: 'KBANK', name: 'Kasikorn Bank' }
 const KTB = { code: 'KTB', name: 'Krung Thai Bank' }
@@ -29,7 +30,7 @@ const BRI = { code: 'BRI', name: 'Bank BRI' }
 const BCA = { code: 'BCA', name: 'Bank Central Asia' }
 const BNI = { code: 'BNI', name: 'Bank Negara Indonesia' }
 
-const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, MSB]
+const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, MSB, VIB]
 const VND_ALL_BANKS_DEV = [
   VCB,
   ACB,
@@ -41,7 +42,8 @@ const VND_ALL_BANKS_DEV = [
   SACOM,
   AGRI,
   FAKER,
-  MSB
+  MSB,
+  VIB
 ]
 
 const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB]
