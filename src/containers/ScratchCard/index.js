@@ -40,21 +40,18 @@ const useStyles = createUseStyles({
   },
   formWrapper: {
     height: '100%',
+    minWidth: '500px',
     padding: '35px 0 0',
 
     '@media (max-width: 36em)': {
-      minWidth: 0,
+      minWidth: '353px',
       overflowY: 'scroll',
       maxHeight: 'calc(100vh - 0px)'
     }
   },
   scratchCardContainer: {
     margin: '0 auto',
-    maxWidth: '500px',
-
-    '@media (max-width: 36em)': {
-      maxWidth: '350px'
-    }
+    maxWidth: '466px'
   },
   scratchCardContent: {
     background: '#FFFFFF',

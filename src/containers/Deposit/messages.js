@@ -27,7 +27,7 @@ export default defineMessages({
   },
   done: {
     id: 'done',
-    defaultMessage: 'Done'
+    defaultMessage: 'DONE'
   },
   placeholders: {
     loginName: {

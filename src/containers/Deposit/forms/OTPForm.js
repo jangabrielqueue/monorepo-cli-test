@@ -40,7 +40,7 @@ const useStyles = createUseStyles({
   },
   formIconContainerOtpReference: {
     '&:before': {
-      background: 'url(/icons/otp-reference.png) no-repeat center'
+      background: 'url(/icons/otp-reference.svg) no-repeat center'
     }
   },
 

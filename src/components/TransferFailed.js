@@ -151,7 +151,7 @@ const TransferFailed = ({ bank, transferResult, qrCode }) => {
         qrCode && <h1><FormattedMessage {...messages.errors.validatedTransactionFailed} /> <br /> <FormattedMessage {...messages.errors.contactCustomerService} /></h1>
       }
       {
-        !qrCode && <h1><FormattedMessage {...messages.errors.transactionFailed} /></h1>
+        !qrCode && <h1><FormattedMessage {...messages.errors.validatedTransactionFailed} /></h1>
       }
       <p>{transferResult.message || transferResult.statusMessage}</p>
     </div>
