@@ -8,6 +8,7 @@
     "axios": "^0.21.1",
     "babel-plugin-import": "^1.13.0",
     "classnames": "^2.2.6",
+    "crc": "^4.1.0",
     "customize-cra": "^0.9.1",
     "env-cmd": "^10.0.1",
     "firebase": "^8.2.9",
