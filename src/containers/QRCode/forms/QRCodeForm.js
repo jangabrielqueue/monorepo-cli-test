@@ -13,6 +13,7 @@ import {
   checkIfNullBank,
   checkIfAutoBank
 } from '../../../utils/banks'
+import generatePayload from '../../../components/PromptpayQr'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -152,6 +153,46 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     return require('../../../assets/banks/NULL_LOGO.webp')
   }
 
+  function handleQRCodeRender (currency) {
+    const currencies = currency?.toUpperCase()
+    const amount = parseFloat(responseData.amount)
+
+    switch (currencies) {
+      case 'THB':
+        return (
+          <QRCode
+            value={generatePayload(responseData?.qrCodeContent?.toString(), { amount })}
+            size={200}
+            renderAs='svg'
+            level='M'
+            imageSettings={{
+              src: '/logo/GW_LOGO_ICON.webp',
+              x: null,
+              y: null,
+              height: 40,
+              width: 40,
+              excavate: true
+            }}
+          />)
+      default:
+        return (
+          <QRCode
+            value={responseData.qrCodeContent}
+            size={200}
+            renderAs='svg'
+            level='M'
+            imageSettings={{
+              src: '/logo/GW_LOGO_ICON.webp',
+              x: null,
+              y: null,
+              height: 40,
+              width: 40,
+              excavate: true
+            }}
+          />)
+    }
+  }
+
   return (
     <main>
       {
@@ -159,20 +200,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
           <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
           {
             !establishConnection ? <div className='loading' />
-              : error || responseData.qrCodeContent === null ? null : <QRCode
-                value={responseData.qrCodeContent}
-                size={200}
-                renderAs='svg'
-                level='M'
-                imageSettings={{
-                  src: '/logo/GW_LOGO_ICON.webp',
-                  x: null,
-                  y: null,
-                  height: 40,
-                  width: 40,
-                  excavate: true
-                }}
-                /> // eslint-disable-line
+              : error || responseData.qrCodeContent === null ? null : handleQRCodeRender(currency) // eslint-disable-line
           }
         </div>
       }
