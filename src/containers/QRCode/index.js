@@ -267,7 +267,7 @@ const QRCode = (props) => {
         statusMessage: resultQrCodeSubmit.statusMessage,
         amount: resultQrCodeSubmit.amount,
         currency: resultQrCodeSubmit.currency,
-        isSuccessful: resultQrCodeSubmit.statusCode === '000'
+        isSuccessful: resultQrCodeSubmit.statusCode === '006'
       })
       setLoadingButton(false)
       setProgress(undefined)
