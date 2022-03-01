@@ -299,6 +299,7 @@ const QRCode = (props) => {
               error={error}
               language={language}
               reference={reference}
+              note={note}
             />
           </AutoRedirectQR>
         )

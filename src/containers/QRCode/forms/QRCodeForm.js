@@ -14,6 +14,7 @@ import {
   checkIfAutoBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
+import getVietQRCode from '../../../components/VietQr'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -136,7 +137,8 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode,
     error,
     language,
-    reference
+    reference,
+    note
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
@@ -174,6 +176,24 @@ const QRCodeForm = memo(function QRCodeForm (props) {
               excavate: true
             }}
           />)
+
+      case 'VND':
+        return (
+          <QRCode
+            value={getVietQRCode(bank, responseData.qrCodeContent, responseData.amount, note)}
+            size={200}
+            renderAs='svg'
+            level='M'
+            imageSettings={{
+              src: '/logo/GW_LOGO_ICON.webp',
+              x: null,
+              y: null,
+              height: 40,
+              width: 40,
+              excavate: true
+            }}
+          />)
+
       default:
         return (
           <QRCode
