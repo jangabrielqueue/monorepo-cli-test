@@ -78,11 +78,7 @@ const getVietQRCode = (bank, id, amount, notes) => {
 
   const qRCode = `${cRCPayload}${cRCResponse}`
 
-  return checkNotesIsValid(notes) && qRCode
-}
-
-const checkNotesIsValid = (notes) => {
-  return notes.length <= 25
+  return qRCode
 }
 
 const handleLength = (length) => {
