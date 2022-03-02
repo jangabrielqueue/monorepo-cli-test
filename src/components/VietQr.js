@@ -63,15 +63,20 @@ const getVietQRCode = (bank, id, amount, notes) => {
     return data.name === bank
   })[0]?.id
 
+  let AI = '' // Addtional Information
+  let AM = '' // Amount modified
   const BC = `0006${bankID}` // Bank BIN ID
   const MI = `01${handleLength(id?.length)}${id}` // Merchant/customer ID
   const BO = `01${handleLength(BC.length + MI.length)}${BC}${MI}` // Beneficiary organization
   const MAI = `38${handleLength(BO.length + GU.length + SC.length)}${GU}${BO}${SC}` // Merchant Account Information
+  if (amount) {
+    AM = `54${handleLength(amount?.length)}${amount}` // Amount modified
+  }
 
-  const AM = `54${handleLength(amount.length)}${amount}` // Amount modified
-
-  const PT = `08${handleLength(notes?.length)}${notes}` // Purpose of Transaction
-  const AI = `62${handleLength(PT.length)}${PT}` // Addtional Information
+  if (notes) {
+    const PT = `08${handleLength(notes?.length)}${notes}` // Purpose of Transaction
+    AI = `62${handleLength(PT.length)}${PT}`
+  }
 
   const cRCPayload = `${FI}${IM}${MAI}${CU}${AM}${CO}${AI}6304`
   const cRCResponse = crc.crc16ccitt(cRCPayload).toString(16).padStart(4, '0').toUpperCase()
@@ -82,7 +87,7 @@ const getVietQRCode = (bank, id, amount, notes) => {
 }
 
 const handleLength = (length) => {
-  const string = length.toString().padStart(2, '0')
+  const string = length?.toString().padStart(2, '0')
   return string
 }
 
