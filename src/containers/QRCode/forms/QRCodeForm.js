@@ -137,8 +137,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     handleSubmitQRCode,
     error,
     language,
-    reference,
-    note
+    reference
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
@@ -180,7 +179,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       case 'VND':
         return (
           <QRCode
-            value={getVietQRCode(bank, responseData.qrCodeContent, responseData.amount, note)}
+            value={getVietQRCode(bank, responseData.qrCodeContent, responseData.amount, reference)}
             size={200}
             renderAs='svg'
             level='M'

@@ -70,7 +70,7 @@ const getVietQRCode = (bank, id, amount, notes) => {
   const BO = `01${handleLength(BC.length + MI.length)}${BC}${MI}` // Beneficiary organization
   const MAI = `38${handleLength(BO.length + GU.length + SC.length)}${GU}${BO}${SC}` // Merchant Account Information
   if (amount) {
-    AM = `55020256${handleLength(amount?.length)}${amount}` // Amount modified
+    AM = `54${handleLength(amount?.length)}${amount}` // Amount modified
   }
 
   if (notes) {
