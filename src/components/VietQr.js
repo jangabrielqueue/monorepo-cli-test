@@ -58,23 +58,32 @@ const CO = '5802VN' // Country Code (Vietnam)
 const GU = '0010A000000727' // GUI Code
 const SC = '0208QRIBFTTA' // Service Code for Merchant Account Information
 
-const getVietQRCode = (bank, id, amount, notes) => {
+const getVietQRCode = (bank, id, amount, reference) => {
   const bankID = bankList.filter((data) => {
     return data.name === bank
   })[0]?.id
 
+  let message = ''
   let AI = '' // Addtional Information
   let AM = '' // Amount modified
+
+  if (['SACOM'].includes(bank)) {
+    message = reference?.replace(/[-\s]/g, '')
+  } else {
+    message = reference
+  }
+
   const BC = `0006${bankID}` // Bank BIN ID
   const MI = `01${handleLength(id?.length)}${id}` // Merchant/customer ID
   const BO = `01${handleLength(BC.length + MI.length)}${BC}${MI}` // Beneficiary organization
   const MAI = `38${handleLength(BO.length + GU.length + SC.length)}${GU}${BO}${SC}` // Merchant Account Information
+
   if (amount) {
     AM = `54${handleLength(amount?.length)}${amount}` // Amount modified
   }
 
-  if (notes) {
-    const PT = `08${handleLength(notes?.length)}${notes}` // Purpose of Transaction
+  if (reference) {
+    const PT = `08${handleLength(message?.length)}${message}` // Purpose of Transaction
     AI = `62${handleLength(PT.length)}${PT}`
   }
 
@@ -82,7 +91,6 @@ const getVietQRCode = (bank, id, amount, notes) => {
   const cRCResponse = crc.crc16ccitt(cRCPayload).toString(16).padStart(4, '0').toUpperCase()
 
   const qRCode = `${cRCPayload}${cRCResponse}`
-
   return qRCode
 }
 
