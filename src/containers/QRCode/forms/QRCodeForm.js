@@ -11,7 +11,10 @@ import {
   checkIfFakerBank,
   checkIfFakerThbBank,
   checkIfNullBank,
-  checkIfAutoBank
+  checkIfAutoBank,
+  checkIfMsbBank,
+  checkifAgriBank,
+  checkIfDABBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 
@@ -56,7 +59,6 @@ const useStyles = createUseStyles({
       '&:first-child': {
         borderRight: '2px solid #1b427f'
       },
-
       '&:last-child': {
         '& > img': {
           marginBottom: (props) => (
@@ -65,8 +67,11 @@ const useStyles = createUseStyles({
             checkIfFakerBank(props.bank) ||
             checkIfFakerThbBank(props.bank) ||
             checkIfNullBank(props.bank) ||
-            checkIfAutoBank(props.bank)
-          ) ? '7px' : '15px'
+            checkIfAutoBank(props.bank) ||
+            checkifAgriBank(props.bank) ||
+            checkIfDABBank(props.bank)
+          ) ? '7px' : (
+              checkIfMsbBank(props.bank) ? 0 : '15px')
         }
       }
     }
@@ -78,7 +83,7 @@ const useStyles = createUseStyles({
     alignItems: 'center',
 
     '& img': {
-      height: '27px',
+      maxHeight: '27px',
       maxWidth: '120px',
       width: '100%'
     }

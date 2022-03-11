@@ -171,6 +171,14 @@ function checkIfAutoBank (bank) {
   return bank?.toUpperCase() === 'AUTO'
 }
 
+function checkIfMsbBank (bank) {
+  return bank?.toUpperCase() === 'MSB'
+}
+
+function checkifAgriBank (bank) {
+  return bank?.toUpperCase() === 'AGRI'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
@@ -186,5 +194,7 @@ module.exports = {
   checkIfFakerBank,
   checkIfFakerThbBank,
   checkIfNullBank,
-  checkIfAutoBank
+  checkIfAutoBank,
+  checkIfMsbBank,
+  checkifAgriBank
 }
