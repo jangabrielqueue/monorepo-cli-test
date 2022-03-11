@@ -15,7 +15,8 @@ import {
   checkIfMsbBank,
   checkifAgriBank,
   checkIfDABBank,
-  checkIfTcbBank
+  checkIfTcbBank,
+  checkIfSacomBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 
@@ -71,7 +72,8 @@ const useStyles = createUseStyles({
             checkIfAutoBank(props.bank) ||
             checkifAgriBank(props.bank) ||
             checkIfDABBank(props.bank) ||
-            checkIfTcbBank(props.bank)
+            checkIfTcbBank(props.bank) ||
+            checkIfSacomBank(props.bank)
           ) ? '7px' : (
               checkIfMsbBank(props.bank) ? 0 : '15px')
         }
