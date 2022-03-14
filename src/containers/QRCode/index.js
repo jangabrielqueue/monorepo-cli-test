@@ -290,7 +290,7 @@ const QRCode = (props) => {
           <AutoRedirectQR delay={timeout.minutes * 60000} setStep={setStep} time={timeout}>
             <QRCodeForm
               currency={currency}
-              bank={bank}
+              bank={responseData.bank}
               establishConnection={establishConnection}
               loadingButton={loadingButton}
               responseData={responseData}
