@@ -151,7 +151,8 @@ const QRCode = (props) => {
     customer: null,
     qrCodeContent: null,
     clientTimer: 0,
-    amount: 0
+    amount: 0,
+    bank: null
   })
   const [timeout, setTimeout] = useState({
     minutes: 0,
@@ -167,8 +168,8 @@ const QRCode = (props) => {
     isSuccessful: false
   })
   const language = props.language // language was handled at root component not at the queryparams
-  const isBankKnown = checkBankIfKnown(currency, bank)
-  const themeColor = isBankKnown ? `${bank}` : 'main'
+  const isBankKnown = checkBankIfKnown(currency, responseData.bank)
+  const themeColor = isBankKnown ? `${responseData.bank}` : 'main'
   const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
   const classes = useStyles(step)
   const intl = props.intl
@@ -290,7 +291,7 @@ const QRCode = (props) => {
           <AutoRedirectQR delay={timeout.minutes * 60000} setStep={setStep} time={timeout}>
             <QRCodeForm
               currency={currency}
-              bank={bank}
+              bank={responseData.bank}
               establishConnection={establishConnection}
               loadingButton={loadingButton}
               responseData={responseData}
@@ -479,7 +480,7 @@ const QRCode = (props) => {
                       ? <div className={classes.qrCodeTopLogo}>
                         <img alt='vietqr' src='/logo/VIETQR.webp' width={280} />
                       </div> // eslint-disable-line
-                      : <Logo bank={bank} currency={currency} />
+                      : <Logo bank={responseData.bank} currency={currency} />
                   }
                 </Suspense>
                 {
