@@ -63,8 +63,8 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
         !qrCode && <h1 className={classes.countdownHeaderText}>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1 }) : intl.formatMessage(messages.countdown)}</h1>
       }
       {
-        !qrCode ? <p className={classes.countdownTimer}>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</p>
-          : <p className={classes.countdownTimerQr}>{intl.formatMessage(messages.countdown)}: <span>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></p>
+        !qrCode ? <p className={classes.countdownTimer}>00:{timerMinutes < 10 ? `0${timerMinutes}` : timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</p>
+          : <p className={classes.countdownTimerQr}>{intl.formatMessage(messages.countdown)}: <span>00:{timerMinutes < 10 ? `0${timerMinutes}` : timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></p>
       }
     </section>
   )
