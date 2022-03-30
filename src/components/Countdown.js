@@ -27,8 +27,7 @@ const useStyles = createUseStyles({
 })
 
 const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
-  const [timerMinutes, setTimerMinutes] = useState(minutes)
-  const [timerSeconds, setTimerSeconds] = useState(seconds)
+  const [formattedTime, setFormattedTime] = useState('00:00')
   const classes = useStyles(redirect)
 
   useEffect(() => {
@@ -47,10 +46,13 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
         clearInterval(timer)
       } else {
         // update timer
-        setTimerMinutes(minutes)
-        setTimerSeconds(seconds)
+        setFormattedTime(`${formatTime(minutes)}:${formatTime(seconds)}`)
       }
     }, 1000)
+
+    const formatTime = (time) => {
+      return time.toString().padStart(2, 0)
+    }
 
     return () => {
       clearInterval(timer) // clear the timer on unmount
@@ -63,8 +65,8 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
         !qrCode && <h1 className={classes.countdownHeaderText}>{redirect ? intl.formatMessage(messages.texts.redirected, { timeLeft: seconds / 1 }) : intl.formatMessage(messages.countdown)}</h1>
       }
       {
-        !qrCode ? <p className={classes.countdownTimer}>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</p>
-          : <p className={classes.countdownTimerQr}>{intl.formatMessage(messages.countdown)}: <span>00:0{timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span></p>
+        !qrCode ? <p className={classes.countdownTimer}>00:{formattedTime}</p>
+          : <p className={classes.countdownTimerQr}>{intl.formatMessage(messages.countdown)}: <span>00:{formattedTime}</span></p>
       }
     </section>
   )
