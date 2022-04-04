@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
+import QRCode from 'qrcode.react'
 import { isNullOrWhitespace } from '../../../utils/utils'
 
 // lazy loaded components
@@ -98,7 +99,7 @@ const useStyles = createUseStyles({
 )
 
 const OTPForm = React.memo((props) => {
-  const { handleSubmitOTP, otpReference, waitingForReady, progress } = props
+  const { handleSubmitOTP, otpReference, waitingForReady, progress, methodType } = props
   const buttonColor = 'topup'
   const { register, errors, handleSubmit, reset, setValue, getValues, formState } = useFormContext()
   const { dirty, isSubmitting } = formState
@@ -128,7 +129,7 @@ const OTPForm = React.memo((props) => {
     <main>
       <form>
         {
-          !isNullOrWhitespace(otpReference) &&
+          !isNullOrWhitespace(otpReference) && ![2, 4].includes(methodType) &&
             <div className={formIconContainerOtpReferenceStyles}>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>
@@ -136,36 +137,71 @@ const OTPForm = React.memo((props) => {
               </div>
             </div>
         }
-        <div className={formIconContainerUsernameStyles}>
-          <div>
-            <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
-            <div className={classes.inputFieldContainer}>
-              <input
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
-                type='number'
-                id='OTP'
-                name='OTP'
-                autoComplete='off'
-                onKeyDown={e => e.which === 69 && e.preventDefault()}
-              />
-              <ul>
-                {
-                  (formValues.OTP !== '' && dirty) &&
-                    <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
-                }
-              </ul>
+        {
+          [3, 4].includes(methodType) &&
+            <QRCode
+              value={otpReference}
+              size={200}
+              renderAs='svg'
+              level='M'
+              imageSettings={{
+                src: '/logo/GW_LOGO_ICON.webp',
+                x: null,
+                y: null,
+                height: 40,
+                width: 40,
+                excavate: true
+              }}
+            />
+        }
+        {
+          ![2, 4].includes(methodType) &&
+            <div className={formIconContainerUsernameStyles}>
+              <div>
+                <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
+                <div className={classes.inputFieldContainer}>
+                  <input
+                    ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} /> })}
+                    type='number'
+                    id='OTP'
+                    name='OTP'
+                    autoComplete='off'
+                    onKeyDown={e => e.which === 69 && e.preventDefault()}
+                  />
+                  <ul>
+                    {
+                      (formValues.OTP !== '' && dirty) &&
+                        <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
+                    }
+                  </ul>
+                </div>
+                <p className='input-errors'>{errors.OTP?.message}</p>
+              </div>
             </div>
-            <p className='input-errors'>{errors.OTP?.message}</p>
-          </div>
-        </div>
+        }
         <section className={classes.footer}>
-          <GlobalButton
-            label={<FormattedMessage {...messages.submit} />}
-            color={buttonColor}
-            icon={<img alt='submit' src='/icons/submit-otp.svg' />}
-            onClick={handleSubmit(handleSubmitForm)}
-            disabled={waitingForReady || isSubmitting}
-          />
+          {
+            ![2, 4].includes(methodType) &&
+              <GlobalButton
+                label={<FormattedMessage {...messages.submit} />}
+                color={buttonColor}
+                onClick={handleSubmit(handleSubmitForm)}
+                disabled={waitingForReady || isSubmitting}
+              >
+                <img alt='submit' src='/icons/submit-otp.svg' />
+              </GlobalButton>
+          }
+          {
+            [2, 4].includes(methodType) &&
+              <GlobalButton
+                label={<FormattedMessage {...messages.done} />}
+                color={buttonColor}
+                onClick={() => handleSubmitOTP('DONE')}
+                disabled={waitingForReady || isSubmitting}
+              >
+                <img alt='submit' src='/icons/submit-otp.svg' />
+              </GlobalButton>
+          }
         </section>
       </form>
     </main>
