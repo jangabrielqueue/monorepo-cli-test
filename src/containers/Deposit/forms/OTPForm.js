@@ -6,7 +6,8 @@ import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
 import { checkBankIfKnown, checkIfBcaBank, checkIfBniBank } from '../../../utils/banks'
-import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp } from '../../../utils/utils'
+import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp, isNullorUndefined } from '../../../utils/utils'
+import QRCode from 'qrcode.react'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -140,6 +141,7 @@ const OTPForm = React.memo((props) => {
     otpReference,
     waitingForReady,
     progress,
+    methodType,
     isCardOTP
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
@@ -152,6 +154,7 @@ const OTPForm = React.memo((props) => {
   const cardOTP2 = cardOTPReferenceArray?.[1]
   const classes = useStyles()
   const cx = classNames.bind(classes)
+  const hasMethodType = !isNullorUndefined(methodType)
   const formIconContainerOtpReferenceStyles = cx({
     formIconContainer: true,
     formIconContainerOtpReference: true
@@ -271,7 +274,7 @@ const OTPForm = React.memo((props) => {
                   </>
               }
               {
-                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) &&
+                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) && ![3, 4].includes(methodType) &&
                   <>
                     <FormattedMessage {...messages.otpReference} />
                     <p className={classes.otpReferenceText}>{otpReference}</p>
@@ -281,7 +284,24 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        !isCardOTP &&
+        [3, 4].includes(methodType) &&
+          <QRCode
+            value={otpReference}
+            size={200}
+            renderAs='svg'
+            level='M'
+            imageSettings={{
+              src: '/logo/GW_LOGO_ICON.webp',
+              x: null,
+              y: null,
+              height: 40,
+              width: 40,
+              excavate: true
+            }}
+          />
+      }
+      {
+        !isCardOTP && (!hasMethodType || [1, 3].includes(methodType)) &&
           <div className={formIconContainerUsernameStyles}>
             <div>
               <label htmlFor='OTP'>
@@ -304,8 +324,12 @@ const OTPForm = React.memo((props) => {
                     />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 3 &&
                     <FormattedMessage {...messages.placeholders.inputOtp} />
+                }
+                {
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType === 3 &&
+                    <FormattedMessage {...messages.placeholders.inputQrOtp} />
                 }
               </label>
               <div className={classes.inputFieldContainer}>
@@ -379,7 +403,7 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        isCardOTP &&
+        isCardOTP && !hasMethodType &&
           <div>
             <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
             <div className={classes.formDabContainer}>
@@ -419,14 +443,28 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       <section className={classes.formFooter}>
-        <GlobalButton
-          label={<FormattedMessage {...messages.submit} />}
-          color={buttonColor}
-          onClick={handleSubmit(handleSubmitForm)}
-          disabled={waitingForReady || isSubmitting}
-        >
-          <img alt='submit' src='/icons/submit-otp.svg' />
-        </GlobalButton>
+        {
+          ![2, 4].includes(methodType) &&
+            <GlobalButton
+              label={<FormattedMessage {...messages.submit} />}
+              color={buttonColor}
+              onClick={handleSubmit(handleSubmitForm)}
+              disabled={waitingForReady || isSubmitting}
+            >
+              <img alt='submit' src='/icons/submit-otp.svg' />
+            </GlobalButton>
+        }
+        {
+          [2, 4].includes(methodType) &&
+            <GlobalButton
+              label={<FormattedMessage {...messages.done} />}
+              color={buttonColor}
+              onClick={() => handleSubmitOTP('DONE')}
+              disabled={waitingForReady || isSubmitting}
+            >
+              <img alt='submit' src='/icons/submit-otp.svg' />
+            </GlobalButton>
+        }
       </section>
     </form>
   )

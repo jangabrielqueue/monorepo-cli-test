@@ -19,6 +19,7 @@
   "placeholders.inputLoginName": "Harap masukkan nama login perbankan online Anda",
   "placeholders.inputPassword": "Silakan masukkan password Anda",
   "placeholders.inputOtp": "Harap masukkan OTP yang diterima dari bank",
+  "placeholders.inputQrOtp": "Harap masukkan QR Code yang diterima dari bank",
   "secureBankingTitle": "Perbankan Online Aman:",
   "secureBankingText": "Harap gunakan akun Internet Banking dan kata sandi Anda untuk login.",
   "placeholders.inputOtpDAB": "Silahkan masukkan 3 angka",

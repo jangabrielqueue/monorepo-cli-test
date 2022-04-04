@@ -5,6 +5,27 @@ function isNullOrWhitespace (input) {
   return input.replace(/\s/g, '').length < 1
 }
 
+function isNullorUndefined (input) {
+  if (typeof input === 'undefined' || input == null) return true
+}
+
+function isJSON (item) {
+  item = typeof item !== 'string'
+    ? JSON.stringify(item)
+    : item
+  try {
+    item = JSON.parse(item)
+  } catch (e) {
+    return false
+  }
+
+  if (typeof item === 'object' && item !== null) {
+    return true
+  }
+
+  return false
+}
+
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -50,6 +71,8 @@ function checkIfAppTwoOtp (otpReference) {
 
 export {
   isNullOrWhitespace,
+  isNullorUndefined,
+  isJSON,
   sleep,
   calculateCurrentProgress,
   renderButtonColors,

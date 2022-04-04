@@ -25,6 +25,7 @@
     "placeholders.inputLoginName": "กรุณากรอกข้อมูลช่องชื่อบัญชีออนไลน์แบงค์กิ้ง",
     "placeholders.inputPassword": "กรุณากรอกรหัสผ่าน",
     "placeholders.inputOtp": "กรุณากรอกรหัส OTP ที่ได้จากธนาคาร",
+    "placeholders.inputQrOtp": "กรุณากรอกรหัส QR ที่ได้จากธนาคาร",
     "secureBankingTitle": "ระบบความปลอดภัยของการทำธุรกรรมทางออนไลน์:",
     "secureBankingText": "กรุณาล็อกอินด้วยยูสเซอร์และรหัสผ่าน ออนไลน์แบงค์กิ้งของคุณ",
     "placeholders.inputOtpDAB": "กรุณากรอกตัวเลข 3 หลัก",
