@@ -284,14 +284,14 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        [1, 2].includes(methodType) &&
+        [1, 2].includes(methodType) && !isNullOrWhitespace(otpReference) &&
           <>
             <FormattedMessage {...messages.otpReference} />
             <p className={classes.otpReferenceText}>{otpReference}</p>
           </>
       }
       {
-        [3, 4].includes(methodType) &&
+        [3, 4].includes(methodType) && !isNullOrWhitespace(otpReference) &&
           <QRCode
             value={otpReference}
             size={200}
@@ -335,7 +335,7 @@ const OTPForm = React.memo((props) => {
                     <FormattedMessage {...messages.placeholders.inputOtp} />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 1 &&
                     <FormattedMessage {...messages.placeholders.inputQrOtp} />
                 }
               </label>
