@@ -274,7 +274,7 @@ const OTPForm = React.memo((props) => {
                   </>
               }
               {
-                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) && ![3, 4].includes(methodType) &&
+                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) && !hasMethodType &&
                   <>
                     <FormattedMessage {...messages.otpReference} />
                     <p className={classes.otpReferenceText}>{otpReference}</p>
@@ -282,6 +282,13 @@ const OTPForm = React.memo((props) => {
               }
             </div>
           </div>
+      }
+      {
+        [1, 2].includes(methodType) &&
+          <>
+            <FormattedMessage {...messages.otpReference} />
+            <p className={classes.otpReferenceText}>{otpReference}</p>
+          </>
       }
       {
         [3, 4].includes(methodType) &&
@@ -324,11 +331,11 @@ const OTPForm = React.memo((props) => {
                     />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 3 &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
                     <FormattedMessage {...messages.placeholders.inputOtp} />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType === 3 &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
                     <FormattedMessage {...messages.placeholders.inputQrOtp} />
                 }
               </label>
@@ -403,7 +410,7 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        isCardOTP && !hasMethodType &&
+        isCardOTP && (!hasMethodType || [1, 3].includes(methodType)) &&
           <div>
             <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
             <div className={classes.formDabContainer}>
