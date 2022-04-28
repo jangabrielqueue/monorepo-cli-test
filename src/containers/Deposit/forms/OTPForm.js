@@ -222,7 +222,7 @@ const OTPForm = React.memo((props) => {
   return (
     <form>
       {
-        !isNullOrWhitespace(otpReference) && !isCardOTP &&
+        !isNullOrWhitespace(otpReference) && !isCardOTP && !hasMethodType &&
           <div className={formIconContainerOtpReferenceStyles}>
             <div>
               {
@@ -274,7 +274,7 @@ const OTPForm = React.memo((props) => {
                   </>
               }
               {
-                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) && !hasMethodType &&
+                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) &&
                   <>
                     <FormattedMessage {...messages.otpReference} />
                     <p className={classes.otpReferenceText}>{otpReference}</p>
@@ -331,7 +331,7 @@ const OTPForm = React.memo((props) => {
                     />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 3 &&
                     <FormattedMessage {...messages.placeholders.inputOtp} />
                 }
                 {
