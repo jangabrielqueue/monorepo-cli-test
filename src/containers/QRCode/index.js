@@ -286,10 +286,11 @@ const QRCode = (props) => {
 
   function renderStepContents () {
     const delay = currency?.toUpperCase() === 'THB' ? 180000 : timeout.minutes * 60000
+    const THBTimeout = currency?.toUpperCase() === 'THB' ? { minutes: 3, seconds: 0 } : timeout
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={delay} setStep={setStep} time={timeout}>
+          <AutoRedirectQR delay={delay} setStep={setStep} time={THBTimeout}>
             <QRCodeForm
               currency={currency}
               bank={responseData.bank}
