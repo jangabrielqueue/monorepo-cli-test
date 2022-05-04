@@ -240,6 +240,13 @@ const QRCode = (props) => {
       setProgress(undefined)
       setStep(1)
     }
+
+    if (currency?.toUpperCase() === 'THB') {
+      await sleep(180000)
+      step !== 1 && setStep(2)
+      setProgress(undefined)
+      setLoadingButton(false)
+    }
   }
 
   const handleQrCodeResult = useCallback(
