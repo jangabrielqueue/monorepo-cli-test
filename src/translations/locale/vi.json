@@ -52,6 +52,7 @@
     "errors.connectionTimeout": "Hệ thống kết nối bị lỗi, vui lòng liên hệ bộ phận chăm sóc khách hàng để được hỗ trợ giao dịch",
     "errors.bankError": "Tiền tệ / Ngân hàng không được hỗ trợ, vui lòng liên hệ với bộ phận hỗ trợ khách hàng.",
     "errors.validatedTransactionFailed": "Phiên giao dịch không hợp lệ.",
+    "errors.qrCodeTransactionFailed": "Mã QR đã hết hạn, vui lòng thực hiện lại giao dịch. Không lưu và quét lại mã QR cũ để tránh sai sót. Vui lòng đợi giao dịch được cộng tiền sau khi hoàn tất thanh toán.",
     "errors.contactCustomerService": "Xin vui lòng liên hệ bộ phận chăm sóc khách hàng.",
     "steps.fillInForm": "Điền vào mẫu",
     "placeholders.selectTelco": "Vui lòng chọn tên nhà mạng",
