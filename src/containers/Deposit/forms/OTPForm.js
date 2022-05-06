@@ -9,6 +9,12 @@ import { checkBankIfKnown, checkIfBcaBank, checkIfBniBank } from '../../../utils
 import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp, isNullorUndefined } from '../../../utils/utils'
 import QRCode from 'qrcode.react'
 
+const OtpMethod = {
+  Input: 1,
+  Confirm: 2,
+  QrInput: 3,
+  QrConfirm: 4
+}
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
@@ -284,14 +290,14 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        [1, 2].includes(methodType) && !isNullOrWhitespace(otpReference) &&
+        [OtpMethod.Input, OtpMethod.Confirm].includes(methodType) && !isNullOrWhitespace(otpReference) &&
           <>
             <FormattedMessage {...messages.otpReference} />
             <p className={classes.otpReferenceText}>{otpReference}</p>
           </>
       }
       {
-        [3, 4].includes(methodType) && !isNullOrWhitespace(otpReference) &&
+        [OtpMethod.QrInput, OtpMethod.QrConfirm].includes(methodType) && !isNullOrWhitespace(otpReference) &&
           <QRCode
             value={otpReference}
             size={200}
@@ -308,7 +314,7 @@ const OTPForm = React.memo((props) => {
           />
       }
       {
-        !isCardOTP && (!hasMethodType || [1, 3].includes(methodType)) &&
+        !isCardOTP && (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(methodType)) &&
           <div className={formIconContainerUsernameStyles}>
             <div>
               <label htmlFor='OTP'>
@@ -410,7 +416,7 @@ const OTPForm = React.memo((props) => {
           </div>
       }
       {
-        isCardOTP && (!hasMethodType || [1, 3].includes(methodType)) &&
+        isCardOTP && (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(methodType)) &&
           <div>
             <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
             <div className={classes.formDabContainer}>
@@ -451,7 +457,7 @@ const OTPForm = React.memo((props) => {
       }
       <section className={classes.formFooter}>
         {
-          ![2, 4].includes(methodType) &&
+          ![OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
             <GlobalButton
               label={<FormattedMessage {...messages.submit} />}
               color={buttonColor}
@@ -462,7 +468,7 @@ const OTPForm = React.memo((props) => {
             </GlobalButton>
         }
         {
-          [2, 4].includes(methodType) &&
+          [OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
             <GlobalButton
               label={<FormattedMessage {...messages.done} />}
               color={buttonColor}
