@@ -243,7 +243,7 @@ const QRCode = (props) => {
 
     if (currency?.toUpperCase() === 'THB') {
       await sleep(180000)
-      step !== 1 && setStep(2)
+      setStep(1)
       setProgress(undefined)
       setLoadingButton(false)
     }
@@ -292,12 +292,13 @@ const QRCode = (props) => {
   }
 
   function renderStepContents () {
-    const delay = currency?.toUpperCase() === 'THB' ? 180000 : timeout.minutes * 60000
-    const THBTimeout = currency?.toUpperCase() === 'THB' ? { minutes: 3, seconds: 0 } : timeout
+    const isTHB = currency?.toUpperCase() === 'THB'
+    const delay = isTHB ? 180000 : timeout.minutes * 60000
+    const THBTimeout = isTHB ? { minutes: 3, seconds: 0 } : timeout
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={delay} setStep={setStep} time={THBTimeout}>
+          <AutoRedirectQR delay={delay} setStep={setStep} time={THBTimeout} isTHB={isTHB}>
             <QRCodeForm
               currency={currency}
               bank={responseData.bank}
@@ -323,13 +324,13 @@ const QRCode = (props) => {
         } else {
           return (
             <AutoRedirect delay={10000} url={failedUrl}>
-              <TransferFailed transferResult={transferResult} language={language} qrCode />
+              <TransferFailed transferResult={transferResult} language={language} qrCode isTHB={isTHB} />
             </AutoRedirect>
           )
         }
       case 2:
         return (
-          <VerifyTransaction language={language} currency={currency} />
+          <VerifyTransaction language={language} />
         )
 
       default:
