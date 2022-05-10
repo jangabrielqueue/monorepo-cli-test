@@ -337,11 +337,11 @@ const OTPForm = React.memo((props) => {
                     />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 3 &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== OtpMethod.QrInput &&
                     <FormattedMessage {...messages.placeholders.inputOtp} />
                 }
                 {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== 1 &&
+                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== OtpMethod.Input &&
                     <FormattedMessage {...messages.placeholders.inputQrOtp} />
                 }
               </label>

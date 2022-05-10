@@ -26,6 +26,14 @@ function isJSON (item) {
   return false
 }
 
+function getOtpMethod (otpReference) {
+  return isJSON(otpReference) ? JSON.parse(otpReference)?.MethodType : undefined
+}
+
+function getOtpReference (otpReference) {
+  return isJSON(otpReference) ? JSON.parse(otpReference)?.RefId : otpReference
+}
+
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -73,6 +81,8 @@ export {
   isNullOrWhitespace,
   isNullorUndefined,
   isJSON,
+  getOtpMethod,
+  getOtpReference,
   sleep,
   calculateCurrentProgress,
   renderButtonColors,

@@ -26,7 +26,7 @@ import LoadingIcon from '../../components/LoadingIcon'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
-import { sleep, calculateCurrentProgress, isJSON } from '../../utils/utils'
+import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod } from '../../utils/utils'
 import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
 // endpoints
@@ -399,12 +399,12 @@ const Deposit = (props) => {
     } else if (!qrCodeOtp) {
       return (
         <OTPForm
-          otpReference={isJSON(otpReference) ? JSON.parse(otpReference)?.RefId : otpReference}
+          otpReference={getOtpReference(otpReference)}
           handleSubmitOTP={handleSubmitOTP}
           waitingForReady={waitingForReady}
           progress={progress}
           isCardOTP={isCardOTP}
-          methodType={isJSON(otpReference) ? JSON.parse(otpReference)?.MethodType : undefined}
+          methodType={getOtpMethod(otpReference)}
         />
       )
     } else if (qrCodeOtp) {
