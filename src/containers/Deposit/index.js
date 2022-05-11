@@ -26,7 +26,7 @@ import LoadingIcon from '../../components/LoadingIcon'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
-import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod } from '../../utils/utils'
+import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod, checkIfQrOtp } from '../../utils/utils'
 import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
 // endpoints
@@ -386,7 +386,7 @@ const Deposit = (props) => {
   }
 
   function renderOtpForms () {
-    const qrCodeOtp = otpReference?.includes('QRCODE_')
+    const qrCodeOtp = checkIfQrOtp(otpReference)
 
     if (checkIfMandiriBank(bank)) {
       return (

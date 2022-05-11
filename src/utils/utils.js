@@ -66,7 +66,15 @@ function checkIfAppTwoOtp (otpReference) {
   return otpReference.includes('APP2')
 }
 
+function checkIfQrOtp (otpReference) {
+  if (typeof otpReference === 'object') {
+    return false
+  }
+  return otpReference?.includes('QRCODE_')
+}
+
 export {
+  checkIfQrOtp,
   isNullOrWhitespace,
   isNullorUndefined,
   getOtpMethod,
