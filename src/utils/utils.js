@@ -9,29 +9,18 @@ function isNullorUndefined (input) {
   if (typeof input === 'undefined' || input == null) return true
 }
 
-function isJSON (item) {
-  item = typeof item !== 'string'
-    ? JSON.stringify(item)
-    : item
-  try {
-    item = JSON.parse(item)
-  } catch (e) {
-    return false
-  }
-
-  if (typeof item === 'object' && item !== null) {
-    return true
-  }
-
-  return false
-}
-
 function getOtpMethod (otpReference) {
-  return isJSON(otpReference) ? JSON.parse(otpReference)?.MethodType : undefined
+  if (typeof otpReference === 'object') {
+    return otpReference?.MethodType
+  }
+  return undefined
 }
 
 function getOtpReference (otpReference) {
-  return isJSON(otpReference) ? JSON.parse(otpReference)?.RefId : otpReference
+  if (typeof otpReference === 'object') {
+    return otpReference?.RefId
+  }
+  return otpReference
 }
 
 function sleep (ms) {
@@ -80,7 +69,6 @@ function checkIfAppTwoOtp (otpReference) {
 export {
   isNullOrWhitespace,
   isNullorUndefined,
-  isJSON,
   getOtpMethod,
   getOtpReference,
   sleep,

@@ -7,6 +7,12 @@ import classNames from 'classnames/bind'
 import QRCode from 'qrcode.react'
 import { isNullOrWhitespace } from '../../../utils/utils'
 
+const OtpMethod = {
+  Input: 1,
+  Confirm: 2,
+  QrInput: 3,
+  QrConfirm: 4
+}
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
@@ -129,7 +135,7 @@ const OTPForm = React.memo((props) => {
     <main>
       <form>
         {
-          !isNullOrWhitespace(otpReference) && ![2, 4].includes(methodType) &&
+          !isNullOrWhitespace(otpReference) && ![OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
             <div className={formIconContainerOtpReferenceStyles}>
               <div>
                 <label><FormattedMessage {...messages.otpReference} /></label>
@@ -138,7 +144,7 @@ const OTPForm = React.memo((props) => {
             </div>
         }
         {
-          [3, 4].includes(methodType) &&
+          [OtpMethod.QrInput, OtpMethod.QrConfirm].includes(methodType) &&
             <QRCode
               value={otpReference}
               size={200}
@@ -155,7 +161,7 @@ const OTPForm = React.memo((props) => {
             />
         }
         {
-          ![2, 4].includes(methodType) &&
+          ![OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
             <div className={formIconContainerUsernameStyles}>
               <div>
                 <label htmlFor='OTP'><FormattedMessage {...messages.placeholders.inputOtp} /></label>
@@ -181,7 +187,7 @@ const OTPForm = React.memo((props) => {
         }
         <section className={classes.footer}>
           {
-            ![2, 4].includes(methodType) &&
+            ![OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
               <GlobalButton
                 label={<FormattedMessage {...messages.submit} />}
                 color={buttonColor}
@@ -192,7 +198,7 @@ const OTPForm = React.memo((props) => {
               </GlobalButton>
           }
           {
-            [2, 4].includes(methodType) &&
+            [OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
               <GlobalButton
                 label={<FormattedMessage {...messages.done} />}
                 color={buttonColor}
