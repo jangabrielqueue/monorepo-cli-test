@@ -20,7 +20,7 @@ import TransferSuccessful from '../../components/TransferSuccessful'
 import TransferFailed from '../../components/TransferFailed'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendTopUpRequest, sendTopUpOtp } from './Requests'
-import { sleep, calculateCurrentProgress } from '../../utils/utils'
+import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod } from '../../utils/utils'
 import { getBanksByCurrencyForTopUp } from '../../utils/banks'
 
 // endpoints
@@ -339,10 +339,11 @@ const TopUp = props => {
       analytics.setCurrentScreen('input_otp')
       return (
         <OTPForm
-          otpReference={otpReference}
+          otpReference={getOtpReference(otpReference)}
           handleSubmitOTP={handleSubmitOTP}
           waitingForReady={waitingForReady}
           progress={progress}
+          methodType={getOtpMethod(otpReference)}
         />
       )
     } else if (step === 2 && isSuccessful) {

@@ -25,6 +25,7 @@
     "placeholders.inputLoginName": "Vui lòng điền tên đăng nhập tài khoản banking của bạn",
     "placeholders.inputPassword": "Vui lòng nhập mật khẩu tài khoản",
     "placeholders.inputOtp": "Vui lòng nhập mã OTP nhận được từ ngân hàng",
+    "placeholders.inputQrOtp": "Vui lòng nhập mã QR nhận được từ ngân hàng",
     "secureBankingTitle": "Bảo Mật Thanh Toán Trực Tuyến:",
     "secureBankingText": "Vui lòng sử dụng tài khoản và mật khẩu Internet Banking của bạn để đăng nhập",
     "placeholders.inputOtpDAB": "Vui lòng nhập một số có 3 chữ số",

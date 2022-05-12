@@ -50,6 +50,10 @@ export default defineMessages({
       id: 'placeholders.inputOtp',
       defaultMessage: 'Please input OTP received from bank'
     },
+    inputQrOtp: {
+      id: 'placeholders.inputQrOtp',
+      defaultMessage: 'Please input QR Code received from bank'
+    },
     inputOtpDAB: {
       id: 'placeholders.inputOtpDAB',
       defaultMessage: 'Please input a 3 digit number'

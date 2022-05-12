@@ -5,6 +5,24 @@ function isNullOrWhitespace (input) {
   return input.replace(/\s/g, '').length < 1
 }
 
+function isNullorUndefined (input) {
+  if (typeof input === 'undefined' || input == null) return true
+}
+
+function getOtpMethod (otpReference) {
+  if (typeof otpReference === 'object') {
+    return otpReference?.MethodType
+  }
+  return undefined
+}
+
+function getOtpReference (otpReference) {
+  if (typeof otpReference === 'object') {
+    return otpReference?.RefId
+  }
+  return otpReference
+}
+
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -48,8 +66,19 @@ function checkIfAppTwoOtp (otpReference) {
   return otpReference.includes('APP2')
 }
 
+function checkIfQrOtp (otpReference) {
+  if (typeof otpReference === 'object') {
+    return false
+  }
+  return otpReference?.includes('QRCODE_')
+}
+
 export {
+  checkIfQrOtp,
   isNullOrWhitespace,
+  isNullorUndefined,
+  getOtpMethod,
+  getOtpReference,
   sleep,
   calculateCurrentProgress,
   renderButtonColors,

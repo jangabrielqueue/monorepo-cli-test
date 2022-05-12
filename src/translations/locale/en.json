@@ -25,6 +25,7 @@
     "placeholders.inputLoginName": "Please input your online banking login name",
     "placeholders.inputPassword": "Please input your password",
     "placeholders.inputOtp": "Please input OTP received from bank",
+    "placeholders.inputQrOtp": "Please input QR Code received from bank",
     "secureBankingTitle": "Secure Online Banking:",
     "secureBankingText": "Please use your Internet Banking account and password to log in.",
     "placeholders.inputOtpDAB": "Please input a 3 digit number",
