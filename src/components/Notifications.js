@@ -72,20 +72,32 @@ const Notifications = ({ language, intl, bank }) => {
     switch (bank) {
       case 'VCB':
         return (
-          <ul>
-            <li>
+          <>
+            <ul>
               <FormattedMessage
-                {...messages.notifications.hasVCB}
+                {...messages.notifications.instructionVCB}
                 values={textFormatter}
               />
-            </li>
-            <li>
-              <FormattedMessage
-                {...messages.notifications.noVCB}
-                values={textFormatter}
-              />
-            </li>
-          </ul>
+              <li>
+                <FormattedMessage
+                  {...messages.notifications.firstInstructionVCB}
+                  values={textFormatter}
+                />
+              </li>
+              <li>
+                <FormattedMessage
+                  {...messages.notifications.secondInstructionVCB}
+                  values={textFormatter}
+                />
+              </li>
+              <li>
+                <FormattedMessage
+                  {...messages.notifications.thirdInstructionVCB}
+                  values={textFormatter}
+                />
+              </li>
+            </ul>
+          </>
         )
       case 'BIDV':
         return (
