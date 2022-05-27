@@ -56,7 +56,7 @@
     "placeholders.selectTelco": "Please select telco name",
     "placeholders.cardSerialNo": "Card Serial No.",
     "placeholders.cardPin": "Card Pin",
-    "notes.notesOne": "For loading money from scratch card, memeber will shoulder a transaction fee.",
+    "notes.notesOne": "For loading money from scratch card, member will shoulder a transaction fee.",
     "notes.notesTwo": "Please submit the correct amount, card number and serial number. If input incorrect details, we will not credit deposit amount.",
     "notes.notesThree": "If submitted with incorrect amount:",
     "notes.notesFour": "Request amount < real amount, will return request amount + penalised 2% of Request amount.",

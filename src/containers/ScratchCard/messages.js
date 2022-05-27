@@ -48,7 +48,7 @@ export default defineMessages({
   notes: {
     notesOne: {
       id: 'notes.notesOne',
-      defaultMessage: 'For loading money from scratch card, memeber will shoulder a transaction fee.'
+      defaultMessage: 'For loading money from scratch card, member will shoulder a transaction fee.'
     },
     notesTwo: {
       id: 'notes.notesTwo',
