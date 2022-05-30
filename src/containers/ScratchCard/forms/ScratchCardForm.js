@@ -285,7 +285,7 @@ const ScratchCardForm = React.memo((props) => {
       return (
         <ul>
 
-          <li>VIETTEL: 18% (Giá trị thẻ 10/20/30), 15% (Giá trị thẻ 50/100), 16% (Giá trị thẻ 200/300) và 19% (Giá trị thẻ 500/1tr)  </li>
+          <li>VIETTEL: 20% (Giá trị thẻ 10/20/30), 17% (Giá trị thẻ 50/100), 18% (Giá trị thẻ 200/300) và 21% (Giá trị thẻ 500/1tr)  </li>
 
           <li>MOBI: 24% (Giá trị thẻ 10/20/30), 21% (Giá trị thẻ 50/100/200) và 22% (Giá trị thẻ 300/500) </li>
           <li>VINA: 20% (Giá trị thẻ 10/20/30), 18% (Giá trị thẻ 50/100/200) và 19% (Giá trị thẻ 300/500) </li>
@@ -298,7 +298,7 @@ const ScratchCardForm = React.memo((props) => {
       return (
         <ul>
 
-          <li>VIETTEL: 18% (card value 10/20/30), 15% (card value 50/100), 16% (card value 200/300) and 19% (card value 500/1tr)</li>
+          <li>VIETTEL: 20% (card value 10/20/30), 17% (card value 50/100), 18% (card value 200/300) and 21% (card value 500/1tr)</li>
 
           <li>MOBI: 24% (card value 10/20/30), 21% (card value 50/100/200) and 22% (card value 300/500)</li>
           <li>VINA: 20% (card value 10/20/30), 18% (card value 50/100/200) and 19% (card value 300/500)</li>
@@ -409,7 +409,7 @@ const ScratchCardForm = React.memo((props) => {
                 </ul>
                 <li><FormattedMessage {...messages.notes.notesSix} /></li>
               </ul>
-              <p className={classes.noteText}>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: 0:01 AM 28/05/2022 GMT+7)</p>
+              <p className={classes.noteText}>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: 0:01 AM 01/06/2022 GMT+7)</p>
               <ul className={classes.noteText}>
                 {
                   renderTransactionRates()
