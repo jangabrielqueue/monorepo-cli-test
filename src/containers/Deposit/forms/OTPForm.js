@@ -242,7 +242,7 @@ const errorMessages = {
   maxLength: maxLengthErrorMessageRender
 }
 
-const notCardOtpErrorMessagesRender = (props) => (
+export const notCardOtpErrorMessagesRender = (props) => (
   errorMessages[props.errors.OTP?.type] && errorMessages[props.errors.OTP?.type](props)
 )
 
@@ -262,8 +262,9 @@ const cardOtpErrorMessages = {
   required: requiredCardOtpErrorMessage
 }
 
-const cardOtpErrorMessageRender = ({ errors }) => {
-  return cardOtpErrorMessages[errors.OTP1?.type](errors) || cardOtpErrorMessages[errors.OTP2?.type](errors)
+export const cardOtpErrorMessageRender = ({ errors }) => {
+  return (cardOtpErrorMessages[errors?.OTP1?.type] && cardOtpErrorMessages[errors?.OTP1?.type](errors)) ||
+    (cardOtpErrorMessages[errors?.OTP2?.type] && cardOtpErrorMessages[errors?.OTP2?.type](errors))
 }
 
 const notCardOtpInputRender = ({ formIconContainerUsernameStyles, classes, register, inputOtpValidations, formValues, dirty, setValue, ...renderProps }) => (
@@ -327,7 +328,7 @@ const inputRenders = {
   false: notCardOtpInputRender
 }
 
-const InputRender = ({ hasMethodType, isCardOTP, ...renderProps }) => (
+export const InputRender = ({ hasMethodType, isCardOTP, ...renderProps }) => (
   (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(renderProps.methodType)) && inputRenders[isCardOTP] && inputRenders[isCardOTP](renderProps)
 )
 
@@ -359,7 +360,7 @@ const globalButtons = {
   [OtpMethod.QrConfirm]: doneGlobalButton
 }
 
-const globalButtonRender = ({ classes, methodType, ...renderProps }) => (
+export const globalButtonRender = ({ classes, methodType, ...renderProps }) => (
   <section className={classes.formFooter}>
     {(globalButtons[methodType] && globalButtons[methodType](renderProps)) || globalButtons.default(renderProps)}
   </section>
@@ -394,7 +395,7 @@ const methodTypeComponents = {
   [OtpMethod.QrInput]: defaultOtpMessage,
   [OtpMethod.QrConfirm]: qrCodeRender
 }
-const methodTypeRender = ({ methodType, ...renderProps }) => (
+export const methodTypeRender = ({ methodType, ...renderProps }) => (
   !isNullOrWhitespace(renderProps.otpReference) && methodTypeComponents[methodType] && methodTypeComponents[methodType](renderProps)
 )
 
