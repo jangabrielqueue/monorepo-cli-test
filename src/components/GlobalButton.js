@@ -30,7 +30,7 @@ const useStyles = createUseStyles({
 
     '&:hover': {
       cursor: 'pointer',
-      backgroundColor: '#F5F5F5'
+      backgroundColor: ({ props }) => props.color === 'topup' ? '#1b7fdd' : '#F5F5F5'
     },
 
     '@media (max-width: 36em)': {
