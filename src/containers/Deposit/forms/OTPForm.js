@@ -156,10 +156,10 @@ const bniBankInputLabel = () => (
 )
 
 const otpMethodInputLabel = () => (
-  <FormattedMessage {...messages.placeholders.inputQrOtp} />
+  <FormattedMessage {...messages.placeholders.inputOtp} />
 )
 const otpMethodQrInputLabel = () => (
-  <FormattedMessage {...messages.placeholders.inputOtp} />
+  <FormattedMessage {...messages.placeholders.inputQrOtp} />
 )
 
 const inputLabelRender = ({ bank, methodType, otpReference }) => {
@@ -169,7 +169,8 @@ const inputLabelRender = ({ bank, methodType, otpReference }) => {
     [OtpMethod.Input]: otpMethodInputLabel,
     [OtpMethod.QrInput]: otpMethodQrInputLabel
   }
-  return (!isNullOrWhitespace(otpReference) && notCardOTPInputLabels.true && notCardOTPInputLabels.true(otpReference)) || (notCardOTPInputLabels[methodType] && notCardOTPInputLabels[methodType]())
+  return (!isNullOrWhitespace(otpReference) && notCardOTPInputLabels.true && notCardOTPInputLabels.true(otpReference)) ||
+    (notCardOTPInputLabels[methodType] && notCardOTPInputLabels[methodType]())
 }
 
 const bcaMinLengthErrorMessage = ({ otpReference }) => (
@@ -391,8 +392,8 @@ const qrCodeRender = ({ otpReference }) => (
 )
 const methodTypeComponents = {
   [OtpMethod.Input]: defaultOtpMessage,
-  [OtpMethod.Confirm]: qrCodeRender,
-  [OtpMethod.QrInput]: defaultOtpMessage,
+  [OtpMethod.Confirm]: defaultOtpMessage,
+  [OtpMethod.QrInput]: qrCodeRender,
   [OtpMethod.QrConfirm]: qrCodeRender
 }
 export const methodTypeRender = ({ methodType, ...renderProps }) => (
