@@ -189,6 +189,10 @@ function checkIfSacomBank (bank) {
   return bank?.toUpperCase() === 'SACOM'
 }
 
+function checkIfTHBCurrency (currency) {
+  return currency?.toUpperCase() === 'THB'
+}
+
 module.exports = {
   getBanksByCurrency,
   getBanksByCurrencyForTopUp,
@@ -208,5 +212,6 @@ module.exports = {
   checkIfMsbBank,
   checkifAgriBank,
   checkIfTcbBank,
-  checkIfSacomBank
+  checkIfSacomBank,
+  checkIfTHBCurrency
 }

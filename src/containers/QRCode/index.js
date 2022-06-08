@@ -18,7 +18,7 @@ import AutoRedirect from '../../components/AutoRedirect'
 import AutoRedirectQR from '../../components/AutoRedirectQR'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { checkBankIfKnown, checkIfVndCurrency } from '../../utils/banks'
+import { checkBankIfKnown, checkIfTHBCurrency, checkIfVndCurrency } from '../../utils/banks'
 import { sleep } from '../../utils/utils'
 import VerifyTransaction from '../../components/VerifyTransaction'
 
@@ -292,7 +292,7 @@ const QRCode = (props) => {
   }
 
   function renderStepContents () {
-    const isTHB = currency?.toUpperCase() === 'THB'
+    const isTHB = checkIfTHBCurrency(currency)
     const delay = isTHB ? 180000 : timeout.minutes * 60000
     const THBTimeout = isTHB ? { minutes: 3, seconds: 0 } : timeout
     switch (step) {
