@@ -73,6 +73,10 @@ function checkIfQrOtp (otpReference) {
   return otpReference?.includes('QRCODE_')
 }
 
+function convertToMiliseconds (time) {
+  return time.minutes * 60000 + time.seconds * 1000
+}
+
 export {
   checkIfQrOtp,
   isNullOrWhitespace,
@@ -84,5 +88,6 @@ export {
   renderButtonColors,
   isTopUp,
   checkIfAppOneOtp,
-  checkIfAppTwoOtp
+  checkIfAppTwoOtp,
+  convertToMiliseconds
 }
