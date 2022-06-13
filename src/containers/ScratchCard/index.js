@@ -330,6 +330,7 @@ const ScratchCard = (props) => {
             bank={bank}
             currency={currency}
             language={language}
+            merchant={merchant}
           />
         )
 
