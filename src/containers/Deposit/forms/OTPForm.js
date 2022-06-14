@@ -20,6 +20,12 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
+  qrCodeContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    flexDirection: 'column'
+  },
   otpReferenceText: {
     fontWeight: 'bold',
     wordBreak: 'break-all'
@@ -374,21 +380,24 @@ const defaultOtpMessage = ({ classes, otpReference }) => (
   </>
 )
 
-const qrCodeRender = ({ otpReference }) => (
-  <QRCode
-    value={otpReference}
-    size={200}
-    renderAs='svg'
-    level='M'
-    imageSettings={{
-      src: '/logo/GW_LOGO_ICON.png',
-      x: null,
-      y: null,
-      height: 40,
-      width: 40,
-      excavate: true
-    }}
-  />
+const qrCodeRender = ({ otpReference, classes }) => (
+  <div className={classes.qrCodeContainer}>
+    <p className={classes.otpReferenceText}>Please scan the QR Code for OTP Reference</p>
+    <QRCode
+      value={otpReference}
+      size={200}
+      renderAs='svg'
+      level='M'
+      imageSettings={{
+        src: '/logo/GW_LOGO_ICON.png',
+        x: null,
+        y: null,
+        height: 40,
+        width: 40,
+        excavate: true
+      }}
+    />
+  </div>
 )
 const methodTypeComponents = {
   [OtpMethod.Input]: defaultOtpMessage,

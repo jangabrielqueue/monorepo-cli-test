@@ -27,7 +27,7 @@ import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
 import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod, checkIfQrOtp } from '../../utils/utils'
-import { checkBankIfKnown, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
+import { checkBankIfKnown, checkIfBidvBank, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -54,7 +54,7 @@ const useStyles = createUseStyles({
     padding: (props) => notificationBanks.includes(props.bank?.toUpperCase()) ? '0 20px' : '75px 0 0',
 
     '@media (max-width: 62em)': {
-      padding: (props) => props.bank?.toUpperCase() === 'BIDV' && '0 20px'
+      padding: (props) => checkIfBidvBank(props.bank) && '0 20px'
     },
 
     '@media (max-width: 36em)': {
@@ -600,7 +600,7 @@ const Deposit = (props) => {
                   )
                 }
                 {
-                  step === 1 && !checkIfMandiriBank(bank) && bank?.toUpperCase() !== 'BIDV' && (
+                  step === 1 && !checkIfMandiriBank(bank) && (
                     <Countdown minutes={0} seconds={100} reRender={reRenderCountdown} />
                   )
                 }
@@ -618,7 +618,7 @@ const Deposit = (props) => {
           </div>
         </div>
         {
-          showOtpMethod && step === 0 && bank?.toUpperCase() !== 'BIDV' &&
+          showOtpMethod && step === 0 && !checkIfBidvBank(bank) &&
             <footer className={classes.depositFooter}>
               <GlobalButton
                 label='SMS OTP'
@@ -655,7 +655,7 @@ const Deposit = (props) => {
             </footer>
         }
         {
-          showOtpMethod && step === 0 && bank?.toUpperCase() === 'BIDV' &&
+          showOtpMethod && step === 0 && checkIfBidvBank(bank) &&
             <footer className={classes.depositBidvFooter}>
               <GlobalButton
                 label='SMART OTP'
