@@ -51,6 +51,7 @@
     "errors.connectionTimeout": "A server connection timeout error, please contact customer support for the transaction status.",
     "errors.bankError": "Currency/Bank is not supported, please contact customer support.",
     "errors.validatedTransactionFailed": "Transaction Failed.",
+    "errors.qrCodeTransactionFailed": "QR has expired, please don't use it anymore or else fund will be lost. If you have made payment please wait for transaction to be credited.",
     "errors.contactCustomerService": "Please contact customer service.",
     "steps.fillInForm": "FILL IN FORM",
     "placeholders.selectTelco": "Please select telco name",

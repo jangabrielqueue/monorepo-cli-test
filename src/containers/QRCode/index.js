@@ -18,8 +18,8 @@ import AutoRedirect from '../../components/AutoRedirect'
 import AutoRedirectQR from '../../components/AutoRedirectQR'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { checkBankIfKnown, checkIfVndCurrency } from '../../utils/banks'
-import { sleep } from '../../utils/utils'
+import { checkBankIfKnown, checkIfTHBCurrency, checkIfVndCurrency } from '../../utils/banks'
+import { convertToMiliseconds, sleep } from '../../utils/utils'
 import VerifyTransaction from '../../components/VerifyTransaction'
 
 // endpoints
@@ -173,6 +173,8 @@ const QRCode = (props) => {
   const session = `DEPOSIT-BANK-QRCODE-${merchant}-${reference}`
   const classes = useStyles(step)
   const intl = props.intl
+  const THBTimeout = { minutes: 3, seconds: 0 }
+  const isTHB = checkIfTHBCurrency(currency)
 
   async function handleSubmitQRCode () {
     const submitValues = {
@@ -240,6 +242,13 @@ const QRCode = (props) => {
       setProgress(undefined)
       setStep(1)
     }
+
+    if (isTHB) {
+      await sleep(convertToMiliseconds(THBTimeout))
+      setStep(1)
+      setProgress(undefined)
+      setLoadingButton(false)
+    }
   }
 
   const handleQrCodeResult = useCallback(
@@ -285,10 +294,12 @@ const QRCode = (props) => {
   }
 
   function renderStepContents () {
+    const delay = isTHB ? convertToMiliseconds(THBTimeout) : convertToMiliseconds(timeout)
+    const firstStepTimeOut = isTHB ? THBTimeout : timeout
     switch (step) {
       case 0:
         return (
-          <AutoRedirectQR delay={timeout.minutes * 60000} setStep={setStep} time={timeout}>
+          <AutoRedirectQR delay={delay} setStep={setStep} time={firstStepTimeOut} isTHB={isTHB}>
             <QRCodeForm
               currency={currency}
               bank={responseData.bank}
@@ -314,7 +325,7 @@ const QRCode = (props) => {
         } else {
           return (
             <AutoRedirect delay={10000} url={failedUrl}>
-              <TransferFailed transferResult={transferResult} language={language} qrCode />
+              <TransferFailed transferResult={transferResult} language={language} qrCode isTHB={isTHB} />
             </AutoRedirect>
           )
         }

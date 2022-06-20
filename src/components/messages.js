@@ -36,6 +36,10 @@ export default defineMessages({
       id: 'errors.validatedTransactionFailed',
       defaultMessage: 'Transaction Failed.'
     },
+    qrCodeTransactionFailed: {
+      id: 'errors.qrCodeTransactionFailed',
+      defaultMessage: "QR has expired, please don't use it anymore or else fund will be lost. If you have made payment please wait for transaction to be credited."
+    },
     contactCustomerService: {
       id: 'errors.contactCustomerService',
       defaultMessage: 'Please contact customer service.'
