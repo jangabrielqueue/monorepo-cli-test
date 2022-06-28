@@ -135,7 +135,7 @@ const useStyles = createUseStyles({
 { name: 'ScratchCardForm' }
 )
 
-const scratchCardColumns = [
+const uniqueScratchCardColumns = [
   {
     name: 'telco',
     width: '50px',
@@ -183,16 +183,61 @@ const scratchCardColumns = [
   }
 ]
 
+const scratchCardColumns = [
+  {
+    name: 'telco',
+    width: '50px',
+    align: 'left'
+  },
+  {
+    name: '10/20/30',
+    width: '30px',
+    selector: '10'
+  },
+  {
+    name: '50/100/200/300',
+    width: '30px',
+    selector: '50'
+  },
+  {
+    name: '500',
+    width: '30px'
+
+  },
+  {
+    name: '1000',
+    width: '30px'
+
+  }
+]
+
 const getScratchCardData = (response) => {
   return response.map((data) => ({
     telco: data.name,
-    ...data.rates
+    ...data.fixedRate != null ? {
+      10: data.fixedRate,
+      20: data.fixedRate,
+      30: data.fixedRate,
+      50: data.fixedRate,
+      100: data.fixedRate,
+      200: data.fixedRate,
+      300: data.fixedRate,
+      500: data.fixedRate,
+      1000: data.fixedRate
+    } : {
+      ...data.rates
+    }
   }))
 }
+
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank, merchant } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const [scratchCardData, setScratchCardData] = useState([])
+  const hasDifferentValue = scratchCardData.find((data) => (
+    data[10] !== data[20] || data[10] !== data[30] ||
+    data[50] !== data[100] || data[50] !== data[200] || data[50] !== data[300]
+  )) // if no match returns undefined
   const intl = props.intl
   const { register, errors, handleSubmit, reset, watch, getValues, formState } = useFormContext()
   const { isSubmitting } = formState
@@ -215,7 +260,7 @@ const ScratchCardForm = React.memo((props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getScratchCardRates({ merchantId: merchant })
+      const response = await getScratchCardRates({ merchant })
       setScratchCardData(getScratchCardData(response))
     }
     fetchData()
@@ -445,7 +490,7 @@ const ScratchCardForm = React.memo((props) => {
               </ul>
               <p className={classes.noteText}>Table below shows the rate of different telco provider per card value (in 1000 VND).</p>
               <TableComponent
-                columns={scratchCardColumns}
+                columns={!hasDifferentValue ? scratchCardColumns : uniqueScratchCardColumns}
                 data={scratchCardData}
               />
             </>

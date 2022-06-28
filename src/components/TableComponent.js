@@ -37,18 +37,23 @@ const TableComponent = ({ columns, data }) => {
           return (
             <tr key={`tr${iD}`}>
               {columns.map((column, iC) => {
-                if (data[column.name]) {
+                if (data[column.name] || data[column.selector]) {
                   return (
                     <td
                       key={`${iD}-${iC}`}
                       style={{ width: column.width ? column.width : '', textAlign: column.align ? column.align : 'center' }}
                     >
-                      {data[column.name]}
+                      {column.selector ? data[column.selector] : data[column.name]}
                     </td>
                   )
                 } else {
                   return (
-                    <td>-</td>
+                    <td
+                      key={`${iD}-${iC}`}
+                      style={{ width: column.width ? column.width : '', textAlign: column.align ? column.align : 'center' }}
+                    >
+                      -
+                    </td>
                   )
                 }
               })}
