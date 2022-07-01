@@ -60,7 +60,7 @@
     "placeholders.cardPin": "Mã Thẻ",
     "notes.notesOne": "Quý khách tự chịu phí giao dịch khi nạp bằng Thẻ Cào ĐT.",
     "notes.notesTwo": "Quý khách vui lòng điền chính xác thông tin mệnh giá, mã thẻ và số seri. Nếu điền sai, hệ thống sẽ không cập nhật tiền nạp.",
-    "notes.notesThree": "Nếu điền sai mệnh giá:",
+    "notes.notesThree": "Nếu điền sai mệnh giá, sẽ trả lại giá trị thấp hơn giữa Số tiền Yêu cầu và Số tiền Thực",
     "notes.notesFour": "Mệnh giá đã chọn < mệnh giá thật, sẽ trả theo mệnh giá đã chọn + phạt 2% Mệnh giá đã chọn.",
     "notes.notesFive": "Mệnh giá đã chọn > mệnh giá thật, sẽ trả theo mệnh giá thật + phạt 15% số tiền thực nhận.",
     "notes.notesSix": "Phí giao dịch:",

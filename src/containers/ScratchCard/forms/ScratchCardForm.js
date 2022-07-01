@@ -403,10 +403,10 @@ const ScratchCardForm = React.memo((props) => {
                 <li><FormattedMessage {...messages.notes.notesOne} /></li>
                 <li><FormattedMessage {...messages.notes.notesTwo} /></li>
                 <li><FormattedMessage {...messages.notes.notesThree} /></li>
-                <ul>
+                {/* <ul>
                   <li><FormattedMessage {...messages.notes.notesFour} /></li>
                   <li><FormattedMessage {...messages.notes.notesFive} /></li>
-                </ul>
+                </ul> */}
                 <li><FormattedMessage {...messages.notes.notesSix} /></li>
               </ul>
               <p className={classes.noteText}>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: 0:01 AM 21/06/2022 GMT+7)</p>
