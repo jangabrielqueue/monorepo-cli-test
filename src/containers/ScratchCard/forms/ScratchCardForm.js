@@ -1,10 +1,12 @@
-import React, { useState, lazy } from 'react'
+import React, { useState, lazy, useEffect } from 'react'
 import { injectIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
 import { checkBankIfKnown, checkIfGWCBank } from '../../../utils/banks'
+import TableComponent from '../../../components/TableComponent'
+import { getScratchCardRates } from '../Requests'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -133,15 +135,115 @@ const useStyles = createUseStyles({
 { name: 'ScratchCardForm' }
 )
 
+const uniqueScratchCardColumns = [
+  {
+    name: 'telco',
+    width: '50px',
+    align: 'left'
+  },
+  {
+    name: '10',
+    width: '30px'
+  },
+  {
+    name: '20',
+    width: '30px'
+
+  },
+  {
+    name: '30',
+    width: '30px'
+  },
+  {
+    name: '50',
+    width: '30px'
+  },
+  {
+    name: '100',
+    width: '30px'
+
+  },
+  {
+    name: '200',
+    width: '30px'
+  },
+  {
+    name: '300',
+    width: '30px'
+  },
+  {
+    name: '500',
+    width: '30px'
+
+  },
+  {
+    name: '1000',
+    width: '30px'
+
+  }
+]
+
+const scratchCardColumns = [
+  {
+    name: 'telco',
+    width: '50px',
+    align: 'left'
+  },
+  {
+    name: '10/20/30',
+    width: '30px',
+    selector: '10'
+  },
+  {
+    name: '50/100/200/300',
+    width: '30px',
+    selector: '50'
+  },
+  {
+    name: '500',
+    width: '30px'
+
+  },
+  {
+    name: '1000',
+    width: '30px'
+
+  }
+]
+
+const getScratchCardData = (response) => {
+  return response.map((data) => ({
+    telco: data.name,
+    ...data.fixedRate != null ? {
+      10: data.fixedRate,
+      20: data.fixedRate,
+      30: data.fixedRate,
+      50: data.fixedRate,
+      100: data.fixedRate,
+      200: data.fixedRate,
+      300: data.fixedRate,
+      500: data.fixedRate,
+      1000: data.fixedRate
+    } : {
+      ...data.rates
+    }
+  }))
+}
+
 const ScratchCardForm = React.memo((props) => {
-  const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank } = props
+  const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank, merchant } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
+  const [scratchCardData, setScratchCardData] = useState([])
+  const hasDifferentValue = scratchCardData.find((data) => (
+    data[10] !== data[20] || data[10] !== data[30] ||
+    data[50] !== data[100] || data[50] !== data[200] || data[50] !== data[300]
+  )) // if no match returns undefined
   const intl = props.intl
   const { register, errors, handleSubmit, reset, watch, getValues, formState } = useFormContext()
   const { isSubmitting } = formState
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
-  const language = props.language
+  // const language = props.language
   const watchCardSerialNumber = watch('cardSerialNumber', '')
   const watchCardPin = watch('cardPin', '')
   const formValues = getValues()
@@ -156,6 +258,13 @@ const ScratchCardForm = React.memo((props) => {
     formIconContainerCreditCard: true
   })
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getScratchCardRates({ merchant })
+      setScratchCardData(getScratchCardData(response))
+    }
+    fetchData()
+  }, [merchant])
   function handleSubmitForm (values) {
     handleSubmitScratchCard(values)
   }
@@ -280,36 +389,6 @@ const ScratchCardForm = React.memo((props) => {
     })
   }
 
-  function renderTransactionRates () {
-    if (language === 'vi-vn') {
-      return (
-        <ul>
-
-          <li>VIETTEL: 22% (Giá trị thẻ 10/20/30), 20% (Giá trị thẻ 50/100/200/300) và 23% (Giá trị thẻ 500/1tr)  </li>
-
-          <li>MOBI: 24%</li>
-          <li>VINA: 23%</li>
-          <li>ZING: 20%</li>
-          <li>GATE: 25%</li>
-          <li>VIETNAMOBILE: 18%</li>
-        </ul>
-      )
-    } else {
-      return (
-        <ul>
-
-          <li>VIETTEL: 22% (card value 10/20/30), 20% (card value 50/100/200/300) and 23% (card value 500/1tr)</li>
-
-          <li>MOBI: 24%</li>
-          <li>VINA: 23%</li>
-          <li>ZING: 20%</li>
-          <li>GATE: 25%</li>
-          <li>VIETNAMOBILE: 18%</li>
-        </ul>
-      )
-    }
-  }
-
   return (
     <>
       <form autoComplete='off'>
@@ -409,12 +488,11 @@ const ScratchCardForm = React.memo((props) => {
                 </ul>
                 <li><FormattedMessage {...messages.notes.notesSix} /></li>
               </ul>
-              <p className={classes.noteText}>The rate will be fluctuated, please do contact for the updated rates. (Rate updated: 0:01 AM 21/06/2022 GMT+7)</p>
-              <ul className={classes.noteText}>
-                {
-                  renderTransactionRates()
-                }
-              </ul>
+              <p className={classes.noteText}>Table below shows the rate of different telco provider per card value (in 1000 VND).</p>
+              <TableComponent
+                columns={!hasDifferentValue ? scratchCardColumns : uniqueScratchCardColumns}
+                data={scratchCardData}
+              />
             </>
         }
         {
