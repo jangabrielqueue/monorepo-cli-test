@@ -59,7 +59,7 @@
     "placeholders.cardPin": "Card Pin",
     "notes.notesOne": "For loading money from scratch card, member will shoulder a transaction fee.",
     "notes.notesTwo": "Please submit the correct amount, card number and serial number. If input incorrect details, we will not credit deposit amount.",
-    "notes.notesThree": "If submitted with incorrect amount:",
+    "notes.notesThree": "If submitted with incorrect amount, will return the lower value between request amount and real amount.",
     "notes.notesFour": "Request amount < real amount, will return request amount + penalised 2% of Request amount.",
     "notes.notesFive": "Request amount > real amount, will return real amount + penalized 15% of the received amount.",
     "notes.notesSix": "Transaction Fee:",

@@ -47,7 +47,7 @@
   "placeholders.cardPin": "Pin Kartu",
   "notes.notesOne": "Untuk memasukkan uang dari scratch card, member akan memperoleh biaya transaksi.",
   "notes.notesTwo": "Mohon masukkan jumlah, nomor kartu dan nomor seri yang benar. Jika memasukkan detail yang salah, kami tidak akan mengkredit jumlah setoran.",
-  "notes.notesThree": "Jika memasukkan dengan jumlah yang salah:",
+  "notes.notesThree": "Jika diajukan dengan jumlah yang salah, akan mengembalikan nilai yang lebih rendah antara Jumlah Permintaan dan Jumlah Nyatas",
   "notes.notesFour": "Jumlah permintaan <jumlah sebenarnya, akan mengembalikan jumlah permintaan + Penalti 2% dari Jumlah permintaan.",
   "notes.notesFive": "Jumlah permintaan> jumlah nyata, akan mengembalikan jumlah sebenarnya + denda 15% dari jumlah yang diterima.",
   "notes.notesSix": "Biaya Transaksi:",

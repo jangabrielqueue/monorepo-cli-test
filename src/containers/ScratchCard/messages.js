@@ -56,7 +56,7 @@ export default defineMessages({
     },
     notesThree: {
       id: 'notes.notesThree',
-      defaultMessage: 'If submitted with incorrect amount:'
+      defaultMessage: 'If submitted with incorrect amount, will return the lower value between request amount and real amount'
     },
     notesFour: {
       id: 'notes.notesFour',

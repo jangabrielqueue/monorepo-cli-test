@@ -482,10 +482,10 @@ const ScratchCardForm = React.memo((props) => {
                 <li><FormattedMessage {...messages.notes.notesOne} /></li>
                 <li><FormattedMessage {...messages.notes.notesTwo} /></li>
                 <li><FormattedMessage {...messages.notes.notesThree} /></li>
-                <ul>
+                {/* <ul>
                   <li><FormattedMessage {...messages.notes.notesFour} /></li>
                   <li><FormattedMessage {...messages.notes.notesFive} /></li>
-                </ul>
+                </ul> */}
                 <li><FormattedMessage {...messages.notes.notesSix} /></li>
               </ul>
               <p className={classes.noteText}>Table below shows the rate of different telco provider per card value (in 1000 VND).</p>
