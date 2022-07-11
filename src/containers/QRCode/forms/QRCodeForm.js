@@ -136,6 +136,15 @@ const useStyles = createUseStyles({
   }
 })
 
+const THBQrLogoCases = {
+  TRUEWALLET: '/logo/TRUEWALLET_LOGO.webp',
+  default: '/logo/GW_LOGO_ICON.webp'
+}
+
+const THBQrLogo = (bank) => {
+  const bankSelected = bank.toUpperCase()
+  return THBQrLogoCases[bankSelected] || THBQrLogoCases.default
+}
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
@@ -176,7 +185,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             renderAs='svg'
             level='M'
             imageSettings={{
-              src: '/logo/GW_LOGO_ICON.webp',
+              src: THBQrLogo(bank),
               x: null,
               y: null,
               height: 40,
