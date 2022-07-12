@@ -22,6 +22,7 @@ const BBL = { code: 'BBL', name: 'Bangkok Bank' }
 const BOA = { code: 'BOA', name: 'Ayudhya Bank / Krungsri' }
 const TMB = { code: 'TMB', name: 'TMB Bank' }
 const FAKERTHB = { code: 'FAKERTHB', name: 'Faker THB' }
+const TRUEWALLET = { code: 'TRUEWALLET', name: 'True Money Wallet' }
 
 const PERMATA = { code: 'PERMATA', name: 'Permata Bank' }
 const CIMB = { code: 'CIMB', name: 'CIMB Niaga' }
@@ -46,8 +47,8 @@ const VND_ALL_BANKS_DEV = [
   VIB
 ]
 
-const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB]
-const THB_ALL_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, FAKERTHB]
+const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB, TRUEWALLET]
+const THB_ALL_BANKS_DEV = [KBANK, KTB, SCB, BBL, BOA, TMB, FAKERTHB, TRUEWALLET]
 
 const VND_TOPUP_BANKS = [VCB, ACB, TCB, BIDV, SACOM]
 const VND_TOPUP_BANKS_DEV = [VCB, ACB, TCB, BIDV, SACOM, FAKER]
