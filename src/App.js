@@ -61,7 +61,8 @@ const appTheme = {
     notificationFontBIDV: '#0066ad',
     bni: '#f15922',
     buttonBni: '#005f6b',
-    msb: '#e71e24'
+    msb: '#e71e24',
+    truewallet: '#ff7f02'
   }
 }
 
