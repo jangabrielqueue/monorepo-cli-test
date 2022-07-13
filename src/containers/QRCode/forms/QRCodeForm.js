@@ -16,7 +16,8 @@ import {
   checkifAgriBank,
   checkIfDABBank,
   checkIfTcbBank,
-  checkIfSacomBank
+  checkIfSacomBank,
+  checkIfTrueWalletBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 import getVietQRCode from '../../../components/VietQr'
@@ -157,8 +158,9 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     language,
     reference
   } = props
-  const isBankKnown = checkBankIfKnown(currency, bank)
-  const buttonColor = isBankKnown ? `${bank}` : 'main'
+  const isTrueWallet = checkIfTrueWalletBank(bank)
+  const isBankKnown = checkBankIfKnown(currency, responseData.bank)
+  const buttonColor = isTrueWallet ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
   const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {

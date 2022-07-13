@@ -18,7 +18,7 @@ import AutoRedirect from '../../components/AutoRedirect'
 import AutoRedirectQR from '../../components/AutoRedirectQR'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { checkBankIfKnown, checkIfTHBCurrency, checkIfVndCurrency } from '../../utils/banks'
+import { checkBankIfKnown, checkIfTHBCurrency, checkIfTrueWalletBank, checkIfVndCurrency } from '../../utils/banks'
 import { convertToMiliseconds, sleep } from '../../utils/utils'
 import VerifyTransaction from '../../components/VerifyTransaction'
 
@@ -302,7 +302,7 @@ const QRCode = (props) => {
           <AutoRedirectQR delay={delay} setStep={setStep} time={firstStepTimeOut} isTHB={isTHB}>
             <QRCodeForm
               currency={currency}
-              bank={responseData.bank}
+              bank={bank}
               establishConnection={establishConnection}
               loadingButton={loadingButton}
               responseData={responseData}
@@ -491,7 +491,9 @@ const QRCode = (props) => {
                       ? <div className={classes.qrCodeTopLogo}>
                         <img alt='vietqr' src='/logo/VIETQR.webp' width={280} />
                       </div> // eslint-disable-line
-                      : <Logo bank={responseData.bank} currency={currency} />
+                      : checkIfTrueWalletBank(bank)
+                        ? <Logo bank={bank} currency={currency} />
+                        : <Logo bank={responseData.bank} currency={currency} />
                   }
                 </Suspense>
                 {
