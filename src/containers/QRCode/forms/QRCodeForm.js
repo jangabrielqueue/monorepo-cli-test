@@ -137,7 +137,7 @@ const useStyles = createUseStyles({
 })
 
 const THBQrLogoCases = {
-  TRUEWALLET: '/logo/TRUEWALLET_LOGO.webp',
+  TRUEWALLET: '../../../assets/banks/TRUEWALLET_LOGO.webp',
   default: '/logo/GW_LOGO_ICON.webp'
 }
 
