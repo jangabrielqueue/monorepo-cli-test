@@ -16,7 +16,8 @@ import {
   checkifAgriBank,
   checkIfDABBank,
   checkIfTcbBank,
-  checkIfSacomBank
+  checkIfSacomBank,
+  checkIfTrueWalletBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 import getVietQRCode from '../../../components/VietQr'
@@ -136,6 +137,15 @@ const useStyles = createUseStyles({
   }
 })
 
+const THBQrLogoCases = {
+  TRUEWALLET: '/logo/TRUEWALLET_LOGO.webp',
+  default: '/logo/GW_LOGO_ICON.webp'
+}
+
+const THBQrLogo = (bank) => {
+  const bankSelected = bank.toUpperCase()
+  return THBQrLogoCases[bankSelected] || THBQrLogoCases.default
+}
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
@@ -148,8 +158,9 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     language,
     reference
   } = props
-  const isBankKnown = checkBankIfKnown(currency, bank)
-  const buttonColor = isBankKnown ? `${bank}` : 'main'
+  const isTrueWallet = checkIfTrueWalletBank(bank)
+  const isBankKnown = checkBankIfKnown(currency, responseData.bank)
+  const buttonColor = isTrueWallet ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
   const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {
@@ -176,7 +187,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             renderAs='svg'
             level='M'
             imageSettings={{
-              src: '/logo/GW_LOGO_ICON.webp',
+              src: THBQrLogo(bank),
               x: null,
               y: null,
               height: 40,
