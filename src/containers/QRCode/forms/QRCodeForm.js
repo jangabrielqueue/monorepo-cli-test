@@ -146,6 +146,7 @@ const THBQrLogo = (bank) => {
   const bankSelected = bank.toUpperCase()
   return THBQrLogoCases[bankSelected] || THBQrLogoCases.default
 }
+
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
