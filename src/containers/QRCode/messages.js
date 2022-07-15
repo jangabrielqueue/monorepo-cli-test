@@ -61,6 +61,14 @@ export default defineMessages({
     verificationFailed: {
       id: 'errors.verificationFailed',
       defaultMessage: 'Verification failed. Please check again.'
+    },
+    networkErrorTitle: {
+      id: 'errors.networkErrorTitle',
+      defaultMessage: 'Network Error'
+    },
+    networkError: {
+      id: 'errors.networkError',
+      defaultMessage: 'Can\'t connect to server, please refresh your browser.'
     }
   }
 })
