@@ -23,17 +23,17 @@ const useStyles = createUseStyles({
 })
 
 const Logo = ({ bank, currency, type }) => {
-  const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.webp$/)
+  const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.png$/)
   const isBankKnown = checkBankIfKnown(currency, bank)
   const classes = useStyles({ bank, type })
 
   const getFilePathWebP = (bank, type) => {
     if (isBankKnown) {
-      return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.webp`)
+      return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.png`)
     } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
-      return requestImageFileWebp('./PRECARD_LOGO.webp')
+      return requestImageFileWebp('./PRECARD_LOGO.png')
     } else {
-      return requestImageFileWebp('./GW_LOGO.webp')
+      return requestImageFileWebp('./GW_LOGO.png')
     }
   }
 
@@ -63,7 +63,7 @@ const Logo = ({ bank, currency, type }) => {
             alt='game-wallet'
             width='200'
             height='80'
-            src={requestImageFileWebp('./GW_LOGO.webp')}
+            src={requestImageFileWebp('./GW_LOGO.png')}
           />
       }
     </section>

@@ -151,7 +151,7 @@ const OTPForm = React.memo((props) => {
               renderAs='svg'
               level='M'
               imageSettings={{
-                src: '/logo/GW_LOGO_ICON.webp',
+                src: '/logo/GW_LOGO_ICON.png',
                 x: null,
                 y: null,
                 height: 40,

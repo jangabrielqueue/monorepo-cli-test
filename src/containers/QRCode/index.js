@@ -489,7 +489,7 @@ const QRCode = (props) => {
                   {
                     checkIfVndCurrency(currency)
                       ? <div className={classes.qrCodeTopLogo}>
-                        <img alt='vietqr' src='/logo/VIETQR.webp' width={280} />
+                        <img alt='vietqr' src='/logo/VIETQR.png' width={280} />
                       </div> // eslint-disable-line
                       : checkIfTrueWalletBank(bank)
                         ? <Logo bank={bank} currency={currency} />
