@@ -138,8 +138,8 @@ const useStyles = createUseStyles({
 })
 
 const THBQrLogoCases = {
-  TRUEWALLET: '/logo/TRUEWALLET_LOGO.webp',
-  default: '/logo/GW_LOGO_ICON.webp'
+  TRUEWALLET: '/logo/TRUEWALLET_LOGO.png',
+  default: '/logo/GW_LOGO_ICON.png'
 }
 
 const THBQrLogo = (bank) => {
@@ -170,9 +170,9 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   function handleRenderBottomLogo () {
     if (isBankKnown) {
-      return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.webp`)
+      return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.png`)
     }
-    return require('../../../assets/banks/NULL_LOGO.webp')
+    return require('../../../assets/banks/NULL_LOGO.png')
   }
 
   function handleQRCodeRender (currency) {
@@ -205,7 +205,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             renderAs='svg'
             level='M'
             imageSettings={{
-              src: '/logo/GW_LOGO_ICON.webp',
+              src: '/logo/GW_LOGO_ICON.png',
               x: null,
               y: null,
               height: 40,
@@ -222,7 +222,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             renderAs='svg'
             level='M'
             imageSettings={{
-              src: '/logo/GW_LOGO_ICON.webp',
+              src: '/logo/GW_LOGO_ICON.png',
               x: null,
               y: null,
               height: 40,
@@ -248,12 +248,12 @@ const QRCodeForm = memo(function QRCodeForm (props) {
         checkIfVndCurrency(currency) &&
           <div className={classes.qrcodeBottomLogos}>
             <div className={classes.qrcodeBottomLogoWrapper}>
-              <img alt='napas247' src='/logo/NAPAS_247.webp' />
+              <img alt='napas247' src='/logo/NAPAS_247.png' />
             </div>
             <div className={classes.qrcodeBottomLogoWrapper}>
               {
                 bank ? <img alt={bank} src={handleRenderBottomLogo()} />
-                  : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.webp')} />
+                  : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.png')} />
               }
             </div>
           </div>
