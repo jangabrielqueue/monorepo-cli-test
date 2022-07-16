@@ -200,7 +200,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
       case 'VND':
         return (
           <QRCode
-            value={getVietQRCode(bank, responseData.qrCodeContent, responseData.amount, reference)}
+            value={getVietQRCode(responseData.bank, responseData.qrCodeContent, responseData.amount, reference)}
             size={200}
             renderAs='svg'
             level='M'
