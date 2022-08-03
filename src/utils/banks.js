@@ -31,12 +31,13 @@ const BRI = { code: 'BRI', name: 'Bank BRI' }
 const BCA = { code: 'BCA', name: 'Bank Central Asia' }
 const BNI = { code: 'BNI', name: 'Bank Negara Indonesia' }
 
-const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, TCB, EXIM, SACOM, AGRI, MSB, VIB]
+const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, MSB, VIB]
 const VND_ALL_BANKS_DEV = [
   VCB,
   ACB,
   VTB,
   DAB,
+  BIDV,
   TCB,
   EXIM,
   SACOM,
