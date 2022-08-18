@@ -16,7 +16,7 @@ import localeId from './translations/locale/id.json'
 import localeCn from './translations/locale/cn.json'
 
 // lazy loaded components
-const ExternalProvider = lazy(() => import('./containers/ExternalProvider'))
+const GritPay = lazy(() => import('./containers/GritPay'))
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
@@ -175,7 +175,7 @@ const App = () => {
                         <TopUp language={language} />
                       </Route>
                       <Route exact path='/deposit/gritpay'>
-                        <ExternalProvider language={language} />
+                        <GritPay language={language} />
                       </Route>
                       <Route path='/error'>
                         <CustomErrorPages />

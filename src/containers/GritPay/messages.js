@@ -18,7 +18,7 @@ export default defineMessages({
   header: {
     pending: {
       id: 'header.pending',
-      defaultMessage: 'Transaction in Progress'
+      defaultMessage: 'TRANSACTION IN PROGRESS'
     },
     success: {
       id: 'header.success',
