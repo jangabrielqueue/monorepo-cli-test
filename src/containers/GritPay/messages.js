@@ -1,59 +1,22 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
-  placeholders: {
-    fullName: {
-      id: 'placeholders.fullName',
-      defaultMessage: 'Please enter full name'
-    },
-    inputFullName: {
-      id: 'placeholders.inputFullName',
-      defaultMessage: 'Full Name'
-    },
-    inputID: {
-      id: 'placeholders.inputID',
-      default: 'Please enter your ID'
-    }
-  },
-  header: {
+  gritHeader: {
     pending: {
-      id: 'header.pending',
+      id: 'gritHeader.pending',
       defaultMessage: 'TRANSACTION IN PROGRESS'
     },
     success: {
-      id: 'header.success',
-      defaultMessage: 'Transaction Successful'
+      id: 'gritHeader.success',
+      defaultMessage: 'TRANSACTION SUCCESSFUL'
     },
     failed: {
-      id: 'header.failed',
-      defaultMessage: 'Transaction Failed'
-    }
-  },
-
-  progress: {
-    startingConnection: {
-      id: 'progress.startingConnection',
-      defaultMessage: 'Starting secured connection'
+      id: 'gritHeader.failed',
+      defaultMessage: 'TRANSACTION FAILED'
     },
-    encryptedTransmission: {
-      id: 'progress.encryptedTransmission',
-      defaultMessage: 'Encrypted the transmission data'
-    },
-    beginningTransaction: {
-      id: 'progress.beginningTransaction',
-      defaultMessage: 'Beginning of the transaction'
-    },
-    submittingTransaction: {
-      id: 'progress.submittingTransaction',
-      defaultMessage: 'Submitting transaction via secured connection'
-    },
-    waitingTransaction: {
-      id: 'progress.waitingTransaction',
-      defaultMessage: 'Waiting transaction confirm'
-    },
-    verifyingTransaction: {
-      id: 'progress.verifyingTransaction',
-      defaultMessage: 'Verifying Transaction'
+    establishConnection: {
+      id: 'gritHeader.establishConnection',
+      defaultMessage: 'Establishing Connection with GritPay'
     }
   },
   errors: {
@@ -73,5 +36,9 @@ export default defineMessages({
       id: 'errors.networkError',
       defaultMessage: 'Can\'t connect to server, please refresh your browser.'
     }
+  },
+  reference: {
+    id: 'reference',
+    defaultMessage: 'Reference'
   }
 })
