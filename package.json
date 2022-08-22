@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.2",
     "babel-eslint": "^10.1.0",
     "eslint-plugin-react-hooks": "^4.0.8",
     "standard": "^14.3.4"

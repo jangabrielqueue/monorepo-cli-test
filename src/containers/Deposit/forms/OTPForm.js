@@ -20,6 +20,12 @@ const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
 
 // styling
 const useStyles = createUseStyles({
+  qrCodeContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    flexDirection: 'column'
+  },
   otpReferenceText: {
     fontWeight: 'bold',
     wordBreak: 'break-all'
@@ -137,6 +143,353 @@ const useStyles = createUseStyles({
 { name: 'OTPForm' }
 )
 
+const bcaBankInputLabel = (otpReference) => (
+  <FormattedMessage
+    {...messages.bcaOtpReference.pleaseInputOtp}
+    values={{
+      number: checkIfAppTwoOtp(otpReference) ? 2 : 1
+    }}
+  />
+)
+
+const bniBankInputLabel = () => (
+  <FormattedMessage
+    {...messages.bniOtpReference.pleaseInputOtp}
+    values={{
+      number: 8
+    }}
+  />
+)
+
+const otpMethodInputLabel = () => (
+  <FormattedMessage {...messages.placeholders.inputOtp} />
+)
+const otpMethodQrInputLabel = () => (
+  <FormattedMessage {...messages.placeholders.inputQrOtp} />
+)
+
+const inputLabelRender = ({ bank, methodType, otpReference }) => {
+  const notCardOTPInputLabels = {
+    [checkIfBcaBank(bank)]: bcaBankInputLabel,
+    [checkIfBniBank(bank)]: bniBankInputLabel,
+    [OtpMethod.Input]: otpMethodInputLabel,
+    [OtpMethod.QrInput]: otpMethodQrInputLabel
+  }
+  return (!isNullOrWhitespace(otpReference) && notCardOTPInputLabels.true && notCardOTPInputLabels.true(otpReference)) ||
+    (notCardOTPInputLabels[methodType] && notCardOTPInputLabels[methodType]())
+}
+
+const bcaMinLengthErrorMessage = ({ otpReference }) => (
+  <FormattedMessage
+    {...messages.bcaOtpReference.inputFixedLength}
+    values={{
+      fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+    }}
+  />
+)
+
+const bniMinLengthErrorMessage = () => (
+  <FormattedMessage
+    {...messages.bniOtpReference.inputFixedLength}
+    values={{
+      fixedLength: 8
+    }}
+  />
+)
+
+const minLengthErrorMessageRender = ({ otpReference, bank }) => {
+  const minLengthErrorMessages = {
+    [checkIfBcaBank(bank)]: bcaMinLengthErrorMessage,
+    [checkIfBniBank(bank)]: bniMinLengthErrorMessage
+  }
+  return (
+    <p className='input-errors'>
+      {minLengthErrorMessages.true && minLengthErrorMessages.true(otpReference)}
+    </p>
+  )
+}
+
+const requiredErrorMessage = ({ errors }) => (
+  <p className='input-errors'>{errors.OTP?.message}</p>
+)
+
+const bniMaxLengthErrorMessage = () => (
+  <FormattedMessage
+    {...messages.bniOtpReference.inputFixedLength}
+    values={{
+      fixedLength: 8
+    }}
+  />
+)
+
+const bcaMaxLengthErrorMessage = (otpReference) => (
+  <FormattedMessage
+    {...messages.bcaOtpReference.inputFixedLength}
+    values={{
+      fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
+    }}
+  />
+)
+
+const maxLengthErrorMessageRender = ({ otpReference, bank }) => {
+  const maxLengthErrorMessages = {
+    [checkIfBniBank(bank)]: bniMaxLengthErrorMessage,
+    [checkIfBcaBank(bank)]: bcaMaxLengthErrorMessage
+  }
+  return (
+    <p className='input-errors'>
+      {maxLengthErrorMessages.true && maxLengthErrorMessages.true(otpReference)}
+    </p>
+  )
+}
+
+const errorMessages = {
+  minLength: minLengthErrorMessageRender,
+  required: requiredErrorMessage,
+  maxLength: maxLengthErrorMessageRender
+}
+
+export const notCardOtpErrorMessagesRender = (props) => (
+  errorMessages[props.errors.OTP?.type] && errorMessages[props.errors.OTP?.type](props)
+)
+
+const maxLengthCardOtpErrorMessage = () => (
+  <p className='input-errors'>
+    <FormattedMessage {...messages.placeholders.inputOtpDAB} />
+  </p>
+)
+
+const requiredCardOtpErrorMessage = (errors) => (
+  <p className='input-errors'>
+    {errors.OTP1?.message || errors.OTP2?.message}
+  </p>
+)
+const cardOtpErrorMessages = {
+  maxLength: maxLengthCardOtpErrorMessage,
+  required: requiredCardOtpErrorMessage
+}
+
+export const cardOtpErrorMessageRender = ({ errors }) => {
+  return (cardOtpErrorMessages[errors?.OTP1?.type] && cardOtpErrorMessages[errors?.OTP1?.type](errors)) ||
+    (cardOtpErrorMessages[errors?.OTP2?.type] && cardOtpErrorMessages[errors?.OTP2?.type](errors))
+}
+
+const notCardOtpInputRender = ({ formIconContainerUsernameStyles, classes, register, inputOtpValidations, formValues, dirty, setValue, ...renderProps }) => (
+  <div className={formIconContainerUsernameStyles}>
+    <div>
+      <label htmlFor='OTP'>{inputLabelRender(renderProps)}</label>
+      <div className={classes.inputFieldContainer}>
+        <input
+          ref={register({
+            ...inputOtpValidations
+          })}
+          type='number'
+          id='OTP'
+          name='OTP'
+          autoComplete='off'
+          onKeyDown={e => e.which === 69 && e.preventDefault()}
+        />
+        <ul>
+          {
+            (formValues.OTP !== '' && dirty) &&
+              <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
+          }
+        </ul>
+      </div>
+      {notCardOtpErrorMessagesRender(renderProps)}
+    </div>
+  </div>
+)
+
+const cardOtpInputRender = ({ classes, cardOTP1, register, cardOTP2, ...renderProps }) => (
+  <div>
+    <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
+    <div className={classes.formDabContainer}>
+      <label htmlFor='OTP1'>{cardOTP1}</label>
+      <input
+        className={classes.formDabInput}
+        ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
+        type='number'
+        id='OTP1'
+        name='OTP1'
+        autoComplete='off'
+        onKeyDown={e => e.which === 69 && e.preventDefault()}
+      />
+      <label htmlFor='OTP2'>{cardOTP2}</label>
+      <input
+        className={classes.formDabInput}
+        ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
+        type='number'
+        id='OTP2'
+        name='OTP2'
+        autoComplete='off'
+        onKeyDown={e => e.which === 69 && e.preventDefault()}
+      />
+    </div>
+    {cardOtpErrorMessageRender(renderProps)}
+  </div>
+)
+
+const inputRenders = {
+  true: cardOtpInputRender,
+  false: notCardOtpInputRender
+}
+
+export const InputRender = ({ hasMethodType, isCardOTP, ...renderProps }) => (
+  (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(renderProps.methodType)) && inputRenders[isCardOTP] && inputRenders[isCardOTP](renderProps)
+)
+
+const defaultGlobalButton = ({ buttonColor, handleSubmit, handleSubmitForm, waitingForReady, isSubmitting }) => (
+  <GlobalButton
+    label={<FormattedMessage {...messages.submit} />}
+    color={buttonColor}
+    onClick={handleSubmit(handleSubmitForm)}
+    disabled={waitingForReady || isSubmitting}
+  >
+    <img alt='submit' src='/icons/submit-otp.svg' />
+  </GlobalButton>
+)
+
+const doneGlobalButton = ({ buttonColor, handleSubmitOTP, waitingForReady, isSubmitting }) => (
+  <GlobalButton
+    label={<FormattedMessage {...messages.done} />}
+    color={buttonColor}
+    onClick={() => handleSubmitOTP('DONE')}
+    disabled={waitingForReady || isSubmitting}
+  >
+    <img alt='submit' src='/icons/submit-otp.svg' />
+  </GlobalButton>
+)
+
+const globalButtons = {
+  default: defaultGlobalButton,
+  [OtpMethod.Confirm]: doneGlobalButton,
+  [OtpMethod.QrConfirm]: doneGlobalButton
+}
+
+export const globalButtonRender = ({ classes, methodType, ...renderProps }) => (
+  <section className={classes.formFooter}>
+    {(globalButtons[methodType] && globalButtons[methodType](renderProps)) || globalButtons.default(renderProps)}
+  </section>
+)
+
+const defaultOtpMessage = ({ classes, otpReference }) => (
+  <>
+    <FormattedMessage {...messages.otpReference} />
+    <p className={classes.otpReferenceText}>{otpReference}</p>
+  </>
+)
+
+const qrCodeRender = ({ otpReference, classes }) => (
+  <div className={classes.qrCodeContainer}>
+    <p className={classes.otpReferenceText}>Please scan the QR Code for OTP Reference</p>
+    <QRCode
+      value={otpReference}
+      size={200}
+      renderAs='svg'
+      level='M'
+      imageSettings={{
+        src: '/logo/GW_LOGO_ICON.png',
+        x: null,
+        y: null,
+        height: 40,
+        width: 40,
+        excavate: true
+      }}
+    />
+  </div>
+)
+const methodTypeComponents = {
+  [OtpMethod.Input]: defaultOtpMessage,
+  [OtpMethod.Confirm]: defaultOtpMessage,
+  [OtpMethod.QrInput]: qrCodeRender,
+  [OtpMethod.QrConfirm]: qrCodeRender
+}
+export const methodTypeRender = ({ methodType, ...renderProps }) => (
+  !isNullOrWhitespace(renderProps.otpReference) && methodTypeComponents[methodType] && methodTypeComponents[methodType](renderProps)
+)
+
+const appTwoBniMessage = () => (
+  <FormattedMessage
+    {...messages.bniOtpReference.pleaseKeyInDigit}
+    values={{
+      number: 8
+    }}
+  />
+)
+
+const appTwoBcaMessage = (otpReference) => (
+  <FormattedMessage
+    {...messages.bcaOtpReference.pleaseKeyInDigit}
+    values={{
+      number: checkIfAppTwoOtp(otpReference) ? 6 : 8
+    }}
+  />
+)
+
+const appTwoOtpMessage = ({ bank, otpReference, classes }) => {
+  const bankMessage = {
+    [checkIfBcaBank(bank)]: appTwoBcaMessage,
+    [checkIfBniBank(bank)]: appTwoBniMessage
+  }
+
+  return (
+    <>
+      {bankMessage.true && bankMessage.true(otpReference)}
+      <p className={classes.otpReferenceText}>{otpReference}</p>
+    </>
+  )
+}
+
+const appOneBniMessage = () => (
+  <FormattedMessage
+    {...messages.bniOtpReference.pleaseKeyInDigit}
+    values={{
+      number: 8
+    }}
+  />
+)
+
+const appOneBcaMessage = () => (
+  <FormattedMessage
+    {...messages.bcaOtpReference.pleaseKeyInDigit}
+    values={{
+      number: 8
+    }}
+  />
+)
+
+const appOneOtpMessage = ({ bank, otpReference, classes }) => {
+  const bankMessage = {
+    [checkIfBcaBank(bank)]: appOneBcaMessage,
+    [checkIfBniBank(bank)]: appOneBniMessage
+  }
+
+  return (
+    <>
+      {bankMessage.true && bankMessage.true(otpReference)}
+      <p className={classes.otpReferenceText}>{otpReference}</p>
+    </>
+  )
+}
+
+const neitherAppOtpMessage = ({ otpReference, classes }) => (
+  <>
+    <FormattedMessage {...messages.otpReference} />
+    <p className={classes.otpReferenceText}>{otpReference}</p>
+  </>
+)
+
+const appMessagesRender = (renderProps) => {
+  const appOtpMessages = {
+    [checkIfAppTwoOtp(renderProps.otpReference)]: appTwoOtpMessage,
+    [checkIfAppOneOtp(renderProps.otpReference)]: appOneOtpMessage,
+    otherwise: neitherAppOtpMessage
+  }
+
+  return (appOtpMessages.true && appOtpMessages.true(renderProps)) || appOtpMessages.otherwise(renderProps)
+}
+
 const OTPForm = React.memo((props) => {
   const {
     bank,
@@ -225,260 +578,43 @@ const OTPForm = React.memo((props) => {
     }
   }, [progress, otpReference, reset])
 
+  const renderProps = {
+    formIconContainerUsernameStyles,
+    classes,
+    inputOtpValidations,
+    formValues,
+    dirty,
+    isCardOTP,
+    hasMethodType,
+    cardOTP1,
+    cardOTP2,
+    register,
+    setValue,
+    methodType,
+    otpReference,
+    bank,
+    errors,
+    buttonColor,
+    handleSubmit,
+    handleSubmitForm,
+    handleSubmitOTP,
+    waitingForReady,
+    isSubmitting
+  }
+
   return (
     <form>
       {
         !isNullOrWhitespace(otpReference) && !isCardOTP && !hasMethodType &&
           <div className={formIconContainerOtpReferenceStyles}>
             <div>
-              {
-                checkIfAppTwoOtp(otpReference) &&
-                  <>
-                    {
-                      checkIfBcaBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bcaOtpReference.pleaseKeyInDigit}
-                          values={{
-                            number: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                          }}
-                        />
-                    }
-                    {
-                      checkIfBniBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bniOtpReference.pleaseKeyInDigit}
-                          values={{
-                            number: 8
-                          }}
-                        />
-                    }
-                    <p className={classes.otpReferenceText}>{otpReference}</p>
-                  </>
-              }
-              {
-                checkIfAppOneOtp(otpReference) &&
-                  <>
-                    {
-                      checkIfBcaBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bcaOtpReference.pleaseKeyInDigit}
-                          values={{
-                            number: 8
-                          }}
-                        />
-                    }
-                    {
-                      checkIfBniBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bniOtpReference.pleaseKeyInDigit}
-                          values={{
-                            number: 8
-                          }}
-                        />
-                    }
-                    <p className={classes.otpReferenceText}>{otpReference}</p>
-                  </>
-              }
-              {
-                !checkIfAppTwoOtp(otpReference) && !checkIfAppOneOtp(otpReference) &&
-                  <>
-                    <FormattedMessage {...messages.otpReference} />
-                    <p className={classes.otpReferenceText}>{otpReference}</p>
-                  </>
-              }
+              {appMessagesRender(renderProps)}
             </div>
           </div>
       }
-      {
-        [OtpMethod.Input, OtpMethod.Confirm].includes(methodType) && !isNullOrWhitespace(otpReference) &&
-          <>
-            <FormattedMessage {...messages.otpReference} />
-            <p className={classes.otpReferenceText}>{otpReference}</p>
-          </>
-      }
-      {
-        [OtpMethod.QrInput, OtpMethod.QrConfirm].includes(methodType) && !isNullOrWhitespace(otpReference) &&
-          <QRCode
-            value={otpReference}
-            size={200}
-            renderAs='svg'
-            level='M'
-            imageSettings={{
-              src: '/logo/GW_LOGO_ICON.png',
-              x: null,
-              y: null,
-              height: 40,
-              width: 40,
-              excavate: true
-            }}
-          />
-      }
-      {
-        !isCardOTP && (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(methodType)) &&
-          <div className={formIconContainerUsernameStyles}>
-            <div>
-              <label htmlFor='OTP'>
-                {
-                  checkIfBcaBank(bank) && !isNullOrWhitespace(otpReference) &&
-                    <FormattedMessage
-                      {...messages.bcaOtpReference.pleaseInputOtp}
-                      values={{
-                        number: checkIfAppTwoOtp(otpReference) ? 2 : 1
-                      }}
-                    />
-                }
-                {
-                  checkIfBniBank(bank) && !isNullOrWhitespace(otpReference) &&
-                    <FormattedMessage
-                      {...messages.bniOtpReference.pleaseInputOtp}
-                      values={{
-                        number: 8
-                      }}
-                    />
-                }
-                {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== OtpMethod.QrInput &&
-                    <FormattedMessage {...messages.placeholders.inputOtp} />
-                }
-                {
-                  !checkIfBcaBank(bank) && !checkIfBniBank(bank) && methodType !== OtpMethod.Input &&
-                    <FormattedMessage {...messages.placeholders.inputQrOtp} />
-                }
-              </label>
-              <div className={classes.inputFieldContainer}>
-                <input
-                  ref={register({
-                    ...inputOtpValidations
-                  })}
-                  type='number'
-                  id='OTP'
-                  name='OTP'
-                  autoComplete='off'
-                  onKeyDown={e => e.which === 69 && e.preventDefault()}
-                />
-                <ul>
-                  {
-                    (formValues.OTP !== '' && dirty) &&
-                      <li onClick={() => setValue('OTP', '')}><span>&times;</span></li>
-                  }
-                </ul>
-              </div>
-              {
-                errors.OTP?.type === 'required' && <p className='input-errors'>{errors.OTP?.message}</p>
-              }
-              {
-                errors.OTP?.type === 'minLength' &&
-                  <p className='input-errors'>
-                    {
-                      checkIfBcaBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bcaOtpReference.inputFixedLength}
-                          values={{
-                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                          }}
-                        />
-                    }
-                    {
-                      checkIfBniBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bniOtpReference.inputFixedLength}
-                          values={{
-                            fixedLength: 8
-                          }}
-                        />
-                    }
-                  </p>
-              }
-              {
-                errors.OTP?.type === 'maxLength' &&
-                  <p className='input-errors'>
-                    {
-                      checkIfBcaBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bcaOtpReference.inputFixedLength}
-                          values={{
-                            fixedLength: checkIfAppTwoOtp(otpReference) ? 6 : 8
-                          }}
-                        />
-                    }
-                    {
-                      checkIfBniBank(bank) &&
-                        <FormattedMessage
-                          {...messages.bniOtpReference.inputFixedLength}
-                          values={{
-                            fixedLength: 8
-                          }}
-                        />
-                    }
-                  </p>
-              }
-            </div>
-          </div>
-      }
-      {
-        isCardOTP && (!hasMethodType || [OtpMethod.Input, OtpMethod.QrInput].includes(methodType)) &&
-          <div>
-            <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
-            <div className={classes.formDabContainer}>
-              <label htmlFor='OTP1'>{cardOTP1}</label>
-              <input
-                className={classes.formDabInput}
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
-                type='number'
-                id='OTP1'
-                name='OTP1'
-                autoComplete='off'
-                onKeyDown={e => e.which === 69 && e.preventDefault()}
-              />
-              <label htmlFor='OTP2'>{cardOTP2}</label>
-              <input
-                className={classes.formDabInput}
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
-                type='number'
-                id='OTP2'
-                name='OTP2'
-                autoComplete='off'
-                onKeyDown={e => e.which === 69 && e.preventDefault()}
-              />
-            </div>
-            {
-              (errors.OTP1?.type === 'required' || errors.OTP2?.type === 'required') &&
-                <p className='input-errors'>
-                  {errors.OTP1?.message || errors.OTP2?.message}
-                </p>
-            }
-            {
-              (errors.OTP1?.type === 'maxLength' || errors.OTP2?.type === 'maxLength') &&
-                <p className='input-errors'>
-                  <FormattedMessage {...messages.placeholders.inputOtpDAB} />
-                </p>
-            }
-          </div>
-      }
-      <section className={classes.formFooter}>
-        {
-          ![OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
-            <GlobalButton
-              label={<FormattedMessage {...messages.submit} />}
-              color={buttonColor}
-              onClick={handleSubmit(handleSubmitForm)}
-              disabled={waitingForReady || isSubmitting}
-            >
-              <img alt='submit' src='/icons/submit-otp.svg' />
-            </GlobalButton>
-        }
-        {
-          [OtpMethod.Confirm, OtpMethod.QrConfirm].includes(methodType) &&
-            <GlobalButton
-              label={<FormattedMessage {...messages.done} />}
-              color={buttonColor}
-              onClick={() => handleSubmitOTP('DONE')}
-              disabled={waitingForReady || isSubmitting}
-            >
-              <img alt='submit' src='/icons/submit-otp.svg' />
-            </GlobalButton>
-        }
-      </section>
+      {methodTypeRender(renderProps)}
+      {InputRender(renderProps)}
+      {globalButtonRender(renderProps)}
     </form>
   )
 })
