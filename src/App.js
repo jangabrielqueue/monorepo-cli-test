@@ -14,6 +14,7 @@ import localeVi from './translations/locale/vi.json'
 import localeTh from './translations/locale/th.json'
 import localeId from './translations/locale/id.json'
 import localeCn from './translations/locale/cn.json'
+import localeKo from './translations/locale/ko.json'
 
 // lazy loaded components
 const GritPay = lazy(() => import('./containers/GritPay'))
@@ -98,7 +99,8 @@ const App = () => {
     vi: localeVi,
     th: localeTh,
     id: localeId,
-    cn: localeCn
+    cn: localeCn,
+    ko: localeKo
   }
   const methods = useForm({
     defaultValues: {
@@ -134,6 +136,10 @@ const App = () => {
       case 'zh-cn':
         setLocale('cn')
         setLanguage('zh-cn')
+        break
+      case 'ko-kr':
+        setLocale('ko')
+        setLanguage('ko-kr')
         break
       default:
         setLocale('en')

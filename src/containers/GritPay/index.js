@@ -219,6 +219,28 @@ const useStyles = createUseStyles({
     top: 2,
     left: 0,
     right: 0
+  },
+  noteSection: {
+    fontSize: '14px',
+    lineHeight: 1.5,
+    margin: '15px 0',
+    paddingLeft: '20px',
+
+    '& li': {
+      color: '#767676',
+      marginBottom: '5px'
+    },
+
+    '& ul': {
+      boxSizing: 'border-box',
+      listStylePosition: 'outside',
+      listStyleType: 'circle',
+
+      '& li': {
+        color: '#767676',
+        marginBottom: '5px'
+      }
+    }
   }
 })
 
@@ -232,7 +254,7 @@ const headerCases = {
 const PendingBodyDisplay = ({ classes }) => (
   <>
     <section className={classes.contentBody}>
-      <p>You may wait for the confirmation of your transaction or leave this page. Leaving this page won't have any effect on your transaction.</p>
+      <p><FormattedMessage {...messages.notes.gritBodyText} /></p>
     </section>
     <section className={classes.depositProgressBarContainer}>
       <div>
@@ -273,15 +295,6 @@ const GritPay = (props) => {
     reference,
     currency,
     amount
-    // requester,
-    // clientIp,
-    // callbackUri,
-    // amount,
-    // datetime,
-    // signature,
-    // successfulUrl,
-    // failedUrl,
-    // note
   } = useContext(QueryParamsContext)
   const { intl, language } = props
   const analytics = useContext(FirebaseContext)
@@ -380,7 +393,7 @@ const GritPay = (props) => {
                 establishConnection
                   ? (
                     <div className={classes.toolTipContainer}>
-                      <span className={toolTipStyles}>reference copied!</span>
+                      <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
 
                       <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
                         <p> <FormattedMessage {...messages.reference} /> {reference}</p>
@@ -393,6 +406,18 @@ const GritPay = (props) => {
             <div className={classes.transactionAmount}>
               <h1>{new Intl.NumberFormat(language, { style: 'currency', currency }).format(amount)}</h1>
             </div>
+            <section className={classes.noteSection}>
+              <ul>
+                <strong><FormattedMessage {...messages.notes.caution} /></strong>
+                <li><FormattedMessage {...messages.notes.gritNoteOne} /></li>
+                <li><FormattedMessage {...messages.notes.gritNoteTwo} /></li>
+                <li><FormattedMessage {...messages.notes.gritNoteThree} /></li>
+                <li><FormattedMessage {...messages.notes.gritNoteFour} /></li>
+                <li><FormattedMessage {...messages.notes.gritNoteFive} /></li>
+                <li><FormattedMessage {...messages.notes.gritNoteSix} /></li>
+              </ul>
+            </section>
+
           </div>
         </div>
       </div>
