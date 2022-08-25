@@ -11,6 +11,7 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import ErrorAlert from '../../components/ErrorAlert'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import classNames from 'classnames/bind'
+import AutoRedirect from '../../components/AutoRedirect'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -264,21 +265,23 @@ const PendingBodyDisplay = ({ classes }) => (
   </>
 )
 
-const FailedBodyDisplay = ({ classes, responseData }) => (
-  <>
+const FailedBodyDisplay = ({ classes, responseData, failedUrl }) => (
+  <AutoRedirect delay={10000} url={failedUrl}>
     <div className={classes.contentFailed}>
       <img alt='submit-failed' src='/icons/submit-failed.svg' />
       <p>{responseData.message}</p>
     </div>
-  </>
+  </AutoRedirect>
 )
 
-const SuccessBodyDisplay = ({ classes, responseData }) => (
-  <section className={classes.contentSuccess}>
-    <img alt='submit-success' src='/icons/submit-success.svg' />
-    <p>{responseData.message}</p>
+const SuccessBodyDisplay = ({ classes, responseData, successfulUrl }) => (
+  <AutoRedirect delay={10000} url={successfulUrl}>
+    <section className={classes.contentSuccess}>
+      <img alt='submit-success' src='/icons/submit-success.svg' />
+      <p>{responseData.message}</p>
 
-  </section>
+    </section>
+  </AutoRedirect>
 )
 
 const bodyDisplayCases = {
@@ -294,7 +297,9 @@ const GritPay = (props) => {
     merchant,
     reference,
     currency,
-    amount
+    amount,
+    successfulUrl,
+    failedUrl
   } = useContext(QueryParamsContext)
   const { intl, language } = props
   const analytics = useContext(FirebaseContext)
@@ -322,7 +327,9 @@ const GritPay = (props) => {
 
   const bodyProps = {
     classes,
-    responseData
+    responseData,
+    successfulUrl,
+    failedUrl
   }
 
   const handleCommandStatusUpdate = useCallback(
