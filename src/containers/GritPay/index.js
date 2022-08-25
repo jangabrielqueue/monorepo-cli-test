@@ -18,6 +18,14 @@ const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const API_USER_COMMAND_MONITOR = ENDPOINT + '/hubs/monitor'
 
 const useStyles = createUseStyles({
+  '@keyframes spin': {
+    from: {
+      transform: 'rotate(0)'
+    },
+    to: {
+      transform: 'rotate(360deg)'
+    }
+  },
   wrapper: {
     position: 'relative',
     height: '100%',
@@ -96,6 +104,9 @@ const useStyles = createUseStyles({
       borderRadius: '50%'
     },
     '& img': {
+      animationName: '$spin',
+      animationDuration: '1s',
+      animationIterationCount: 'infinite',
       maxWidth: '45px'
     },
 
