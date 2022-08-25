@@ -115,7 +115,6 @@ const useStyles = createUseStyles({
   referenceContainer: {
     fontFamily: 'ProductSansRegular',
     fontSize: '14px',
-    fontWeight: 'bold',
     textAlign: 'center',
     margin: '30px 30px 0',
     '& p': {
@@ -403,7 +402,7 @@ const GritPay = (props) => {
                       <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
 
                       <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
-                        <p> <FormattedMessage {...messages.reference} /> {reference}</p>
+                        <p> <strong><FormattedMessage {...messages.reference} />:</strong> {reference}</p>
                       </CopyToClipboard>
                     </div>
                   )
