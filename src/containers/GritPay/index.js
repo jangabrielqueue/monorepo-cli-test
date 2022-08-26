@@ -385,6 +385,14 @@ const GritPay = (props) => {
     // Start the connection
     start()
   }, [session, handleCommandStatusUpdate, intl])
+  useEffect(() => {
+    window.onbeforeunload = (e) => {
+      // this custom message will only appear on earlier version of different browsers.
+      // However on modern and latest browsers their own default message will override this custom message.
+      // as of the moment only applicable on browsers. there's no definite implementation on mobile
+      e.returnValue = 'Do you really want to leave current page?'
+    }
+  }, [])
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
       <QueryParamsValidator />
