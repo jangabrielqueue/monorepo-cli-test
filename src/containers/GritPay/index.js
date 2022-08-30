@@ -259,6 +259,7 @@ const headerCases = {
   '009': messages.gritHeader.pending,
   '000': messages.gritHeader.success,
   '001': messages.gritHeader.failed,
+  400: messages.gritHeader.error,
   default: messages.gritHeader.establishConnection
 }
 
@@ -294,10 +295,50 @@ const SuccessBodyDisplay = ({ classes, responseData, successfulUrl }) => (
   </AutoRedirect>
 )
 
+const FooterDisplay = ({ classes, responseData, language, currency, amount }) => {
+  const [isCopy, setIsCopy] = useState(false)
+
+  const cx = classNames.bind(classes)
+  const toolTipStyles = cx({
+    toolTipText: true,
+    toolTipShow: isCopy
+  })
+
+  return (
+    <>
+      <section className={classes.referenceContainer}>
+        <div className={classes.toolTipContainer}>
+          <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
+
+          <CopyToClipboard text={responseData.reference} onCopy={() => setIsCopy(prevState => !prevState)}>
+            <p> <strong><FormattedMessage {...messages.reference} />:</strong> {responseData.reference}</p>
+          </CopyToClipboard>
+        </div>
+        {responseData.accountInfo && <p> <strong><FormattedMessage {...messages.receivingAccount} />:</strong> {responseData.accountInfo}</p>}
+      </section>
+      <div className={classes.transactionAmount}>
+        <h1>{new Intl.NumberFormat(language, { style: 'currency', currency, minimumFractionDigits: 0 }).format(amount)}</h1>
+      </div>
+      <section className={classes.noteSection}>
+        <ul>
+          <strong><FormattedMessage {...messages.notes.caution} /></strong>
+          <li><FormattedMessage {...messages.notes.gritNoteOne} /></li>
+          <li><FormattedMessage {...messages.notes.gritNoteTwo} /></li>
+          <li><FormattedMessage {...messages.notes.gritNoteThree} /></li>
+          <li><FormattedMessage {...messages.notes.gritNoteFour} /></li>
+          <li><FormattedMessage {...messages.notes.gritNoteFive} /></li>
+          <li><FormattedMessage {...messages.notes.gritNoteSix} /></li>
+        </ul>
+      </section>
+    </>
+  )
+}
+
 const bodyDisplayCases = {
   '001': FailedBodyDisplay,
   '009': PendingBodyDisplay,
   '000': SuccessBodyDisplay,
+  400: FailedBodyDisplay,
   default: PendingBodyDisplay
 }
 
@@ -314,14 +355,8 @@ const GritPay = (props) => {
   const { intl, language } = props
   const analytics = useContext(FirebaseContext)
   const [error, setError] = useState(undefined)
-  const [isCopy, setIsCopy] = useState(false)
   const [responseData, setResponseData] = useState({ statusCode: undefined })
   const classes = useStyles({ bank })
-  const cx = classNames.bind(classes)
-  const toolTipStyles = cx({
-    toolTipText: true,
-    toolTipShow: isCopy
-  })
 
   const session = `DEPOSIT-GRITPAY-${merchant}-${reference}`.toUpperCase()
 
@@ -338,7 +373,10 @@ const GritPay = (props) => {
     classes,
     responseData,
     successfulUrl,
-    failedUrl
+    failedUrl,
+    language,
+    currency,
+    amount
   }
 
   const handleCommandStatusUpdate = useCallback(
@@ -410,31 +448,7 @@ const GritPay = (props) => {
             </section>
 
             {bodyDisplayCases[responseData.statusCode] ? bodyDisplayCases[responseData.statusCode](bodyProps) : bodyDisplayCases.default(bodyProps)}
-
-            <section className={classes.referenceContainer}>
-              <div className={classes.toolTipContainer}>
-                <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
-
-                <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
-                  <p> <strong><FormattedMessage {...messages.reference} />:</strong> {reference}</p>
-                </CopyToClipboard>
-              </div>
-            </section>
-            <div className={classes.transactionAmount}>
-              <h1>{new Intl.NumberFormat(language, { style: 'currency', currency }).format(amount)}</h1>
-            </div>
-            <section className={classes.noteSection}>
-              <ul>
-                <strong><FormattedMessage {...messages.notes.caution} /></strong>
-                <li><FormattedMessage {...messages.notes.gritNoteOne} /></li>
-                <li><FormattedMessage {...messages.notes.gritNoteTwo} /></li>
-                <li><FormattedMessage {...messages.notes.gritNoteThree} /></li>
-                <li><FormattedMessage {...messages.notes.gritNoteFour} /></li>
-                <li><FormattedMessage {...messages.notes.gritNoteFive} /></li>
-                <li><FormattedMessage {...messages.notes.gritNoteSix} /></li>
-              </ul>
-            </section>
-
+            {responseData.statusCode !== 400 && <FooterDisplay {...bodyProps} />}
           </div>
         </div>
       </div>

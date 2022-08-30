@@ -17,6 +17,10 @@ export default defineMessages({
     establishConnection: {
       id: 'gritHeader.establishConnection',
       defaultMessage: 'Establishing Connection'
+    },
+    error: {
+      id: 'gritHeader.error',
+      defaultMessage: 'Transaction Expired'
     }
   },
   errors: {
