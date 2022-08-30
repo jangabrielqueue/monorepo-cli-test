@@ -3,6 +3,7 @@
   "gritHeader.success": "거래 성공",
   "gritHeader.failed": "거래 실패",
   "gritHeader.establishConnection": "연결 설정",
+  "gritHeader.confirmed": "거래 확인됨",
   "gritHeader.error": "거래 만료",
   "errors.bankError": "통화/은행은 지원되지 않습니다. 고객 지원에 문의하십시오.",
   "errors.verificationFailed": "확인에 실패했습니다. 다시 확인 해주세요.",

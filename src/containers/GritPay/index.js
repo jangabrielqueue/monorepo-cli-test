@@ -259,6 +259,7 @@ const headerCases = {
   '009': messages.gritHeader.pending,
   '000': messages.gritHeader.success,
   '001': messages.gritHeader.failed,
+  '006': messages.gritHeader.confimed,
   400: messages.gritHeader.error,
   default: messages.gritHeader.establishConnection
 }
@@ -338,6 +339,7 @@ const bodyDisplayCases = {
   '001': FailedBodyDisplay,
   '009': PendingBodyDisplay,
   '000': SuccessBodyDisplay,
+  '006': SuccessBodyDisplay,
   400: FailedBodyDisplay,
   default: PendingBodyDisplay
 }
