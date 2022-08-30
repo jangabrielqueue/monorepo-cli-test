@@ -16,7 +16,7 @@ export default defineMessages({
     },
     establishConnection: {
       id: 'gritHeader.establishConnection',
-      defaultMessage: 'Establishing Connection with GritPay'
+      defaultMessage: 'Establishing Connection'
     }
   },
   errors: {
@@ -40,6 +40,10 @@ export default defineMessages({
   reference: {
     id: 'reference',
     defaultMessage: 'Reference'
+  },
+  receivingAccount: {
+    id: 'receivingAccount',
+    defaultMessage: 'Receiving Account'
   },
   copiedReference: {
     id: 'copiedReference',

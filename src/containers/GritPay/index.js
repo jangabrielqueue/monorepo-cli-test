@@ -316,7 +316,6 @@ const GritPay = (props) => {
   const [error, setError] = useState(undefined)
   const [isCopy, setIsCopy] = useState(false)
   const [responseData, setResponseData] = useState({ statusCode: undefined })
-  const [establishConnection, setEstablishConnection] = useState(false)
   const classes = useStyles({ bank })
   const cx = classNames.bind(classes)
   const toolTipStyles = cx({
@@ -375,7 +374,6 @@ const GritPay = (props) => {
           message: intl.formatMessage(messages.errors.networkError)
         })
       }
-      setEstablishConnection(true)
     }
 
     connection.onclose(async () => {
@@ -414,19 +412,13 @@ const GritPay = (props) => {
             {bodyDisplayCases[responseData.statusCode] ? bodyDisplayCases[responseData.statusCode](bodyProps) : bodyDisplayCases.default(bodyProps)}
 
             <section className={classes.referenceContainer}>
-              {
-                establishConnection
-                  ? (
-                    <div className={classes.toolTipContainer}>
-                      <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
+              <div className={classes.toolTipContainer}>
+                <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
 
-                      <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
-                        <p> <strong><FormattedMessage {...messages.reference} />:</strong> {reference}</p>
-                      </CopyToClipboard>
-                    </div>
-                  )
-                  : <div className='loading' />
-              }
+                <CopyToClipboard text={reference} onCopy={() => setIsCopy(prevState => !prevState)}>
+                  <p> <strong><FormattedMessage {...messages.reference} />:</strong> {reference}</p>
+                </CopyToClipboard>
+              </div>
             </section>
             <div className={classes.transactionAmount}>
               <h1>{new Intl.NumberFormat(language, { style: 'currency', currency }).format(amount)}</h1>
