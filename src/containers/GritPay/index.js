@@ -9,6 +9,7 @@ import messages from './messages'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
+import { requestStatus } from './Request'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -325,6 +326,7 @@ const queryParams = {
   bank: urlQueryString.get('b'),
   merchant: urlQueryString.get('m'),
   currency: urlQueryString.get('c1'),
+  requester: urlQueryString.get('c2'),
   payer: urlQueryString.get('c2'),
   clientIp: urlQueryString.get('c3'),
   callbackUri: urlQueryString.get('c4'),
@@ -393,6 +395,21 @@ const GritPay = (props) => {
 
     [analytics, reference]
   )
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      const result = await requestStatus({ reference, currency, merchant })
+      if (result.error) {
+        setError(result.error)
+        setResponseData({ statusCode: result.error.code })
+      } else {
+        setResponseData(result)
+      }
+    }
+
+    asyncFunc().finally(() => {})
+  }, [reference, currency, merchant])
+
   useEffect(() => {
     const getGritPayPayload = {
       ...queryParams
