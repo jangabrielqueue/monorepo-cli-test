@@ -53,6 +53,14 @@ export default defineMessages({
     id: 'receivingAccount',
     defaultMessage: 'Receiving Account'
   },
+  bankName: {
+    id: 'bankName',
+    defaultMessage: 'Bank Name'
+  },
+  accountHolder: {
+    id: 'accountHolder',
+    defaultMessage: 'Account Holder Name'
+  },
   copiedReference: {
     id: 'copiedReference',
     defaultMessage: 'reference copied!'

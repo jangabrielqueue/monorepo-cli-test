@@ -319,6 +319,14 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
             <td><strong><FormattedMessage {...messages.receivingAccount} />:</strong></td>
             <td>{responseData.accountInfo}</td>
           </tr>
+          <tr>
+            <td><strong><FormattedMessage {...messages.bankName} />:</strong></td>
+            <td>{responseData.bankName}</td>
+          </tr>
+          <tr>
+            <td><strong><FormattedMessage {...messages.accountHolder} />:</strong></td>
+            <td>{responseData.accountHolder}</td>
+          </tr>
         </table>
       </section>
       <div className={classes.transactionAmount}>
