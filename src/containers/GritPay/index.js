@@ -8,8 +8,6 @@ import { FirebaseContext } from '../../contexts/FirebaseContext'
 import messages from './messages'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import ErrorAlert from '../../components/ErrorAlert'
-import CopyToClipboard from 'react-copy-to-clipboard'
-import classNames from 'classnames/bind'
 import AutoRedirect from '../../components/AutoRedirect'
 
 // endpoints
@@ -129,6 +127,9 @@ const useStyles = createUseStyles({
     margin: '30px 30px 0',
     '& p': {
       margin: 0
+    },
+    '& td': {
+      textAlign: 'left'
     }
   },
   contentFailed: {
@@ -143,43 +144,6 @@ const useStyles = createUseStyles({
       fontSize: '16px',
       margin: '25px 0'
     }
-  },
-  toolTipText: {
-    backgroundColor: '#555',
-    borderRadius: '6px',
-    bottom: '125%',
-    color: '#fff',
-    fontSize: '14px',
-    left: '50%',
-    marginLeft: '-80px',
-    padding: '8px 0',
-    position: 'absolute',
-    textAlign: 'center',
-    visibility: 'hidden',
-    width: '140px',
-    zIndex: 1,
-
-    '&::after': {
-      borderColor: '#555 transparent transparent transparent',
-      borderStyle: 'solid',
-      borderWidth: '5px',
-      content: '""',
-      left: '50%',
-      marginLeft: '-5px',
-      position: 'absolute',
-      top: '100%'
-    }
-  },
-  toolTipContainer: {
-    cursor: 'pointer',
-    display: 'inline-block',
-    margin: 0,
-    position: 'relative'
-  },
-  toolTipShow: {
-    '-webkit-animation': 'fadeIn 1s',
-    animation: 'fadeIn 1s',
-    visibility: 'visible'
   },
   contentSuccess: {
     textAlign: 'center',
@@ -258,7 +222,7 @@ const headerCases = {
   '009': messages.gritHeader.pending,
   '000': messages.gritHeader.success,
   '001': messages.gritHeader.failed,
-  '006': messages.gritHeader.confimed,
+  '006': messages.gritHeader.confirmed,
   400: messages.gritHeader.error,
   default: messages.gritHeader.establishConnection
 }
@@ -296,37 +260,37 @@ const SuccessBodyDisplay = ({ classes, responseData, successfulUrl }) => (
 )
 
 const FooterDisplay = ({ classes, responseData, language, currency, amount }) => {
-  const [isCopy, setIsCopy] = useState(false)
-
-  const cx = classNames.bind(classes)
-  const toolTipStyles = cx({
-    toolTipText: true,
-    toolTipShow: isCopy
-  })
+  const accountInfo = [
+    {
+      label: <FormattedMessage {...messages.reference} />,
+      text: responseData.reference
+    },
+    {
+      label: <FormattedMessage {...messages.receivingAccount} />,
+      text: responseData.receiverAccount
+    },
+    {
+      label: <FormattedMessage {...messages.bankName} />,
+      text: responseData.receiverBank
+    },
+    {
+      label: <FormattedMessage {...messages.accountHolder} />,
+      text: responseData.receiverOwner
+    }
+  ]
 
   return (
     <>
       <section className={classes.referenceContainer}>
-        <div className={classes.toolTipContainer}>
-          <span className={toolTipStyles}><FormattedMessage {...messages.copiedReference} /></span>
-
-          <CopyToClipboard text={responseData.reference} onCopy={() => setIsCopy(prevState => !prevState)}>
-            <p> <strong><FormattedMessage {...messages.reference} />:</strong> {responseData.reference}</p>
-          </CopyToClipboard>
-        </div>
         <table>
-          <tr>
-            <td><strong><FormattedMessage {...messages.receivingAccount} />:</strong></td>
-            <td>{responseData.accountInfo}</td>
-          </tr>
-          <tr>
-            <td><strong><FormattedMessage {...messages.bankName} />:</strong></td>
-            <td>{responseData.bankName}</td>
-          </tr>
-          <tr>
-            <td><strong><FormattedMessage {...messages.accountHolder} />:</strong></td>
-            <td>{responseData.accountHolder}</td>
-          </tr>
+          {
+            accountInfo.map((data, idx) => (
+              <tr key={idx}>
+                <td><strong>{data.label}:</strong></td>
+                <td>{data.text}</td>
+              </tr>
+            ))
+          }
         </table>
       </section>
       <div className={classes.transactionAmount}>
@@ -361,7 +325,7 @@ const queryParams = {
   bank: urlQueryString.get('b'),
   merchant: urlQueryString.get('m'),
   currency: urlQueryString.get('c1'),
-  requester: urlQueryString.get('c2'),
+  payer: urlQueryString.get('c2'),
   clientIp: urlQueryString.get('c3'),
   callbackUri: urlQueryString.get('c4'),
   amount: urlQueryString.get('a'),
@@ -383,10 +347,8 @@ const GritPay = (props) => {
     bank,
     merchant,
     currency,
-    requester,
     amount,
     reference,
-    signature,
     successfulUrl,
     failedUrl
   } = queryParams
@@ -423,16 +385,16 @@ const GritPay = (props) => {
         reference: reference,
         result: result
       })
-      setResponseData(result)
+      if (result !== null) {
+        setResponseData(result)
+      }
     },
 
     [analytics, reference]
   )
   useEffect(() => {
     const getGritPayPayload = {
-      ...queryParams,
-      customer: requester,
-      key: signature
+      ...queryParams
     }
 
     const connection = new HubConnectionBuilder()
@@ -467,9 +429,7 @@ const GritPay = (props) => {
   }, [
     session,
     handleCommandStatusUpdate,
-    intl,
-    requester,
-    signature
+    intl
   ])
   useEffect(() => {
     window.onbeforeunload = (e) => {
