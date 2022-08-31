@@ -5,7 +5,6 @@ import { createUseStyles } from 'react-jss'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
-import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 import messages from './messages'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import ErrorAlert from '../../components/ErrorAlert'
@@ -315,7 +314,12 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
             <p> <strong><FormattedMessage {...messages.reference} />:</strong> {responseData.reference}</p>
           </CopyToClipboard>
         </div>
-        {responseData.accountInfo && <p> <strong><FormattedMessage {...messages.receivingAccount} />:</strong> {responseData.accountInfo}</p>}
+        <table>
+          <tr>
+            <td><strong><FormattedMessage {...messages.receivingAccount} />:</strong></td>
+            <td>{responseData.accountInfo}</td>
+          </tr>
+        </table>
       </section>
       <div className={classes.transactionAmount}>
         <h1>{new Intl.NumberFormat(language, { style: 'currency', currency, minimumFractionDigits: 0 }).format(amount)}</h1>
@@ -343,17 +347,41 @@ const bodyDisplayCases = {
   400: FailedBodyDisplay,
   default: PendingBodyDisplay
 }
-
+const queryString = window.location.search
+const urlQueryString = new URLSearchParams(queryString)
+const queryParams = {
+  bank: urlQueryString.get('b'),
+  merchant: urlQueryString.get('m'),
+  currency: urlQueryString.get('c1'),
+  requester: urlQueryString.get('c2'),
+  clientIp: urlQueryString.get('c3'),
+  callbackUri: urlQueryString.get('c4'),
+  amount: urlQueryString.get('a'),
+  reference: urlQueryString.get('r'),
+  dateTime: urlQueryString.get('d'),
+  signature: urlQueryString.get('k'),
+  successfulUrl: urlQueryString.get('su'),
+  failedUrl: urlQueryString.get('fu'),
+  note: urlQueryString.get('n'),
+  key: urlQueryString.get('k'),
+  customer: urlQueryString.get('c2'),
+  datetime: urlQueryString.get('d'),
+  language: urlQueryString.get('l'),
+  accountId: urlQueryString.get('ai'),
+  accountName: urlQueryString.get('an')
+}
 const GritPay = (props) => {
   const {
     bank,
     merchant,
-    reference,
     currency,
+    requester,
     amount,
+    reference,
+    signature,
     successfulUrl,
     failedUrl
-  } = useContext(QueryParamsContext)
+  } = queryParams
   const { intl, language } = props
   const analytics = useContext(FirebaseContext)
   const [error, setError] = useState(undefined)
@@ -393,6 +421,12 @@ const GritPay = (props) => {
     [analytics, reference]
   )
   useEffect(() => {
+    const getGritPayPayload = {
+      ...queryParams,
+      customer: requester,
+      key: signature
+    }
+
     const connection = new HubConnectionBuilder()
       .withUrl(API_USER_COMMAND_MONITOR)
       .withAutomaticReconnect()
@@ -401,13 +435,13 @@ const GritPay = (props) => {
 
     connection.on('receivedResult', handleCommandStatusUpdate)
     connection.onreconnected(async e => {
-      await connection.invoke('Start', session)
+      await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
     })
 
     async function start () {
       try {
         await connection.start()
-        await connection.invoke('Start', session)
+        await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
@@ -422,7 +456,13 @@ const GritPay = (props) => {
 
     // Start the connection
     start()
-  }, [session, handleCommandStatusUpdate, intl])
+  }, [
+    session,
+    handleCommandStatusUpdate,
+    intl,
+    requester,
+    signature
+  ])
   useEffect(() => {
     window.onbeforeunload = (e) => {
       // this custom message will only appear on earlier version of different browsers.
