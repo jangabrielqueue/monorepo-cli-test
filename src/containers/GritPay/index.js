@@ -387,6 +387,7 @@ const GritPay = (props) => {
       })
       if (result !== null) {
         setResponseData(result)
+        setError(undefined)
       }
     },
 
