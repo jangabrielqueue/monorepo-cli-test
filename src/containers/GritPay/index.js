@@ -35,9 +35,7 @@ const useStyles = createUseStyles({
     },
 
     '@media (max-width: 36em)': {
-      minWidth: 0,
-      overflowY: 'scroll',
-      maxHeight: 'calc(100vh - 83px)'
+      minWidth: 0
     },
 
     '@media (max-width: 33.750em)': {
@@ -46,7 +44,8 @@ const useStyles = createUseStyles({
   },
   container: {
     margin: '0 auto',
-    maxWidth: '466px'
+    maxWidth: '466px',
+    paddingBottom: '30px'
   },
   content: {
     background: '#FFFFFF',
@@ -96,16 +95,18 @@ const useStyles = createUseStyles({
     display: 'flex',
     justifyContent: 'center',
     '& div': {
-      border: '4px solid #91C431',
-      width: '100px',
-      padding: '20px',
+      border: '2px solid #91C431',
+      width: '50px',
+      height: '50px',
+      padding: '10px',
       borderRadius: '50%'
     },
     '& img': {
       animationName: '$spin',
       animationDuration: '1s',
       animationIterationCount: 'infinite',
-      maxWidth: '45px'
+      width: '25px',
+      height: '25px'
     },
 
     '@media (min-width: 36em)': {
@@ -121,17 +122,20 @@ const useStyles = createUseStyles({
       minWidth: '232px'
     }
   },
-  referenceContainer: {
+  accountInfoContainer: {
     fontFamily: 'ProductSansRegular',
-    fontSize: '14px',
-    textAlign: 'center',
-    margin: '30px 30px 0',
+    textAlign: 'left',
+    margin: '20px 20px 0',
     '& p': {
       margin: 0
-    },
-    '& td': {
-      textAlign: 'left'
     }
+  },
+  accountInfoText: {
+    color: '#666666',
+    borderRadius: '5px',
+    padding: '10px',
+    backgroundColor: '#f9f9f9',
+    fontWeight: 'bold'
   },
   contentFailed: {
     textAlign: 'center',
@@ -200,7 +204,6 @@ const useStyles = createUseStyles({
     lineHeight: 1.5,
     margin: '15px 0',
     paddingLeft: '20px',
-
     '& li': {
       color: '#767676',
       marginBottom: '5px'
@@ -282,17 +285,15 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
 
   return (
     <>
-      <section className={classes.referenceContainer}>
-        <table>
-          {
-            accountInfo.map((data, idx) => (
-              <tr key={idx}>
-                <td><strong>{data.label}:</strong></td>
-                <td>{data.text}</td>
-              </tr>
-            ))
-          }
-        </table>
+      <section className={classes.accountInfoContainer}>
+        {
+          accountInfo.map((info) => (
+            <>
+              <p>{info.label}:</p>
+              <p className={classes.accountInfoText}>{info.text}</p>
+            </>
+          ))
+        }
       </section>
       <div className={classes.transactionAmount}>
         <h1>{new Intl.NumberFormat(language, { style: 'currency', currency, minimumFractionDigits: 0 }).format(amount)}</h1>
