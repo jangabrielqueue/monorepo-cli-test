@@ -402,22 +402,6 @@ const GritPay = (props) => {
   )
 
   useOnMountEffect(() => {
-    const asyncFunc = async () => {
-      const result = await requestStatus({ reference, currency, merchant })
-      if (result.error) {
-        setError(result.error)
-        setResponseData({ ...result, statusCode: result.error.code })
-      } if (result.status === '001') {
-        setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
-      } else {
-        setResponseData(result)
-      }
-    }
-
-    asyncFunc().finally(() => {})
-  })
-
-  useOnMountEffect(() => {
     const getGritPayPayload = {
       ...queryParams
     }
@@ -429,14 +413,15 @@ const GritPay = (props) => {
       .build()
 
     connection.on('receivedResult', handleCommandStatusUpdate)
-    connection.onreconnected(async e => {
-      await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
-    })
+    // connection.onreconnected(async e => {
+    //   await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
+    // })
 
-    async function start () {
+    async function start (boolean) {
       try {
         await connection.start()
-        await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
+        boolean && await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
+        !boolean && await connection.invoke('Start', session)
       } catch (ex) {
         setError({
           code: intl.formatMessage(messages.errors.networkErrorTitle),
@@ -445,12 +430,30 @@ const GritPay = (props) => {
       }
     }
 
-    connection.onclose(async () => {
-      await start()
-    })
+    const asyncFunc = async () => {
+      const result = await requestStatus({ reference, currency, merchant })
+      if (result.error) {
+        setError(result.error)
+        setResponseData({ ...result, statusCode: result.error.code })
+      } if (result.status === '001') {
+        setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
+      } if (!result) {
+        connection.onclose(async () => {
+          await start(true)
+        })
+        start(true)
+      } else {
+        connection.onclose(async () => {
+          await start(false)
+        })
 
-    // Start the connection
-    start()
+        // Start the connection
+        start(false)
+        setResponseData(result)
+      }
+    }
+
+    asyncFunc().finally(() => { })
   })
   useEffect(() => {
     window.onbeforeunload = (e) => {
