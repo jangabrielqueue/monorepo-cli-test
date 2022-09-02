@@ -131,7 +131,7 @@ const useStyles = createUseStyles({
     }
   },
   accountInfoText: {
-    color: '#666666',
+    color: '#3f3f3f',
     borderRadius: '5px',
     padding: '10px',
     backgroundColor: '#f9f9f9',
@@ -282,16 +282,17 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
       text: responseData.receiverOwner
     }
   ]
-
   return (
     <>
       <section className={classes.accountInfoContainer}>
         {
-          accountInfo.map((info) => (
-            <>
-              <p>{info.label}:</p>
-              <p className={classes.accountInfoText}>{info.text}</p>
-            </>
+          accountInfo.map((info, idx) => (
+            info.text ? (
+              <React.Fragment key={idx}>
+                <p>{info.label}:</p>
+                <p className={classes.accountInfoText}>{info.text}</p>
+              </React.Fragment>)
+              : <React.Fragment key={idx}></React.Fragment>
           ))
         }
       </section>
@@ -388,9 +389,11 @@ const GritPay = (props) => {
         reference: reference,
         result: result
       })
-      if (result !== null) {
+      if (result !== null && result.status == null) {
         setResponseData(result)
         setError(undefined)
+      } else if (result.status) {
+        setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
       }
     },
 
@@ -402,7 +405,9 @@ const GritPay = (props) => {
       const result = await requestStatus({ reference, currency, merchant })
       if (result.error) {
         setError(result.error)
-        setResponseData({ statusCode: result.error.code })
+        setResponseData({ ...result, statusCode: result.error.code })
+      } if (result.status === '001') {
+        setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
       } else {
         setResponseData(result)
       }
