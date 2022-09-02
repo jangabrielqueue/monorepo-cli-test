@@ -10,6 +10,7 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
 import { requestStatus } from './Request'
+import useOnMountEffect from '../../hooks/useOnMountEffect'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -400,7 +401,7 @@ const GritPay = (props) => {
     [analytics, reference]
   )
 
-  useEffect(() => {
+  useOnMountEffect(() => {
     const asyncFunc = async () => {
       const result = await requestStatus({ reference, currency, merchant })
       if (result.error) {
@@ -414,9 +415,9 @@ const GritPay = (props) => {
     }
 
     asyncFunc().finally(() => {})
-  }, [reference, currency, merchant])
+  })
 
-  useEffect(() => {
+  useOnMountEffect(() => {
     const getGritPayPayload = {
       ...queryParams
     }
@@ -450,11 +451,7 @@ const GritPay = (props) => {
 
     // Start the connection
     start()
-  }, [
-    session,
-    handleCommandStatusUpdate,
-    intl
-  ])
+  })
   useEffect(() => {
     window.onbeforeunload = (e) => {
       // this custom message will only appear on earlier version of different browsers.
