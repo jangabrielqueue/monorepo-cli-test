@@ -330,7 +330,6 @@ const queryParams = {
   merchant: urlQueryString.get('m'),
   currency: urlQueryString.get('c1'),
   requester: urlQueryString.get('c2'),
-  payer: urlQueryString.get('c2'),
   clientIp: urlQueryString.get('c3'),
   callbackUri: urlQueryString.get('c4'),
   amount: urlQueryString.get('a'),
@@ -344,8 +343,7 @@ const queryParams = {
   customer: urlQueryString.get('c2'),
   datetime: urlQueryString.get('d'),
   language: urlQueryString.get('l'),
-  accountId: urlQueryString.get('ai'),
-  accountName: urlQueryString.get('an')
+  payer: urlQueryString.get('p1')
 }
 const GritPay = (props) => {
   const {
