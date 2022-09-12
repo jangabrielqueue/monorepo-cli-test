@@ -283,6 +283,7 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
       text: responseData.receiverOwner
     }
   ]
+  const displayAmount = new Intl.NumberFormat(language, { style: 'currency', currency }).formatToParts(amount)[0]?.value
   return (
     <>
       <section className={classes.accountInfoContainer}>
@@ -298,7 +299,7 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
         }
       </section>
       <div className={classes.transactionAmount}>
-        <h1>{new Intl.NumberFormat(language, { style: 'currency', currency, minimumFractionDigits: 0 }).format(amount)}</h1>
+        <h1>{displayAmount}{amount}</h1>
       </div>
       <section className={classes.noteSection}>
         <ul>
