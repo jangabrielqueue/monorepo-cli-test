@@ -14,8 +14,10 @@ import localeVi from './translations/locale/vi.json'
 import localeTh from './translations/locale/th.json'
 import localeId from './translations/locale/id.json'
 import localeCn from './translations/locale/cn.json'
+import localeKo from './translations/locale/ko.json'
 
 // lazy loaded components
+const GritPay = lazy(() => import('./containers/GritPay'))
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))
@@ -97,7 +99,8 @@ const App = () => {
     vi: localeVi,
     th: localeTh,
     id: localeId,
-    cn: localeCn
+    cn: localeCn,
+    ko: localeKo
   }
   const methods = useForm({
     defaultValues: {
@@ -133,6 +136,10 @@ const App = () => {
       case 'zh-cn':
         setLocale('cn')
         setLanguage('zh-cn')
+        break
+      case 'ko-kr':
+        setLocale('ko')
+        setLanguage('ko-kr')
         break
       default:
         setLocale('en')
@@ -172,6 +179,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />
+                      </Route>
+                      <Route exact path='/deposit/gritpay'>
+                        <GritPay language={language} />
                       </Route>
                       <Route path='/error'>
                         <CustomErrorPages />

@@ -104,5 +104,9 @@
     "localBanktransfer.bankName": "Bank Name",
     "localBanktransfer.accountName": "Account Name",
     "localBanktransfer.accountNumber": "Account No.",
-    "localBanktransfer.amount": "Amount"
+    "localBanktransfer.amount": "Amount",
+    "gritHeader.success": "TRANSACTION SUCCESSFUL",
+    "gritHeader.pending": "TRANSACTION IN PROGRESS",
+    "gritHeader.failed": "TRANSACTION FAILED",
+    "gritHeader.establishConnection": "Establishing Connection"
 }
