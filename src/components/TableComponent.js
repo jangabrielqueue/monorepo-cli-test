@@ -13,9 +13,16 @@ const useStyles = createUseStyles({
     '& tr:nth-child(2n + 2)': {
       backgroundColor: '#efefef'
     }
+  },
+  contentWrapper: {
+    witdh: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '10px 0'
   }
 })
-const TableComponent = ({ columns, data }) => {
+const TableComponent = ({ columns, data, noContentDisplay, showContent }) => {
   const classes = useStyles()
 
   return (
@@ -61,6 +68,12 @@ const TableComponent = ({ columns, data }) => {
           )
         })}
       </table>
+      {
+        showContent && (
+          <div className={classes.contentWrapper}>
+            {noContentDisplay}
+          </div>)
+      }
     </div>
   )
 }

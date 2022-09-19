@@ -1,4 +1,4 @@
-import React, { useState, lazy, useEffect } from 'react'
+import React, { useState, lazy, useEffect, useCallback } from 'react'
 import { injectIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
@@ -130,6 +130,29 @@ const useStyles = createUseStyles({
         }
       }
     }
+  },
+  tableContent: {
+    padding: '5px',
+    textAlign: 'center',
+    fontSize: '14px',
+    '& p': {
+      margin: 0
+    }
+  },
+  tableContentButton: {
+    outline: 'none',
+    padding: '5px',
+    background: '#efefef',
+    borderRadius: '5px',
+    border: 'none',
+    '& img': {
+      height: '12px',
+      width: '12px'
+    },
+    '&:hover': {
+      cursor: 'pointer',
+      outline: 'none'
+    }
   }
 },
 { name: 'ScratchCardForm' }
@@ -230,10 +253,24 @@ const getScratchCardData = (response) => {
   }))
 }
 
+const tableContentDisplay = ({ onRefresh, classes }) => {
+  return (
+    <div className={classes.tableContent}>
+      <p>Failed to load scratch card telco provider rate.</p>
+      <p>Please press "Refresh" button to display scratch card rates</p>
+
+      <button className={classes.tableContentButton} onClick={onRefresh}>
+        Refresh
+      </button>
+    </div>
+  )
+}
+
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank, merchant } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
   const [scratchCardData, setScratchCardData] = useState([])
+  const [loadingScRates, setLoadingScRates] = useState(false)
   const hasDifferentValue = scratchCardData.find((data) => (
     data[10] !== data[20] || data[10] !== data[30] ||
     data[50] !== data[100] || data[50] !== data[200] || data[50] !== data[300]
@@ -258,13 +295,19 @@ const ScratchCardForm = React.memo((props) => {
     formIconContainerCreditCard: true
   })
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getScratchCardRates({ merchant })
+  const fetchData = useCallback(async () => {
+    setLoadingScRates(true)
+    const response = await getScratchCardRates({ merchant })
+    if (response !== undefined) {
       setScratchCardData(getScratchCardData(response))
     }
-    fetchData()
+    setLoadingScRates(false)
   }, [merchant])
+
+  useEffect(() => {
+    fetchData().finally(() => {})
+  }, [fetchData])
+
   function handleSubmitForm (values) {
     handleSubmitScratchCard(values)
   }
@@ -492,6 +535,8 @@ const ScratchCardForm = React.memo((props) => {
               <TableComponent
                 columns={!hasDifferentValue ? scratchCardColumns : uniqueScratchCardColumns}
                 data={scratchCardData}
+                showContent={scratchCardData.length === 0}
+                noContentDisplay={loadingScRates ? <span>loading...</span> : tableContentDisplay({ classes, onRefresh: () => fetchData().finally(() => {}) })}
               />
             </>
         }
