@@ -430,7 +430,7 @@ const GritPay = (props) => {
     }
 
     const asyncFunc = async () => {
-      const result = await requestStatus({ reference, currency, merchant })
+      const result = await requestStatus({ ...queryParams })
       if (result.error) {
         setError(result.error)
         setResponseData({ ...result, statusCode: result.error.code })
