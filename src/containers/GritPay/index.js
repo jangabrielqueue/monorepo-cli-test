@@ -445,7 +445,7 @@ const GritPay = (props) => {
 
         // Start the connection
         start(false)
-        setResponseData(result)
+        setResponseData({ ...result, ...result.data, statusCode: result.status })
       }
     }
 
