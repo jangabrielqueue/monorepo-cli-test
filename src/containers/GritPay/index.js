@@ -433,7 +433,7 @@ const GritPay = (props) => {
         setResponseData({ ...result, statusCode: result.error.code })
       } if (result.status === '001') {
         setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
-      } if (!result) {
+      } if (result.status === '404') {
         connection.onclose(async () => {
           await start(true)
         })
@@ -442,8 +442,6 @@ const GritPay = (props) => {
         connection.onclose(async () => {
           await start(false)
         })
-
-        // Start the connection
         start(false)
         setResponseData({ ...result, ...result.data, statusCode: result.status })
       }
