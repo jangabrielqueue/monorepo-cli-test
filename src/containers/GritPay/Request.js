@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_REQUEST_STATUS = '/api/Deposit/Status?api-version=2.0'
+const API_REQUEST_STATUS = '/api/ChannelDeposit/Status?api-version=2.0'
 
 export async function requestStatus (data) {
   try {

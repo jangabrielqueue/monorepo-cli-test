@@ -180,7 +180,7 @@ const App = () => {
                       <Route exact path='/topup/bank'>
                         <TopUp language={language} />
                       </Route>
-                      <Route exact path='/deposit/gritpay'>
+                      <Route exact path='/deposit/channel'>
                         <GritPay language={language} />
                       </Route>
                       <Route path='/error'>

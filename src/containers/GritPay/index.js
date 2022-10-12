@@ -362,7 +362,7 @@ const GritPay = (props) => {
   const [responseData, setResponseData] = useState({ statusCode: undefined })
   const classes = useStyles({ bank })
 
-  const session = `DEPOSIT-GRITPAY-${merchant}-${reference}`.toUpperCase()
+  const session = `DEPOSIT-CHANNEL-${merchant}-${reference}`.toUpperCase()
 
   analytics.setCurrentScreen('gritpay')
   function errorHandler (error, componentStack) {
@@ -412,14 +412,11 @@ const GritPay = (props) => {
       .build()
 
     connection.on('receivedResult', handleCommandStatusUpdate)
-    // connection.onreconnected(async e => {
-    //   await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
-    // })
 
     async function start (boolean) {
       try {
         await connection.start()
-        boolean && await connection.invoke('GritpayExternalProviderTransferStart', session, getGritPayPayload)
+        boolean && await connection.invoke('ChannelTransferStart', session, getGritPayPayload)
         !boolean && await connection.invoke('Start', session)
       } catch (ex) {
         setError({
@@ -430,13 +427,13 @@ const GritPay = (props) => {
     }
 
     const asyncFunc = async () => {
-      const result = await requestStatus({ reference, currency, merchant })
+      const result = await requestStatus({ ...queryParams })
       if (result.error) {
         setError(result.error)
         setResponseData({ ...result, statusCode: result.error.code })
       } if (result.status === '001') {
         setResponseData({ ...result, ...result.data, statusCode: result.status, message: result.description })
-      } if (!result) {
+      } if (result.status === '404') {
         connection.onclose(async () => {
           await start(true)
         })
@@ -445,10 +442,8 @@ const GritPay = (props) => {
         connection.onclose(async () => {
           await start(false)
         })
-
-        // Start the connection
         start(false)
-        setResponseData(result)
+        setResponseData({ ...result, ...result.data, statusCode: result.status })
       }
     }
 
