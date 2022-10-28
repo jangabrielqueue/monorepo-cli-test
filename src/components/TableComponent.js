@@ -6,12 +6,18 @@ const useStyles = createUseStyles({
     width: '100%',
     margin: '0 0 0 0',
     fontSize: '12px',
-    border: '1px solid #bbb',
+    borderLeft: '1px solid #bbb',
+    borderTop: '1px solid #bbb',
     '& tr:first-child': {
+      borderBottom: '1px solid #bbb',
+      borderRight: '1px solid #bbb'
+    },
+    '& tr': {
+      // backgroundColor: '#efefef'
       borderBottom: '1px solid #bbb'
     },
-    '& tr:nth-child(2n + 2)': {
-      backgroundColor: '#efefef'
+    '& td': {
+      borderRight: '1px solid #bbb'
     }
   },
   contentWrapper: {
@@ -22,7 +28,7 @@ const useStyles = createUseStyles({
     padding: '10px 0'
   }
 })
-const TableComponent = ({ columns, data, noContentDisplay, showContent }) => {
+const TableComponent = ({ columns, data, noContentDisplay, showContent, customRows }) => {
   const classes = useStyles()
 
   return (
@@ -48,7 +54,10 @@ const TableComponent = ({ columns, data, noContentDisplay, showContent }) => {
                   return (
                     <td
                       key={`${iD}-${iC}`}
-                      style={{ width: column.width ? column.width : '', textAlign: column.align ? column.align : 'center' }}
+                      style={{
+                        width: column.width ? column.width : '',
+                        textAlign: column.align ? column.align : 'center'
+                      }}
                     >
                       {column.selector ? data[column.selector] : data[column.name]}
                     </td>
@@ -57,7 +66,10 @@ const TableComponent = ({ columns, data, noContentDisplay, showContent }) => {
                   return (
                     <td
                       key={`${iD}-${iC}`}
-                      style={{ width: column.width ? column.width : '', textAlign: column.align ? column.align : 'center' }}
+                      style={{
+                        width: column.width ? column.width : '',
+                        textAlign: column.align ? column.align : 'center'
+                      }}
                     >
                       -
                     </td>
@@ -67,6 +79,7 @@ const TableComponent = ({ columns, data, noContentDisplay, showContent }) => {
             </tr>
           )
         })}
+        {customRows}
       </table>
       {
         showContent && (
