@@ -25,9 +25,20 @@ const useStyles = createUseStyles({
     }
   }
 })
+const formatTime = (time) => {
+  return time.toString().padStart(2, 0)
+}
+
+const initialTime = (min, sec) => {
+  if (min == null && sec == null) return '00:00'
+  const time = min * 60 + sec
+  min = Math.floor(time % (60 * 60) / 60)
+  sec = Math.floor(time % 60)
+  return `${formatTime(min)}:${formatTime(sec)}`
+}
 
 const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
-  const [formattedTime, setFormattedTime] = useState('00:00')
+  const [formattedTime, setFormattedTime] = useState(initialTime(minutes, seconds))
   const classes = useStyles(redirect)
 
   useEffect(() => {
@@ -49,10 +60,6 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
         setFormattedTime(`${formatTime(minutes)}:${formatTime(seconds)}`)
       }
     }, 1000)
-
-    const formatTime = (time) => {
-      return time.toString().padStart(2, 0)
-    }
 
     return () => {
       clearInterval(timer) // clear the timer on unmount
