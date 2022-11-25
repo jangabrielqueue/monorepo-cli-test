@@ -192,7 +192,6 @@ const Deposit = (props) => {
   const themeColor = checkBankIfKnown(currency, bank) ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
-  const [otpStatusCode, setOtpStatusCode] = useState('')
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
   analytics.setCurrentScreen('deposit')
   const classes = useStyles({ step, bank })
@@ -306,7 +305,6 @@ const Deposit = (props) => {
           statusMessage: <FormattedMessage {...messages.progress.submittingTransaction} />
         })
         setStep(1)
-        setOtpStatusCode('')
       }
     },
     [
@@ -361,7 +359,9 @@ const Deposit = (props) => {
     setProgress(undefined)
     setStep(1)
     setOtpReference(e.extraData)
-    setOtpStatusCode(e.statusCode)
+    if (e.statusCode === '002') {
+      setReRenderCountdown(prev => !prev)
+    }
     setWaitingForReady(false)
   }
 
@@ -566,14 +566,6 @@ const Deposit = (props) => {
       }
     }
   }, [step])
-
-  useEffect(() => {
-    if (otpStatusCode === '002') {
-      // this will help in determing when getting otp and will use this to rerender the countdown time
-      // everytime there is a new otp to fill up
-      setReRenderCountdown(prevState => !prevState)
-    }
-  }, [otpStatusCode])
 
   return (
     <>
