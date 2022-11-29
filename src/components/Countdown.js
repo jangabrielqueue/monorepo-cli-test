@@ -38,12 +38,14 @@ const initialTime = (min, sec) => {
 }
 
 const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
-  const [formattedTime, setFormattedTime] = useState(initialTime(minutes, seconds))
+  const [formattedTime, setFormattedTime] = useState('00:00')
   const classes = useStyles(redirect)
 
   useEffect(() => {
+    setFormattedTime(initialTime(minutes, seconds))
+
     const dateTime = new Date()
-    const countdownTime = dateTime.setMinutes(dateTime.getMinutes() + minutes, dateTime.getSeconds() + seconds)
+    const countdownTime = dateTime.setMinutes(dateTime.getMinutes() + minutes, dateTime.getSeconds() + seconds + 1)
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
