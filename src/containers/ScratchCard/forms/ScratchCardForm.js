@@ -1,4 +1,4 @@
-import React, { useState, lazy, useEffect } from 'react'
+import React, { useState, lazy, useEffect, useCallback } from 'react'
 import { injectIntl, FormattedMessage } from 'react-intl'
 import messages from '../messages'
 import { useFormContext } from 'react-hook-form'
@@ -130,6 +130,29 @@ const useStyles = createUseStyles({
         }
       }
     }
+  },
+  tableContent: {
+    padding: '5px',
+    textAlign: 'center',
+    fontSize: '14px',
+    '& p': {
+      margin: 0
+    }
+  },
+  tableContentButton: {
+    outline: 'none',
+    padding: '5px',
+    background: '#efefef',
+    borderRadius: '5px',
+    border: 'none',
+    '& img': {
+      height: '12px',
+      width: '12px'
+    },
+    '&:hover': {
+      cursor: 'pointer',
+      outline: 'none'
+    }
   }
 },
 { name: 'ScratchCardForm' }
@@ -212,29 +235,80 @@ const scratchCardColumns = [
 ]
 
 const getScratchCardData = (response) => {
-  return response.map((data) => ({
-    telco: data.name,
-    ...data.fixedRate != null ? {
-      10: data.fixedRate,
-      20: data.fixedRate,
-      30: data.fixedRate,
-      50: data.fixedRate,
-      100: data.fixedRate,
-      200: data.fixedRate,
-      300: data.fixedRate,
-      500: data.fixedRate,
-      1000: data.fixedRate
-    } : {
-      ...data.rates
+  const result = response.reduce((prev, curr) => {
+    if (Object.keys(curr).length === 1) {
+      prev.withoutData.push(curr.name)
+    } else {
+      const data = {
+        telco: curr.name,
+        ...curr.fixedRate != null ? {
+          10: curr.fixedRate,
+          20: curr.fixedRate,
+          30: curr.fixedRate,
+          50: curr.fixedRate,
+          100: curr.fixedRate,
+          200: curr.fixedRate,
+          300: curr.fixedRate,
+          500: curr.fixedRate,
+          1000: curr.fixedRate
+        } : {
+          ...curr.rates
+        }
+      }
+      prev.withData.push(data)
     }
-  }))
+    return prev
+  }, { withData: [], withoutData: [] })
+  return result
+}
+
+const customRows = (noData, isUniqueColumn, props) => {
+  const [first, ...rest] = noData
+  return (
+    <>
+      <tr>
+        <td>{first}</td>
+        <td colSpan={isUniqueColumn ? 9 : 4} rowSpan={noData.length}>
+          {tableContentDisplay(props)}
+        </td>
+      </tr>
+      {
+        rest != null && rest.map((name, i) => (
+          <tr key={i}>
+            <td>{name}</td>
+          </tr>
+        ))
+      }
+    </>
+  )
+}
+
+const tableContentDisplay = ({ onRefresh, classes, loadingScRates }) => {
+  return (
+    <div className={classes.tableContent}>
+      {
+        loadingScRates
+          ? <span>loading...</span>
+          : (
+            <>
+              <p>Failed to load scratch card telco provider rate.</p>
+              <p>Please press "Refresh" button to display scratch card rates</p>
+
+              <button className={classes.tableContentButton} onClick={onRefresh}>
+              Refresh
+              </button>
+            </>)
+      }
+    </div>
+  )
 }
 
 const ScratchCardForm = React.memo((props) => {
   const { handleSubmitScratchCard, waitingForReady, establishConnection, currency, bank, merchant } = props
   const [telcoName, setTelcoName] = useState(bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT')
-  const [scratchCardData, setScratchCardData] = useState([])
-  const hasDifferentValue = scratchCardData.find((data) => (
+  const [scratchCardData, setScratchCardData] = useState({ withData: [], withoutData: [] })
+  const [loadingScRates, setLoadingScRates] = useState(false)
+  const hasDifferentValue = scratchCardData.withData.find((data) => (
     data[10] !== data[20] || data[10] !== data[30] ||
     data[50] !== data[100] || data[50] !== data[200] || data[50] !== data[300]
   )) // if no match returns undefined
@@ -258,13 +332,19 @@ const ScratchCardForm = React.memo((props) => {
     formIconContainerCreditCard: true
   })
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getScratchCardRates({ merchant })
+  const fetchData = useCallback(async () => {
+    setLoadingScRates(true)
+    const response = await getScratchCardRates({ merchant })
+    if (response !== undefined) {
       setScratchCardData(getScratchCardData(response))
     }
-    fetchData()
+    setLoadingScRates(false)
   }, [merchant])
+
+  useEffect(() => {
+    fetchData().finally(() => {})
+  }, [fetchData])
+
   function handleSubmitForm (values) {
     handleSubmitScratchCard(values)
   }
@@ -388,6 +468,11 @@ const ScratchCardForm = React.memo((props) => {
       telcoName: e.target.value
     })
   }
+  const onRefresh = (e) => {
+    e.preventDefault()
+    fetchData().finally(() => { })
+  }
+  const noContentProps = { classes, onRefresh, loadingScRates }
 
   return (
     <>
@@ -491,7 +576,8 @@ const ScratchCardForm = React.memo((props) => {
               <p className={classes.noteText}>Table below shows the rate of different telco provider per card value (in 1000 VND).</p>
               <TableComponent
                 columns={!hasDifferentValue ? scratchCardColumns : uniqueScratchCardColumns}
-                data={scratchCardData}
+                data={scratchCardData.withData}
+                customRows={scratchCardData.withoutData.length > 0 && customRows(scratchCardData.withoutData, hasDifferentValue, noContentProps)}
               />
             </>
         }
