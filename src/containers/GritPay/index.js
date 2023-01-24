@@ -220,6 +220,26 @@ const useStyles = createUseStyles({
         marginBottom: '5px'
       }
     }
+  },
+  verifyTransactionContainer: {
+    textAlign: 'center',
+
+    '& img': {
+      margin: '30px 0',
+      maxWidth: '45px'
+    },
+
+    '& h1': {
+      color: '#767676',
+      fontFamily: 'ProductSansMedium',
+      fontSize: '16px',
+      lineHeight: 1.5,
+
+      '& span': {
+        display: 'block',
+        paddingTop: 10
+      }
+    }
   }
 })
 
@@ -228,6 +248,7 @@ const headerCases = {
   '000': messages.gritHeader.success,
   '001': messages.gritHeader.failed,
   '006': messages.gritHeader.confirmed,
+  '007': messages.gritHeader.verifying,
   400: messages.gritHeader.error,
   default: messages.gritHeader.establishConnection
 }
@@ -243,6 +264,15 @@ const PendingBodyDisplay = ({ classes }) => (
       </div>
     </section>
   </>
+)
+
+const VerifyBodyDisplay = ({ classes }) => (
+  <div className={classes.verifyTransactionContainer}>
+    <img alt='submit-verification' src='/icons/submit-verification.png' />
+    {
+      <h1>We are verifying the transaction. <br /> Please wait for the status of your transaction. <span>Thank you!</span></h1>
+    }
+  </div>
 )
 
 const FailedBodyDisplay = ({ classes, responseData, failedUrl }) => (
@@ -266,24 +296,24 @@ const SuccessBodyDisplay = ({ classes, responseData, successfulUrl }) => (
 
 const FooterDisplay = ({ classes, responseData, language, currency, amount }) => {
   const accountInfo = [
-    {
+    ...responseData.reference != null ? [{
       label: <FormattedMessage {...messages.reference} />,
       text: responseData.reference
-    },
-    {
+    }] : [],
+    ...responseData.receiverAccount != null ? [{
       label: <FormattedMessage {...messages.receivingAccount} />,
       text: responseData.receiverAccount
-    },
-    {
+    }] : [],
+    ...responseData.receiverBank != null ? [{
       label: <FormattedMessage {...messages.bankName} />,
       text: responseData.receiverBank
-    },
-    {
+    }] : [],
+    ...responseData.receiverOwner != null ? [{
       label: <FormattedMessage {...messages.accountHolder} />,
       text: responseData.receiverOwner
-    }
+    }] : []
   ]
-  const displayAmount = new Intl.NumberFormat(language, { style: 'currency', currency }).format(amount)
+  const displayAmount = amount != null ? new Intl.NumberFormat(language, { style: 'currency', currency }).format(amount) : '-'
   return (
     <>
       <section className={classes.accountInfoContainer}>
@@ -321,6 +351,7 @@ const bodyDisplayCases = {
   '009': PendingBodyDisplay,
   '000': SuccessBodyDisplay,
   '006': SuccessBodyDisplay,
+  '007': VerifyBodyDisplay,
   400: FailedBodyDisplay,
   default: PendingBodyDisplay
 }
@@ -475,7 +506,7 @@ const GritPay = (props) => {
               <h1><strong><FormattedMessage {...headerCases[responseData.statusCode] || headerCases.default} /></strong></h1>
             </section>
 
-            {bodyDisplayCases[responseData.statusCode] ? bodyDisplayCases[responseData.statusCode](bodyProps) : bodyDisplayCases.default(bodyProps)}
+            {Object.hasOwn(bodyDisplayCases, responseData.statusCode) ? bodyDisplayCases[responseData.statusCode](bodyProps) : bodyDisplayCases.default(bodyProps)}
             {responseData.statusCode !== 400 && <FooterDisplay {...bodyProps} />}
           </div>
         </div>

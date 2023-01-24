@@ -25,6 +25,10 @@ export default defineMessages({
     error: {
       id: 'gritHeader.error',
       defaultMessage: 'Transaction Expired'
+    },
+    verifying: {
+      id: 'gritHeader.verifying',
+      defaultMessage: 'VERIFYING TRANSACTION'
     }
   },
   errors: {
