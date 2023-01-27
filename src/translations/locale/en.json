@@ -108,5 +108,6 @@
     "gritHeader.success": "TRANSACTION SUCCESSFUL",
     "gritHeader.pending": "TRANSACTION IN PROGRESS",
     "gritHeader.failed": "TRANSACTION FAILED",
-    "gritHeader.establishConnection": "Establishing Connection"
+    "gritHeader.establishConnection": "Establishing Connection",
+    "gritHEader.verifying": "VERIFIYING TRANSACTION"
 }
