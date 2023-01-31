@@ -14,7 +14,7 @@ const useStyles = createUseStyles({
       fontSize: '14px',
       lineHeight: '22px',
       margin: 0,
-      wordBreak: 'break-all',
+      wordBreak: 'keep-all',
 
       '& img': {
         verticalAlign: 'bottom',
