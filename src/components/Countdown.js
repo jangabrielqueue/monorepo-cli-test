@@ -29,8 +29,7 @@ const formatTime = (time) => {
   return time.toString().padStart(2, 0)
 }
 
-const initialTime = (min, sec) => {
-  if (min == null && sec == null) return '00:00'
+export const initialTime = ({ min = 0, sec = 0 }) => {
   const time = min * 60 + sec
   min = Math.floor(time % (60 * 60) / 60)
   sec = Math.floor(time % 60)
@@ -42,7 +41,7 @@ const Countdown = ({ redirect, intl, minutes, seconds, qrCode, reRender }) => {
   const classes = useStyles(redirect)
 
   useEffect(() => {
-    setFormattedTime(initialTime(minutes, seconds))
+    setFormattedTime(initialTime({ min: minutes, sec: seconds }))
 
     const dateTime = new Date()
     const countdownTime = dateTime.setMinutes(dateTime.getMinutes() + minutes, dateTime.getSeconds() + seconds + 1)
