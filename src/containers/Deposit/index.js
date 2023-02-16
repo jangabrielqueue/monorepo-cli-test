@@ -190,6 +190,7 @@ const Deposit = (props) => {
   const [progress, setProgress] = useState(undefined)
   const [isSuccessful, setIsSuccessful] = useState(false)
   const [transferResult, setTransferResult] = useState({})
+  const [isInquiry, setIsInquiry] = useState(false)
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
@@ -197,6 +198,7 @@ const Deposit = (props) => {
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
+  const [otpStatusCode, setOtpStatusCode] = useState('')
   analytics.setCurrentScreen('deposit')
   const classes = useStyles({ step, bank })
   const notificationBanks = ['VCB', 'BIDV']
@@ -374,6 +376,15 @@ const Deposit = (props) => {
     }
     setWaitingForReady(false)
   }
+  async function handleInquiry (e) {
+    await sleep(2000) // delaying execution of otp for situation that update and otp method simultaneously invoke.
+    setIsInquiry(true)
+    setProgress(undefined)
+    setStep(1)
+    setOtpReference(e.extraData)
+    setOtpStatusCode(e.statusCode)
+    setWaitingForReady(false)
+  }
 
   function errorHandler (error, componentStack) {
     analytics.logEvent('exception', {
@@ -409,6 +420,7 @@ const Deposit = (props) => {
     } else if (!qrCodeOtp) {
       return (
         <OTPForm
+          isInquiry={isInquiry || otpStatusCode === '004'}
           otpReference={getOtpReference(otpReference)}
           handleSubmitOTP={handleSubmitOTP}
           waitingForReady={waitingForReady}
@@ -535,6 +547,7 @@ const Deposit = (props) => {
     connection.on('receivedResult', handleReceivedResult)
     connection.on('otpRequested', handleRequestOTP)
     connection.on('update', handleUpdateProgress)
+    connection.on('inquiry', handleInquiry)
     connection.onreconnected(async (e) => {
       await connection.invoke('Start', session)
     })

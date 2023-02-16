@@ -274,10 +274,10 @@ export const cardOtpErrorMessageRender = ({ errors }) => {
     (cardOtpErrorMessages[errors?.OTP2?.type] && cardOtpErrorMessages[errors?.OTP2?.type](errors))
 }
 
-const notCardOtpInputRender = ({ formIconContainerUsernameStyles, classes, register, inputOtpValidations, formValues, dirty, setValue, ...renderProps }) => (
+const notCardOtpInputRender = ({ formIconContainerUsernameStyles, classes, register, inputOtpValidations, formValues, dirty, setValue, shouldDisplayLabel, ...renderProps }) => (
   <div className={formIconContainerUsernameStyles}>
     <div>
-      <label htmlFor='OTP'>{inputLabelRender(renderProps)}</label>
+      {shouldDisplayLabel && <label htmlFor='OTP'>{inputLabelRender(renderProps)}</label>}
       <div className={classes.inputFieldContainer}>
         <input
           ref={register({
@@ -301,11 +301,11 @@ const notCardOtpInputRender = ({ formIconContainerUsernameStyles, classes, regis
   </div>
 )
 
-const cardOtpInputRender = ({ classes, cardOTP1, register, cardOTP2, ...renderProps }) => (
+const cardOtpInputRender = ({ classes, cardOTP1, register, cardOTP2, shouldDisplayLabel, ...renderProps }) => (
   <div>
     <h1 className={classes.formHeader}><FormattedMessage {...messages.otpDABLabel} /></h1>
     <div className={classes.formDabContainer}>
-      <label htmlFor='OTP1'>{cardOTP1}</label>
+      {shouldDisplayLabel && <label htmlFor='OTP1'>{cardOTP1}</label>}
       <input
         className={classes.formDabInput}
         ref={register({ required: <FormattedMessage {...messages.placeholders.inputOtp} />, maxLength: 3 })}
@@ -373,9 +373,9 @@ export const globalButtonRender = ({ classes, methodType, ...renderProps }) => (
   </section>
 )
 
-const defaultOtpMessage = ({ classes, otpReference }) => (
+const defaultOtpMessage = ({ classes, otpReference, shouldDisplayLabel }) => (
   <>
-    <FormattedMessage {...messages.otpReference} />
+    {shouldDisplayLabel && <FormattedMessage {...messages.otpReference} />}
     <p className={classes.otpReferenceText}>{otpReference}</p>
   </>
 )
@@ -501,7 +501,8 @@ const OTPForm = React.memo((props) => {
     waitingForReady,
     progress,
     methodType,
-    isCardOTP
+    isCardOTP,
+    isInquiry
   } = props
   const isBankKnown = checkBankIfKnown(currency, bank)
   const buttonColor = isBankKnown ? `${bank}` : 'main'
@@ -599,7 +600,8 @@ const OTPForm = React.memo((props) => {
     handleSubmitForm,
     handleSubmitOTP,
     waitingForReady,
-    isSubmitting
+    isSubmitting,
+    shouldDisplayLabel: !isInquiry
   }
 
   return (
