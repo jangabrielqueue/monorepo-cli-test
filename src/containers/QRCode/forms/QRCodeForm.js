@@ -201,7 +201,6 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   }
 
   const getValue = () => {
-    if (isMomoBank || isZaloBank) return responseData?.qrCodeContent
     if (currencies === 'THB') return generatePayload(responseData?.qrCodeContent?.toString(), { amount })
     if (currencies === 'VND') return getVietQRCode(responseData.bank, responseData.qrCodeContent, responseData.amount, reference)
     return responseData?.qrCodeContent
