@@ -17,7 +17,9 @@ import {
   checkIfDABBank,
   checkIfTcbBank,
   checkIfSacomBank,
-  checkIfTrueWalletBank
+  checkIfTrueWalletBank,
+  checkIfMomoBank,
+  checkIfZaloBank
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 import getVietQRCode from '../../../components/VietQr'
@@ -147,6 +149,24 @@ const THBQrLogo = (bank) => {
   return THBQrLogoCases[bankSelected] || THBQrLogoCases.default
 }
 
+function handleQRCodeRender (qrCodeProps) {
+  return (
+    <QRCode
+      value={qrCodeProps.value}
+      size={200}
+      renderAs='svg'
+      level='M'
+      imageSettings={{
+        src: qrCodeProps.logo,
+        x: null,
+        y: null,
+        height: 40,
+        width: 40,
+        excavate: true
+      }}
+    />)
+}
+
 const QRCodeForm = memo(function QRCodeForm (props) {
   const {
     currency,
@@ -159,9 +179,14 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     language,
     reference
   } = props
+
+  const isMomoBank = checkIfMomoBank(bank)
+  const isZaloBank = checkIfZaloBank(bank)
   const isTrueWallet = checkIfTrueWalletBank(bank)
   const isBankKnown = checkBankIfKnown(currency, responseData.bank)
-  const buttonColor = isTrueWallet ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
+  const buttonColor = isTrueWallet || isMomoBank || isZaloBank ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
+  const currencies = currency?.toUpperCase()
+  const amount = parseFloat(responseData.amount)
   const classes = useStyles({ currency, bank })
 
   function handleSubmitForm () {
@@ -175,62 +200,21 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     return require('../../../assets/banks/NULL_LOGO.png')
   }
 
-  function handleQRCodeRender (currency) {
-    const currencies = currency?.toUpperCase()
-    const amount = parseFloat(responseData.amount)
+  const getValue = () => {
+    if (isMomoBank || isZaloBank) return responseData?.qrCodeContent
+    if (currencies === 'THB') return generatePayload(responseData?.qrCodeContent?.toString(), { amount })
+    if (currencies === 'VND') return getVietQRCode(responseData.bank, responseData.qrCodeContent, responseData.amount, reference)
+    return responseData?.qrCodeContent
+  }
 
-    switch (currencies) {
-      case 'THB':
-        return (
-          <QRCode
-            value={generatePayload(responseData?.qrCodeContent?.toString(), { amount })}
-            size={200}
-            renderAs='svg'
-            level='M'
-            imageSettings={{
-              src: THBQrLogo(bank),
-              x: null,
-              y: null,
-              height: 40,
-              width: 40,
-              excavate: true
-            }}
-          />)
+  const getLogo = () => {
+    if (currencies === 'THB') return THBQrLogo(bank)
+    return '/logo/GW_LOGO_ICON.png'
+  }
 
-      case 'VND':
-        return (
-          <QRCode
-            value={getVietQRCode(responseData.bank, responseData.qrCodeContent, responseData.amount, reference)}
-            size={200}
-            renderAs='svg'
-            level='M'
-            imageSettings={{
-              src: '/logo/GW_LOGO_ICON.png',
-              x: null,
-              y: null,
-              height: 40,
-              width: 40,
-              excavate: true
-            }}
-          />)
-
-      default:
-        return (
-          <QRCode
-            value={responseData.qrCodeContent}
-            size={200}
-            renderAs='svg'
-            level='M'
-            imageSettings={{
-              src: '/logo/GW_LOGO_ICON.png',
-              x: null,
-              y: null,
-              height: 40,
-              width: 40,
-              excavate: true
-            }}
-          />)
-    }
+  const qrCodeProps = {
+    value: getValue(),
+    logo: getLogo()
   }
 
   return (
@@ -240,12 +224,12 @@ const QRCodeForm = memo(function QRCodeForm (props) {
           <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
           {
             !establishConnection ? <div className='loading' />
-              : error || responseData.qrCodeContent === null ? null : handleQRCodeRender(currency) // eslint-disable-line
+              : error || responseData.qrCodeContent === null ? null : handleQRCodeRender(qrCodeProps) // eslint-disable-line
           }
         </div>
       }
       {
-        checkIfVndCurrency(currency) &&
+        !isMomoBank && !isZaloBank && checkIfVndCurrency(currency) &&
           <div className={classes.qrcodeBottomLogos}>
             <div className={classes.qrcodeBottomLogoWrapper}>
               <img alt='napas247' src='/logo/NAPAS_247.png' />
