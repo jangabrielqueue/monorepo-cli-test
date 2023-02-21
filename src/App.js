@@ -64,7 +64,9 @@ const appTheme = {
     bni: '#f15922',
     buttonBni: '#005f6b',
     msb: '#e71e24',
-    truewallet: '#ff7f02'
+    truewallet: '#ff7f02',
+    momo: '#a50064',
+    zalopay: '#118bca'
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown } from '../utils/banks'
+import { checkBankIfKnown, checkIfMomoBank, checkIfZaloBank } from '../utils/banks'
 
 // styling
 const useStyles = createUseStyles({
@@ -22,10 +22,11 @@ const useStyles = createUseStyles({
   }
 })
 
-const Logo = ({ bank, currency, type }) => {
+const Logo = ({ currency, type, bank }) => {
   const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.png$/)
   const isBankKnown = checkBankIfKnown(currency, bank)
   const classes = useStyles({ bank, type })
+  const bankIsMomoOrZalo = checkIfZaloBank(bank) || checkIfMomoBank(bank)
 
   const getFilePathWebP = (bank, type) => {
     if (isBankKnown) {
@@ -43,6 +44,7 @@ const Logo = ({ bank, currency, type }) => {
         isBankKnown !== undefined && // all repo except topup
           <img
             alt={bank}
+            style={{ ...bankIsMomoOrZalo ? { transform: 'scale(calc(2 / 3))', margin: '-20px auto' } : {} }}
             width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
             height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
             src={getFilePathWebP(bank, type)}

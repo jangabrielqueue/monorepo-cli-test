@@ -30,8 +30,10 @@ const MANDIRI = { code: 'MANDIRI', name: 'MANDIRI Bank' }
 const BRI = { code: 'BRI', name: 'Bank BRI' }
 const BCA = { code: 'BCA', name: 'Bank Central Asia' }
 const BNI = { code: 'BNI', name: 'Bank Negara Indonesia' }
+const MOMO = { code: 'MOMO', name: 'MomoPay' }
+const ZALOPAY = { code: 'ZALOPAY', name: 'ZaloPay' }
 
-const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, MSB, VIB]
+const VND_ALL_BANKS = [VCB, ACB, VTB, DAB, BIDV, TCB, EXIM, SACOM, AGRI, MSB, VIB, MOMO, ZALOPAY]
 const VND_ALL_BANKS_DEV = [
   VCB,
   ACB,
@@ -44,7 +46,9 @@ const VND_ALL_BANKS_DEV = [
   AGRI,
   FAKER,
   MSB,
-  VIB
+  VIB,
+  MOMO,
+  ZALOPAY
 ]
 
 const THB_ALL_BANKS = [KBANK, KTB, SCB, BBL, BOA, TMB, TRUEWALLET]
@@ -194,6 +198,14 @@ function checkIfTrueWalletBank (bank) {
   return bank?.toUpperCase() === 'TRUEWALLET'
 }
 
+function checkIfMomoBank (bank) {
+  return bank?.toUpperCase() === 'MOMO'
+}
+
+function checkIfZaloBank (bank) {
+  return bank?.toUpperCase() === 'ZALOPAY'
+}
+
 function checkIfTHBCurrency (currency) {
   return currency?.toUpperCase() === 'THB'
 }
@@ -219,5 +231,7 @@ module.exports = {
   checkIfTcbBank,
   checkIfSacomBank,
   checkIfTHBCurrency,
-  checkIfTrueWalletBank
+  checkIfTrueWalletBank,
+  checkIfMomoBank,
+  checkIfZaloBank
 }
