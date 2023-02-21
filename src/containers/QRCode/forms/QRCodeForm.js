@@ -211,11 +211,6 @@ const QRCodeForm = memo(function QRCodeForm (props) {
     return '/logo/GW_LOGO_ICON.png'
   }
 
-  const qrCodeProps = {
-    value: getValue(),
-    logo: getLogo()
-  }
-
   return (
     <main>
       {
@@ -223,7 +218,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
           <h1><span>{`${new Intl.NumberFormat(language).format(responseData.amount)}`}</span></h1>
           {
             !establishConnection ? <div className='loading' />
-              : error || responseData.qrCodeContent === null ? null : handleQRCodeRender(qrCodeProps) // eslint-disable-line
+              : error || responseData.qrCodeContent === null ? null : handleQRCodeRender({ value: getValue(), logo: getLogo() }) // eslint-disable-line
           }
         </div>
       }
