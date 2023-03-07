@@ -6,6 +6,7 @@ import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
 import QRCode from 'qrcode.react'
 import { isNullOrWhitespace } from '../../../utils/utils'
+import { theme } from '../../../App'
 
 const OtpMethod = {
   Input: 1,
@@ -151,7 +152,7 @@ const OTPForm = React.memo((props) => {
               renderAs='svg'
               level='M'
               imageSettings={{
-                src: '/logo/GW_LOGO_ICON.png',
+                src: theme.logoIcon,
                 x: null,
                 y: null,
                 height: 40,

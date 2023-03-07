@@ -8,6 +8,7 @@ import classNames from 'classnames/bind'
 import { checkBankIfKnown, checkIfBcaBank, checkIfBniBank } from '../../../utils/banks'
 import { isNullOrWhitespace, checkIfAppOneOtp, checkIfAppTwoOtp, isNullorUndefined } from '../../../utils/utils'
 import QRCode from 'qrcode.react'
+import { theme } from '../../../App'
 
 const OtpMethod = {
   Input: 1,
@@ -389,7 +390,7 @@ const qrCodeRender = ({ otpReference, classes }) => (
       renderAs='svg'
       level='M'
       imageSettings={{
-        src: '/logo/GW_LOGO_ICON.png',
+        src: theme.logoIcon,
         x: null,
         y: null,
         height: 40,

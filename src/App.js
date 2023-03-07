@@ -14,6 +14,9 @@ import localeId from './translations/locale/id.json'
 import localeCn from './translations/locale/cn.json'
 import localeKo from './translations/locale/ko.json'
 import { QueryParamsContext } from './contexts/QueryParamsContext'
+import GWLOGO from './assets/banks/GW_LOGO.png'
+import GWLOGOICON from './assets/banks/GW_LOGO_ICON.png'
+import SRPAYLOGO from './assets/banks/SRPAY_LOGO.png'
 
 // lazy loaded components
 const Conversion = lazy(() => import('./containers/Conversion'))
@@ -26,12 +29,29 @@ const TopUp = lazy(() => import(/* webpackChunkName: 'topup' */'./containers/Top
 const NotFound = lazy(() => import(/* webpackChunkName: 'notfound' */'./components/NotFound'))
 const CustomErrorPages = lazy(() => import(/* webpackChunkName: 'badrequest' */'./components/CustomErrorPages'))
 
+const GW = {
+  main: '#91C431',
+  logo: GWLOGO,
+  logoIcon: GWLOGOICON,
+  logoHref: './GW_LOGO.png'
+}
+
+const SRP = {
+  main: '#2196f3',
+  logo: SRPAYLOGO,
+  logoIcon: SRPAYLOGO,
+  logoHref: './SRPAY_LOGO.png'
+}
+
+const isGWorSRP = window.location.hostname.toLowerCase().includes('gamewallet')
+export const theme = isGWorSRP ? GW : SRP
+
 // themes
 const appTheme = {
   colors: {
-    main: '#91C431',
-    faker: '#91C431',
-    fakerthb: '#91C431',
+    main: theme.main,
+    faker: theme.main,
+    fakerthb: theme.main,
     topup: '#1890ff',
     tcb: '#FF2600',
     tmb: '#008CCD',

@@ -11,6 +11,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
 import { requestStatus } from './Request'
 import useOnMountEffect from '../../hooks/useOnMountEffect'
+import { theme } from '../../App'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -500,7 +501,7 @@ const GritPay = (props) => {
         <div className={classes.container}>
           <div className={classes.content}>
             <section className={classes.logoHeader}>
-              <img src='/logo/GW_LOGO.png' alt='logo' />
+              <img src={theme.logo} alt='logo' />
             </section>
             <section className={classes.contentHeader}>
               <h1><strong><FormattedMessage {...headerCases[responseData.statusCode] || headerCases.default} /></strong></h1>

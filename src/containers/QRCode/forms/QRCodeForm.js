@@ -23,6 +23,7 @@ import {
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 import getVietQRCode from '../../../components/VietQr'
+import { theme } from '../../../App'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -141,7 +142,7 @@ const useStyles = createUseStyles({
 
 const THBQrLogoCases = {
   TRUEWALLET: '/logo/TRUEWALLET_LOGO.png',
-  default: '/logo/GW_LOGO_ICON.png'
+  default: theme.logoIcon
 }
 
 const THBQrLogo = (bank) => {
@@ -208,7 +209,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   const getLogo = () => {
     if (currencies === 'THB') return THBQrLogo(bank)
-    return '/logo/GW_LOGO_ICON.png'
+    return theme.logoIcon
   }
 
   return (
