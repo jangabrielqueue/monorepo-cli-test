@@ -20,7 +20,7 @@ import SRPAYLOGO from './assets/banks/SRPAY_LOGO.png'
 
 // lazy loaded components
 const Conversion = lazy(() => import('./containers/Conversion'))
-const GritPay = lazy(() => import('./containers/GritPay'))
+const GritPay = lazy(() => import(/* webpackChunkName: 'depositchannel' */'./containers/GritPay'))
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
 const QRCode = lazy(() => import(/* webpackChunkName: 'qrcode' */'./containers/QRCode'))

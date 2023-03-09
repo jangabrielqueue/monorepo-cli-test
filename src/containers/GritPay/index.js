@@ -61,6 +61,20 @@ const useStyles = createUseStyles({
     padding: '10px 20px',
     borderBottom: (props) => props.step === 1 ? '#FFF' : '0.5px solid #E3E3E3'
   },
+  logoContainer: {
+    margin: '25px auto',
+    maxWidth: '200px',
+
+    '& img': {
+      height: 'auto',
+      width: '100%'
+    },
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      margin: '10px auto',
+      maxWidth: '150px'
+    }
+  },
   contentHeader: {
     display: 'flex',
     flexDirection: 'column',
@@ -501,7 +515,9 @@ const GritPay = (props) => {
         <div className={classes.container}>
           <div className={classes.content}>
             <section className={classes.logoHeader}>
-              <img src={theme.logo} alt='logo' />
+              <div className={classes.logoContainer}>
+                <img src={theme.logo} alt='logo' />
+              </div>
             </section>
             <section className={classes.contentHeader}>
               <h1><strong><FormattedMessage {...headerCases[responseData.statusCode] || headerCases.default} /></strong></h1>
