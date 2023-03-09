@@ -6,7 +6,8 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
-import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../../utils/banks'
+import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank, checkIfFakerBank, checkIfFakerThbBank } from '../../../utils/banks'
+import { theme } from '../../../App'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -287,6 +288,9 @@ export default function DepositForm (props) {
   })
 
   function renderIcon (type) {
+    if (checkIfFakerBank(bank) || checkIfFakerThbBank(bank)) {
+      return theme[type]
+    }
     if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (checkBank.isBankKnown && type === 'smart') {

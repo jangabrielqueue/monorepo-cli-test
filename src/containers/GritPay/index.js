@@ -111,7 +111,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     justifyContent: 'center',
     '& div': {
-      border: '2px solid #91C431',
+      border: `2px solid ${theme.main}`,
       width: '50px',
       height: '50px',
       padding: '10px',
@@ -275,7 +275,7 @@ const PendingBodyDisplay = ({ classes }) => (
     </section>
     <section className={classes.depositProgressBarContainer}>
       <div>
-        <img alt='submit-verification' src='/icons/submit-verification.png' />
+        <img alt='submit-verification' src={theme.hourGlass} />
       </div>
     </section>
   </>

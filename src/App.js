@@ -34,15 +34,20 @@ const GW = {
   logo: GWLOGO,
   logoIcon: GWLOGOICON,
   logoHref: './GW_LOGO.png',
-  title: 'Game Wallet'
+  title: 'Game Wallet',
+  sms: '/icons/faker/sms-faker.png',
+  smart: '/icons/faker/smart-faker.png',
+  hourGlass: '/icons/submit-verification.png'
 }
-
 const SRP = {
   main: '#2196f3',
   logo: SRPAYLOGO,
   logoIcon: SRPAYLOGO,
   logoHref: './SRPAY_LOGO.png',
-  title: 'SRPay'
+  title: 'SRPay',
+  sms: '/icons/srpay/sms-srpay.png',
+  smart: '/icons/srpay/smart-srpay.png',
+  hourGlass: '/icons/submit-verification-blue.png'
 }
 
 const isGWorSRP = window.location.hostname.toLowerCase().includes('gamewallet')

@@ -65,7 +65,7 @@ const Logo = ({ bank, currency, type, width = '200', height = 'auto', noMargin }
       {
         isBankKnown === undefined && type === undefined && // without bank param
           <img
-            alt='game-wallet'
+            alt={theme.title}
             width={width}
             height={height}
             src={requestImageFileWebp(theme.logoHref)}
