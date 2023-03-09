@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy, useContext } from 'react'
+import React, { useState, useEffect, Suspense, lazy, useContext, useLayoutEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import axios from 'axios'
 import { IntlProvider } from 'react-intl'
@@ -33,14 +33,16 @@ const GW = {
   main: '#91C431',
   logo: GWLOGO,
   logoIcon: GWLOGOICON,
-  logoHref: './GW_LOGO.png'
+  logoHref: './GW_LOGO.png',
+  title: 'Game Wallet'
 }
 
 const SRP = {
   main: '#2196f3',
   logo: SRPAYLOGO,
   logoIcon: SRPAYLOGO,
-  logoHref: './SRPAY_LOGO.png'
+  logoHref: './SRPAY_LOGO.png',
+  title: 'SRPay'
 }
 
 const isGWorSRP = window.location.hostname.toLowerCase().includes('gamewallet')
@@ -120,6 +122,9 @@ const App = () => {
     cn: localeCn,
     ko: localeKo
   }
+  useLayoutEffect(() => {
+    document.title = theme.title
+  }, [])
   const methods = useForm({
     defaultValues: {
       telcoName: bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT'
