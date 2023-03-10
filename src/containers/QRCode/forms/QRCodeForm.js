@@ -185,6 +185,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   const isZaloBank = checkIfZaloBank(bank)
   const isTrueWallet = checkIfTrueWalletBank(bank)
   const isBankKnown = checkBankIfKnown(currency, responseData.bank)
+  const isNotAutoBank = checkBankIfKnown(currency, bank)
   const buttonColor = isTrueWallet || isMomoBank || isZaloBank ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
   const currencies = currency?.toUpperCase()
   const amount = parseFloat(responseData.amount)
@@ -195,10 +196,10 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   }
 
   function handleRenderBottomLogo () {
-    if (isBankKnown) {
+    if (isBankKnown && isNotAutoBank) {
       return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.png`)
     }
-    return require('../../../assets/banks/NULL_LOGO.png')
+    return theme.logo
   }
 
   const getValue = () => {
@@ -232,7 +233,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             <div className={classes.qrcodeBottomLogoWrapper}>
               {
                 bank ? <img alt={bank} src={handleRenderBottomLogo()} />
-                  : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.png')} />
+                  : <img alt={bank} src={theme.logo} />
               }
             </div>
           </div>
