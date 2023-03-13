@@ -50,8 +50,8 @@ const SRP = {
   hourGlass: '/icons/submit-verification-blue.png'
 }
 
-const isGWorSRP = window.location.hostname.toLowerCase().includes('gamewallet')
-export const theme = isGWorSRP ? GW : SRP
+const isGWorSRP = window.location.hostname.toLowerCase().includes('srpaygateway')
+export const theme = isGWorSRP ? SRP : GW
 
 // themes
 const appTheme = {
@@ -103,7 +103,7 @@ const useStyles = createUseStyles({
     flexWrap: 'wrap',
     height: '100%',
     justifyContent: 'center',
-    backgroundImage: (props) => props.bank?.toUpperCase() === 'BIDV' ? 'linear-gradient(190deg, #00bfae, #0066ad 44%, #FFFFFF calc(44% + 2px))' : `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : '#91C431'} 44%,
+    backgroundImage: (props) => props.bank?.toUpperCase() === 'BIDV' ? 'linear-gradient(190deg, #00bfae, #0066ad 44%, #FFFFFF calc(44% + 2px))' : `linear-gradient(190deg, ${props.bank?.toUpperCase() ? appTheme.colors[`${props.themeColor?.toLowerCase()}`] : theme.main} 44%,
     #FFFFFF calc(44% + 2px))`
   }
 })
