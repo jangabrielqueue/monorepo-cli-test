@@ -17,6 +17,7 @@ import localeCn from './translations/locale/cn.json'
 import localeKo from './translations/locale/ko.json'
 
 // lazy loaded components
+const Crypto = lazy(() => import('./containers/Crypto'))
 const GritPay = lazy(() => import('./containers/GritPay'))
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
@@ -184,6 +185,9 @@ const App = () => {
                       </Route>
                       <Route exact path='/deposit/channel'>
                         <GritPay language={language} />
+                      </Route>
+                      <Route exact path='/deposit/crypto'>
+                        <Crypto language={language} />
                       </Route>
                       <Route path='/error'>
                         <CustomErrorPages />
