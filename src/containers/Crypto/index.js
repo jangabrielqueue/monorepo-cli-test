@@ -10,6 +10,8 @@ import Logo from '../../components/Logo'
 import GlobalButton from '../../components/GlobalButton'
 import { useFormContext } from 'react-hook-form'
 import messages from '../Deposit/messages'
+import { useHistory } from 'react-router'
+import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
@@ -64,51 +66,62 @@ const currencies = [
     name: 'VND'
   },
   {
-    code: 'VND',
-    name: 'VND'
+    code: 'THB',
+    name: 'THB'
   },
   {
-    code: 'VND',
-    name: 'VND'
+    code: 'IDR',
+    name: 'IDR'
   },
   {
-    code: 'VND',
-    name: 'VND'
+    code: 'RMB',
+    name: 'RMB'
   },
   {
-    code: 'VND',
-    name: 'VND'
+    code: 'KRW',
+    name: 'KRW'
   }
 ]
 
+const paymentChannelCases = {
+  1: 'bank',
+  2: 'qrcode'
+}
+
 const UsdtPage = (props) => {
   const {
-    bank
-    // merchant,
-    // currency,
-    // requester,
-    // clientIp,
-    // callbackUri,
-    // amount,
-    // reference,
-    // datetime,
-    // signature,
-    // successfulUrl,
-    // failedUrl,
-    // note
+    bank: crypto,
+    merchant,
+    requester,
+    clientIp,
+    callbackUri,
+    amount: initialAmount,
+    currency: initialCurrency,
+    reference,
+    datetime,
+    signature,
+    successfulUrl,
+    failedUrl,
+    note,
+    language
   } = useContext(QueryParamsContext)
-  // const params = useContext(QueryParamsContext)
-  const [amount, setAmount] = useState()
-  const { register, handleSubmit } = useFormContext()
+  const history = useHistory()
+  const queryString = window.location.search
+  const urlQueryString = new URLSearchParams(queryString)
+  const { paymentChannel, paymentChannelType } = {
+    paymentChannel: urlQueryString.get('p2'), // IB or QR
+    paymentChannelType: urlQueryString.get('p3') // bank
+  }
+  const [amount, setAmount] = useState(initialAmount ?? 0)
+  const [currency, setCurrency] = useState(initialCurrency ?? 'VND')
+  const { register } = useFormContext()
   const convertion = 0.000098299
-  const currency = 'USD'
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
-  // const intl = props.intl
-  const requestImageFile = require.context('../../assets/crypto', true, /^\.\/.*\.png$/)
 
-  function handleSubmitForm (value) {
-    console.log(value)
+  function handleSubmitForm () {
+    props.setThemeColorState(`${paymentChannelType}`)
+    history.push(`/deposit/${paymentChannelCases[paymentChannel]}?b=${paymentChannelType}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3${paymentChannelType}`)
   }
   function errorHandler (error, componentStack) {
     analytics.logEvent('exception', {
@@ -119,19 +132,19 @@ const UsdtPage = (props) => {
   }
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
-      {/* <QueryParamsValidator /> */}
+      <QueryParamsValidator />
       <div className={classes.formWrapper}>
         <div className={classes.qrCodeContainer}>
           <div className={classes.qrCodeContent}>
             <section className={classes.qrCodeHeader}>
               <Logo />
               <div className={classes.cryptoHeader}>
-                <p>Buy USDT</p>
+                <p>Buy {crypto}</p>
                 <img
-                  alt={bank}
+                  alt={crypto}
                   width='50'
                   height='50'
-                  src={requestImageFile(`./${bank?.toUpperCase()}_LOGO.png`)}
+                  src={require(`../../assets/crypto/${crypto?.toUpperCase()}_LOGO.png`)}
                 />
               </div>
             </section>
@@ -145,18 +158,23 @@ const UsdtPage = (props) => {
                   name='amount'
                   autoComplete='off'
                   onChange={(e) => setAmount(e.target.value)}
+                  value={amount}
                 />
                 <select
+                  id='currency'
+                  name='currency'
                   style={{ border: '1px solid #E3E3E3' }}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  value={currency}
                 >
                   {
-                    currencies?.map((item, i) => (
-                      <option key={item.code} value={item.code}>
-                        {
-                          item.name
-                        }
-                      </option>
-                    ))
+                      currencies?.map((item, i) => (
+                        <option key={item.code} value={item.code}>
+                          {
+                            item.name
+                          }
+                        </option>
+                      ))
                   }
                 </select>
               </div>
@@ -174,15 +192,15 @@ const UsdtPage = (props) => {
                 >
                   {amount * convertion || 0}
                 </div>
-                <div style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}>USDT</div>
+                <div style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}>{crypto}</div>
               </div>
 
             </section>
             <div className={classes.submitContainer}>
               <GlobalButton
-                label='Buy USDT'
+                label={`Buy ${crypto}`}
                 color='main'
-                onClick={handleSubmit(handleSubmitForm)}
+                onClick={handleSubmitForm}
               />
             </div>
           </div>

@@ -97,6 +97,7 @@ const App = () => {
   const isBankKnown = checkBankIfKnown(currency, bank)
   const topUpTheme = window.location.pathname.includes('topup')
   const themeColor = topUpTheme ? 'topup' : renderIsBankUnknown()
+  const [themeColorState, setThemeColorState] = useState(themeColor)
   const localeMessages = {
     en: localeEn,
     vi: localeVi,
@@ -110,7 +111,7 @@ const App = () => {
       telcoName: bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT'
     }
   })
-  const classes = useStyles({ bank, themeColor })
+  const classes = useStyles({ bank, themeColor: themeColorState })
 
   function renderIsBankUnknown () {
     if (isBankKnown === undefined) {
@@ -187,7 +188,7 @@ const App = () => {
                         <GritPay language={language} />
                       </Route>
                       <Route exact path='/deposit/crypto'>
-                        <Crypto language={language} />
+                        <Crypto language={language} setThemeColorState={setThemeColorState} />
                       </Route>
                       <Route path='/error'>
                         <CustomErrorPages />
