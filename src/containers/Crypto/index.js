@@ -117,11 +117,11 @@ const paymentChannelCases = {
 }
 
 const conversionCases = {
-  VND: 23644.64,
-  THB: 34.58,
-  KRW: 1315.10,
-  IDR: 15431.84,
-  RMB: 6.92
+  VND: 23575,
+  THB: 34.43,
+  KRW: 1312.32,
+  IDR: 15436.05,
+  RMB: 6.9
 }
 const UsdtPage = (props) => {
   const {
@@ -130,7 +130,7 @@ const UsdtPage = (props) => {
     requester,
     clientIp,
     callbackUri,
-    amount: initialAmount,
+    amount: initialConverted, // number || 0
     currency,
     reference,
     datetime,
@@ -140,23 +140,24 @@ const UsdtPage = (props) => {
     note,
     language,
     paymentChannel,
-    paymentChannelType
+    paymentChannelType, // bank || null
+    methodType
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
-  const [amount, setAmount] = useState(initialAmount ?? 0)
   const { register } = useFormContext()
   const conversion = conversionCases[currency] // USDT to selected currency
-  const [converted, setConverted] = useState((initialAmount ?? 0) / conversion)
+  const [converted, setConverted] = useState(initialConverted)
+  const [amount, setAmount] = useState((initialConverted) * conversion)
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
   const noBankSelected = paymentChannelType === 'null' || paymentChannelType == null
-  const noAmount = initialAmount === 'null' || initialAmount == null
+  const noAmount = initialConverted === '0' || initialConverted === 0 || initialConverted === 'null' || initialConverted == null
   const [banks, setBanks] = useState([])
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
 
   function handleSubmitForm () {
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3${paymentChannelType}`
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${converted}&er=${conversion}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
     history.push(url)
