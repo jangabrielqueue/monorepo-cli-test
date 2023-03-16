@@ -1,12 +1,10 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react'
+import React, { useState, useEffect, Suspense, lazy, useContext } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import axios from 'axios'
 import { IntlProvider } from 'react-intl'
 import { createUseStyles, ThemeProvider } from 'react-jss'
 import { useForm, FormContext } from 'react-hook-form'
 import FallbackPage from './components/FallbackPage'
-import QueryParamsContext from './contexts/QueryParamsContext'
-import FirebaseContext from './contexts/FirebaseContext'
 import GlobalStyles from '../src/assets/styles/GlobalStyles'
 import { checkBankIfKnown } from './utils/banks'
 import localeEn from './translations/locale/en.json'
@@ -15,6 +13,7 @@ import localeTh from './translations/locale/th.json'
 import localeId from './translations/locale/id.json'
 import localeCn from './translations/locale/cn.json'
 import localeKo from './translations/locale/ko.json'
+import { QueryParamsContext } from './contexts/QueryParamsContext'
 
 // lazy loaded components
 const Crypto = lazy(() => import('./containers/Crypto'))
@@ -82,12 +81,8 @@ const useStyles = createUseStyles({
   }
 })
 
-const queryString = window.location.search
-const urlQueryString = new URLSearchParams(queryString)
-const bank = urlQueryString.get('b')
-const currency = urlQueryString.get('c1')
-
 const App = () => {
+  const { bank, currency } = useContext(QueryParamsContext)
   GlobalStyles()
   const { REACT_APP_ENDPOINT } = process.env
   axios.defaults.baseURL = REACT_APP_ENDPOINT
@@ -97,7 +92,6 @@ const App = () => {
   const isBankKnown = checkBankIfKnown(currency, bank)
   const topUpTheme = window.location.pathname.includes('topup')
   const themeColor = topUpTheme ? 'topup' : renderIsBankUnknown()
-  const [themeColorState, setThemeColorState] = useState(themeColor)
   const localeMessages = {
     en: localeEn,
     vi: localeVi,
@@ -111,7 +105,7 @@ const App = () => {
       telcoName: bank?.toUpperCase() === 'GWC' ? 'GW' : 'VTT'
     }
   })
-  const classes = useStyles({ bank, themeColor: themeColorState })
+  const classes = useStyles({ bank, themeColor })
 
   function renderIsBankUnknown () {
     if (isBankKnown === undefined) {
@@ -160,51 +154,48 @@ const App = () => {
   }, [])
 
   return (
-    <FirebaseContext>
-      <QueryParamsContext>
-        <FormContext {...methods}>
-          <ThemeProvider theme={appTheme}>
-            <IntlProvider locale={locale} messages={localeMessages[locale]}>
-              <div className={classes.wrapper}>
-                <Suspense fallback={<FallbackPage />}>
-                  <Router>
-                    <Switch>
-                      <Route exact path='/deposit/bank'>
-                        <Deposit language={language} />
-                      </Route>
-                      <Route exact path='/deposit/scratch-card'>
-                        <ScratchCard language={language} />
-                      </Route>
-                      <Route exact path='/deposit/qrcode'>
-                        <QRCode language={language} />
-                      </Route>
-                      <Route exact path='/deposit/local-bank-transfer'>
-                        <LocalBankTransfer language={language} />
-                      </Route>
-                      <Route exact path='/topup/bank'>
-                        <TopUp language={language} />
-                      </Route>
-                      <Route exact path='/deposit/channel'>
-                        <GritPay language={language} />
-                      </Route>
-                      <Route exact path='/deposit/crypto'>
-                        <Crypto language={language} setThemeColorState={setThemeColorState} />
-                      </Route>
-                      <Route path='/error'>
-                        <CustomErrorPages />
-                      </Route>
-                      <Route path='*'>
-                        <NotFound />
-                      </Route>
-                    </Switch>
-                  </Router>
-                </Suspense>
-              </div>
-            </IntlProvider>
-          </ThemeProvider>
-        </FormContext>
-      </QueryParamsContext>
-    </FirebaseContext>
+
+    <FormContext {...methods}>
+      <ThemeProvider theme={appTheme}>
+        <IntlProvider locale={locale} messages={localeMessages[locale]}>
+          <div className={classes.wrapper}>
+            <Suspense fallback={<FallbackPage />}>
+              <Router>
+                <Switch>
+                  <Route exact path='/deposit/bank'>
+                    <Deposit language={language} />
+                  </Route>
+                  <Route exact path='/deposit/scratch-card'>
+                    <ScratchCard language={language} />
+                  </Route>
+                  <Route exact path='/deposit/qrcode'>
+                    <QRCode language={language} />
+                  </Route>
+                  <Route exact path='/deposit/local-bank-transfer'>
+                    <LocalBankTransfer language={language} />
+                  </Route>
+                  <Route exact path='/topup/bank'>
+                    <TopUp language={language} />
+                  </Route>
+                  <Route exact path='/deposit/channel'>
+                    <GritPay language={language} />
+                  </Route>
+                  <Route exact path='/deposit/crypto'>
+                    <Crypto language={language} />
+                  </Route>
+                  <Route path='/error'>
+                    <CustomErrorPages />
+                  </Route>
+                  <Route path='*'>
+                    <NotFound />
+                  </Route>
+                </Switch>
+              </Router>
+            </Suspense>
+          </div>
+        </IntlProvider>
+      </ThemeProvider>
+    </FormContext>
   )
 }
 

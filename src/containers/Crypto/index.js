@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { QueryParamsContext, QueryParamsSetterContext } from '../../contexts/QueryParamsContext'
 import { ErrorBoundary } from 'react-error-boundary'
 // import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FirebaseContext } from '../../contexts/FirebaseContext'
@@ -105,6 +105,7 @@ const UsdtPage = (props) => {
     note,
     language
   } = useContext(QueryParamsContext)
+  const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
   const queryString = window.location.search
   const urlQueryString = new URLSearchParams(queryString)
@@ -120,8 +121,10 @@ const UsdtPage = (props) => {
   const classes = useStyles(0)
 
   function handleSubmitForm () {
-    props.setThemeColorState(`${paymentChannelType}`)
-    history.push(`/deposit/${paymentChannelCases[paymentChannel]}?b=${paymentChannelType}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3${paymentChannelType}`)
+    const queryString = `?b=${paymentChannelType}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3${paymentChannelType}`
+    const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
+    setQuery(queryString)
+    history.push(url)
   }
   function errorHandler (error, componentStack) {
     analytics.logEvent('exception', {
@@ -144,7 +147,7 @@ const UsdtPage = (props) => {
                   alt={crypto}
                   width='50'
                   height='50'
-                  src={require(`../../assets/crypto/${crypto?.toUpperCase()}_LOGO.png`)}
+                  src={require(`../../assets/banks/${crypto?.toUpperCase()}_LOGO.png`)}
                 />
               </div>
             </section>
