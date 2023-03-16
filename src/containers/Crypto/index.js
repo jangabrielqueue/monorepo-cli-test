@@ -57,31 +57,49 @@ const useStyles = createUseStyles({
       color: '#1bb193',
       fontSize: 25
     }
-  }
-})
+  },
+  inputWrapper: {
+    display: 'grid',
+    width: '100%',
+    gridTemplateColumns: '2fr 1fr',
+    border: '1px solid #E3E3E3 !important',
+    borderRadius: '10px'
 
-const currencies = [
-  {
-    code: 'VND',
-    name: 'VND'
   },
-  {
-    code: 'THB',
-    name: 'THB'
+  inputContainer: {
+    paddingLeft: 6,
+    border: 'none !important',
+    lineHeight: '38px',
+    background: 'transparent',
+    '&:last-child': {
+      borderLeft: '1px solid #E3E3E3 !important'
+    }
   },
-  {
-    code: 'IDR',
-    name: 'IDR'
+  timelineWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '5px auto'
   },
-  {
-    code: 'RMB',
-    name: 'RMB'
+  timeline: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '40px',
+    alignItems: 'center',
+    width: '50px'
   },
-  {
-    code: 'KRW',
-    name: 'KRW'
+  timelineLine: {
+    backgroundColor: '#e3e3e3',
+    flexGrow: 1,
+    width: '2px'
+  },
+  timelineCircle: {
+    borderRadius: '50%',
+    width: '10px',
+    height: '10px',
+    backgroundColor: '#e3e3e3'
   }
-]
+
+})
 
 const paymentChannelCases = {
   1: 'bank',
@@ -103,7 +121,7 @@ const UsdtPage = (props) => {
     clientIp,
     callbackUri,
     amount: initialAmount,
-    currency: initialCurrency,
+    currency,
     reference,
     datetime,
     signature,
@@ -117,9 +135,9 @@ const UsdtPage = (props) => {
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
   const [amount, setAmount] = useState(initialAmount ?? 0)
-  const [currency, setCurrency] = useState(initialCurrency ?? 'VND')
   const { register } = useFormContext()
   const conversion = conversionCases[currency] // USDT to selected currency
+  const [converted, setConverted] = useState((initialAmount ?? 0) * conversion)
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
 
@@ -135,6 +153,12 @@ const UsdtPage = (props) => {
       description: error,
       fatal: true
     })
+  }
+
+  function handleChange (e) {
+    const value = e.target.value
+    setAmount(value * conversion)
+    setConverted(value)
   }
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
@@ -155,56 +179,39 @@ const UsdtPage = (props) => {
               </div>
             </section>
             <section className={classes.qrCodeBody}>
-              <div style={{ display: 'grid', width: '100%', gridTemplateColumns: '2fr 1fr' }}>
+              <div className={classes.inputWrapper}>
                 <input
-                  style={{ border: '1px solid #E3E3E3' }}
+                  className={classes.inputContainer}
                   ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                   type='number'
-                  id='amount'
-                  name='amount'
+                  id='converted'
+                  name='converted'
                   autoComplete='off'
-                  onChange={(e) => setAmount(e.target.value)}
-                  value={amount}
+                  onChange={handleChange}
+                  value={converted}
                 />
-                <select
-                  id='currency'
-                  name='currency'
-                  style={{ border: '1px solid #E3E3E3' }}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  value={currency}
-                >
-                  {
-                      currencies?.map((item, i) => (
-                        <option key={item.code} value={item.code}>
-                          {
-                            item.name
-                          }
-                        </option>
-                      ))
-                  }
-                </select>
+                <div className={classes.inputContainer}>{crypto}</div>
               </div>
-              <section style={{ display: 'flex', alignItems: 'center', margin: '5px auto' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', height: '40px', alignItems: 'center', width: '50px' }}>
-                  <div style={{ backgroundColor: '#e3e3e3', flexGrow: 1, width: '2px' }} />
-                  <div style={{ borderRadius: '50%', width: '10px', height: '10px', backgroundColor: '#e3e3e3' }} />
-                  <div style={{ backgroundColor: '#e3e3e3', flexGrow: 1, width: '2px' }} />
+              <section className={classes.timelineWrapper}>
+                <div className={classes.timeline}>
+                  <div className={classes.timelineLine} />
+                  <div className={classes.timelineCircle} />
+                  <div className={classes.timelineLine} />
                 </div>
                 <div style={{ fontSize: 12 }}> {conversion} {currency} ~ 1 {crypto} Expected rate</div>
               </section>
-              <div style={{ display: 'grid', width: '100%', gridTemplateColumns: '2fr 1fr', height: '40px' }}>
+              <div className={classes.inputWrapper}>
                 <div
-                  style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}
+                  className={classes.inputContainer}
                 >
-                  {amount / conversion || 0}
+                  {amount || 0}
                 </div>
-                <div style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}>{crypto}</div>
+                <div className={classes.inputContainer}>{currency}</div>
               </div>
-
             </section>
             <div className={classes.submitContainer}>
               <GlobalButton
-                label={`Buy ${crypto}`}
+                label='Continue'
                 color='main'
                 onClick={handleSubmitForm}
               />
