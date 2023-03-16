@@ -23,7 +23,9 @@ function QueryParamsProvider ({ children }) {
       key: urlQueryString.get('k'),
       customer: urlQueryString.get('c2'),
       datetime: urlQueryString.get('d'),
-      language: urlQueryString.get('l')
+      language: urlQueryString.get('l'),
+      paymentChannel: urlQueryString.get('p2'),
+      paymentChannelType: urlQueryString.get('p3')
     }
   }
   const [queryParams, setQueryParams] = useState(getParams(queryString))

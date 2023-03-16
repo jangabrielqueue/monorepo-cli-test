@@ -103,16 +103,12 @@ const UsdtPage = (props) => {
     successfulUrl,
     failedUrl,
     note,
-    language
+    language,
+    paymentChannel,
+    paymentChannelType
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
-  const queryString = window.location.search
-  const urlQueryString = new URLSearchParams(queryString)
-  const { paymentChannel, paymentChannelType } = {
-    paymentChannel: urlQueryString.get('p2'), // IB or QR
-    paymentChannelType: urlQueryString.get('p3') // bank
-  }
   const [amount, setAmount] = useState(initialAmount ?? 0)
   const [currency, setCurrency] = useState(initialCurrency ?? 'VND')
   const { register } = useFormContext()

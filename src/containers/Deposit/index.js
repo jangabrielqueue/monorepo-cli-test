@@ -25,7 +25,7 @@ import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { sendDepositRequest, sendDepositOtp } from './Requests'
+import { sendDepositRequest, sendDepositOtp, sendDepositCryptoRequest } from './Requests'
 import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod, checkIfQrOtp } from '../../utils/utils'
 import { checkBankIfKnown, checkIfBidvBank, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
@@ -175,7 +175,8 @@ const Deposit = (props) => {
     signature,
     successfulUrl,
     failedUrl,
-    note
+    note,
+    paymentChannel
   } = useContext(QueryParamsContext)
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
@@ -202,7 +203,7 @@ const Deposit = (props) => {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
     }
-
+    const api = paymentChannel === 0 || paymentChannel === '0' ? sendDepositRequest : sendDepositCryptoRequest
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
 
     analytics.logEvent('login', {
@@ -231,7 +232,7 @@ const Deposit = (props) => {
       statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
     })
     await sleep(750)
-    const result = await sendDepositRequest({
+    const result = await api({
       currency,
       merchant,
       requester,
