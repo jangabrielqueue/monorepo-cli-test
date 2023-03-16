@@ -88,6 +88,13 @@ const paymentChannelCases = {
   2: 'qrcode'
 }
 
+const conversionCases = {
+  VND: 23644.64,
+  THB: 34.58,
+  KRW: 1315.10,
+  IDR: 15431.84,
+  RMB: 6.92
+}
 const UsdtPage = (props) => {
   const {
     bank: crypto,
@@ -112,7 +119,7 @@ const UsdtPage = (props) => {
   const [amount, setAmount] = useState(initialAmount ?? 0)
   const [currency, setCurrency] = useState(initialCurrency ?? 'VND')
   const { register } = useFormContext()
-  const convertion = 0.000098299
+  const conversion = conversionCases[currency] // USDT to selected currency
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
 
@@ -183,13 +190,13 @@ const UsdtPage = (props) => {
                   <div style={{ borderRadius: '50%', width: '10px', height: '10px', backgroundColor: '#e3e3e3' }} />
                   <div style={{ backgroundColor: '#e3e3e3', flexGrow: 1, width: '2px' }} />
                 </div>
-                <div style={{ fontSize: 12 }}>1 {currency} ~ {convertion} BTC Expected rate</div>
+                <div style={{ fontSize: 12 }}> {conversion} {currency} ~ 1 {crypto} Expected rate</div>
               </section>
               <div style={{ display: 'grid', width: '100%', gridTemplateColumns: '2fr 1fr', height: '40px' }}>
                 <div
                   style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}
                 >
-                  {amount * convertion || 0}
+                  {amount / conversion || 0}
                 </div>
                 <div style={{ border: '1px solid #E3E3E3', lineHeight: '40px', padding: '4px' }}>{crypto}</div>
               </div>
