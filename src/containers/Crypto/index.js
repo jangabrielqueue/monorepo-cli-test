@@ -13,6 +13,10 @@ import messages from '../Deposit/messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { getBankRequest } from './Request'
+import ErrorAlert from '../../components/ErrorAlert'
+import { checkBankIfKnown } from '../../utils/banks'
+import TransferFailed from '../../components/TransferFailed'
+import AutoRedirect from '../../components/AutoRedirect'
 const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
@@ -106,8 +110,8 @@ const useStyles = createUseStyles({
     height: '10px',
     backgroundColor: '#e3e3e3'
   },
-  bankDisplayWrapper: {
-
+  unknownBankError: {
+    marginBottom: 10
   }
 })
 
@@ -155,8 +159,14 @@ const UsdtPage = (props) => {
   const noAmount = initialConverted === '0' || initialConverted === 0 || initialConverted === 'null' || initialConverted == null
   const [banks, setBanks] = useState([])
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
+  const [error, setError] = useState({ hasError: false, message: '' })
+  const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
 
   function handleSubmitForm () {
+    if (bank === '') {
+      setError({ hasError: true, message: 'Please Select a bank' })
+      return
+    }
     const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${converted}&er=${conversion}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
@@ -182,6 +192,74 @@ const UsdtPage = (props) => {
   useEffect(() => {
     getBanks().finally(() => {})
   }, [getBanks])
+
+  const renderBody = (
+    <>
+      <section className={classes.cryptoBody}>
+        {
+          noBankSelected && (
+            <div className={classes.inputBankWrapper}>
+              <label>Bank:</label>
+              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)}>
+                <option disabled selected value>--Select Bank--</option>
+                {
+                  banks.map((bank, i) => (
+                    <option key={i} value={bank.value}>{bank.text}</option>
+                  ))
+                }
+              </select>
+            </div>
+          )
+        }
+        <div className={classes.inputWrapper}>
+          {
+            noAmount ? (
+              <input
+                className={classes.inputContainer}
+                ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
+                type='number'
+                id='converted'
+                name='converted'
+                autoComplete='off'
+                onChange={handleChange}
+                value={converted}
+              />)
+              : (
+                <div className={classes.inputContainer}>{converted}</div>
+              )
+          }
+          <div className={classes.inputContainer}>{crypto}</div>
+        </div>
+        <section className={classes.timelineWrapper}>
+          <div className={classes.timeline}>
+            <div className={classes.timelineLine} />
+            <div className={classes.timelineCircle} />
+            <div className={classes.timelineLine} />
+          </div>
+          <div style={{ fontSize: 12 }}> {conversion} {currency} ~ 1 {crypto} Expected rate</div>
+        </section>
+        <div className={classes.inputWrapper}>
+          <div
+            className={classes.inputContainer}
+          >
+            {amount || 0}
+          </div>
+          <div className={classes.inputContainer}>{currency}</div>
+        </div>
+        {bank !== '' && (
+          <>
+            <Logo bank={bank} currency={currency} />
+          </>)}
+      </section>
+      <div className={classes.submitContainer}>
+        <GlobalButton
+          label='Continue'
+          color='main'
+          onClick={handleSubmitForm}
+        />
+      </div>
+    </>
+  )
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
       <QueryParamsValidator />
@@ -199,70 +277,19 @@ const UsdtPage = (props) => {
                   src={require(`../../assets/banks/${crypto?.toUpperCase()}_LOGO.png`)}
                 />
               </div>
-            </section>
-            <section className={classes.cryptoBody}>
               {
-                noBankSelected && (
-                  <div className={classes.inputBankWrapper}>
-                    <label>Bank:</label>
-                    <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)}>
-                      <option disabled selected value>--Select Bank--</option>
-                      {
-                        banks.map((bank, i) => (
-                          <option key={i} value={bank.value}>{bank.text}</option>
-                        ))
-                      }
-                    </select>
-                  </div>
-                )
+                error.hasError && <ErrorAlert message={error.message} />
               }
-              <div className={classes.inputWrapper}>
-                {
-                  noAmount ? (
-                    <input
-                      className={classes.inputContainer}
-                      ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
-                      type='number'
-                      id='converted'
-                      name='converted'
-                      autoComplete='off'
-                      onChange={handleChange}
-                      value={converted}
-                    />)
-                    : (
-                      <div className={classes.inputContainer}>{converted}</div>
-                    )
-                }
-                <div className={classes.inputContainer}>{crypto}</div>
-              </div>
-              <section className={classes.timelineWrapper}>
-                <div className={classes.timeline}>
-                  <div className={classes.timelineLine} />
-                  <div className={classes.timelineCircle} />
-                  <div className={classes.timelineLine} />
-                </div>
-                <div style={{ fontSize: 12 }}> {conversion} {currency} ~ 1 {crypto} Expected rate</div>
-              </section>
-              <div className={classes.inputWrapper}>
-                <div
-                  className={classes.inputContainer}
-                >
-                  {amount || 0}
-                </div>
-                <div className={classes.inputContainer}>{currency}</div>
-              </div>
-              {bank !== '' && (
-                <div className={classes.bankDisplayWrapper}>
-                  <Logo bank={bank} currency={currency} />
-                </div>)}
             </section>
-            <div className={classes.submitContainer}>
-              <GlobalButton
-                label='Continue'
-                color='main'
-                onClick={handleSubmitForm}
-              />
-            </div>
+            {
+              bankIsKnown ? renderBody : (
+                <div className={classes.unknownBankError}>
+                  <AutoRedirect delay={10000} url={failedUrl}>
+                    <TransferFailed bank={bank} transferResult={{ message: <FormattedMessage {...messages.errors.verificationFailed} /> }} />
+                  </AutoRedirect>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>
