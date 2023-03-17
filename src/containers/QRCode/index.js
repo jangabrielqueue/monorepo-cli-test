@@ -140,7 +140,11 @@ const QRCode = (props) => {
     signature,
     successfulUrl,
     failedUrl,
-    note
+    note,
+    methodType,
+    exchangeRate,
+    exchangeAmount,
+    exchangeCurrency
   } = useContext(QueryParamsContext)
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
@@ -178,6 +182,7 @@ const QRCode = (props) => {
   const isMomoBank = checkIfMomoBank(bank)
   const isZaloBank = checkIfZaloBank(bank)
 
+  const isCrypto = methodType === 7 || methodType === '7'
   async function handleSubmitQRCode () {
     const submitValues = {
       amount: amount,
@@ -412,7 +417,13 @@ const QRCode = (props) => {
       requester: requester,
       signature: signature,
       successfulUrl: successfulUrl,
-      toAccountId: 0
+      toAccountId: 0,
+      ...isCrypto ? {
+        methodType,
+        exchangeAmount,
+        exchangeCurrency,
+        exchangeRate
+      } : {}
     }
 
     const connection = new HubConnectionBuilder()
@@ -465,7 +476,12 @@ const QRCode = (props) => {
     requester,
     signature,
     successfulUrl,
-    intl
+    intl,
+    methodType,
+    exchangeAmount,
+    exchangeCurrency,
+    exchangeRate,
+    isCrypto
   ])
 
   useEffect(() => {

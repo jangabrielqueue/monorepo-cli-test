@@ -26,10 +26,10 @@ function QueryParamsProvider ({ children }) {
       language: urlQueryString.get('l'),
       paymentChannel: urlQueryString.get('p2'),
       paymentChannelType: urlQueryString.get('p3'),
-      methodType: urlQueryString.get('mt'),
-      exchangeRate: urlQueryString.get('er'),
+      methodType: parseInt(urlQueryString.get('mt')),
+      exchangeRate: parseInt(urlQueryString.get('er')),
       exchangeCurrency: urlQueryString.get('ec'),
-      exchangeAmount: urlQueryString.get('ea')
+      exchangeAmount: parseInt(urlQueryString.get('ea'))
     }
   }
   const [queryParams, setQueryParams] = useState(getParams(queryString))
