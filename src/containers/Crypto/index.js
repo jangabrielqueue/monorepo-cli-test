@@ -12,11 +12,13 @@ import { useFormContext } from 'react-hook-form'
 import messages from '../Deposit/messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
-import { getBankRequest } from './Request'
+import { getBankRequest, getRatesRequest } from './Request'
 import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
+import { getCurrencyValue } from '../../utils/utils'
+import LoadingIcon from '../../components/LoadingIcon'
 const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
@@ -119,14 +121,6 @@ const paymentChannelCases = {
   1: 'bank',
   2: 'qrcode'
 }
-
-const conversionCases = {
-  VND: 23575,
-  THB: 34.43,
-  KRW: 1312.32,
-  IDR: 15436.05,
-  RMB: 6.9
-}
 const UsdtPage = (props) => {
   const {
     bank: crypto,
@@ -150,9 +144,9 @@ const UsdtPage = (props) => {
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
   const { register } = useFormContext()
-  const conversion = conversionCases[currency] // USDT to selected currency
   const [converted, setConverted] = useState(initialConverted)
-  const [amount, setAmount] = useState((initialConverted) * conversion)
+  const [conversion, setConversion] = useState(null)
+  const amount = converted * conversion
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
   const noBankSelected = paymentChannelType === 'null' || paymentChannelType == null
@@ -161,7 +155,6 @@ const UsdtPage = (props) => {
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
   const [error, setError] = useState({ hasError: false, message: '' })
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
-
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
@@ -182,17 +175,25 @@ const UsdtPage = (props) => {
 
   function handleChange (e) {
     const value = e.target.value
-    setAmount(value * conversion)
     setConverted(value)
   }
   const getBanks = useCallback(async () => {
     const res = await getBankRequest({ paymentChannel, currency })
     setBanks(res)
   }, [paymentChannel, currency])
+
+  const getRates = useCallback(async () => {
+    const res = await getRatesRequest({ methodType, currency: getCurrencyValue(currency), paymentChannel, merchant  })
+    setConversion(res)
+  }, [paymentChannel, currency, methodType, merchant])
+
   useEffect(() => {
     getBanks().finally(() => {})
   }, [getBanks])
 
+  useEffect(() => {
+    getRates().finally(() => {})
+  }, [getRates])
   const renderBody = (
     <>
       <section className={classes.cryptoBody}>
@@ -200,8 +201,8 @@ const UsdtPage = (props) => {
           noBankSelected && (
             <div className={classes.inputBankWrapper}>
               <label>Bank:</label>
-              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)}>
-                <option disabled selected value>--Select Bank--</option>
+              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
+                <option disabled value=''>--Select Bank--</option>
                 {
                   banks.map((bank, i) => (
                     <option key={i} value={bank.value}>{bank.text}</option>
@@ -236,7 +237,10 @@ const UsdtPage = (props) => {
             <div className={classes.timelineCircle} />
             <div className={classes.timelineLine} />
           </div>
-          <div style={{ fontSize: 12 }}> {conversion} {currency} ~ 1 {crypto} Expected rate</div>
+          <div style={{ fontSize: 12, display: 'flex' }}> 
+            {conversion == null ? <LoadingIcon /> : conversion} {currency} ~ 1 {crypto} Expected rate
+             
+          </div>
         </section>
         <div className={classes.inputWrapper}>
           <div

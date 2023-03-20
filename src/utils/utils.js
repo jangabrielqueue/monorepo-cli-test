@@ -77,6 +77,18 @@ function convertToMiliseconds (time) {
   return time.minutes * 60000 + time.seconds * 1000
 }
 
+const currencyValue = {
+  'VND': 1,
+  'THB': 2,
+  'RMB': 3,
+  'IDR': 4,
+  'MYR': 5,
+  'KRW': 6
+}
+function getCurrencyValue (currency) {
+  return currencyValue[currency]
+}
+
 export {
   checkIfQrOtp,
   isNullOrWhitespace,
@@ -89,5 +101,6 @@ export {
   isTopUp,
   checkIfAppOneOtp,
   checkIfAppTwoOtp,
-  convertToMiliseconds
+  convertToMiliseconds,
+  getCurrencyValue
 }
