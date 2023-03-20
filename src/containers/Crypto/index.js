@@ -12,7 +12,7 @@ import { useFormContext } from 'react-hook-form'
 import messages from '../Deposit/messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
-import { getBankRequest, getRatesRequest } from './Request'
+import { getBankRequest, getExchangeRateRequest, getMarkupRatesRequest } from './Request'
 import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
@@ -160,7 +160,8 @@ const UsdtPage = (props) => {
       setError({ hasError: true, message: 'Please Select a bank' })
       return
     }
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${amount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${converted}&er=${conversion}`
+    const roundedoffAmount = amount.toFixed(0)
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${converted}&er=${conversion}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
     history.push(url)
@@ -183,9 +184,16 @@ const UsdtPage = (props) => {
   }, [paymentChannel, currency])
 
   const getRates = useCallback(async () => {
-    const res = await getRatesRequest({ methodType, currency: getCurrencyValue(currency), paymentChannel, merchant  })
-    setConversion(res)
-  }, [paymentChannel, currency, methodType, merchant])
+    const markupRate = await getMarkupRatesRequest({ methodType, currency: getCurrencyValue(currency), paymentChannel, merchant  })
+    const exchangeRate = await getExchangeRateRequest({ provider: crypto })
+    if (exchangeRate != null && Object.hasOwn(exchangeRate, currency)) {
+      const rate = (1 + markupRate / 100) * exchangeRate[currency].Value
+      setConversion(rate)
+    } else {
+      setConversion(0)
+      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: < FormattedMessage {...messages.errors.networkError} /></>})
+    }
+  }, [paymentChannel, currency, methodType, merchant, crypto])
 
   useEffect(() => {
     getBanks().finally(() => {})
@@ -222,6 +230,7 @@ const UsdtPage = (props) => {
                 id='converted'
                 name='converted'
                 autoComplete='off'
+                autoFocus
                 onChange={handleChange}
                 value={converted}
               />)
@@ -237,9 +246,10 @@ const UsdtPage = (props) => {
             <div className={classes.timelineCircle} />
             <div className={classes.timelineLine} />
           </div>
-          <div style={{ fontSize: 12, display: 'flex' }}> 
-            {conversion == null ? <LoadingIcon /> : conversion} {currency} ~ 1 {crypto} Expected rate
-             
+          <div style={{ fontSize: 12, display: 'flex' }}>
+            {
+              conversion == null ? <LoadingIcon /> : <>{conversion} {currency} ~ 1 {crypto} Expected rate</> 
+            }             
           </div>
         </section>
         <div className={classes.inputWrapper}>
