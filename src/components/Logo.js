@@ -5,13 +5,12 @@ import { checkBankIfKnown, checkIfMomoBank, checkIfZaloBank } from '../utils/ban
 // styling
 const useStyles = createUseStyles({
   logoContainer: {
-    margin: '25px auto',
+    margin: ({ noMargin }) => noMargin ? '0' : '25px auto',
     maxWidth: ({ bank, type }) => bank?.toUpperCase() === 'PRECARD' &&
     type === 'scratch-card' ? '400px' : '200px',
 
     '& img': {
-      height: 'auto',
-      width: '100%'
+      height: 'auto'
     },
 
     '@media (max-width: 36em) and (orientation: portrait)': {
@@ -22,10 +21,10 @@ const useStyles = createUseStyles({
   }
 })
 
-const Logo = ({ currency, type, bank }) => {
+const Logo = ({ bank, currency, type, width = '200', height = '80', noMargin }) => {
   const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.png$/)
   const isBankKnown = checkBankIfKnown(currency, bank)
-  const classes = useStyles({ bank, type })
+  const classes = useStyles({ bank, type, noMargin })
   const bankIsMomoOrZalo = checkIfZaloBank(bank) || checkIfMomoBank(bank)
 
   const getFilePathWebP = (bank, type) => {
@@ -45,8 +44,8 @@ const Logo = ({ currency, type, bank }) => {
           <img
             alt={bank}
             style={{ ...bankIsMomoOrZalo ? { transform: 'scale(calc(2 / 3))', margin: '-20px auto' } : {} }}
-            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
-            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : width}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : height}
             src={getFilePathWebP(bank, type)}
           />
       }
@@ -54,8 +53,8 @@ const Logo = ({ currency, type, bank }) => {
         isBankKnown === undefined && type === 'topup' && // for topup logo only
           <img
             alt={bank}
-            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : '200'}
-            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : '80'}
+            width={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '400' : width}
+            height={(bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') ? '120' : height}
             src={getFilePathWebP(bank, type)}
           />
       }
@@ -63,8 +62,8 @@ const Logo = ({ currency, type, bank }) => {
         isBankKnown === undefined && type === undefined && // without bank param
           <img
             alt='game-wallet'
-            width='200'
-            height='80'
+            width={width}
+            height={height}
             src={requestImageFileWebp('./GW_LOGO.png')}
           />
       }

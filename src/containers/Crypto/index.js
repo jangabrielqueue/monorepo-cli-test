@@ -19,6 +19,7 @@ import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
 import { getCurrencyValue } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
+// import logo from 
 const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
@@ -73,12 +74,21 @@ const useStyles = createUseStyles({
     borderRadius: '10px'
   },
   inputBankWrapper: {
-    marginBottom: 20
+    margin: '20px 0'
   },
   inputSelect: {
     width: '100%',
-    border: '1px solid #E3E3E3 !important',
-    borderRadius: '10px'
+    border: 'none',
+    minHeight: '38px',
+    borderRadius: '10px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    '&:last-child': {
+      borderLeft: '1px solid #E3E3E3 !important',
+      padding: 5
+    }
   },
   inputContainer: {
     paddingLeft: 6,
@@ -205,21 +215,6 @@ const UsdtPage = (props) => {
   const renderBody = (
     <>
       <section className={classes.cryptoBody}>
-        {
-          noBankSelected && (
-            <div className={classes.inputBankWrapper}>
-              <label>Bank:</label>
-              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
-                <option disabled value=''>--Select Bank--</option>
-                {
-                  banks.map((bank, i) => (
-                    <option key={i} value={bank.value}>{bank.text}</option>
-                  ))
-                }
-              </select>
-            </div>
-          )
-        }
         <div className={classes.inputWrapper}>
           {
             noAmount ? (
@@ -260,9 +255,29 @@ const UsdtPage = (props) => {
           </div>
           <div className={classes.inputContainer}>{currency}</div>
         </div>
-        {bank !== '' && (
+        {
+          noBankSelected && (
+            <div className={classes.inputBankWrapper}>
+              <label>Bank:</label>
+              <div className={classes.inputWrapper}>
+                <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
+                  <option disabled value=''>--Select Bank--</option>
+                  {
+                    banks.map((bank, i) => (
+                      <option key={i} value={bank.value}>{bank.text}</option>
+                    ))
+                  }
+                </select>
+                <div className={classes.inputSelect}>
+                  <Logo bank={bank} currency={currency} noMargin width={120} />
+                </div>
+              </div>
+            </div>
+          )
+        }
+        {!noBankSelected && (
           <>
-            <Logo bank={bank} currency={currency} />
+            <Logo bank={paymentChannelType} currency={currency} />
           </>)}
       </section>
       <div className={classes.submitContainer}>
