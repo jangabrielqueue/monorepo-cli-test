@@ -154,9 +154,9 @@ const UsdtPage = (props) => {
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
   const { register } = useFormContext()
-  const [converted, setConverted] = useState(initialConverted)
+  const [cryptoAmount, setCryptoAmount] = useState(initialConverted)
   const [conversion, setConversion] = useState(null)
-  const amount = converted * conversion
+  const amount = cryptoAmount * conversion
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
   const noBankSelected = paymentChannelType === 'null' || paymentChannelType == null
@@ -171,7 +171,7 @@ const UsdtPage = (props) => {
       return
     }
     const roundedoffAmount = amount.toFixed(0)
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${converted}&er=${conversion}`
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${conversion}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
     history.push(url)
@@ -186,7 +186,7 @@ const UsdtPage = (props) => {
 
   function handleChange (e) {
     const value = e.target.value
-    setConverted(value)
+    setCryptoAmount(value)
   }
   const getBanks = useCallback(async () => {
     const res = await getBankRequest({ paymentChannel, currency })
@@ -227,10 +227,10 @@ const UsdtPage = (props) => {
                 autoComplete='off'
                 autoFocus
                 onChange={handleChange}
-                value={converted}
+                value={cryptoAmount}
               />)
               : (
-                <div className={classes.inputContainer}>{converted}</div>
+                <div className={classes.inputContainer}>{new Intl.NumberFormat(language).format(cryptoAmount)}</div>
               )
           }
           <div className={classes.inputContainer}>{crypto}</div>
@@ -243,7 +243,7 @@ const UsdtPage = (props) => {
           </div>
           <div style={{ fontSize: 12, display: 'flex' }}>
             {
-              conversion == null ? <LoadingIcon /> : <>{conversion} {currency} ~ 1 {crypto} Expected rate</> 
+              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} Expected rate</> 
             }             
           </div>
         </section>
@@ -251,7 +251,7 @@ const UsdtPage = (props) => {
           <div
             className={classes.inputContainer}
           >
-            {amount || 0}
+            {new Intl.NumberFormat(language).format(amount) || 0}
           </div>
           <div className={classes.inputContainer}>{currency}</div>
         </div>
