@@ -12,12 +12,11 @@ import { useFormContext } from 'react-hook-form'
 import messages from '../Deposit/messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
-import { getBankRequest, getExchangeRateRequest, getMarkupRatesRequest } from './Request'
+import { getBankRequest, getExchangeRateRequest } from './Request'
 import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
-import { getCurrencyValue } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
 // import logo from 
 const useStyles = createUseStyles({
@@ -194,16 +193,14 @@ const UsdtPage = (props) => {
   }, [paymentChannel, currency])
 
   const getRates = useCallback(async () => {
-    const markupRate = await getMarkupRatesRequest({ methodType, currency: getCurrencyValue(currency), paymentChannel, merchant  })
-    const exchangeRate = await getExchangeRateRequest({ provider: crypto })
+    const exchangeRate = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel, merchant })
     if (exchangeRate != null && Object.hasOwn(exchangeRate, currency)) {
-      const rate = (1 + markupRate / 100) * exchangeRate[currency].Value
-      setConversion(rate)
+      setConversion(exchangeRate[currency].value)
     } else {
       setConversion(0)
-      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: < FormattedMessage {...messages.errors.networkError} /></>})
+      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: < FormattedMessage {...messages.errors.networkError} /></> })
     }
-  }, [paymentChannel, currency, methodType, merchant, crypto])
+  }, [paymentChannel, currency, methodType, merchant])
 
   useEffect(() => {
     getBanks().finally(() => {})
