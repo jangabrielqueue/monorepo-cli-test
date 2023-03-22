@@ -59,7 +59,7 @@ const useStyles = createUseStyles({
     borderBottom: '0.5px solid #E3E3E3'
   },
   submitContainer: {
-    padding: '10px 0'
+    padding: '10px 0 20px'
   },
   cryptoLogoHeader: {
     display: 'flex',
@@ -320,7 +320,7 @@ const UsdtPage = (props) => {
             <div className={classes.inputBankWrapper}>
               <InputSelect
                 onChange={(val) => setBank(val)}
-                label='Bank:'
+                label='Pay with:'
                 options={banks.map((bank) => ({ label: bank.text, value: bank.value }))}
                 renderOptions={(option) => renderOptions(option, currency)}
                 placeholder='Select Bank'

@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom'
 import React from 'react'
 import { createUseStyles } from 'react-jss'
 import usePopper from '../../hooks/usePopper'
+import { ReactComponent as DownArrow } from '../../assets/icons/down-arrow.svg'
+import classNames from 'classnames/bind'
 const useStyles = createUseStyles({
   inputContainer: {
     width: '100%',
@@ -26,6 +28,9 @@ const useStyles = createUseStyles({
       right: 0
     }
   },
+  label: {
+    marginLeft: 5
+  },
   panelContainer: {
     maxHeight: 400,
     border: '1px solid #e3e3e3',
@@ -40,13 +45,22 @@ const useStyles = createUseStyles({
     width: '100vw',
     height: '100vh',
     position: 'fixed',
-    zIndex:2
+    zIndex:2,
+    cursor: 'pointer'
   },
   options: {
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: 'rgba(0,0,0,0.1)' 
     }
+  },
+  downArrow: {
+    width: 7,
+    height: 7,
+    color: 'grey'
+  },
+  upArrow: {
+    transform: 'rotate(180deg)'
   }
 })
 
@@ -54,18 +68,22 @@ const useStyles = createUseStyles({
 const InputSelect = ({ label, options = [], renderOptions, onChange, value, placeholder = 'Select ' }) => {
   const { onOpen, ref, setRef, panelRef, panelAttributes, open } = usePopper()
   const classes = useStyles({ open, ref })
-
+  const cx = classNames.bind(classes)
+  const arrowStyles = cx({
+    downArrow: true,
+    upArrow: open
+  })
   const handleOptionClick = (value) => {
     onOpen()
     onChange(value)
   }
   return (
     <>
-      <label>{label}</label>
+      <label className={classes.label}>{label}</label>
       <div className={classes.inputContainer} ref={setRef} onClick={onOpen}>
         <p>{options.find(option => option.value === value)?.label ?? placeholder}</p>
-        <div className={classes.arrow}>
-          <p>{open ? <>&#129169;</> : <>&#129171;</>}</p>
+        <div>
+          <DownArrow className={arrowStyles} />
         </div>
       </div>
       {
