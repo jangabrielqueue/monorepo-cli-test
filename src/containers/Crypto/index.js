@@ -19,6 +19,7 @@ import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
 import { getCurrencyText } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
+import InputSelect from '../../components/Inputs/InputSelect'
 // import logo from 
 const useStyles = createUseStyles({
   formWrapper: {
@@ -160,6 +161,18 @@ const paymentChannelCases = {
 const cryptoHelperTexts = {
   USDT: 'TRC-20 Thether'
 }
+
+const renderOptions = (option, currency) => {
+  return (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', padding: 15, borderBottom: '1px solid #e3e3e3' }}>
+        <Logo bank={option.value} currency={currency} noMargin width={120} height={20} />
+        {' '}
+        <p style={{ margin: 0, fontStyle: 'italic', color: '#9e9e9e' }}> - {option.value}</p>
+      </div>
+    </>
+  )
+}
 const UsdtPage = (props) => {
   const {
     bank: crypto,
@@ -300,15 +313,14 @@ const UsdtPage = (props) => {
         {
           noBankSelected && (
             <div className={classes.inputBankWrapper}>
-              <label>Bank:</label>
-              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
-                <option disabled value=''>--Select Your Bank--</option>
-                {
-                  banks.map((bank, i) => (
-                    <option key={i} value={bank.value} label={<Logo bank={bank} currency={currency} noMargin width={120} height={38} />}> {bank.text}</option>
-                  ))
-                }
-              </select>
+              <InputSelect
+                onChange={(val) => setBank(val)}
+                label='Bank:'
+                options={banks.map((bank) => ({ label: bank.text, value: bank.value }))}
+                renderOptions={(option) => renderOptions(option, currency)}
+                placeholder='Select Bank'
+                value={bank}
+              />
               </div>
           )
         }

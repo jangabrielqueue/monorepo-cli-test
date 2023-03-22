@@ -158,6 +158,7 @@ const App = () => {
     <FormContext {...methods}>
       <ThemeProvider theme={appTheme}>
         <IntlProvider locale={locale} messages={localeMessages[locale]}>
+          <div id='backdrop' />
           <div className={classes.wrapper}>
             <Suspense fallback={<FallbackPage />}>
               <Router>
