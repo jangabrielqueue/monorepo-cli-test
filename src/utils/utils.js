@@ -78,15 +78,19 @@ function convertToMiliseconds (time) {
 }
 
 const currencyValue = {
-  'VND': 1,
-  'THB': 2,
-  'RMB': 3,
-  'IDR': 4,
-  'MYR': 5,
-  'KRW': 6
+  'VND': [1, 'Vn Dong'],
+  'THB': [2, 'Thai Baht'],
+  'RMB': [3, 'Renminbi'],
+  'IDR': [4, 'Rupiah'],
+  'MYR': [5, 'Ringgit'],
+  'KRW': [6, 'Korean Won']
 }
 function getCurrencyValue (currency) {
-  return currencyValue[currency]
+  return currencyValue[currency][0]
+}
+
+function getCurrencyText (currency) {
+  return currencyValue[currency][1]
 }
 
 export {
@@ -102,5 +106,6 @@ export {
   checkIfAppOneOtp,
   checkIfAppTwoOtp,
   convertToMiliseconds,
-  getCurrencyValue
+  getCurrencyValue,
+  getCurrencyText
 }

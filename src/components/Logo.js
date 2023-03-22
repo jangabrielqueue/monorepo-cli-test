@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
     type === 'scratch-card' ? '400px' : '200px',
 
     '& img': {
-      height: 'auto'
+      height: ({ height }) => height
     },
 
     '@media (max-width: 36em) and (orientation: portrait)': {
@@ -21,10 +21,10 @@ const useStyles = createUseStyles({
   }
 })
 
-const Logo = ({ bank, currency, type, width = '200', height = '80', noMargin }) => {
+const Logo = ({ bank, currency, type, width = '200', height = 'auto', noMargin }) => {
   const requestImageFileWebp = require.context('../assets/banks', true, /^\.\/.*\.png$/)
   const isBankKnown = checkBankIfKnown(currency, bank)
-  const classes = useStyles({ bank, type, noMargin })
+  const classes = useStyles({ bank, type, noMargin, height })
   const bankIsMomoOrZalo = checkIfZaloBank(bank) || checkIfMomoBank(bank)
 
   const getFilePathWebP = (bank, type) => {

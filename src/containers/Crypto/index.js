@@ -17,6 +17,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
+import { getCurrencyText } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
 // import logo from 
 const useStyles = createUseStyles({
@@ -53,7 +54,6 @@ const useStyles = createUseStyles({
     borderBottom: '0.5px solid #E3E3E3'
   },
   submitContainer: {
-    margin: '0 10px',
     padding: '10px 0'
   },
   cryptoLogoHeader: {
@@ -66,9 +66,8 @@ const useStyles = createUseStyles({
     }
   },
   inputWrapper: {
-    display: 'grid',
+    display: 'flex',
     width: '100%',
-    gridTemplateColumns: '2fr 1fr',
     border: '1px solid #E3E3E3 !important',
     borderRadius: '10px'
   },
@@ -77,12 +76,9 @@ const useStyles = createUseStyles({
   },
   inputSelect: {
     width: '100%',
-    border: 'none',
+    border: '1px solid #E3E3E3 !important',
     minHeight: '38px',
     borderRadius: '10px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     height: '100%',
     '&:last-child': {
       borderLeft: '1px solid #E3E3E3 !important',
@@ -90,18 +86,35 @@ const useStyles = createUseStyles({
     }
   },
   inputContainer: {
-    paddingLeft: 6,
+    flex: 2,
+    height: 'auto !important',
+    padding: '10px 6px !important',
     border: 'none !important',
-    lineHeight: '38px',
     background: 'transparent',
-    '&:last-child': {
-      borderLeft: '1px solid #E3E3E3 !important'
-    }
+    fontSize: '30px !important'
+  },
+  inputLabelContainer: {
+    padding: '10px 0 10px 10px',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    borderLeft: '1px solid #E3E3E3 !important'
+  },
+  inputLabel: {
+    fontSize: 18
+  },
+  inputHelperText: {
+    fontSize: 14,
+    color: '#9e9e9e',
+    fontStyle: 'italic'
+
   },
   timelineWrapper: {
     display: 'flex',
     alignItems: 'center',
-    margin: '5px auto'
+    margin: '5px auto',
+    color: '#9e9e9e'
   },
   timeline: {
     display: 'flex',
@@ -123,12 +136,29 @@ const useStyles = createUseStyles({
   },
   unknownBankError: {
     marginBottom: 10
+  },
+  bankDisplay: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    borderTop: '1px solid #E3E3E3',
+    padding: '20px 0',
+    '& p': {
+      fontStyle: 'italic',
+      color: '#9e9e9e',
+      margin: 0,
+      paddingRight: 10
+    }
   }
 })
 
 const paymentChannelCases = {
   1: 'bank',
   2: 'qrcode'
+}
+
+const cryptoHelperTexts = {
+  USDT: 'TRC-20 Thether'
 }
 const UsdtPage = (props) => {
   const {
@@ -216,6 +246,7 @@ const UsdtPage = (props) => {
           {
             noAmount ? (
               <input
+                // style={{ fontSize: 30}} 
                 className={classes.inputContainer}
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                 type='number'
@@ -230,7 +261,14 @@ const UsdtPage = (props) => {
                 <div className={classes.inputContainer}>{new Intl.NumberFormat(language).format(cryptoAmount)}</div>
               )
           }
-          <div className={classes.inputContainer}>{crypto}</div>
+          <div className={classes.inputLabelContainer}>
+            <div className={classes.inputLabel}>
+              {crypto}
+            </div>
+            <div className={classes.inputHelperText}>
+              {cryptoHelperTexts[crypto]}
+            </div>
+          </div>
         </div>
         <section className={classes.timelineWrapper}>
           <div className={classes.timeline}>
@@ -248,42 +286,46 @@ const UsdtPage = (props) => {
           <div
             className={classes.inputContainer}
           >
-            {new Intl.NumberFormat(language).format(amount) || 0}
+            {new Intl.NumberFormat(language).format(amount.toFixed(2)) || 0}
           </div>
-          <div className={classes.inputContainer}>{currency}</div>
+          <div className={classes.inputLabelContainer}>
+            <div className={classes.inputLabel}>
+              {currency}
+            </div>
+            <div className={classes.inputHelperText}>
+              {getCurrencyText(currency)}
+            </div>  
+          </div>
         </div>
         {
           noBankSelected && (
             <div className={classes.inputBankWrapper}>
               <label>Bank:</label>
-              <div className={classes.inputWrapper}>
-                <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
-                  <option disabled value=''>--Select Bank--</option>
-                  {
-                    banks.map((bank, i) => (
-                      <option key={i} value={bank.value}>{bank.text}</option>
-                    ))
-                  }
-                </select>
-                <div className={classes.inputSelect}>
-                  <Logo bank={bank} currency={currency} noMargin width={120} />
-                </div>
+              <select className={classes.inputSelect} onChange={(e) => setBank(e.target.value)} defaultValue=''>
+                <option disabled value=''>--Select Your Bank--</option>
+                {
+                  banks.map((bank, i) => (
+                    <option key={i} value={bank.value} label={<Logo bank={bank} currency={currency} noMargin width={120} height={38} />}> {bank.text}</option>
+                  ))
+                }
+              </select>
               </div>
-            </div>
           )
         }
+        <div className={classes.submitContainer}>
+          <GlobalButton
+            label='Continue'
+            color='main'
+            onClick={handleSubmitForm}
+          />
+        </div>
         {!noBankSelected && (
-          <>
-            <Logo bank={paymentChannelType} currency={currency} />
-          </>)}
+          <div className={classes.bankDisplay}>
+            <p>Pay with</p>
+            <Logo bank={paymentChannel} currency={currency} noMargin width={120} height={38} />
+          </div>)}
       </section>
-      <div className={classes.submitContainer}>
-        <GlobalButton
-          label='Continue'
-          color='main'
-          onClick={handleSubmitForm}
-        />
-      </div>
+      
     </>
   )
   return (
@@ -294,15 +336,6 @@ const UsdtPage = (props) => {
           <div className={classes.cryptoContent}>
             <section className={classes.cryptoHeader}>
               <Logo />
-              <div className={classes.cryptoLogoHeader}>
-                <p>Buy {crypto}</p>
-                <img
-                  alt={crypto}
-                  width='50'
-                  height='50'
-                  src={require(`../../assets/banks/${crypto?.toUpperCase()}_LOGO.png`)}
-                />
-              </div>
               {
                 error.hasError && <ErrorAlert message={error.message} />
               }
