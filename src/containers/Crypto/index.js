@@ -155,7 +155,7 @@ const useStyles = createUseStyles({
 
 const paymentChannelCases = {
   1: 'bank',
-  2: 'qrcode'
+  3: 'qrcode'
 }
 
 const cryptoHelperTexts = {
