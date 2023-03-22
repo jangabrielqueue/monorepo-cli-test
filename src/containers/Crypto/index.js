@@ -25,16 +25,11 @@ const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
     minWidth: '500px',
-    padding: '75px 0 0',
+    padding: '75px 0 0 0',
 
-    '@media (max-width: 62em)': {
-      padding: '0 20px'
-    },
 
     '@media (max-width: 36em)': {
       minWidth: 'calc(36em - 175px)',
-      overflowY: 'scroll',
-      maxHeight: 'calc(100vh - 83px)'
     },
 
     '@media (max-width: 33.750em)': {
@@ -167,6 +162,9 @@ const cryptoHelperTexts = {
   USDT: 'TRC-20 Thether'
 }
 
+const cryptoMinMax = {
+  USDT: [25, 25000]
+}
 const renderOptions = (option, currency) => {
   return (
     <>
@@ -215,6 +213,12 @@ const UsdtPage = (props) => {
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
+      return
+    }
+    const min = cryptoMinMax[crypto][0]
+    const max = cryptoMinMax[crypto][1]
+    if (cryptoAmount < min || cryptoAmount > max) {
+      setError({ hasError: true, message: `Error: ${crypto} amount must be in the range of ${min} - ${max}` })
       return
     }
     const roundedoffAmount = amount.toFixed(0)
