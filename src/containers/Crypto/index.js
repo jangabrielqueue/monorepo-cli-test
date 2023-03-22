@@ -27,17 +27,21 @@ const useStyles = createUseStyles({
     minWidth: '500px',
     padding: '75px 0 0',
 
+    '@media (max-width: 62em)': {
+      padding: '0 20px'
+    },
+
     '@media (max-width: 36em)': {
-      minWidth: 0,
+      minWidth: 'calc(36em - 175px)',
       overflowY: 'scroll',
-      maxHeight: 'calc(100vh - 0px)'
+      maxHeight: 'calc(100vh - 83px)'
     },
 
     '@media (max-width: 33.750em)': {
       padding: '35px 20px 0'
     }
   },
-  crpytoContainer: {
+  cryptoContainer: {
     margin: '0 auto',
     maxWidth: '466px'
   },
@@ -47,7 +51,7 @@ const useStyles = createUseStyles({
     boxShadow: '0 5px 10px 0 rgba(112,112,112,0.3)'
   },
   cryptoBody: {
-    padding: '20px 20px 0 20px',
+    padding: '20px',
     position: 'relative'
   },
   cryptoHeader: {
@@ -88,11 +92,13 @@ const useStyles = createUseStyles({
   },
   inputContainer: {
     flex: 2,
+    display: 'flex',
+    alignItems: 'center',
     height: 'auto !important',
     padding: '10px 6px !important',
     border: 'none !important',
     background: 'transparent',
-    fontSize: '30px !important'
+    fontSize: '26px !important'
   },
   inputLabelContainer: {
     padding: '10px 0 10px 10px',
@@ -103,12 +109,11 @@ const useStyles = createUseStyles({
     borderLeft: '1px solid #E3E3E3 !important'
   },
   inputLabel: {
-    fontSize: 18
+    fontSize: 16
   },
   inputHelperText: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#9e9e9e',
-    fontStyle: 'italic'
 
   },
   timelineWrapper: {
