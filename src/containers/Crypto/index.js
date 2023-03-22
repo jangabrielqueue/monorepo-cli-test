@@ -163,7 +163,7 @@ const cryptoHelperTexts = {
 }
 
 const cryptoMinMax = {
-  USDT: [25, 25000]
+  USDT: [20, 25000]
 }
 const renderOptions = (option, currency) => {
   return (
@@ -210,15 +210,16 @@ const UsdtPage = (props) => {
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
   const [error, setError] = useState({ hasError: false, message: '' })
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
+  const min = cryptoMinMax[crypto][0]
+  const max = cryptoMinMax[crypto][1]
+  
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
       return
     }
-    const min = cryptoMinMax[crypto][0]
-    const max = cryptoMinMax[crypto][1]
     if (cryptoAmount < min || cryptoAmount > max) {
-      setError({ hasError: true, message: `Error: ${crypto} amount must be in the range of ${min} - ${max}` })
+      setError({ hasError: true, message: `Error:  amount must be in the range of ${min} - ${max} ${crypto}` })
       return
     }
     const roundedoffAmount = amount.toFixed(0)
