@@ -344,7 +344,7 @@ const UsdtPage = (props) => {
         {!noBankSelected && (
           <div className={classes.bankDisplay}>
             <p>Pay with</p>
-            <Logo bank={paymentChannel} currency={currency} noMargin width={120} height={38} />
+            <Logo bank={paymentChannelType} currency={currency} noMargin height={30} width='auto' />
           </div>)}
       </section>
     </>
