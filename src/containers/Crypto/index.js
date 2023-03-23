@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { QueryParamsContext, QueryParamsSetterContext } from '../../contexts/QueryParamsContext'
 import { ErrorBoundary } from 'react-error-boundary'
 // import { QueryParamsValidator } from '../../components/QueryParamsValidator'
@@ -20,16 +20,15 @@ import AutoRedirect from '../../components/AutoRedirect'
 import { getCurrencyText } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
 import InputSelect from '../../components/Inputs/InputSelect'
-// import logo from 
+// import logo from
 const useStyles = createUseStyles({
   formWrapper: {
     height: '100%',
     minWidth: '500px',
     padding: '75px 0 0 0',
 
-
     '@media (max-width: 36em)': {
-      minWidth: 'calc(36em - 175px)',
+      minWidth: 'calc(36em - 175px)'
     },
 
     '@media (max-width: 33.750em)': {
@@ -108,7 +107,7 @@ const useStyles = createUseStyles({
   },
   inputHelperText: {
     fontSize: 11,
-    color: '#9e9e9e',
+    color: '#9e9e9e'
 
   },
   timelineWrapper: {
@@ -159,7 +158,7 @@ const paymentChannelCases = {
 }
 
 const cryptoHelperTexts = {
-  USDT: 'TRC-20 Thether'
+  USDT: 'TRC-20 Tether'
 }
 
 const cryptoMinMax = {
@@ -209,10 +208,10 @@ const UsdtPage = (props) => {
   const [banks, setBanks] = useState([])
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
   const [error, setError] = useState({ hasError: false, message: '' })
+  const exchangeRate = useRef(null)
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
   const min = cryptoMinMax[crypto][0]
   const max = cryptoMinMax[crypto][1]
-  
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
@@ -223,7 +222,7 @@ const UsdtPage = (props) => {
       return
     }
     const roundedoffAmount = amount.toFixed(0)
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${conversion}`
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
     history.push(url)
@@ -246,12 +245,14 @@ const UsdtPage = (props) => {
   }, [paymentChannel, currency])
 
   const getRates = useCallback(async () => {
-    const exchangeRate = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel, merchant })
-    if (exchangeRate != null && Object.hasOwn(exchangeRate, currency)) {
-      setConversion(exchangeRate[currency].value)
+    const res = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel, merchant })
+    if (res != null && Object.hasOwn(res, currency)) {
+      const rate = res[currency]
+      setConversion(rate.value)
+      res.current = rate.exchangeRate
     } else {
       setConversion(0)
-      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: < FormattedMessage {...messages.errors.networkError} /></> })
+      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></> })
     }
   }, [paymentChannel, currency, methodType, merchant])
 
@@ -269,7 +270,6 @@ const UsdtPage = (props) => {
           {
             noAmount ? (
               <input
-                // style={{ fontSize: 30}} 
                 className={classes.inputContainer}
                 ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                 type='number'
@@ -301,8 +301,8 @@ const UsdtPage = (props) => {
           </div>
           <div style={{ fontSize: 12, display: 'flex' }}>
             {
-              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} Expected rate</> 
-            }             
+              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} Expected rate</>
+            }
           </div>
         </section>
         <div className={classes.inputWrapper}>
@@ -317,7 +317,7 @@ const UsdtPage = (props) => {
             </div>
             <div className={classes.inputHelperText}>
               {getCurrencyText(currency)}
-            </div>  
+            </div>
           </div>
         </div>
         {
@@ -331,7 +331,7 @@ const UsdtPage = (props) => {
                 placeholder='Select Bank'
                 value={bank}
               />
-              </div>
+            </div>
           )
         }
         <div className={classes.submitContainer}>
@@ -347,7 +347,6 @@ const UsdtPage = (props) => {
             <Logo bank={paymentChannel} currency={currency} noMargin width={120} height={38} />
           </div>)}
       </section>
-      
     </>
   )
   return (
