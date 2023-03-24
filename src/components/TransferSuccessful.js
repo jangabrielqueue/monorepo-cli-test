@@ -2,7 +2,7 @@ import React from 'react'
 import { FormattedMessage } from 'react-intl'
 import messages from './messages'
 import { createUseStyles } from 'react-jss'
-
+import { cryptoHelperTexts } from '../utils/utils'
 // styling
 const useStyles = createUseStyles({
   redirectContentSuccess: {
@@ -28,8 +28,7 @@ const useStyles = createUseStyles({
     '& p': {
       color: '#767676',
       fontSize: '16px',
-      margin: '25px 0',
-
+      margin: ({ isCrypto }) => `25px 0${isCrypto && ' 12.5px'}`,
       '& span': {
         fontWeight: '600'
       }
@@ -47,17 +46,47 @@ const useStyles = createUseStyles({
     height: '50px',
     justifyContent: 'center',
     width: '100%'
+  },
+  cryptoDisplay: {
+    borderTop: '1px solid #e3e3e3',
+    margin: '12.5px 0',
+    padding: 12.5,
+    display: 'flex',
+    justifyContent: 'center',
+    '&> *': {
+      padding: '0 4px'
+    },
+    '& img': {
+      margin: 0,
+      padding: 0
+    }
   }
 })
 
 const TransferSuccessful = ({ transferResult, language }) => {
-  const classes = useStyles()
+  const isCrypto = transferResult.exchangeAmount != null
+  const classes = useStyles({ isCrypto })
 
   return (
     <div className={classes.redirectContentSuccess}>
       <img alt='submit-success' src='/icons/submit-success.svg' />
       <h1>{<FormattedMessage {...messages.success.successfullyDeposit} />}</h1>
       <p><span>Reference</span>: {`${transferResult.reference}`}</p>
+      {isCrypto && (
+        <>
+          <div className={classes.cryptoDisplay}>
+            <img
+              src={require(`../assets/banks/${transferResult.exchangeCurrency?.toUpperCase()}_LOGO.png`)}
+              height={20}
+              width={20}
+              alt={transferResult.exchangeCurrency}
+            />
+            <span>{cryptoHelperTexts[transferResult.exchangeCurrency]}</span>
+            <span>{transferResult.exchangeCurrency}</span>
+            {new Intl.NumberFormat(language).format(transferResult.exchangeAmount)}
+          </div>
+        </>
+      )}
       <div className={classes.transactionAmount}>
         <span>
           {

@@ -78,12 +78,12 @@ function convertToMiliseconds (time) {
 }
 
 const currencyValue = {
-  'VND': [1, 'Vn Dong'],
-  'THB': [2, 'Thai Baht'],
-  'RMB': [3, 'Renminbi'],
-  'IDR': [4, 'Rupiah'],
-  'MYR': [5, 'Ringgit'],
-  'KRW': [6, 'Korean Won']
+  VND: [1, 'Vn Dong'],
+  THB: [2, 'Thai Baht'],
+  RMB: [3, 'Renminbi'],
+  IDR: [4, 'Rupiah'],
+  MYR: [5, 'Ringgit'],
+  KRW: [6, 'Korean Won']
 }
 function getCurrencyValue (currency) {
   return currencyValue[currency][0]
@@ -91,6 +91,10 @@ function getCurrencyValue (currency) {
 
 function getCurrencyText (currency) {
   return currencyValue[currency][1]
+}
+
+const cryptoHelperTexts = {
+  USDT: 'TRC-20 Tether'
 }
 
 export {
@@ -107,5 +111,6 @@ export {
   checkIfAppTwoOtp,
   convertToMiliseconds,
   getCurrencyValue,
-  getCurrencyText
+  getCurrencyText,
+  cryptoHelperTexts
 }

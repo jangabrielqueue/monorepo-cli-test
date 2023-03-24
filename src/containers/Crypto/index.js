@@ -17,7 +17,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
-import { getCurrencyText } from '../../utils/utils'
+import { cryptoHelperTexts, getCurrencyText } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
 import InputSelect from '../../components/Inputs/InputSelect'
 // import logo from
@@ -157,10 +157,6 @@ const paymentChannelCases = {
   3: 'qrcode'
 }
 
-const cryptoHelperTexts = {
-  USDT: 'TRC-20 Tether'
-}
-
 const cryptoMinMax = {
   USDT: [20, 25000]
 }
@@ -249,7 +245,7 @@ const UsdtPage = (props) => {
     if (res != null && Object.hasOwn(res, currency)) {
       const rate = res[currency]
       setConversion(rate.value)
-      res.current = rate.exchangeRate
+      exchangeRate.current = rate.exchangeRate
     } else {
       setConversion(0)
       setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></> })
