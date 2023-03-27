@@ -295,10 +295,14 @@ const UsdtPage = (props) => {
             <div className={classes.timelineCircle} />
             <div className={classes.timelineLine} />
           </div>
-          <div style={{ fontSize: 12, display: 'flex' }}>
+          <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column' }}>
             {
               conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} Expected rate</>
             }
+            <div style={{ fontSize: 10 }}>
+              <b>Note</b>: Expected rate is subject to change without prior notice
+
+            </div>
           </div>
         </section>
         <div className={classes.inputWrapper}>
