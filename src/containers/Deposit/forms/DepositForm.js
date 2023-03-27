@@ -171,7 +171,19 @@ const useStyles = createUseStyles({
   singleFormFooter: {
     marginTop: '5px',
     padding: '10px 0 5px',
-    textAlign: 'center'
+    textAlign: 'center',
+    '@media (max-width: 36em)': {
+      padding: '10px',
+      backgroundColor: '#FFF',
+      bottom: 0,
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      left: 0,
+      position: 'fixed',
+      right: 0,
+      width: '100%'
+    }
   },
 
   singleFormBidvFooter: {
