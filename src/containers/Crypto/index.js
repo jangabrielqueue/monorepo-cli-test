@@ -8,7 +8,6 @@ import { createUseStyles } from 'react-jss'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import Logo from '../../components/Logo'
 import GlobalButton from '../../components/GlobalButton'
-import { useFormContext } from 'react-hook-form'
 import messages from '../Deposit/messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
@@ -193,8 +192,7 @@ const UsdtPage = (props) => {
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
-  const { register } = useFormContext()
-  const [cryptoAmount, setCryptoAmount] = useState(initialConverted)
+  const [cryptoAmount, setCryptoAmount] = useState(initialConverted || '')
   const [conversion, setConversion] = useState(null)
   const amount = cryptoAmount * conversion
   const analytics = useContext(FirebaseContext)
@@ -233,7 +231,9 @@ const UsdtPage = (props) => {
 
   function handleChange (e) {
     const value = e.target.value
-    setCryptoAmount(value)
+    if (/^(?!0)\d*$/.test(value)) {
+      setCryptoAmount(value)
+    }
   }
   const getBanks = useCallback(async () => {
     const res = await getBankRequest({ paymentChannel, currency })
@@ -267,8 +267,8 @@ const UsdtPage = (props) => {
             noAmount ? (
               <input
                 className={classes.inputContainer}
-                ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
-                type='number'
+                // ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
+                type='text'
                 id='converted'
                 name='converted'
                 autoComplete='off'
