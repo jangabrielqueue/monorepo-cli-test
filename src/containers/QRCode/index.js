@@ -201,7 +201,13 @@ const QRCode = (props) => {
       requester: requester,
       signature: signature,
       successfulUrl: successfulUrl,
-      uniqueAmount: responseData.amount
+      uniqueAmount: responseData.amount,
+      ...isCrypto ? {
+        methodType,
+        exchangeAmount,
+        exchangeCurrency,
+        exchangeRate
+      } : {}
     }
     setTimeout({
       minutes: 0,
