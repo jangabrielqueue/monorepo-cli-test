@@ -204,8 +204,8 @@ const UsdtPage = (props) => {
   const [error, setError] = useState({ hasError: false, message: '' })
   const exchangeRate = useRef(null)
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
-  const min = cryptoMinMax[crypto][0]
-  const max = cryptoMinMax[crypto][1]
+  const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
+  const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
