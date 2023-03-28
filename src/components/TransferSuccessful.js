@@ -48,6 +48,12 @@ const useStyles = createUseStyles({
     width: '100%'
   },
   cryptoDisplay: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  cryptoAmountDisplay: {
     borderTop: '1px solid #e3e3e3',
     margin: '12.5px 0',
     padding: 12.5,
@@ -73,8 +79,12 @@ const TransferSuccessful = ({ transferResult, language }) => {
       <h1>{<FormattedMessage {...messages.success.successfullyDeposit} />}</h1>
       <p><span>Reference</span>: {`${transferResult.reference}`}</p>
       {isCrypto && (
-        <>
-          <div className={classes.cryptoDisplay}>
+        <div className={classes.cryptoDisplay}>
+          {transferResult.exchangeConfirmedRate && (
+            <>
+              Exchange Rate: {new Intl.NumberFormat(language).format(transferResult.exchangeConfirmedRate)}
+            </>)}
+          <div className={classes.cryptoAmountDisplay}>
             <img
               src={require(`../assets/banks/${transferResult.exchangeCurrency?.toUpperCase()}_LOGO.png`)}
               height={20}
@@ -85,13 +95,11 @@ const TransferSuccessful = ({ transferResult, language }) => {
             <span>{transferResult.exchangeCurrency}</span>
             {new Intl.NumberFormat(language).format(transferResult.exchangeAmount)}
           </div>
-        </>
+        </div>
       )}
       <div className={classes.transactionAmount}>
         <span>
-          {
-            new Intl.NumberFormat(language, { style: 'currency', currency: transferResult.currency }).format(transferResult.amount)
-          }
+          {transferResult.currency} {transferResult.amount?.toLocaleString(language)}
         </span>
       </div>
     </div>
