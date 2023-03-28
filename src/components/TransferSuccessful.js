@@ -99,7 +99,7 @@ const TransferSuccessful = ({ transferResult, language }) => {
       )}
       <div className={classes.transactionAmount}>
         <span>
-          {transferResult.currency} {transferResult.amount?.toLocaleString(language)}
+          {transferResult.currency} {transferResult.amount?.toLocaleString('en-US')}
         </span>
       </div>
     </div>

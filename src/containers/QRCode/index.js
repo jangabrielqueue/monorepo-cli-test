@@ -285,11 +285,7 @@ const QRCode = (props) => {
   const handleQRCodeSubmitResult = useCallback(
     (resultQrCodeSubmit) => {
       setTransferResult({
-        statusCode: resultQrCodeSubmit.statusCode,
-        reference: resultQrCodeSubmit.reference,
-        statusMessage: resultQrCodeSubmit.statusMessage,
-        amount: resultQrCodeSubmit.amount,
-        currency: resultQrCodeSubmit.currency,
+        ...resultQrCodeSubmit,
         isSuccessful: resultQrCodeSubmit.statusCode === '006'
       })
       setLoadingButton(false)
