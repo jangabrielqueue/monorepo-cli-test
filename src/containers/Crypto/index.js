@@ -157,7 +157,7 @@ const paymentChannelCases = {
 }
 
 const cryptoMinMax = {
-  USDT: [20, 25000]
+  'USDT-TRC20': [20, 25000]
 }
 const renderOptions = (option, currency) => {
   return (
@@ -206,6 +206,7 @@ const UsdtPage = (props) => {
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
   const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
+  const helperText = crypto in cryptoHelperTexts ? cryptoHelperTexts[crypto] : { title: '', helperText: '' }
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
@@ -245,7 +246,7 @@ const UsdtPage = (props) => {
     if (res != null && Object.hasOwn(res, currency)) {
       const rate = res[currency]
       setConversion(rate.value)
-      exchangeRate.current = rate.exchangeRate
+      exchangeRate.current = rate.value
     } else {
       setConversion(0)
       setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></> })
@@ -282,10 +283,10 @@ const UsdtPage = (props) => {
           }
           <div className={classes.inputLabelContainer}>
             <div className={classes.inputLabel}>
-              {crypto}
+              {helperText.title}
             </div>
             <div className={classes.inputHelperText}>
-              {cryptoHelperTexts[crypto]}
+              {helperText.helperText}
             </div>
           </div>
         </div>

@@ -94,7 +94,7 @@ function getCurrencyText (currency) {
 }
 
 const cryptoHelperTexts = {
-  USDT: 'TRC-20 Tether'
+  'USDT-TRC20': { helperText: 'TRC-20 Tether', title: 'USDT' }
 }
 
 export {

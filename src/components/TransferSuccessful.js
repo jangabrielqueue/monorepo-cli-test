@@ -72,7 +72,7 @@ const useStyles = createUseStyles({
 const TransferSuccessful = ({ transferResult, language }) => {
   const isCrypto = transferResult.exchangeAmount != null
   const classes = useStyles({ isCrypto })
-
+  const cryptoHelperText = isCrypto && transferResult.exchangeCurrency in cryptoHelperTexts ? cryptoHelperTexts[transferResult.exchangeCurrency] : { title: '', helperText: '' }
   return (
     <div className={classes.redirectContentSuccess}>
       <img alt='submit-success' src='/icons/submit-success.svg' />
@@ -82,7 +82,7 @@ const TransferSuccessful = ({ transferResult, language }) => {
         <div className={classes.cryptoDisplay}>
           {transferResult.exchangeConfirmedRate && (
             <>
-              Exchange Rate: {new Intl.NumberFormat(language).format(transferResult.exchangeConfirmedRate)}
+              Exchange Rate: 1 {cryptoHelperText.title} = {new Intl.NumberFormat(language).format(transferResult.exchangeConfirmedRate)} {transferResult.currency}
             </>)}
           <div className={classes.cryptoAmountDisplay}>
             <img
@@ -91,8 +91,8 @@ const TransferSuccessful = ({ transferResult, language }) => {
               width={20}
               alt={transferResult.exchangeCurrency}
             />
-            <span>{cryptoHelperTexts[transferResult.exchangeCurrency]}</span>
-            <span>{transferResult.exchangeCurrency}</span>
+            <span>{cryptoHelperText.helperText}</span>
+            <span>{cryptoHelperText.title}</span>
             {new Intl.NumberFormat(language).format(transferResult.exchangeAmount)}
           </div>
         </div>
