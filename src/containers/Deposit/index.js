@@ -25,7 +25,7 @@ import ProgressModal from '../../components/ProgressModal'
 import LoadingIcon from '../../components/LoadingIcon'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
-import { sendDepositRequest, sendDepositOtp, sendDepositCryptoRequest } from './Requests'
+import { sendDepositRequest, sendDepositOtp } from './Requests'
 import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod, checkIfQrOtp } from '../../utils/utils'
 import { checkBankIfKnown, checkIfBidvBank, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
 
@@ -207,7 +207,6 @@ const Deposit = (props) => {
     if (type === 'card') { // this is to check if the otp type is card otp
       setIsCardOTP(prevState => !prevState)
     }
-    const api = isCrypto ? sendDepositCryptoRequest : sendDepositRequest
     const otpType = type === 'sms' || type === undefined ? '1' : '2'
 
     analytics.logEvent('login', {
@@ -236,7 +235,7 @@ const Deposit = (props) => {
       statusMessage: <FormattedMessage {...messages.progress.beginningTransaction} />
     })
     await sleep(750)
-    const result = await api({
+    const result = await sendDepositRequest({
       currency,
       merchant,
       requester,
