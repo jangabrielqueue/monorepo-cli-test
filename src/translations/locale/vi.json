@@ -66,7 +66,7 @@
     "notes.notesFive": "Mệnh giá đã chọn > mệnh giá thật, sẽ trả theo mệnh giá thật + phạt 15% số tiền thực nhận.",
     "notes.notesSix": "Phí giao dịch:",
     "notes.expectedRate": "Tỷ giá dự kiến sẽ được ưu tiên thay đổi mà không cần báo trước.",
-    "notes.expectedRateTitle": "tỷ lệ dự kiến",
+    "notes.expectedRateTitle": "Tỷ giá dự kiến",
     "errors.networkErrorTitle": "Lỗi Hệ Thống",
     "otpNewRecipient": "OTP cho người nhận.",
     "errors.connectionError": "Kết nối đã đóng, vui lòng làm mới trang.",

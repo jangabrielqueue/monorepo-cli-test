@@ -298,7 +298,7 @@ const UsdtPage = (props) => {
           </div>
           <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column' }}>
             {
-              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency}<FormattedMessage {...messages.notes.expectedRateTitle} /></>
+              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} <FormattedMessage {...messages.notes.expectedRateTitle} /></>
             }
             <div style={{ fontSize: 10 }}>
               <b><FormattedMessage {...messages.notes.noteTitle} /></b> <FormattedMessage {...messages.notes.expectedRate} />
