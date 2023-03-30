@@ -204,6 +204,7 @@ const UsdtPage = (props) => {
   const [error, setError] = useState({ hasError: false, message: '' })
   const exchangeRate = useRef(null)
   const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
+  const validQueryAmount = initialConverted % 1 === 0
   const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
   const helperText = crypto in cryptoHelperTexts ? cryptoHelperTexts[crypto] : { title: '', helperText: '' }
@@ -216,7 +217,7 @@ const UsdtPage = (props) => {
       setError({ hasError: true, message: `Error:  amount must be in the range of ${min} - ${max} ${crypto}` })
       return
     }
-    const roundedoffAmount = amount.toFixed(0)
+    const roundedoffAmount = Math.round(amount)
     const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}`
     const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
     setQuery(queryString)
@@ -363,7 +364,7 @@ const UsdtPage = (props) => {
               }
             </section>
             {
-              bankIsKnown ? renderBody : (
+              (bankIsKnown && validQueryAmount) ? renderBody : (
                 <div className={classes.unknownBankError}>
                   <AutoRedirect delay={10000} url={failedUrl}>
                     <TransferFailed bank={bank} transferResult={{ message: <FormattedMessage {...messages.errors.verificationFailed} /> }} />
