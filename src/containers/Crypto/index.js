@@ -8,7 +8,7 @@ import { createUseStyles } from 'react-jss'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import Logo from '../../components/Logo'
 import GlobalButton from '../../components/GlobalButton'
-import messages from '../Deposit/messages'
+import messages from './messages'
 import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { getBankRequest, getExchangeRateRequest } from './Request'
@@ -269,7 +269,6 @@ const UsdtPage = (props) => {
             noAmount ? (
               <input
                 className={classes.inputContainer}
-                // ref={register({ required: <FormattedMessage {...messages.placeholders.inputLoginName} /> })}
                 type='text'
                 id='converted'
                 name='converted'
@@ -299,11 +298,10 @@ const UsdtPage = (props) => {
           </div>
           <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column' }}>
             {
-              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} Expected rate</>
+              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency}<FormattedMessage {...messages.notes.expectedRateTitle} /></>
             }
             <div style={{ fontSize: 10 }}>
-              <b>Note</b>: Expected rate is subject to change without prior notice
-
+              <b><FormattedMessage {...messages.notes.noteTitle} /></b> <FormattedMessage {...messages.notes.expectedRate} />
             </div>
           </div>
         </section>
