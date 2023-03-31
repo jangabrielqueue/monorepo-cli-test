@@ -80,9 +80,9 @@ const TransferSuccessful = ({ transferResult, language }) => {
       <p><span>Reference</span>: {`${transferResult.reference}`}</p>
       {isCrypto && (
         <div className={classes.cryptoDisplay}>
-          {transferResult.exchangeConfirmedRate && (
+          {transferResult.exchangeCreatedRate && (
             <>
-              Exchange Rate: 1 {cryptoHelperText.title} = {new Intl.NumberFormat(language).format(transferResult.exchangeConfirmedRate)} {transferResult.currency}
+              Exchange Rate: 1 {cryptoHelperText.title} = {new Intl.NumberFormat(language).format(transferResult.exchangeCreatedRate)} {transferResult.currency}
             </>)}
           <div className={classes.cryptoAmountDisplay}>
             <img
