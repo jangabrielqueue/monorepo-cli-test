@@ -77,6 +77,26 @@ function convertToMiliseconds (time) {
   return time.minutes * 60000 + time.seconds * 1000
 }
 
+const currencyValue = {
+  VND: [1, 'Vn Dong'],
+  THB: [2, 'Thai Baht'],
+  RMB: [3, 'Renminbi'],
+  IDR: [4, 'Rupiah'],
+  MYR: [5, 'Ringgit'],
+  KRW: [6, 'Korean Won']
+}
+function getCurrencyValue (currency) {
+  return currencyValue[currency][0]
+}
+
+function getCurrencyText (currency) {
+  return currencyValue[currency][1]
+}
+
+const cryptoHelperTexts = {
+  'USDT-TRC20': { helperText: 'TRC-20 Tether', title: 'USDT' }
+}
+
 export {
   checkIfQrOtp,
   isNullOrWhitespace,
@@ -89,5 +109,8 @@ export {
   isTopUp,
   checkIfAppOneOtp,
   checkIfAppTwoOtp,
-  convertToMiliseconds
+  convertToMiliseconds,
+  getCurrencyValue,
+  getCurrencyText,
+  cryptoHelperTexts
 }
