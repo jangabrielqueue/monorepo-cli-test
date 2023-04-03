@@ -203,7 +203,7 @@ const UsdtPage = (props) => {
   const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
   const [error, setError] = useState({ hasError: false, message: '' })
   const exchangeRate = useRef(null)
-  const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
+  const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || paymentChannelType === 'AUTO' || noBankSelected
   const validQueryAmount = initialConverted % 1 === 0
   const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
