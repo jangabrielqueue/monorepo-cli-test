@@ -261,6 +261,10 @@ const UsdtPage = (props) => {
   useEffect(() => {
     getRates().finally(() => {})
   }, [getRates])
+
+  useEffect(() => {
+    setCryptoAmount(initialConverted)
+  }, [initialConverted])
   const renderBody = (
     <>
       <section className={classes.cryptoBody}>
