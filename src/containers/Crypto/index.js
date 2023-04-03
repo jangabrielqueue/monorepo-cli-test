@@ -313,7 +313,7 @@ const UsdtPage = (props) => {
           <div
             className={classes.inputContainer}
           >
-            {new Intl.NumberFormat(language).format(amount.toFixed(2)) || 0}
+            ~ {new Intl.NumberFormat(language).format(amount.toFixed(2)) || 0}
           </div>
           <div className={classes.inputLabelContainer}>
             <div className={classes.inputLabel}>
