@@ -16,7 +16,7 @@ import localeKo from './translations/locale/ko.json'
 import { QueryParamsContext } from './contexts/QueryParamsContext'
 
 // lazy loaded components
-const Crypto = lazy(() => import('./containers/Crypto'))
+const Conversion = lazy(() => import('./containers/Conversion'))
 const GritPay = lazy(() => import('./containers/GritPay'))
 const Deposit = lazy(() => import(/* webpackChunkName: 'deposit' */'./containers/Deposit'))
 const ScratchCard = lazy(() => import(/* webpackChunkName: 'scratchcard' */'./containers/ScratchCard'))
@@ -182,7 +182,7 @@ const App = () => {
                     <GritPay language={language} />
                   </Route>
                   <Route exact path='/deposit/crypto'>
-                    <Crypto language={language} />
+                    <Conversion language={language} />
                   </Route>
                   <Route path='/error'>
                     <CustomErrorPages />

@@ -144,7 +144,7 @@ const QRCode = (props) => {
     methodType,
     exchangeRate,
     exchangeAmount,
-    exchangeCurrency
+    toCurrency
   } = useContext(QueryParamsContext)
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
@@ -182,31 +182,31 @@ const QRCode = (props) => {
   const isMomoBank = checkIfMomoBank(bank)
   const isZaloBank = checkIfZaloBank(bank)
 
-  const isCrypto = methodType === 7 || methodType === '7'
+  const isCrypto = !(toCurrency == null || toCurrency === currency)
   async function handleSubmitQRCode () {
     const submitValues = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
+      amount,
+      bank,
+      callbackUri,
+      clientIp,
+      currency,
       customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
+      datetime,
+      failedUrl,
       key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
-      requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
+      language,
+      merchant,
+      note,
+      reference,
+      requester,
+      signature,
+      successfulUrl,
       uniqueAmount: responseData.amount,
       ...isCrypto ? {
         methodType,
-        exchangeAmount,
-        exchangeCurrency,
-        exchangeRate
+        toCurrency,
+        exchangeRate,
+        exchangeAmount
       } : {}
     }
     setTimeout({
@@ -403,28 +403,28 @@ const QRCode = (props) => {
 
   useEffect(() => {
     const getQRCodePayload = {
-      amount: amount,
-      bank: bank,
-      callbackUri: callbackUri,
-      clientIp: clientIp,
-      currency: currency,
+      amount,
+      bank,
+      callbackUri,
+      clientIp,
+      currency,
       customer: requester,
-      datetime: datetime,
-      failedUrl: failedUrl,
+      datetime,
+      failedUrl,
       key: signature,
-      language: language,
-      merchant: merchant,
-      note: note,
-      reference: reference,
-      requester: requester,
-      signature: signature,
-      successfulUrl: successfulUrl,
+      language,
+      merchant,
+      note,
+      reference,
+      requester,
+      signature,
+      successfulUrl,
       toAccountId: 0,
       ...isCrypto ? {
         methodType,
+        toCurrency,
+        exchangeRate,
         exchangeAmount,
-        exchangeCurrency,
-        exchangeRate
       } : {}
     }
 
@@ -480,10 +480,10 @@ const QRCode = (props) => {
     successfulUrl,
     intl,
     methodType,
-    exchangeAmount,
-    exchangeCurrency,
+    isCrypto,
     exchangeRate,
-    isCrypto
+    exchangeAmount,
+    toCurrency
   ])
 
   useEffect(() => {

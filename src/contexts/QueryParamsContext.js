@@ -29,7 +29,8 @@ function QueryParamsProvider ({ children }) {
       methodType: parseInt(urlQueryString.get('mt')),
       exchangeRate: parseInt(urlQueryString.get('er')),
       exchangeCurrency: urlQueryString.get('ec'),
-      exchangeAmount: parseInt(urlQueryString.get('ea'))
+      exchangeAmount: parseInt(urlQueryString.get('ea')),
+      toCurrency: urlQueryString.get('tc')
     }
   }
   const [queryParams, setQueryParams] = useState(getParams(queryString))
