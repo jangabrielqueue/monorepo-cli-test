@@ -66,7 +66,7 @@
     "notes.notesSix": "Transaction Fee:",
     "notes.expectedRate": "Expected rate is subject to change without prior notice",
     "notes.expectedRateTitle": "Expected Rate",
-    "errors.networkErrorTitle": "Netwrok Error",
+    "errors.networkErrorTitle": "Network Error",
     "otpNewRecipient": "OTP for new recipient",
     "errors.connectionError": "Connection is closed, please refresh the page.",
     "placeholders.inputMaxChar": "Please input a maximum length of {maxLength} characters.",

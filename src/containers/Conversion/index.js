@@ -250,8 +250,13 @@ const ConversionPage = (props) => {
       setConversion(rate.value)
       exchangeRate.current = rate.value
     } else {
+      const message = res.error?.message == null ? (
+      <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>
+      ): (
+        <><FormattedMessage {...messages.errors.error} />: {res.error?.message}</>
+      )
       setConversion(0)
-      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></> })
+      setError({ hasError: true, message })
     }
   }, [methodType, currency, merchant])
 
