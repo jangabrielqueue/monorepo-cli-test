@@ -217,6 +217,7 @@ const ConversionPage = (props) => {
       setError({ hasError: true, message: `Error:  amount must be in the range of ${min} - ${max} ${crypto}` })
       return
     }
+    if (conversion === 0) return
     const roundedoffAmount = Math.round(amount)
     const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}&tc=${crypto}`
     const url = `${paymentChannelCases[methodType]}${queryString}`
