@@ -269,7 +269,7 @@ const ConversionPage = (props) => {
   }, [getRates])
 
   useEffect(() => {
-    setCryptoAmount(initialConverted)
+    setCryptoAmount(initialConverted || '')
   }, [initialConverted])
 
   const renderBody = (
