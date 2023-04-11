@@ -165,10 +165,16 @@ const renderOptions = (option, currency) => {
       <div style={{ display: 'flex', alignItems: 'center', padding: 15, borderBottom: '1px solid #e3e3e3' }}>
         <Logo bank={option.value} currency={currency} noMargin width={120} height={20} />
         {' '}
-        <p style={{ margin: 0, fontStyle: 'italic', color: '#9e9e9e' }}> - {option.value}</p>
+        <p style={{ margin: 0, fontStyle: 'italic', color: '#9e9e9e' }}> - {option.label}</p>
       </div>
     </>
   )
+}
+
+const autoBankLabel = {
+  VND: 'VietQR',
+  THB: 'ThaiQR',
+  IDR: 'QRIS'
 }
 const ConversionPage = (props) => {
   const {
@@ -208,6 +214,10 @@ const ConversionPage = (props) => {
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
   const helperText = crypto in cryptoHelperTexts ? cryptoHelperTexts[crypto] : { title: '', helperText: '' }
 
+  const bankList = banks.map((bank) => ({
+    label: bank.text === 'AUTO' ? autoBankLabel[currency] ?? 'AUTO' : bank.text,
+    value: bank.value
+  }))
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
@@ -338,7 +348,7 @@ const ConversionPage = (props) => {
               <InputSelect
                 onChange={(val) => setBank(val)}
                 label='Pay with:'
-                options={banks.map((bank) => ({ label: bank.text, value: bank.value }))}
+                options={bankList}
                 renderOptions={(option) => renderOptions(option, currency)}
                 placeholder='Select Bank'
                 value={bank}
