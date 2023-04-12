@@ -16,7 +16,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
-import { cryptoHelperTexts, getCurrencyText } from '../../utils/utils'
+import { cryptoHelperTexts, getCurrencyText, isNullOrWhitespace } from '../../utils/utils'
 import LoadingIcon from '../../components/LoadingIcon'
 import InputSelect from '../../components/Inputs/InputSelect'
 // import logo from
@@ -202,8 +202,8 @@ const ConversionPage = (props) => {
   const amount = cryptoAmount * conversion
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
-  const noBankSelected = queryBank === 'null' || queryBank == null
-  const noAmount = initialConverted === '0' || initialConverted === 0 || initialConverted === 'null' || initialConverted == null
+  const noBankSelected = isNullOrWhitespace(queryBank)
+  const noAmount = initialConverted === '0' || initialConverted === 0 || isNullOrWhitespace(initialConverted)
   const [banks, setBanks] = useState([])
   const [bank, setBank] = useState(noBankSelected ? '' : queryBank)
   const [error, setError] = useState({ hasError: false, message: '' })
