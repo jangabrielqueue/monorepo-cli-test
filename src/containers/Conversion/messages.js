@@ -2,6 +2,10 @@ import { defineMessages } from 'react-intl'
 
 export default defineMessages({
   errors: {
+    error: {
+      id: 'errors.error',
+      defaultMessage: 'Error'
+    },
     networkError: {
       id: 'errors.networkError',
       defaultMessage: 'Can\'t connect to server, please refresh your browser.'

@@ -152,8 +152,8 @@ const useStyles = createUseStyles({
 })
 
 const paymentChannelCases = {
-  1: 'bank',
-  3: 'qrcode'
+  1: '/deposit/bank',
+  3: '/deposit/qrcode'
 }
 
 const cryptoMinMax = {
@@ -165,30 +165,35 @@ const renderOptions = (option, currency) => {
       <div style={{ display: 'flex', alignItems: 'center', padding: 15, borderBottom: '1px solid #e3e3e3' }}>
         <Logo bank={option.value} currency={currency} noMargin width={120} height={20} />
         {' '}
-        <p style={{ margin: 0, fontStyle: 'italic', color: '#9e9e9e' }}> - {option.value}</p>
+        <p style={{ margin: 0, fontStyle: 'italic', color: '#9e9e9e' }}> - {option.label}</p>
       </div>
     </>
   )
 }
-const UsdtPage = (props) => {
+
+const autoBankLabel = {
+  VND: 'VietQR',
+  THB: 'ThaiQR',
+  IDR: 'QRIS'
+}
+const ConversionPage = (props) => {
   const {
-    bank: crypto,
+    bank: queryBank,
     merchant,
+    amount: initialConverted, // number || 0
+    currency,
+    failedUrl,
+    language,
+    toCurrency: crypto,
+    methodType,
     requester,
     clientIp,
     callbackUri,
-    amount: initialConverted, // number || 0
-    currency,
     reference,
     datetime,
     signature,
     successfulUrl,
-    failedUrl,
     note,
-    language,
-    paymentChannel,
-    paymentChannelType, // bank || null
-    methodType
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
@@ -197,17 +202,22 @@ const UsdtPage = (props) => {
   const amount = cryptoAmount * conversion
   const analytics = useContext(FirebaseContext)
   const classes = useStyles(0)
-  const noBankSelected = paymentChannelType === 'null' || paymentChannelType == null
+  const noBankSelected = queryBank === 'null' || queryBank == null
   const noAmount = initialConverted === '0' || initialConverted === 0 || initialConverted === 'null' || initialConverted == null
   const [banks, setBanks] = useState([])
-  const [bank, setBank] = useState(noBankSelected ? '' : paymentChannelType)
+  const [bank, setBank] = useState(noBankSelected ? '' : queryBank)
   const [error, setError] = useState({ hasError: false, message: '' })
   const exchangeRate = useRef(null)
-  const bankIsKnown = checkBankIfKnown(currency, paymentChannelType) || noBankSelected
+  const bankIsKnown = checkBankIfKnown(currency, queryBank) || queryBank === 'AUTO' || noBankSelected
   const validQueryAmount = initialConverted % 1 === 0
   const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
   const helperText = crypto in cryptoHelperTexts ? cryptoHelperTexts[crypto] : { title: '', helperText: '' }
+
+  const bankList = banks.map((bank) => ({
+    label: bank.text === 'AUTO' ? autoBankLabel[currency] ?? 'AUTO' : bank.text,
+    value: bank.value
+  }))
   function handleSubmitForm () {
     if (bank === '') {
       setError({ hasError: true, message: 'Please Select a bank' })
@@ -217,12 +227,14 @@ const UsdtPage = (props) => {
       setError({ hasError: true, message: `Error:  amount must be in the range of ${min} - ${max} ${crypto}` })
       return
     }
+    if (conversion === 0) return
     const roundedoffAmount = Math.round(amount)
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&p2=${paymentChannel}&p3=${paymentChannelType}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}`
-    const url = `/deposit/${paymentChannelCases[paymentChannel]}${queryString}`
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}&tc=${crypto}`
+    const url = `${paymentChannelCases[methodType]}${queryString}`
     setQuery(queryString)
     history.push(url)
   }
+
   function errorHandler (error, componentStack) {
     analytics.logEvent('exception', {
       stack: componentStack,
@@ -238,21 +250,26 @@ const UsdtPage = (props) => {
     }
   }
   const getBanks = useCallback(async () => {
-    const res = await getBankRequest({ paymentChannel, currency })
+    const res = await getBankRequest({ currency, methodType })
     setBanks(res)
-  }, [paymentChannel, currency])
+  }, [methodType, currency])
 
   const getRates = useCallback(async () => {
-    const res = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel, merchant })
+    const res = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel: methodType, merchant })
     if (res != null && Object.hasOwn(res, currency)) {
       const rate = res[currency]
       setConversion(rate.value)
       exchangeRate.current = rate.value
     } else {
+      const message = res.error?.message == null ? (
+      <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>
+      ): (
+        <><FormattedMessage {...messages.errors.error} />: {res.error?.message}</>
+      )
       setConversion(0)
-      setError({ hasError: true, message: <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></> })
+      setError({ hasError: true, message })
     }
-  }, [paymentChannel, currency, methodType, merchant])
+  }, [methodType, currency, merchant])
 
   useEffect(() => {
     getBanks().finally(() => {})
@@ -261,6 +278,11 @@ const UsdtPage = (props) => {
   useEffect(() => {
     getRates().finally(() => {})
   }, [getRates])
+
+  useEffect(() => {
+    setCryptoAmount(initialConverted || '')
+  }, [initialConverted])
+
   const renderBody = (
     <>
       <section className={classes.cryptoBody}>
@@ -309,7 +331,7 @@ const UsdtPage = (props) => {
           <div
             className={classes.inputContainer}
           >
-            {new Intl.NumberFormat(language).format(amount.toFixed(2)) || 0}
+            ~ {new Intl.NumberFormat(language).format(amount.toFixed(2)) || 0}
           </div>
           <div className={classes.inputLabelContainer}>
             <div className={classes.inputLabel}>
@@ -326,7 +348,7 @@ const UsdtPage = (props) => {
               <InputSelect
                 onChange={(val) => setBank(val)}
                 label='Pay with:'
-                options={banks.map((bank) => ({ label: bank.text, value: bank.value }))}
+                options={bankList}
                 renderOptions={(option) => renderOptions(option, currency)}
                 placeholder='Select Bank'
                 value={bank}
@@ -344,7 +366,7 @@ const UsdtPage = (props) => {
         {!noBankSelected && (
           <div className={classes.bankDisplay}>
             <p>Pay with</p>
-            <Logo bank={paymentChannelType} currency={currency} noMargin height={30} width='auto' />
+            <Logo bank={queryBank} currency={currency} noMargin height={30} width='auto' />
           </div>)}
       </section>
     </>
@@ -378,4 +400,4 @@ const UsdtPage = (props) => {
   )
 }
 
-export default injectIntl(UsdtPage)
+export default injectIntl(ConversionPage)

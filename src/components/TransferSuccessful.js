@@ -70,6 +70,7 @@ const useStyles = createUseStyles({
 })
 
 const TransferSuccessful = ({ transferResult, language }) => {
+  const amount = parseFloat(transferResult.amount)
   const isCrypto = transferResult.exchangeAmount != null
   const classes = useStyles({ isCrypto })
   const cryptoHelperText = isCrypto && transferResult.exchangeCurrency in cryptoHelperTexts ? cryptoHelperTexts[transferResult.exchangeCurrency] : { title: '', helperText: '' }
@@ -99,7 +100,7 @@ const TransferSuccessful = ({ transferResult, language }) => {
       )}
       <div className={classes.transactionAmount}>
         <span>
-          {transferResult.currency} {transferResult.amount?.toLocaleString('en-US')}
+          {transferResult.currency} {amount?.toLocaleString('en-US')}
         </span>
       </div>
     </div>

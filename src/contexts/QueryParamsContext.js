@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 
 export const QueryParamsContext = React.createContext({})
 export const QueryParamsSetterContext = React.createContext(() => {})
@@ -29,12 +29,13 @@ function QueryParamsProvider ({ children }) {
       methodType: parseInt(urlQueryString.get('mt')),
       exchangeRate: parseInt(urlQueryString.get('er')),
       exchangeCurrency: urlQueryString.get('ec'),
-      exchangeAmount: parseInt(urlQueryString.get('ea'))
+      exchangeAmount: parseInt(urlQueryString.get('ea')),
+      toCurrency: urlQueryString.get('tc')
     }
   }
   const [queryParams, setQueryParams] = useState(getParams(queryString))
   // for bugfix: when user click back or forward button queryparams doesnt rerenders
-  useEffect(() => {
+  useLayoutEffect(() => {
     const popstateEvent = window.addEventListener('popstate', () => {
       const queryString = window.location.search
       setQueryParams(getParams(queryString))

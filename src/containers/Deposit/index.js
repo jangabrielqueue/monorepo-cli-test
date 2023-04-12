@@ -179,7 +179,7 @@ const Deposit = (props) => {
     methodType,
     exchangeRate,
     exchangeAmount,
-    exchangeCurrency
+    toCurrency
   } = useContext(QueryParamsContext)
   const analytics = useContext(FirebaseContext)
   const [step, setStep] = useState(0)
@@ -201,7 +201,7 @@ const Deposit = (props) => {
   const classes = useStyles({ step, bank })
   const notificationBanks = ['VCB', 'BIDV']
   const intl = props.intl
-  const isCrypto = methodType === 7 || methodType === '7'
+  const isCrypto = !(toCurrency == null || toCurrency === currency)
 
   async function handleSubmitDeposit (values, e, type) {
     if (type === 'card') { // this is to check if the otp type is card otp
@@ -254,7 +254,7 @@ const Deposit = (props) => {
       ...isCrypto ? {
         methodType,
         exchangeAmount,
-        exchangeCurrency,
+        toCurrency,
         exchangeRate
       } : {},
       ...values
