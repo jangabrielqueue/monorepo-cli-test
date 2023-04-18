@@ -157,7 +157,7 @@ const paymentChannelCases = {
 }
 
 const cryptoMinMax = {
-  'USDT-TRC20': [20, 25000]
+  'USDT-TRC20': [10, 25000]
 }
 const renderOptions = (option, currency) => {
   return (
@@ -193,7 +193,7 @@ const ConversionPage = (props) => {
     datetime,
     signature,
     successfulUrl,
-    note,
+    note
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
@@ -262,8 +262,8 @@ const ConversionPage = (props) => {
       exchangeRate.current = rate.value
     } else {
       const message = res.error?.message == null ? (
-      <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>
-      ): (
+        <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>
+      ) : (
         <><FormattedMessage {...messages.errors.error} />: {res.error?.message}</>
       )
       setConversion(0)
