@@ -23,6 +23,7 @@ import {
 } from '../../../utils/banks'
 import generatePayload from '../../../components/PromptpayQr'
 import getVietQRCode from '../../../components/VietQr'
+import { theme } from '../../../App'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -141,7 +142,7 @@ const useStyles = createUseStyles({
 
 const THBQrLogoCases = {
   TRUEWALLET: '/logo/TRUEWALLET_LOGO.png',
-  default: '/logo/GW_LOGO_ICON.png'
+  default: theme.logoIcon
 }
 
 const THBQrLogo = (bank) => {
@@ -184,6 +185,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   const isZaloBank = checkIfZaloBank(bank)
   const isTrueWallet = checkIfTrueWalletBank(bank)
   const isBankKnown = checkBankIfKnown(currency, responseData.bank)
+  const isNotAutoBank = checkBankIfKnown(currency, bank)
   const buttonColor = isTrueWallet || isMomoBank || isZaloBank ? `${bank}` : isBankKnown ? `${responseData.bank}` : 'main'
   const currencies = currency?.toUpperCase()
   const amount = parseFloat(responseData.amount)
@@ -194,10 +196,10 @@ const QRCodeForm = memo(function QRCodeForm (props) {
   }
 
   function handleRenderBottomLogo () {
-    if (isBankKnown) {
+    if (isBankKnown && isNotAutoBank) {
       return require(`../../../assets/banks/${bank?.toUpperCase()}_LOGO.png`)
     }
-    return require('../../../assets/banks/NULL_LOGO.png')
+    return theme.logo
   }
 
   const getValue = () => {
@@ -208,7 +210,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
 
   const getLogo = () => {
     if (currencies === 'THB') return THBQrLogo(bank)
-    return '/logo/GW_LOGO_ICON.png'
+    return theme.logoIcon
   }
 
   return (
@@ -231,7 +233,7 @@ const QRCodeForm = memo(function QRCodeForm (props) {
             <div className={classes.qrcodeBottomLogoWrapper}>
               {
                 bank ? <img alt={bank} src={handleRenderBottomLogo()} />
-                  : <img alt={bank} src={require('../../../assets/banks/NULL_LOGO.png')} />
+                  : <img alt={bank} src={theme.logo} />
               }
             </div>
           </div>

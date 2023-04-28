@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { createUseStyles } from 'react-jss'
-import { checkBankIfKnown, checkIfMomoBank, checkIfZaloBank } from '../utils/banks'
+import { checkBankIfKnown, checkIfFakerBank, checkIfFakerThbBank, checkIfMomoBank, checkIfZaloBank } from '../utils/banks'
+import { theme } from '../App'
 
 // styling
 const useStyles = createUseStyles({
@@ -26,14 +27,17 @@ const Logo = ({ bank, currency, type, width = '200', height = 'auto', noMargin }
   const isBankKnown = checkBankIfKnown(currency, bank)
   const classes = useStyles({ bank, type, noMargin, height })
   const bankIsMomoOrZalo = checkIfZaloBank(bank) || checkIfMomoBank(bank)
+  const isFakerBank = checkIfFakerBank(bank) || checkIfFakerThbBank(bank)
 
   const getFilePathWebP = (bank, type) => {
-    if (isBankKnown) {
+    if (isFakerBank) {
+      return requestImageFileWebp(theme.logoHref)
+    } else if (isBankKnown) {
       return requestImageFileWebp(`./${bank.toUpperCase()}_LOGO.png`)
     } else if (bank?.toUpperCase() === 'PRECARD' && type === 'scratch-card') {
       return requestImageFileWebp('./PRECARD_LOGO.png')
     } else {
-      return requestImageFileWebp('./GW_LOGO.png')
+      return requestImageFileWebp(theme.logoHref)
     }
   }
 
@@ -61,10 +65,10 @@ const Logo = ({ bank, currency, type, width = '200', height = 'auto', noMargin }
       {
         isBankKnown === undefined && type === undefined && // without bank param
           <img
-            alt='game-wallet'
+            alt={theme.title}
             width={width}
             height={height}
-            src={requestImageFileWebp('./GW_LOGO.png')}
+            src={requestImageFileWebp(theme.logoHref)}
           />
       }
     </section>

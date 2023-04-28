@@ -1,6 +1,6 @@
 {
-  "short_name": "Game Wallet",
-  "name": "Game Wallet App",
+  "short_name": "Payment Gateway",
+  "name": "Payment Gateway App",
   "icons": [],
   "start_url": ".",
   "display": "standalone",

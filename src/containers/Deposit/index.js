@@ -27,7 +27,8 @@ import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { FallbackComponent } from '../../components/FallbackComponent'
 import { sendDepositRequest, sendDepositOtp } from './Requests'
 import { sleep, calculateCurrentProgress, getOtpReference, getOtpMethod, checkIfQrOtp } from '../../utils/utils'
-import { checkBankIfKnown, checkIfBidvBank, checkIfDABBank, checkIfMandiriBank } from '../../utils/banks'
+import { checkBankIfKnown, checkIfBidvBank, checkIfDABBank, checkIfFakerBank, checkIfFakerThbBank, checkIfMandiriBank } from '../../utils/banks'
+import { theme } from '../../App'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -193,7 +194,8 @@ const Deposit = (props) => {
   const language = props.language // language was handled at root component not at the queryparams
   const session = `DEPOSIT-BANK-${merchant}-${reference}`
   const showOtpMethod = currency && currency.toUpperCase() === 'VND'
-  const themeColor = checkBankIfKnown(currency, bank) ? `${bank}` : 'main'
+  const isBankKnown = checkBankIfKnown(currency, bank)
+  const themeColor = isBankKnown ? `${bank}` : 'main'
   const { handleSubmit } = useFormContext()
   const [isCardOTP, setIsCardOTP] = useState(false)
   const [reRenderCountdown, setReRenderCountdown] = useState(false)
@@ -384,13 +386,16 @@ const Deposit = (props) => {
   }
 
   function renderIcon (type) {
-    if (checkBankIfKnown(currency, bank) && type === 'sms') {
+    if (checkIfFakerBank(bank) || checkIfFakerThbBank(bank)) {
+      return theme[type]
+    }
+    if (isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
-    } else if (checkBankIfKnown(currency, bank) && type === 'smart') {
+    } else if (isBankKnown && type === 'smart') {
       return `/icons/${bank?.toLowerCase()}/smart-${bank?.toLowerCase()}.png`
-    } else if (!checkBankIfKnown(currency, bank) && type === 'sms') {
+    } else if (!isBankKnown && type === 'sms') {
       return '/icons/unknown/sms-unknown.png'
-    } else if (!checkBankIfKnown(currency, bank) && type === 'smart') {
+    } else if (!isBankKnown && type === 'smart') {
       return '/icons/unknown/smart-unknown.png'
     }
   }

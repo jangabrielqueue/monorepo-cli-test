@@ -11,6 +11,7 @@ import ErrorAlert from '../../components/ErrorAlert'
 import AutoRedirect from '../../components/AutoRedirect'
 import { requestStatus } from './Request'
 import useOnMountEffect from '../../hooks/useOnMountEffect'
+import { theme } from '../../App'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -60,6 +61,20 @@ const useStyles = createUseStyles({
     padding: '10px 20px',
     borderBottom: (props) => props.step === 1 ? '#FFF' : '0.5px solid #E3E3E3'
   },
+  logoContainer: {
+    margin: '25px auto',
+    maxWidth: '200px',
+
+    '& img': {
+      height: 'auto',
+      width: '100%'
+    },
+
+    '@media (max-width: 36em) and (orientation: portrait)': {
+      margin: '10px auto',
+      maxWidth: '150px'
+    }
+  },
   contentHeader: {
     display: 'flex',
     flexDirection: 'column',
@@ -96,7 +111,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     justifyContent: 'center',
     '& div': {
-      border: '2px solid #91C431',
+      border: `2px solid ${theme.main}`,
       width: '50px',
       height: '50px',
       padding: '10px',
@@ -260,7 +275,7 @@ const PendingBodyDisplay = ({ classes }) => (
     </section>
     <section className={classes.depositProgressBarContainer}>
       <div>
-        <img alt='submit-verification' src='/icons/submit-verification.png' />
+        <img alt='submit-verification' src={theme.hourGlass} />
       </div>
     </section>
   </>
@@ -500,7 +515,9 @@ const GritPay = (props) => {
         <div className={classes.container}>
           <div className={classes.content}>
             <section className={classes.logoHeader}>
-              <img src='/logo/GW_LOGO.png' alt='logo' />
+              <div className={classes.logoContainer}>
+                <img src={theme.logo} alt='logo' />
+              </div>
             </section>
             <section className={classes.contentHeader}>
               <h1><strong><FormattedMessage {...headerCases[responseData.statusCode] || headerCases.default} /></strong></h1>

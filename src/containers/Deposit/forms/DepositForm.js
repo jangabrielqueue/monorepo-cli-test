@@ -6,7 +6,8 @@ import { useFormContext } from 'react-hook-form'
 import { QueryParamsContext } from '../../../contexts/QueryParamsContext'
 import { createUseStyles } from 'react-jss'
 import classNames from 'classnames/bind'
-import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank } from '../../../utils/banks'
+import { getBanksByCurrency, checkBankIfKnown, checkIfDABBank, checkIfFakerBank, checkIfFakerThbBank } from '../../../utils/banks'
+import { theme } from '../../../App'
 
 // lazy loaded components
 const GlobalButton = lazy(() => import('../../../components/GlobalButton'))
@@ -170,7 +171,19 @@ const useStyles = createUseStyles({
   singleFormFooter: {
     marginTop: '5px',
     padding: '10px 0 5px',
-    textAlign: 'center'
+    textAlign: 'center',
+    '@media (max-width: 36em)': {
+      padding: '10px',
+      backgroundColor: '#FFF',
+      bottom: 0,
+      boxShadow: '0px -5px 10px -3px rgba(112,112,112,0.3)',
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      left: 0,
+      position: 'fixed',
+      right: 0,
+      width: '100%'
+    }
   },
 
   singleFormBidvFooter: {
@@ -287,6 +300,9 @@ export default function DepositForm (props) {
   })
 
   function renderIcon (type) {
+    if (checkIfFakerBank(bank) || checkIfFakerThbBank(bank)) {
+      return theme[type]
+    }
     if (checkBank.isBankKnown && type === 'sms') {
       return `/icons/${bank?.toLowerCase()}/sms-${bank?.toLowerCase()}.png`
     } else if (checkBank.isBankKnown && type === 'smart') {
