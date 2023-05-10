@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import { createUseStyles } from 'react-jss'
@@ -420,6 +420,9 @@ const GritPay = (props) => {
         reference: reference,
         result: result
       })
+      if (result.frontEndUri != null) {
+        return window.location.replace(result.frontEndUri)
+      }
       if (result !== null && result.status == null) {
         setResponseData(result)
         setError(undefined)
@@ -480,14 +483,6 @@ const GritPay = (props) => {
 
     asyncFunc().finally(() => { })
   })
-  useEffect(() => {
-    window.onbeforeunload = (e) => {
-      // this custom message will only appear on earlier version of different browsers.
-      // However on modern and latest browsers their own default message will override this custom message.
-      // as of the moment only applicable on browsers. there's no definite implementation on mobile
-      e.returnValue = 'Do you really want to leave current page?'
-    }
-  }, [])
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallbackComponent}>
       <QueryParamsValidator />
