@@ -193,7 +193,8 @@ const ConversionPage = (props) => {
     datetime,
     signature,
     successfulUrl,
-    note
+    note,
+    payer
   } = useContext(QueryParamsContext)
   const setQuery = useContext(QueryParamsSetterContext)
   const history = useHistory()
@@ -228,7 +229,7 @@ const ConversionPage = (props) => {
     }
     if (conversion === 0) return
     const roundedoffAmount = Math.round(amount)
-    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}&tc=${crypto}`
+    const queryString = `?b=${bank}&m=${merchant}&c1=${currency}&c2=${requester}&c3=${clientIp}&c4=${callbackUri}&a=${roundedoffAmount}&r=${reference}&d=${datetime}&k=${signature}&su=${successfulUrl}&fu=${failedUrl}&n=${note}&l=${language}&mt=${methodType}&ec=USD&ea=${cryptoAmount}&er=${exchangeRate.current}&tc=${crypto}&p1=${payer}`
     const url = `${paymentChannelCases[methodType]}${queryString}`
     setQuery(queryString)
     history.push(url)

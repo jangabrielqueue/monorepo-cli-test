@@ -24,6 +24,7 @@ function QueryParamsProvider ({ children }) {
       customer: urlQueryString.get('c2'),
       datetime: urlQueryString.get('d'),
       language: urlQueryString.get('l'),
+      payer: urlQueryString.get('p1'),
       paymentChannel: urlQueryString.get('p2'),
       paymentChannelType: urlQueryString.get('p3'),
       methodType: parseInt(urlQueryString.get('mt')),
