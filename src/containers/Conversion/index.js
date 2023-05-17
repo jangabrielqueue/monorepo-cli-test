@@ -13,7 +13,6 @@ import { useHistory } from 'react-router'
 import { QueryParamsValidator } from '../../components/QueryParamsValidator'
 import { getBankRequest, getExchangeRateRequest } from './Request'
 import ErrorAlert from '../../components/ErrorAlert'
-import { checkBankIfKnown } from '../../utils/banks'
 import TransferFailed from '../../components/TransferFailed'
 import AutoRedirect from '../../components/AutoRedirect'
 import { cryptoHelperTexts, getCurrencyText, isNullOrWhitespace } from '../../utils/utils'
@@ -153,7 +152,8 @@ const useStyles = createUseStyles({
 
 const paymentChannelCases = {
   1: '/deposit/bank',
-  3: '/deposit/qrcode'
+  3: '/deposit/qrcode',
+  4: '/deposit/channel'
 }
 
 const cryptoMinMax = {
@@ -208,7 +208,6 @@ const ConversionPage = (props) => {
   const [bank, setBank] = useState(noBankSelected ? '' : queryBank)
   const [error, setError] = useState({ hasError: false, message: '' })
   const exchangeRate = useRef(null)
-  const bankIsKnown = checkBankIfKnown(currency, queryBank) || queryBank === 'AUTO' || noBankSelected
   const validQueryAmount = initialConverted % 1 === 0
   const min = crypto in cryptoMinMax ? cryptoMinMax[crypto][0] : 0
   const max = crypto in cryptoMinMax ? cryptoMinMax[crypto][1] : Infinity
@@ -384,7 +383,7 @@ const ConversionPage = (props) => {
               }
             </section>
             {
-              (bankIsKnown && validQueryAmount) ? renderBody : (
+              validQueryAmount ? renderBody : (
                 <div className={classes.unknownBankError}>
                   <AutoRedirect delay={10000} url={failedUrl}>
                     <TransferFailed bank={bank} transferResult={{ message: <FormattedMessage {...messages.errors.verificationFailed} /> }} />
