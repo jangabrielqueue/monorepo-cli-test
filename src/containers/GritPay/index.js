@@ -12,6 +12,7 @@ import AutoRedirect from '../../components/AutoRedirect'
 import { requestStatus } from './Request'
 import useOnMountEffect from '../../hooks/useOnMountEffect'
 import { theme } from '../../App'
+import { QueryParamsContext } from '../../contexts/QueryParamsContext'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -370,44 +371,35 @@ const bodyDisplayCases = {
   400: FailedBodyDisplay,
   default: PendingBodyDisplay
 }
-const queryString = window.location.search
-const urlQueryString = new URLSearchParams(queryString)
-const queryParams = {
-  bank: urlQueryString.get('b'),
-  merchant: urlQueryString.get('m'),
-  currency: urlQueryString.get('c1'),
-  requester: urlQueryString.get('c2'),
-  clientIp: urlQueryString.get('c3'),
-  callbackUri: urlQueryString.get('c4'),
-  amount: urlQueryString.get('a'),
-  reference: urlQueryString.get('r'),
-  dateTime: urlQueryString.get('d'),
-  signature: urlQueryString.get('k'),
-  successfulUrl: urlQueryString.get('su'),
-  failedUrl: urlQueryString.get('fu'),
-  note: urlQueryString.get('n'),
-  key: urlQueryString.get('k'),
-  customer: urlQueryString.get('c2'),
-  datetime: urlQueryString.get('d'),
-  language: urlQueryString.get('l'),
-  payer: urlQueryString.get('p1')
-}
+
 const GritPay = (props) => {
+  const queryParams = useContext(QueryParamsContext)
   const {
     bank,
     merchant,
     currency,
+    requester,
+    clientIp,
+    callbackUri,
     amount,
     reference,
+    dateTime,
+    signature,
     successfulUrl,
-    failedUrl
+    failedUrl,
+    note,
+    key,
+    customer,
+    payer,
+    language: queryLanguage,
+    toCurrency
   } = queryParams
   const { intl, language } = props
   const analytics = useContext(FirebaseContext)
   const [error, setError] = useState(undefined)
   const [responseData, setResponseData] = useState({ statusCode: undefined })
   const classes = useStyles({ bank })
-
+  const isCrypto = !(toCurrency == null || toCurrency === currency)
   const session = `DEPOSIT-CHANNEL-${merchant}-${reference}`.toUpperCase()
 
   analytics.setCurrentScreen('gritpay')
@@ -451,7 +443,26 @@ const GritPay = (props) => {
 
   useOnMountEffect(() => {
     const getGritPayPayload = {
-      ...queryParams
+      bank,
+      merchant,
+      currency,
+      requester,
+      clientIp,
+      callbackUri,
+      amount,
+      reference,
+      dateTime,
+      signature,
+      successfulUrl,
+      failedUrl,
+      note,
+      key,
+      customer,
+      payer,
+      language: queryLanguage,
+      ...isCrypto ? {
+        toCurrency
+      } : {}
     }
 
     const connection = new HubConnectionBuilder()
@@ -476,7 +487,29 @@ const GritPay = (props) => {
     }
 
     const asyncFunc = async () => {
-      const result = await requestStatus({ ...queryParams })
+      const params = {
+        bank,
+        merchant,
+        currency,
+        requester,
+        clientIp,
+        callbackUri,
+        amount,
+        reference,
+        dateTime,
+        signature,
+        successfulUrl,
+        failedUrl,
+        note,
+        key,
+        customer,
+        payer,
+        language: queryLanguage,
+        ...isCrypto ? {
+          toCurrency
+        } : {}
+      }
+      const result = await requestStatus({ ...params })
       if (result.error) {
         setError(result.error)
         setResponseData({ ...result, statusCode: result.error.code })
