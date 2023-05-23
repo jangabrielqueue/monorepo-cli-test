@@ -59,6 +59,7 @@ const GU = '0010A000000727' // GUI Code
 const SC = '0208QRIBFTTA' // Service Code for Merchant Account Information
 
 const getVietQRCode = (bank, id, amount, reference) => {
+  amount = Math.trunc(amount)
   const bankID = bankList.filter((data) => {
     return data.name === bank
   })[0]?.id
@@ -79,7 +80,7 @@ const getVietQRCode = (bank, id, amount, reference) => {
   const MAI = `38${handleLength(BO.length + GU.length + SC.length)}${GU}${BO}${SC}` // Merchant Account Information
 
   if (amount) {
-    AM = `54${handleLength(amount?.length)}${amount}` // Amount modified
+    AM = `54${handleLength(String(amount).length)}${amount}` // Amount modified
   }
 
   if (reference) {
