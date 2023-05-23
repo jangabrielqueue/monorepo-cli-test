@@ -420,7 +420,7 @@ const Deposit = (props) => {
     } else if (!qrCodeOtp) {
       return (
         <OTPForm
-          isInquiry={isInquiry || otpStatusCode === '004'}
+          isInquiry={isInquiry || otpStatusCode === '004' || JSON.stringify(otpReference).includes('National')}
           otpReference={getOtpReference(otpReference)}
           handleSubmitOTP={handleSubmitOTP}
           waitingForReady={waitingForReady}
