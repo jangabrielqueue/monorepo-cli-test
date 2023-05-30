@@ -1,10 +1,22 @@
 {
-  "hosting": {
-    "public": "dist/apps/first-app",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  }
+  "hosting": [
+    {
+      "site": "monorepo-cli-test",
+      "public": "dist/apps/first-app",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "site": "webapp2-test",
+      "public": "dist/apps/webapp2-test",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
 }
