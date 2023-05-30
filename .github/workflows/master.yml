@@ -27,7 +27,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
-      - run: npx nx affected -t build
+      - run: npx nx run-many -t build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
