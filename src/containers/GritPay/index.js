@@ -13,6 +13,7 @@ import { requestStatus } from './Request'
 import useOnMountEffect from '../../hooks/useOnMountEffect'
 import { theme } from '../../App'
 import { QueryParamsContext } from '../../contexts/QueryParamsContext'
+import { checkIfRmbCurrency } from '../../utils/banks'
 
 // endpoints
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
@@ -269,11 +270,12 @@ const headerCases = {
   default: messages.gritHeader.establishConnection
 }
 
-const PendingBodyDisplay = ({ classes }) => (
+const PendingBodyDisplay = ({ classes, currency }) => (
   <>
-    <section className={classes.contentBody}>
-      <p><FormattedMessage {...messages.notes.gritBodyText} /></p>
-    </section>
+    {!checkIfRmbCurrency(currency) &&
+      <section className={classes.contentBody}>
+        <p><FormattedMessage {...messages.notes.gritBodyText} /></p>
+      </section>}
     <section className={classes.depositProgressBarContainer}>
       <div>
         <img alt='submit-verification' src={theme.hourGlass} />
@@ -311,6 +313,7 @@ const SuccessBodyDisplay = ({ classes, responseData, successfulUrl }) => (
 )
 
 const FooterDisplay = ({ classes, responseData, language, currency, amount }) => {
+  const isZhCn = language === 'zh-cn'
   const accountInfo = [
     ...responseData.reference != null ? [{
       label: <FormattedMessage {...messages.reference} />,
@@ -348,14 +351,17 @@ const FooterDisplay = ({ classes, responseData, language, currency, amount }) =>
         <h1>{displayAmount}</h1>
       </div>
       <section className={classes.noteSection}>
-        <ul>
+        <ul style={{ ...isZhCn ? { listStyleType: 'none' } : {} }}>
           <strong><FormattedMessage {...messages.notes.caution} /></strong>
           <li><FormattedMessage {...messages.notes.gritNoteOne} /></li>
           <li><FormattedMessage {...messages.notes.gritNoteTwo} /></li>
           <li><FormattedMessage {...messages.notes.gritNoteThree} /></li>
           <li><FormattedMessage {...messages.notes.gritNoteFour} /></li>
-          <li><FormattedMessage {...messages.notes.gritNoteFive} /></li>
-          <li><FormattedMessage {...messages.notes.gritNoteSix} /></li>
+          {!isZhCn &&
+            <>
+              <li><FormattedMessage {...messages.notes.gritNoteFive} /></li>
+              <li><FormattedMessage {...messages.notes.gritNoteSix} /></li>
+            </>}
         </ul>
       </section>
     </>

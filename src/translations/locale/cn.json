@@ -3,5 +3,14 @@
   "errors.systemBusy": "系统繁忙，请稍后重试.",
   "errors.sameAccount": "请勿于一小时内提交相同的入款金额.",
   "errors.paymentNotSupported": "暂不支持该支付方式.",
-  "errors.defaultError": "出现未知异常，请稍后重试."
+  "errors.defaultError": "出现未知异常，请稍后重试.",
+  "notes.expectedRateTitle": "预期汇率",
+  "notes.noteTitle": "注：",
+  "notes.expectedRate": "预期汇率如有更改，恕不另行通知",
+  "notes.caution": "温馨提示",
+  "notes.gritNoteOne": "1、请您务必使用本人银行卡转账，与下单姓名不符的转款不会上分.",
+  "notes.gritNoteTwo": "2、请您务必按照订单金额转账，如多转少转都不会自动上分.",
+  "notes.gritNoteThree": "3、请您务必不要保存卡号重复转账，卡号只限于本次充值使用。如需继续充值，请再次提单获取新的卡号.",
+  "notes.gritNoteFour": "4、本卡号只用于您本次的充值需求，如挪作他用，或恶意洗钱需要您自己承担损失，概不负责.",
+  "gritHeader.establishConnection": "建立连接"
 }
