@@ -258,8 +258,8 @@ const ConversionPage = (props) => {
     const res = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel: methodType, merchant })
     if (res != null && Object.hasOwn(res, currency)) {
       const rate = res[currency]
-      setConversion(rate.Value)
-      exchangeRate.current = rate.Value
+      setConversion(rate.value)
+      exchangeRate.current = rate.value
     } else {
       const message = res.error?.message == null ? (
         <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>

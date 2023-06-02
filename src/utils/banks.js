@@ -134,6 +134,10 @@ function checkIfVndCurrency (currency) {
   return currency?.toUpperCase() === 'VND'
 }
 
+function checkIfRmbCurrency (currency) {
+  return currency?.toUpperCase() === 'RMB'
+}
+
 function checkIfDABBank (bank) {
   return bank?.toUpperCase() === 'DAB'
 }
@@ -233,5 +237,6 @@ module.exports = {
   checkIfTHBCurrency,
   checkIfTrueWalletBank,
   checkIfMomoBank,
-  checkIfZaloBank
+  checkIfZaloBank,
+  checkIfRmbCurrency
 }
