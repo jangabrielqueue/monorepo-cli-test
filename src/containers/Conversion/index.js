@@ -258,8 +258,8 @@ const ConversionPage = (props) => {
     const res = await getExchangeRateRequest({ methodType, transactionType: 1, paymentChannel: methodType, merchant })
     if (res != null && Object.hasOwn(res, currency)) {
       const rate = res[currency]
-      setConversion(rate.value)
-      exchangeRate.current = rate.value
+      setConversion(rate.Value)
+      exchangeRate.current = rate.Value
     } else {
       const message = res.error?.message == null ? (
         <><FormattedMessage {...messages.errors.networkErrorTitle} />: <FormattedMessage {...messages.errors.networkError} /></>
@@ -320,7 +320,7 @@ const ConversionPage = (props) => {
           </div>
           <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column' }}>
             {
-              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language).format(conversion.toFixed(2))} {currency} <FormattedMessage {...messages.notes.expectedRateTitle} /></>
+              conversion == null ? <LoadingIcon /> : <>1 {crypto} ~ {new Intl.NumberFormat(language, { maximumFractionDigits: 6 }).format(conversion)} {currency} <FormattedMessage {...messages.notes.expectedRateTitle} /></>
             }
             <div style={{ fontSize: 10 }}>
               <b><FormattedMessage {...messages.notes.noteTitle} /></b> <FormattedMessage {...messages.notes.expectedRate} />

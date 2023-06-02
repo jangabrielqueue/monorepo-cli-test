@@ -94,7 +94,7 @@ const TransferSuccessful = ({ transferResult, language }) => {
             />
             <span>{cryptoHelperText.helperText}</span>
             <span>{cryptoHelperText.title}</span>
-            {new Intl.NumberFormat(language).format(transferResult.exchangeAmount)}
+            {new Intl.NumberFormat(language, isCrypto ? { maximumFractionDigits: 6 } : {}).format(transferResult.exchangeAmount)}
           </div>
         </div>
       )}
