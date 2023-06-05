@@ -1,0 +1,33 @@
+name: Deploy to Firebase Hosting on PR
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build:prod
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
+          target: deposit-test
+          projectId: monorepo-cli-test
+          channelId: live
