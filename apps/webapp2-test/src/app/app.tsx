@@ -6,7 +6,9 @@ import NxWelcome from './nx-welcome';
 export function App() {
   return (
     <div>
+      Minor changes
       <NxWelcome title="webapp2-test" />
+      
     </div>
   );
 }
