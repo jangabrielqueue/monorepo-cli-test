@@ -42,7 +42,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dist
-      - run: ls -R
+          path: dist
       - name: Check webapp2 file existence
         id: check_build
         uses: andstor/file-existence-action@v1
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dist
-
+          path: dist
       - name: Check webapp2 file existence
         id: check_build
         uses: andstor/file-existence-action@v1
