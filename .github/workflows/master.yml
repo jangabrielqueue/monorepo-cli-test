@@ -28,24 +28,11 @@ jobs:
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
       - run: npx nx run-many -t build
-
-      - name: Check webapp2 file existence
-        id: check_build
-        uses: andstor/file-existence-action@v1
+      - uses: actions/cache@v2
+        id: cache-dist
         with:
-          files: "dist/apps/webapp2-test"
-      - name: File Exist
-        if: steps.check_build.outputs.files_exists == 'true'
-        run: echo "build exist"
-
-      - name: Check webapp2 file existence
-        id: check_dist_first_app
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "dist/apps/first-app"
-      - name: File Exist
-        if: steps.check_dist_first_app.outputs.files_exists == 'true'
-        run: echo "build exist"
+          path: ./dist/*
+          key: ${{ github.sha }}
 
 
   first_job_test:
@@ -54,6 +41,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        id: cache-dist
+        with:
+          path: ./dist/*
+          key: ${{ github.sha }}
+
       - name: Check webapp2 file existence
         id: check_build
         uses: andstor/file-existence-action@v1
@@ -69,6 +63,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        id: cache-dist
+        with:
+          path: ./dist/*
+          key: ${{ github.sha }}
+
       - name: Check webapp2 file existence
         id: check_build
         uses: andstor/file-existence-action@v1
