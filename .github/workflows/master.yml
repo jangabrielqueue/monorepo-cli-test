@@ -32,6 +32,7 @@ jobs:
         with:
           name: dist
           path: dist
+          retention-days: 1
 
   first_job_test:
     needs: Build
@@ -45,7 +46,7 @@ jobs:
           path: dist
       - name: Check webapp2 file existence
         id: check_build
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: "dist/apps/webapp2-test"
       - name: File Exist
@@ -64,7 +65,7 @@ jobs:
           path: dist
       - name: Check webapp2 file existence
         id: check_build
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: "dist/apps/first-app"
       - name: File Exist
