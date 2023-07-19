@@ -30,7 +30,7 @@ jobs:
       - run: npx nx run-many -t build
       - uses: actions/upload-artifact@v2
         with:
-          name: artifact-dist
+          name: dist
           path: dist
 
   first_job_test:
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: artifact-dist
+          name: dist
 
       - name: Check webapp2 file existence
         id: check_build
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: artifact-dist
+          name: dist
 
       - name: Check webapp2 file existence
         id: check_build
