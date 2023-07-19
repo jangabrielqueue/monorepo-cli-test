@@ -29,9 +29,84 @@ jobs:
       - run: npm ci
       - run: npx nx run-many -t build
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Check webapp2 file existence
+        id: check_build
+        uses: andstor/file-existence-action@v1
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
-          projectId: monorepo-cli-test
-          channelId: live
+          files: "dist/apps/webapp2-test"
+      - name: File Exist
+        if: steps.check_build.outputs.files_exists == 'true'
+        run: echo "build exist"
+
+      - name: Check webapp2 file existence
+        id: check_dist_first_app
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "dist/apps/first-app"
+      - name: File Exist
+        if: steps.check_dist_first_app.outputs.files_exists == 'true'
+        run: echo "build exist"
+
+
+  first_job_test:
+    needs: main
+    name: Test Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check webapp2 file existence
+        id: check_build
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "dist/apps/webapp2-test"
+      - name: File Exist
+        if: steps.check_build.outputs.files_exists == 'true'
+        run: echo "build exist"
+
+  second_job_test:
+    needs: main
+    name: Second Test Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check webapp2 file existence
+        id: check_build
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "dist/apps/first-app"
+      - name: File Exist
+        if: steps.check_build.outputs.files_exists == 'true'
+        run: echo "build exist"
+
+      # - name: Check first-app file
+      #   id: first-app-exist
+      #   uses: andstor/file-existence-action@v1
+      #   with: 
+      #     files: "dist/apps/first-app"
+
+      # - name: Check webapp2 file
+      #   id: webapp2-exist
+      #   uses: andstor/file-existence-action@v1
+      #   with: 
+      #     files: "dist/apps/webapp2-test"
+
+      # - name: Deploy first-app
+      #   if: steps.first-app-exist.outputs.files_exists == 'true'
+      #   uses: FirebaseExtended/action-hosting-deploy@v0 
+      #   with:
+      #     repoToken: '${{ secrets.GITHUB_TOKEN }}'
+      #     firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
+      #     projectId: monorepo-cli-test
+      #     channelId: live
+      #     target: monorepo-cli-test
+
+      # - name: Deploy webbapp2
+      #   if: steps.webapp2-exist.outputs.files_exists == 'true'
+      #   uses: FirebaseExtended/action-hosting-deploy@v0 
+      #   with:
+      #     repoToken: '${{ secrets.GITHUB_TOKEN }}'
+      #     firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
+      #     projectId: monorepo-cli-test
+      #     channelId: live
+      #     target: webapp2-test
+
