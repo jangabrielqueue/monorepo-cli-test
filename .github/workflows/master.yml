@@ -55,7 +55,13 @@ jobs:
           files: "dist/apps/webapp2-test"
       - name: File Exist
         if: steps.check_build.outputs.files_exists == 'true'
-        run: echo "build exist"
+        uses: FirebaseExtended/action-hosting-deploy@v0 
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
+          projectId: monorepo-cli-test
+          channelId: live
+          target: monorepo-cli-test
 
   second_job_test:
     needs: main
@@ -77,7 +83,13 @@ jobs:
           files: "dist/apps/first-app"
       - name: File Exist
         if: steps.check_build.outputs.files_exists == 'true'
-        run: echo "build exist"
+        uses: FirebaseExtended/action-hosting-deploy@v0 
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOREPO_CLI_TEST }}'
+          projectId: monorepo-cli-test
+          channelId: live
+          target: webapp2-test
 
       # - name: Check first-app file
       #   id: first-app-exist
