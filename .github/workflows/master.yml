@@ -32,8 +32,11 @@ jobs:
         with:
           name: dist
           path: | 
+            firebase.json
+            .firebaserc
+            dist
             !node_modules/**
-            **.md
+            !**.md
           retention-days: 1
 
   first_job_test:
